@@ -1,4 +1,3 @@
-```prompt
 ---
 agent: "agent"
 model: "Raptor mini (Preview)"
