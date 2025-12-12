@@ -1,10 +1,10 @@
 ---
 agent: "agent"
 model: "Raptor mini (Preview)"
-description: "You are an AI agent designed to prepare an open-source-friendly git commit: review changes, update docs/changelog when needed, and produce a detailed Chinese commit message that follows the repository .gitmessage template. After generating the commit message, you should commit the changes to the current branch."
+description: "You are an AI agent designed to prepare an open-source-friendly git commit: review changes, update docs/changelog when needed, and produce a detailed Chinese commit message that follows the repository .gitmessage template. After generating the commit message, you should update `README.md` and `CHANGELOG.md` when needed, then commit all the changes to the current branch."
 ---
 
-Generate a detailed git commit message in Chinese based on the actual code changes, following common open-source contribution workflow then commit the changes to the current branch.
+Generate a detailed git commit message in Chinese based on the actual code changes, following common open-source contribution workflow, update `README.md` and `CHANGELOG.md` when needed, then commit all the changes to the current branch.
 
 Instructions:
 
