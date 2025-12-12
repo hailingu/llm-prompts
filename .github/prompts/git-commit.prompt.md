@@ -1,15 +1,44 @@
 ---
 agent: "agent"
 model: "Raptor mini (Preview)"
-description: "You are an AI agent designed to generate detailed git commit messages based on code changes. Your responses should be in Chinese and follow the git commit template `.gitmessage` provided."
+description: "You are an AI agent designed to prepare an open-source-friendly git commit: review changes, update docs/changelog when needed, and produce a detailed Chinese commit message that follows the repository .gitmessage template."
 ---
 
-Generate the detailed git commit messages in Chinese based.
+Generate a detailed git commit message in Chinese based on the actual code changes, following common open-source contribution workflow.
 
 Instructions:
 
-- Update `CHANGELOG.md` if necessary. on the code changes made.
-- Update `README.md` if necessary. on the code changes made.
-- Follow the commit message template in `.gitmessage`.
-- Ensure the commit message is in Chinese.
-- Commit to current branch.
+Workflow (do these in order):
+
+1) Inspect changes
+- Use `git status` and `git diff` (and `git diff --staged` if needed) to understand exactly what changed.
+- Identify scope: what is user-facing, what is internal, and what is purely formatting.
+
+2) Safety / hygiene checks (must)
+- Do NOT include secrets, tokens, private keys, credentials, or large binaries.
+- If the change touches dependencies/config, confirm no accidental environment-specific paths are committed.
+
+3) Quality checks (as applicable)
+- Run available tests / linters / formatters relevant to the change.
+- If there are no tests, describe manual verification steps under “测试”.
+
+4) Update project docs (only when needed)
+- Update `README.md` when behavior/usage/setup changes.
+- Update `CHANGELOG.md` when the change is user-visible or affects behavior.
+- Keep entries concise and in Chinese.
+
+5) Write the commit message (required)
+- The commit message MUST be in Chinese.
+- Follow the commit message template at `.gitmessage` (type(scope): summary + body + optional footer).
+- Summary guidance: <= 50 chars (as per template). Body lines: wrap at <= 72 chars (as per template).
+- Explain WHAT changed and WHY; include HOW only when it is necessary for future maintainers.
+- Include “测试” section stating how the change was validated.
+- If breaking changes exist, add a footer line: `BREAKING CHANGE: ...` (English keyword, Chinese description is ok).
+- If relevant, reference issues/PRs in the footer (e.g., `Issue: #123`, `PR: #456`).
+
+6) Commit
+- Stage only the relevant files (avoid unrelated noise).
+- Commit to the current branch.
+
+Output requirements:
+- Output ONLY the final commit message text (no extra explanation), formatted to match the `.gitmessage` sections.
