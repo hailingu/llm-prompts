@@ -1,10 +1,10 @@
 ---
 agent: "agent"
 model: "Raptor mini (Preview)"
-description: "Evaluate the current duck-flow architecture strictly from code facts (do not read any .md files) and produce a Simplified-Chinese, table-based evaluation report."
+description: "Evaluate the current project architecture strictly from code facts (do not read any .md files) and produce a Simplified-Chinese, table-based evaluation report."
 ---
 
-Evaluate the current duck-flow architecture and output a structured assessment report.
+Evaluate the current project architecture and output a structured assessment report.
 
 Instructions:
 
