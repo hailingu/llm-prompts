@@ -119,4 +119,3 @@ Output structure (in Simplified Chinese, using tables):
 Notes:
 - Evidence should reference code artifacts (e.g., `src/...`, `package.json`, `pyproject.toml`, `pom.xml`, `Dockerfile`, CI configs) but MUST NOT reference `.md`.
 - Keep the report actionable and grounded; avoid generic statements.
-```
