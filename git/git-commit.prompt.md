@@ -27,11 +27,11 @@ Workflow (do these in order):
 - Update `CHANGELOG.md` when the change is user-visible or affects behavior.
 - Keep entries concise and in Chinese.
 
-5) Update CHANGELOG entry (when needed)
-- When you are making a commit in this workflow, you SHOULD add a new entry to `CHANGELOG.md` under `## Unreleased` for this change, following the existing list format.
-- If possible, include the short commit id (e.g., `abc1234`) in the entry (format: `- <change summary>（abc1234）`), but this is OPTIONAL and can be added later in a batch update.
-- If the commit id is not yet available, you may leave it out or add it in a future cleanup commit.
-- Avoid making a separate follow-up commit solely to update the commit id in the changelog, unless specifically requested.
+5) Update CHANGELOG (when applicable)
+- When making a user-visible change, add an entry to `CHANGELOG.md` under `## Unreleased`, following the existing list format.
+- Keep the entry concise and in Chinese, describing what changed.
+- The commit id can be added later during batch CHANGELOG cleanup or release preparation, so do NOT attempt to add it in this workflow.
+- This avoids the circular dependency of needing a commit id before the commit exists.
 6) Write the commit message (required)
 - The commit message MUST be in Chinese.
 - Follow the commit message template at `.gitmessage` (type(scope): summary + body + optional footer).
@@ -48,5 +48,4 @@ Workflow (do these in order):
 Output requirements:
 - Output ONLY the final commit message text (no extra explanation), formatted to match the `.gitmessage` sections.
 
-Note:
-- If you performed a separate follow-up commit only to record the CHANGELOG entry, do NOT output that second commit message unless the user explicitly asks for it.
+
