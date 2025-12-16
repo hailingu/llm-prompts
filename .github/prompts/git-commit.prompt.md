@@ -46,6 +46,3 @@ Workflow (do these in order):
 
 Output requirements:
 - Output ONLY the final commit message text (no extra explanation), formatted to match the `.gitmessage` sections.
-
-Note:
-- If you performed a separate follow-up commit only to record the CHANGELOG entry, do NOT output that second commit message unless the user explicitly asks for it.
