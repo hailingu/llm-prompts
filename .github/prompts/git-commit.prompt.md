@@ -29,9 +29,7 @@ Workflow (do these in order):
 
 5) Update CHANGELOG entry (when needed)
 - When you are making a commit in this workflow, you SHOULD add a new entry to `CHANGELOG.md` under `## Unreleased` for this change, following the existing list format.
-- If possible, include the short commit id (e.g., `abc1234`) in the entry (format: `- <change summary>（abc1234）`), but this is OPTIONAL and can be added later in a batch update.
-- If the commit id is not yet available, you may leave it out or add it in a future cleanup commit.
-- Avoid making a separate follow-up commit solely to update the commit id in the changelog, unless specifically requested.
+- Including the short commit id (e.g., `abc1234`) in the entry is OPTIONAL (format: `- <change summary>（abc1234）`). Commit IDs can be added later in a batch update. Avoid making a separate follow-up commit solely to update commit IDs.
 
 6) Write the commit message (required)
 - The commit message MUST be in Chinese.
