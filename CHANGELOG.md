@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### 9ddd9ce
+
+- 新增 `git/git-pull-request.prompt.md` 与 `.github/prompts/git-pull-request.prompt.md`，用于生成 PR Title 与 PR Description（中文、Markdown 格式）
+
 ### c7f16bd
 
 - 文档: 让提交提示在生成提交信息后执行提交
