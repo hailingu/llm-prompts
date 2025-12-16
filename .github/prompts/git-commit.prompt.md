@@ -27,14 +27,11 @@ Workflow (do these in order):
 - Update `CHANGELOG.md` when the change is user-visible or affects behavior.
 - Keep entries concise and in Chinese.
 
-5) Update CHANGELOG entry with the short commit id (required when committing)
-- When you are making a commit in this workflow, you MUST add a new entry to `CHANGELOG.md` under `## Unreleased` for this change, following the existing list format.
-- The entry MUST include the short commit id (e.g., `abc1234`). Suggested one-line format: `- <change summary>（abc1234）`.
-- Important constraint: the commit id only exists AFTER the commit is created.
-  - First, create the primary commit for the actual change.
-  - Then get the short id via `git rev-parse --short HEAD`.
-  - Then update `CHANGELOG.md` under `## Unreleased` with that short id.
-  - If you need to commit the CHANGELOG update, do it as a separate follow-up commit (so the referenced id stays correct).
+5) Update CHANGELOG (when applicable)
+- When you are making a commit in this workflow, add a new entry to `CHANGELOG.md` under `## Unreleased` for this change if it's user-visible or affects behavior.
+- Keep the entry concise and in Chinese. Format: `- <change summary>`.
+- Optionally, you may include the commit id if it's already available (e.g., when referencing an existing commit). Format: `- <change summary>（abc1234）`.
+- Note: Commit IDs can be added retroactively in batch updates, so don't create a second commit just to add the ID.
 
 6) Write the commit message (required)
 - The commit message MUST be in Chinese.
@@ -51,6 +48,3 @@ Workflow (do these in order):
 
 Output requirements:
 - Output ONLY the final commit message text (no extra explanation), formatted to match the `.gitmessage` sections.
-
-Note:
-- If you performed a separate follow-up commit only to record the CHANGELOG entry, do NOT output that second commit message unless the user explicitly asks for it.
