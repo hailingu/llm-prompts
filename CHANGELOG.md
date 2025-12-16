@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### c7f16bd
+
+- 文档: 让提交提示在生成提交信息后执行提交
+
 ### 8daa124
 
 - 文档: 按 commit id 重组 CHANGELOG 格式并整理条目
