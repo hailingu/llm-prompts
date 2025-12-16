@@ -30,8 +30,7 @@ Workflow (do these in order):
 5) Update CHANGELOG (when applicable)
 - When you are making a commit in this workflow, add a new entry to `CHANGELOG.md` under `## Unreleased` for this change if it's user-visible or affects behavior.
 - Keep the entry concise and in Chinese. Format: `- <change summary>`.
-- Optionally, you may include the commit id if it's already available (e.g., when referencing an existing commit). Format: `- <change summary>（abc1234）`.
-- Note: Commit IDs can be added retroactively in batch updates, so don't create a second commit just to add the ID.
+- Note: The CHANGELOG structure uses commit IDs as section headers (e.g., `### abc1234`), but these can be added retroactively in batch updates. Don't create a follow-up commit just to add the commit ID header.
 
 6) Write the commit message (required)
 - The commit message MUST be in Chinese.
