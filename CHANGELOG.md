@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### 8daa124
+
+- 文档: 按 commit id 重组 CHANGELOG 格式并整理条目
+
 ### c4e6f5d
 
 - 将 git 提交提示翻译为英文
