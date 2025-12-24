@@ -39,9 +39,8 @@ Given the high-level `${input:plan}` to split the module into smaller tasks, man
    - Outline testing requirements for each task, including unit tests, integration tests, and coverage goals
 6. **Documentation**
    - Specify documentation updates needed for each task, including API docs and design overviews.
-   - Ensure generated plan documents conform to markdownlint v0.40.0 doc rules:
+   - Ensure generated plan documents conform to markdownlint v0.40.0 documentation rules:
      https://github.com/DavidAnson/markdownlint/tree/v0.40.0/doc
-   - 生成的分解计划文档格式必须符合 markdownlint v0.40.0 文档规范（见链接）。
 7. **Review and Iterate**
    - Review the task list for completeness and clarity.
 

@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- 提示: 要求 `task/plan-breakdown-to-task.prompt.md` 生成的分解計劃文檔格式符合 markdownlint v0.40.0 文檔規範（https://github.com/DavidAnson/markdownlint/tree/v0.40.0/doc）
+- Prompt: require generated plan documents from `task/plan-breakdown-to-task.prompt.md` to conform to markdownlint v0.40.0 documentation rules (https://github.com/DavidAnson/markdownlint/tree/v0.40.0/doc)
 
 ### 9ddd9ce
 
