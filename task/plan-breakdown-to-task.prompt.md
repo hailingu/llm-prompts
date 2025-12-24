@@ -32,7 +32,7 @@ Given the high-level `${input:plan}` to split the module into smaller tasks, man
      - Implementation Points
      - Testing Strategy
      - Deliverables
-     - checklist for completion
+     - Checklist for completion
 4. **Ensure Backward Compatibility**
    - Define criteria for maintaining backward compatibility with existing code.
 5. **Testing Requirements**
