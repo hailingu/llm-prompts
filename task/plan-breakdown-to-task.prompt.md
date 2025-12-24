@@ -36,7 +36,7 @@ Given the high-level `${input:plan}` to split the module into smaller tasks, man
 4. **Ensure Backward Compatibility**
    - Define criteria for maintaining backward compatibility with existing code.
 5. **Testing Requirements**
-   - Outline testing requirements for each task, including unit tests, integration tests, and coverage goals
+   - Outline testing requirements for each task, including unit tests, integration tests, and coverage goals.
 6. **Documentation**
    - Specify documentation updates needed for each task, including API docs and design overviews.
    - Ensure generated plan documents conform to markdownlint v0.40.0 documentation rules:
