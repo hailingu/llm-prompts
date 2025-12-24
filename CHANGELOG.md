@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Prompt: require generated plan documents from `task/plan-breakdown-to-task.prompt.md` to conform to markdownlint v0.40.0 documentation rules (https://github.com/DavidAnson/markdownlint/tree/v0.40.0/doc)
+
+### 9ddd9ce
+
+- 新增 `git/git-pull-request.prompt.md` 与 `.github/prompts/git-pull-request.prompt.md`，用于生成 PR Title 与 PR Description（中文、Markdown 格式）
+
+### c7f16bd
+
 - 文档: 让提交提示在生成提交信息后执行提交
 - 文档: 按 commit id 重组 CHANGELOG 格式并整理条目
 - 将 git 提交提示翻译为英文

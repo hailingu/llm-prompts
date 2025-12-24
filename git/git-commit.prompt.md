@@ -24,7 +24,8 @@ Workflow (do these in order):
 
 4) Update project docs (only when needed)
 - Update `README.md` when behavior/usage/setup changes.
-- Update `CHANGELOG.md` when the change is user-visible or affects behavior.
+- When relevant, update `CHANGELOG.md` (see section 5 for details).
+
 - Keep entries concise and in Chinese.
 
 5) Update CHANGELOG (when applicable)
@@ -47,5 +48,3 @@ Workflow (do these in order):
 
 Output requirements:
 - Output ONLY the final commit message text (no extra explanation), formatted to match the `.gitmessage` sections.
-
-
