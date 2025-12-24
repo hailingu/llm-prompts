@@ -24,7 +24,8 @@ Workflow (do these in order):
 
 4) Update project docs (only when needed)
 - Update `README.md` when behavior/usage/setup changes.
-- Update `CHANGELOG.md` when the change is user-visible or affects behavior.
+- Update `CHANGELOG.md`.
+
 - Keep entries concise and in Chinese.
 
 5) Update CHANGELOG (when applicable)
