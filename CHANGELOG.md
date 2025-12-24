@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- 提示: 要求 `task/plan-breakdown-to-task.prompt.md` 生成的分解計劃文檔格式符合 markdownlint v0.40.0 文檔規範（https://github.com/DavidAnson/markdownlint/tree/v0.40.0/doc）
+
 ### 9ddd9ce
 
 - 新增 `git/git-pull-request.prompt.md` 与 `.github/prompts/git-pull-request.prompt.md`，用于生成 PR Title 与 PR Description（中文、Markdown 格式）
