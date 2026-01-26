@@ -3,6 +3,7 @@
 **Purpose**: 提供系统化的设计评审检查清单，确保设计文档质量符合 Google 标准。
 
 **When to Use**: 在以下阶段使用此清单：
+
 - java-architect 完成 Level 1 后 (self-review)
 - java-api-designer 完成 Level 2 后 (self-review)
 - java-coder-specialist 实现前 (pre-implementation review)
@@ -23,6 +24,7 @@
 - [ ] Out-of-scope items are explicitly listed
 
 **Questions to ask**:
+
 - Can a new team member understand WHY this module is needed?
 - Is it clear WHO will use this module?
 - Are the integration points well-defined?
@@ -36,6 +38,7 @@
 - [ ] Success criteria are defined (e.g., "support 100 QPS with p95 < 200ms")
 
 **Anti-patterns**:
+
 - ❌ "Improve performance" → ✅ "Reduce p95 latency from 500ms to 200ms"
 - ❌ "Support high concurrency" → ✅ "Support 100 concurrent requests (QPS)"
 
@@ -49,6 +52,7 @@
 - [ ] Technology stack is specified (Spring Boot version, database type, etc.)
 
 **Component Diagram Quality**:
+
 - [ ] Uses standard notation (boxes for services, arrows for dependencies)
 - [ ] Shows external dependencies (databases, external APIs)
 - [ ] Is simple enough to fit on one slide
@@ -63,6 +67,7 @@
 - [ ] **API Overview is provided** (method names and purposes, NOT full signatures)
 
 **Example of good API Overview**:
+
 ```markdown
 ### 4.4 API Overview
 - `verify(apiKey)`: Verify subscription status
@@ -71,6 +76,7 @@
 ```
 
 **What NOT to include** (belongs to Level 2):
+
 - ❌ Complete method signatures with parameter types
 - ❌ Exception declarations
 - ❌ @ThreadSafe annotations
@@ -92,6 +98,7 @@
 - [ ] **NOT method-level concurrency contracts** (belongs to Level 2)
 
 **Example**:
+
 ```markdown
 ### 6.1 Performance Targets
 - QPS: 100 concurrent requests
@@ -120,6 +127,7 @@
 - [ ] Trade-offs are clearly explained
 
 **Anti-pattern**:
+
 - ❌ "We considered Option B but chose Option A because it's better"
 - ✅ "Option A: Lower latency (50ms) but higher memory (2GB). Option B: Higher latency (100ms) but lower memory (500MB). Decision: Choose A because latency is more critical than memory for our use case."
 
@@ -137,6 +145,7 @@
 - [ ] Exceptions follow Pattern 1.1 (IOException for infrastructure, IllegalArgumentException for caller bug)
 
 **Checklist for each method**:
+
 ```java
 /**
  * [Method description]
@@ -165,13 +174,14 @@
 **Example of good Contract**:
 
 | Scenario | HTTP Status | Response Body | Return Value | Exception | Retry? | Pattern |
-|----------|-------------|---------------|--------------|-----------|--------|---------|
+| ------------- | ----------- | -------------- | ----------- | ----------- | -------- | ------- |
 | Success | 200 | {"status":"active"} | Subscription | - | No | - |
 | Not found | 404 | {"error":"not_found"} | null | - | No | 1.1 |
 | Timeout | - | - | - | IOException(SocketTimeoutException) | Yes | 2.1 |
 | Null param | - | - | - | IllegalArgumentException | No | 1.1 |
 
 **Anti-patterns**:
+
 - ❌ "Returns null or throws exception depending on the situation"
 - ❌ "Throws IOException when network fails"
 - ✅ "Throws IOException(SocketTimeoutException) when connection times out (HTTP client configured with 5s timeout)"
@@ -190,6 +200,7 @@
 - [ ] **Pattern references are included** (// Pattern 2.1: Exponential Backoff)
 
 **Quality Test**: Can a junior developer copy-paste this code into production?
+
 - ✅ Yes: Code is complete, runnable, and handles all errors
 - ❌ No: Code is incomplete, has TODOs, or missing error handling
 
@@ -237,6 +248,7 @@
 - [ ] Synchronization strategy is stated (synchronized vs ConcurrentHashMap vs immutable)
 
 **Example**:
+
 ```markdown
 ### 12. Concurrency Requirements
 
@@ -316,7 +328,7 @@ Before generating user documentation:
 
 ## Usage Example
 
-### For java-architect (after completing Level 1):
+### For java-architect (after completing Level 1)
 
 ```bash
 # Self-review checklist
@@ -333,7 +345,7 @@ Before generating user documentation:
 
 ---
 
-### For java-api-designer (after completing Level 2):
+### For java-api-designer (after completing Level 2)
 
 ```bash
 # Self-review checklist (CRITICAL)
@@ -350,7 +362,7 @@ Before generating user documentation:
 
 ---
 
-### For java-coder-specialist (before implementation):
+### For java-coder-specialist (before implementation)
 
 ```bash
 # Pre-implementation review

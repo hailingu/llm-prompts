@@ -8,6 +8,7 @@
 - 修复 MD056（表格列数）：在 `standards/api-patterns.md` 中将 `**2xx Success**` 行补足为 5 列，避免表格缺失数据
 - 修复 MD060（表格样式）与 MD034（裸 URL）：调整 `standards/agent-collaboration-protocol.md` 表格样式并替换裸链接；微调 `java-standards/alibaba-java-guidelines.md` 的代码块标记
 - 删除过期文档：移除 `standards/agent-improvements-summary.md`（该总结已合并至其他规范文档）
+- 修复 `standards/design-review-checklist.md` 排版与示例表格（修复 MD056/MD060）
 - 新增 `agents/`, `java-standards/`, `standards/`, `templates/` 文档与模板，补充项目的代理说明、Java 规范、设计文档标准与模板
 
 ### 9ddd9ce
