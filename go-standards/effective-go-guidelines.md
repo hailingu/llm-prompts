@@ -27,7 +27,9 @@
 
 ### 1.1 General Principles
 
-**Use MixedCaps or mixedCaps, never underscores**
+#### Use MixedCaps or mixedCaps, never underscores
+
+Use MixedCaps or mixedCaps for identifier names; avoid underscores in identifiers to follow Go conventions.
 
 ✅ **Correct**:
 ```go
@@ -131,6 +133,7 @@ func (u *User) GetName() string { return u.name }  // Don't use Get prefix
 **Single-method interfaces use -er suffix**
 
 ✅ **Correct**:
+
 ```go
 type Reader interface {
     Read(p []byte) (n int, err error)
@@ -146,6 +149,7 @@ type Stringer interface {
 ```
 
 **Multi-method interfaces describe the concept**:
+
 ```go
 type UserRepository interface {
     FindByID(id string) (*User, error)
@@ -160,6 +164,7 @@ type UserRepository interface {
 ### 2.1 Package Organization
 
 **Good package design**:
+
 - Small, focused packages
 - Clear, single responsibility
 - No circular dependencies
