@@ -13,19 +13,19 @@
     <property name="severity" value="warning"/>
     <property name="fileExtensions" value="java, properties, xml"/>
 
-    <!-- 文件长度不超过 2000 行 -->
+    <!-- File length must not exceed 2000 lines -->
     <module name="FileLength">
         <property name="max" value="2000"/>
     </module>
 
-    <!-- 每行不超过 120 字符 -->
+    <!-- Each line must not exceed 120 characters -->
     <module name="LineLength">
         <property name="max" value="120"/>
         <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
     </module>
 
     <module name="TreeWalker">
-        <!-- 命名规范 -->
+        <!-- Naming conventions -->
         <module name="PackageName">
             <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
         </module>
@@ -54,36 +54,36 @@
             <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
         </module>
 
-        <!-- 代码格式 -->
+        <!-- Code formatting -->
         <module name="Indentation">
             <property name="basicOffset" value="4"/>
             <property name="braceAdjustment" value="0"/>
             <property name="caseIndent" value="4"/>
         </module>
 
-        <!-- 左大括号位置 -->
+        <!-- Left curly brace position -->
         <module name="LeftCurly">
             <property name="option" value="eol"/>
         </module>
 
-        <!-- 右大括号位置 -->
+        <!-- Right curly brace position -->
         <module name="RightCurly">
             <property name="option" value="alone"/>
         </module>
 
-        <!-- 方法长度不超过 80 行 -->
+        <!-- Method length must not exceed 80 lines -->
         <module name="MethodLength">
             <property name="tokens" value="METHOD_DEF"/>
             <property name="max" value="80"/>
         </module>
 
-        <!-- 参数个数不超过 7 个 -->
+        <!-- Parameter count must not exceed 7 -->
         <module name="ParameterNumber">
             <property name="max" value="7"/>
             <property name="tokens" value="METHOD_DEF"/>
         </module>
 
-        <!-- 空格检查 -->
+        <!-- Whitespace checks -->
         <module name="WhitespaceAround">
             <property name="allowEmptyConstructors" value="true"/>
             <property name="allowEmptyMethods" value="true"/>
@@ -95,13 +95,13 @@
             <property name="tokens" value="COMMA, SEMI"/>
         </module>
 
-        <!-- 避免使用 * 导入 -->
+        <!-- Avoid using wildcard imports -->
         <module name="AvoidStarImport"/>
 
-        <!-- 检查未使用的导入 -->
+        <!-- Check for unused imports -->
         <module name="UnusedImports"/>
 
-        <!-- 导入顺序 -->
+        <!-- Import order -->
         <module name="ImportOrder">
             <property name="groups" value="java,javax,org,com"/>
             <property name="ordered" value="true"/>
@@ -109,40 +109,40 @@
             <property name="option" value="top"/>
         </module>
 
-        <!-- 修饰符顺序 -->
+        <!-- Modifier order -->
         <module name="ModifierOrder"/>
 
-        <!-- 空 catch 块检查 -->
+        <!-- Empty catch block check -->
         <module name="EmptyCatchBlock">
             <property name="exceptionVariableName" value="expected|ignore"/>
         </module>
 
-        <!-- 必须有默认的 switch case -->
+        <!-- Missing default switch case -->
         <module name="MissingSwitchDefault"/>
 
-        <!-- 覆写方法必须有 @Override -->
+        <!-- Overridden methods must include @Override -->
         <module name="MissingOverride"/>
 
-        <!-- equals() 和 hashCode() 必须同时覆写 -->
+        <!-- equals() and hashCode() must be overridden together -->
         <module name="EqualsHashCode"/>
 
-        <!-- 不允许魔法数字 -->
+        <!-- Disallow magic numbers -->
         <module name="MagicNumber">
             <property name="ignoreNumbers" value="-1, 0, 1, 2"/>
             <property name="ignoreHashCodeMethod" value="true"/>
             <property name="ignoreAnnotation" value="true"/>
         </module>
 
-        <!-- 简化布尔表达式 -->
+        <!-- Simplify boolean expressions -->
         <module name="SimplifyBooleanExpression"/>
 
-        <!-- 简化布尔返回 -->
+        <!-- Simplify boolean returns -->
         <module name="SimplifyBooleanReturn"/>
 
-        <!-- 字符串比较 -->
+        <!-- String literal equality -->
         <module name="StringLiteralEquality"/>
 
-        <!-- 嵌套深度不超过 3 层 -->
+        <!-- Nested depth must not exceed 3 levels -->
         <module name="NestedIfDepth">
             <property name="max" value="3"/>
         </module>
@@ -155,19 +155,19 @@
             <property name="max" value="2"/>
         </module>
 
-        <!-- 一行只能有一条语句 -->
+        <!-- One statement per line -->
         <module name="OneStatementPerLine"/>
 
-        <!-- 每个变量声明单独一行 -->
+        <!-- Each variable declaration must be on a separate line -->
         <module name="MultipleVariableDeclarations"/>
 
-        <!-- 数组类型风格 String[] args，不是 String args[] -->
+        <!-- Array type style: prefer String[] args over String args[] -->
         <module name="ArrayTypeStyle"/>
 
-        <!-- 接口中不写 public -->
+        <!-- Do not write 'public' in interfaces -->
         <module name="RedundantModifier"/>
 
-        <!-- Javadoc 注释检查 -->
+        <!-- Javadoc checks for methods -->
         <module name="JavadocMethod">
             <property name="scope" value="public"/>
             <property name="allowMissingParamTags" value="false"/>
@@ -187,19 +187,19 @@
             <property name="checkFirstSentence" value="false"/>
         </module>
 
-        <!-- 循环控制变量不能在循环体内被修改 -->
+        <!-- Loop control variables must not be modified within the loop body -->
         <module name="ModifiedControlVariable"/>
 
-        <!-- 避免内部赋值 -->
+        <!-- Avoid assignments within expressions -->
         <module name="InnerAssignment"/>
 
-        <!-- final 类不能有 protected 成员 -->
+        <!-- Final classes must not have protected members -->
         <module name="FinalClass"/>
 
-        <!-- 工具类应该有私有构造函数 -->
+        <!-- Utility classes should have a private constructor -->
         <module name="HideUtilityClassConstructor"/>
 
-        <!-- 不允许有空语句 -->
+        <!-- Empty statements are not allowed -->
         <module name="EmptyStatement"/>
     </module>
 </module>

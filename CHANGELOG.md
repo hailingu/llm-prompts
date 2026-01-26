@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- docs(standards): 将 `java-standards/checkstyle-alibaba.xml` 中的注释翻译为英文以便国际化与协作
+
 - docs(standards): 用 `subdomain` 替换不常见术语 `subbusiness` 并添加示例，改进 GAV 约定说明
 
 - Prompt: require generated plan documents from `task/plan-breakdown-to-task.prompt.md` to conform to markdownlint v0.40.0 documentation rules ([markdownlint v0.40.0 文档](https://github.com/DavidAnson/markdownlint/tree/v0.40.0/doc))
