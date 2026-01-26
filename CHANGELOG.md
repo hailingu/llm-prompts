@@ -19,4 +19,3 @@
 - 更新 `evaluation/project-evaluate.prompt.md`：重写为英文提示（要求输出为简体中文表格），修复格式损坏并补全内容
 - 更新 `README.md`，说明如何启用该仓库的提交模板
 - 新增 `analysis/architecture-analysis.prompt.md`：提供全面的架构文档编写指导
-
