@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+    Checkstyle configuration for Alibaba Java Coding Guidelines
+    Reference: https://github.com/alibaba/p3c
+-->
+
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="warning"/>
+    <property name="fileExtensions" value="java, properties, xml"/>
+
+    <!-- 文件长度不超过 2000 行 -->
+    <module name="FileLength">
+        <property name="max" value="2000"/>
+    </module>
+
+    <!-- 每行不超过 120 字符 -->
+    <module name="LineLength">
+        <property name="max" value="120"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    </module>
+
+    <module name="TreeWalker">
+        <!-- 命名规范 -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+        </module>
+        
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+        </module>
+        
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+        </module>
+        
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- 代码格式 -->
+        <module name="Indentation">
+            <property name="basicOffset" value="4"/>
+            <property name="braceAdjustment" value="0"/>
+            <property name="caseIndent" value="4"/>
+        </module>
+
+        <!-- 左大括号位置 -->
+        <module name="LeftCurly">
+            <property name="option" value="eol"/>
+        </module>
+
+        <!-- 右大括号位置 -->
+        <module name="RightCurly">
+            <property name="option" value="alone"/>
+        </module>
+
+        <!-- 方法长度不超过 80 行 -->
+        <module name="MethodLength">
+            <property name="tokens" value="METHOD_DEF"/>
+            <property name="max" value="80"/>
+        </module>
+
+        <!-- 参数个数不超过 7 个 -->
+        <module name="ParameterNumber">
+            <property name="max" value="7"/>
+            <property name="tokens" value="METHOD_DEF"/>
+        </module>
+
+        <!-- 空格检查 -->
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+        </module>
+
+        <module name="WhitespaceAfter">
+            <property name="tokens" value="COMMA, SEMI"/>
+        </module>
+
+        <!-- 避免使用 * 导入 -->
+        <module name="AvoidStarImport"/>
+
+        <!-- 检查未使用的导入 -->
+        <module name="UnusedImports"/>
+
+        <!-- 导入顺序 -->
+        <module name="ImportOrder">
+            <property name="groups" value="java,javax,org,com"/>
+            <property name="ordered" value="true"/>
+            <property name="separated" value="true"/>
+            <property name="option" value="top"/>
+        </module>
+
+        <!-- 修饰符顺序 -->
+        <module name="ModifierOrder"/>
+
+        <!-- 空 catch 块检查 -->
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName" value="expected|ignore"/>
+        </module>
+
+        <!-- 必须有默认的 switch case -->
+        <module name="MissingSwitchDefault"/>
+
+        <!-- 覆写方法必须有 @Override -->
+        <module name="MissingOverride"/>
+
+        <!-- equals() 和 hashCode() 必须同时覆写 -->
+        <module name="EqualsHashCode"/>
+
+        <!-- 不允许魔法数字 -->
+        <module name="MagicNumber">
+            <property name="ignoreNumbers" value="-1, 0, 1, 2"/>
+            <property name="ignoreHashCodeMethod" value="true"/>
+            <property name="ignoreAnnotation" value="true"/>
+        </module>
+
+        <!-- 简化布尔表达式 -->
+        <module name="SimplifyBooleanExpression"/>
+
+        <!-- 简化布尔返回 -->
+        <module name="SimplifyBooleanReturn"/>
+
+        <!-- 字符串比较 -->
+        <module name="StringLiteralEquality"/>
+
+        <!-- 嵌套深度不超过 3 层 -->
+        <module name="NestedIfDepth">
+            <property name="max" value="3"/>
+        </module>
+
+        <module name="NestedForDepth">
+            <property name="max" value="3"/>
+        </module>
+
+        <module name="NestedTryDepth">
+            <property name="max" value="2"/>
+        </module>
+
+        <!-- 一行只能有一条语句 -->
+        <module name="OneStatementPerLine"/>
+
+        <!-- 每个变量声明单独一行 -->
+        <module name="MultipleVariableDeclarations"/>
+
+        <!-- 数组类型风格 String[] args，不是 String args[] -->
+        <module name="ArrayTypeStyle"/>
+
+        <!-- 接口中不写 public -->
+        <module name="RedundantModifier"/>
+
+        <!-- Javadoc 注释检查 -->
+        <module name="JavadocMethod">
+            <property name="scope" value="public"/>
+            <property name="allowMissingParamTags" value="false"/>
+            <property name="allowMissingReturnTag" value="false"/>
+        </module>
+
+        <module name="JavadocType">
+            <property name="scope" value="public"/>
+            <property name="authorFormat" value="\S"/>
+        </module>
+
+        <module name="JavadocVariable">
+            <property name="scope" value="public"/>
+        </module>
+
+        <module name="JavadocStyle">
+            <property name="checkFirstSentence" value="false"/>
+        </module>
+
+        <!-- 循环控制变量不能在循环体内被修改 -->
+        <module name="ModifiedControlVariable"/>
+
+        <!-- 避免内部赋值 -->
+        <module name="InnerAssignment"/>
+
+        <!-- final 类不能有 protected 成员 -->
+        <module name="FinalClass"/>
+
+        <!-- 工具类应该有私有构造函数 -->
+        <module name="HideUtilityClassConstructor"/>
+
+        <!-- 不允许有空语句 -->
+        <module name="EmptyStatement"/>
+    </module>
+</module>

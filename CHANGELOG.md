@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Prompt: require generated plan documents from `task/plan-breakdown-to-task.prompt.md` to conform to markdownlint v0.40.0 documentation rules (https://github.com/DavidAnson/markdownlint/tree/v0.40.0/doc)
+- 新增 `agents/`, `java-standards/`, `standards/`, `templates/` 文档与模板，补充项目的代理说明、Java 规范、设计文档标准与模板
 
 ### 9ddd9ce
 
