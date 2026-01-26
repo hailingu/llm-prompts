@@ -11,27 +11,29 @@ productive collaboration.
 
 ## Collaboration Workflow Overview
 
-```text
-                        ┌─────────────────────┐
-                        │   java-tech-lead    │
-                        │  (Approval & Arbiter)│
-                        └──────────┬──────────┘
-                                   │
-            ┌──────────────────────┼──────────────────────┐
-            │ Review               │ Review               │ Review
-            ▼                      ▼                      ▼
-    ┌───────────────┐      ┌───────────────┐      ┌───────────────┐
-    │java-architect │      │ java-coder-   │      │java-doc-writer│
-    │  (Level 1)    │      │ specialist    │      │  (Docs)        │
-    └───────┬───────┘      └───────────────┘      └───────────────┘
-            │                      ▲
-            │ Handoff              │ Handoff
-            ▼                      │
-    ┌───────────────┐              │
-    │java-api-      │──────────────┘
-    │designer       │
-    │  (Level 2)    │
-    └───────────────┘
+```mermaid
+flowchart TD
+  TL["java-tech-lead<br/>(Approval & Arbiter)"]
+  TL --> ARCH["java-architect<br/>(Level 1)"]
+  TL --> CODER["java-coder-specialist"]
+  TL --> DOC["java-doc-writer<br/>(Docs)"]
+  ARCH --> API["java-api-designer<br/>(Level 2)"]
+  CODER --> API
+  DOC --> API
+  API --> TL
+
+  %% Role-specific styles
+  classDef techLead fill:#ffd700,stroke:#333,stroke-width:1px;
+  classDef architect fill:#a7f3d0,stroke:#333,stroke-width:1px;
+  classDef apiDesigner fill:#93c5fd,stroke:#333,stroke-width:1px;
+  classDef coder fill:#fca5a5,stroke:#333,stroke-width:1px;
+  classDef docWriter fill:#fde68a,stroke:#333,stroke-width:1px;
+
+  class TL techLead;
+  class ARCH architect;
+  class API apiDesigner;
+  class CODER coder;
+  class DOC docWriter;
 ```
 
 ---
@@ -310,5 +312,5 @@ coder: "API design is broken"
 ## Version History
 
 | Version | Date | Changes |
-|--------|------|---------|
+| -------- | ------ | --------- |
 | 1.0 | 2026-01-24 | Initial release |

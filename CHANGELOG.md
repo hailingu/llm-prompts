@@ -9,6 +9,8 @@
 - 修复 MD060（表格样式）与 MD034（裸 URL）：调整 `standards/agent-collaboration-protocol.md` 表格样式并替换裸链接；微调 `java-standards/alibaba-java-guidelines.md` 的代码块标记
 - 删除过期文档：移除 `standards/agent-improvements-summary.md`（该总结已合并至其他规范文档）
 - 修复 `standards/design-review-checklist.md` 排版与示例表格（修复 MD056/MD060）
+- 将 `standards/agent-collaboration-protocol.md` 中的协作流程 ASCII 图替换为 Mermaid 图，改进渲染与可维护性，并为不同角色添加节点颜色以便更好区分
+- 统一 Mermaid 节点与类名为驼峰命名（camelCase），提高一致性与可维护性
 - 新增 `agents/`, `java-standards/`, `standards/`, `templates/` 文档与模板，补充项目的代理说明、Java 规范、设计文档标准与模板
 
 ### 9ddd9ce
