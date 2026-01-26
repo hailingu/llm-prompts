@@ -302,7 +302,9 @@ Use tabs for indentation; rely on `gofmt`/`goimports` to enforce formatting auto
 
 ### 4.1 Package Comments
 
-**Every package should have a package comment**
+#### Every package should have a package comment
+
+Each package should include a package-level comment (typically in `doc.go` or the package's primary file) that briefly describes the package's purpose and responsibilities.
 
 ✅ **Correct** (in `user.go` or `doc.go`):
 
