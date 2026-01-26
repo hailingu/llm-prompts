@@ -1,18 +1,20 @@
-# Agent 协作规范与迭代控制
+# Agent Collaboration Protocol and Iteration Control
 
-**Purpose**: 定义 Java 开发 Agent 之间的协作流程、迭代限制和升级机制，防止无限循环并确保高效协作。
+**Purpose**: Define the collaboration workflow, iteration limits, and escalation
+mechanisms among Java development Agents to prevent infinite loops and ensure
+productive collaboration.
 
 **Version**: 1.0  
 **Last Updated**: 2026-01-24
 
 ---
 
-## 协作流程总览
+## Collaboration Workflow Overview
 
 ```text
                         ┌─────────────────────┐
                         │   java-tech-lead    │
-                        │  (审批 + 仲裁)        │
+                        │  (Approval & Arbiter)│
                         └──────────┬──────────┘
                                    │
             ┌──────────────────────┼──────────────────────┐
@@ -20,7 +22,7 @@
             ▼                      ▼                      ▼
     ┌───────────────┐      ┌───────────────┐      ┌───────────────┐
     │java-architect │      │ java-coder-   │      │java-doc-writer│
-    │  (Level 1)    │      │ specialist    │      │  (文档)        │
+    │  (Level 1)    │      │ specialist    │      │  (Docs)        │
     └───────┬───────┘      └───────────────┘      └───────────────┘
             │                      ▲
             │ Handoff              │ Handoff
@@ -34,31 +36,31 @@
 
 ---
 
-## 迭代限制规则
+## Iteration Limits
 
-### 规则 1: 最大迭代次数 = 3
+### Rule 1: Maximum Iterations = 3
 
-任何两个 Agent 之间的反馈循环，最多允许 **3 次迭代**。
+Any feedback loop between two Agents is limited to **3 iterations**.
 
-| 场景 | 允许迭代 | 超过后处理 |
-| -------------------------- | --------- | ----------- |
-| architect ↔ api-designer | 3 次 | 升级到 tech-lead |
-| api-designer ↔ coder | 3 次 | 升级到 tech-lead |
-| coder ↔ api-designer | 3 次 | 升级到 tech-lead |
-| doc-writer ↔ api-designer | 3 次 | 升级到 tech-lead |
+| Scenario | Allowed Iterations | After Limit |
+| -------------------------- | ----------------- | ---------------- |
+| architect ↔ api-designer | 3 | Escalate to tech-lead |
+| api-designer ↔ coder | 3 | Escalate to tech-lead |
+| coder ↔ api-designer | 3 | Escalate to tech-lead |
+| doc-writer ↔ api-designer | 3 | Escalate to tech-lead |
 
-### 规则 2: 迭代计数方式
+### Rule 2: Iteration Counting
 
-```markdown
-Iteration 1: Agent A → Agent B (初始请求)
-Iteration 2: Agent B → Agent A (反馈/修改请求)
-Iteration 3: Agent A → Agent B (修改后重新提交)
-Iteration 4: ❌ 超过限制，必须升级到 tech-lead
+```text
+Iteration 1: Agent A → Agent B (initial request)
+Iteration 2: Agent B → Agent A (feedback / change request)
+Iteration 3: Agent A → Agent B (resubmission after changes)
+Iteration 4: ❌ Exceeded - must escalate to tech-lead
 ```
 
-### 规则 3: 迭代追踪模板
+### Rule 3: Iteration Tracking Template
 
-每次反馈时，必须在消息中包含迭代计数：
+Every feedback message MUST include the iteration count:
 
 ```markdown
 ## Feedback (Iteration 2/3)
@@ -67,104 +69,108 @@ Iteration 4: ❌ 超过限制，必须升级到 tech-lead
 **To**: @java-api-designer
 **Remaining Iterations**: 1
 
-**Issue**: [问题描述]
+**Issue**: [short description of the problem]
 
-**Request**: [请求内容]
+**Request**: [what you need from the recipient]
 
 ---
-⚠️ 注意：如果本次修改后仍有问题，下次反馈将自动升级到 @java-tech-lead
+⚠️ Note: If the issue persists after this change, the next feedback will automatically
+escalate to @java-tech-lead
 ```
 
 ---
 
-## 升级机制
+## Escalation Mechanism
 
-### 自动升级触发条件
+### Automatic Escalation Triggers
 
-1. **迭代超时**: 迭代次数 > 3
-2. **明确请求**: Agent 声明无法继续
-3. **冲突僵局**: 两个 Agent 立场矛盾无法调和
-4. **阻塞超时**: 等待响应 > 24 小时
+1. **Iterations exceeded**: Iteration count > 3
+2. **Explicit request**: An Agent declares it cannot proceed
+3. **Stalemate**: Conflicting positions that cannot be resolved between Agents
+4. **Blocking timeout**: Waiting for a response > 24 hours
 
-### 升级消息模板
+### Escalation Message Template
 
 ```markdown
-@java-tech-lead 需要仲裁
+@java-tech-lead – arbitration requested
 
-## 升级类型
-- [ ] 迭代超时 (Iteration > 3)
-- [ ] 无法继续
-- [ ] 立场冲突
-- [ ] 阻塞超时
+## Escalation Type
+- [ ] Iterations exceeded (Iteration > 3)
+- [ ] Unable to proceed
+- [ ] Conflicting positions
+- [ ] Blocking timeout
 
-## 涉及 Agent
+## Involved Agents
 - @agent1
 - @agent2
 
-## 问题描述
-[详细描述问题]
+## Issue Description
+[Detailed description of the problem]
 
-## 历史迭代摘要
+## Iteration History Summary
 | Iteration | From | To | Summary |
 |-----------|------|-----|---------|
-| 1 | @agent1 | @agent2 | [初始请求] |
-| 2 | @agent2 | @agent1 | [反馈：问题X] |
-| 3 | @agent1 | @agent2 | [修改后重新提交] |
-| 4 | @agent2 | @agent1 | [仍有问题Y] ← 超过限制 |
+| 1 | @agent1 | @agent2 | [Initial request] |
+| 2 | @agent2 | @agent1 | [Feedback: issue X] |
+| 3 | @agent1 | @agent2 | [Resubmission after changes] |
+| 4 | @agent2 | @agent1 | [Still issue Y] ← exceeded limit |
 
-## 双方立场
-**@agent1 立场**: [描述]
-**@agent2 立场**: [描述]
+## Positions
+**@agent1 position**: [description]
+**@agent2 position**: [description]
 
-## 请求
-请做出最终决策
+## Request
+Please make a final decision.
 ```
 
 ---
 
-## 降级产出策略
+## Degraded Output Strategies
 
-当设计文档或上游产出不完整时，不应完全阻塞，而是采用降级策略。
+When design documents or upstream inputs are incomplete, do not fully block; instead,
+employ a degraded delivery strategy.
 
-### 策略 1: 最小可行产出 (MVP Output)
+### Strategy 1: Minimal Viable Output (MVP Output)
 
 ```markdown
-## 降级产出声明
+## Degraded Output Declaration
 
-**原因**: [上游产出不完整的具体问题]
+**Reason**: [specific reason why upstream input is incomplete]
 
-**降级内容**: 
-本次产出基于不完整的输入，以下部分标记为"待补充"：
-- [ ] [待补充项1]
-- [ ] [待补充项2]
+**Degraded Content**:
+This output is based on incomplete input; the following items are marked as "to be
+completed":
+- [ ] [item to be completed 1]
+- [ ] [item to be completed 2]
 
-**待上游补充后**: 
-请 @[上游agent] 补充以下信息，我将更新产出：
-- [需要的信息1]
-- [需要的信息2]
+**When upstream provides the missing information**:
+Please @[upstream-agent] supply the missing items; I will update the output accordingly:
+- [required info 1]
+- [required info 2]
 ```
 
-### 策略 2: 假设并标注
+### Strategy 2: Assumptions with Annotations
 
 ```markdown
-## 基于假设的产出
+## Output Based on Assumptions
 
-由于上游未明确以下信息，我基于假设进行产出：
+Because upstream did not specify the following, I produce output based on reasonable
+assumptions:
 
-| 项目 | 假设值 | 如果假设错误的影响 |
-|------|-------|------------------|
-| 错误处理策略 | 返回 null | 需要修改返回值处理 |
-| 并发要求 | 100 QPS | 可能需要调整同步机制 |
+| Item | Assumed Value | Impact if Wrong |
+|------|---------------|-----------------|
+| Error handling strategy | return null | may require changes to return handling |
+| Concurrency requirement | 100 QPS | may require synchronization changes |
 
-⚠️ **风险**: 如果假设错误，需要返工
+⚠️ **Risk**: If an assumption is incorrect, rework will be required
 
-@[上游agent] 请确认这些假设是否正确
+@[upstream-agent] Please confirm these assumptions
 ```
 
-### 策略 3: 分阶段交付
+### Strategy 3: Phased Delivery
 
 ```markdown
-## 分阶段产出
+## Phased Delivery
 
 由于上游产出不完整，采用分阶段交付：
 
@@ -181,128 +187,128 @@ Iteration 4: ❌ 超过限制，必须升级到 tech-lead
 
 ---
 
-## 质量门禁 (Quality Gates)
+## Quality Gates
 
 ### Gate 1: Design Approved
 
-**进入条件**:
+**Entry Criteria**:
 
-- [ ] Level 1 Architecture Design 完成
-- [ ] Level 2 API Specification 完成
-- [ ] @java-tech-lead 审批通过
-- [ ] 迭代次数 ≤ 3
+- [ ] Level 1 Architecture Design completed
+- [ ] Level 2 API Specification completed
+- [ ] Approved by @java-tech-lead
+- [ ] Iterations ≤ 3
 
-**允许操作**: @java-coder-specialist 开始实现
+**Allowed action**: @java-coder-specialist may start implementation
 
 ### Gate 2: Implementation Approved
 
-**进入条件**:
+**Entry Criteria**:
 
-- [ ] 代码实现完成
-- [ ] 所有 static analysis 通过
-- [ ] 测试覆盖率 ≥ 80%
-- [ ] @java-tech-lead 审批通过
-- [ ] 迭代次数 ≤ 3
+- [ ] Code implementation completed
+- [ ] All static analysis passes
+- [ ] Test coverage ≥ 80%
+- [ ] Approved by @java-tech-lead
+- [ ] Iterations ≤ 3
 
-**允许操作**: @java-doc-writer 开始文档
+**Allowed action**: @java-doc-writer may start documentation
 
 ### Gate 3: Documentation Approved
 
-**进入条件**:
+**Entry Criteria**:
 
-- [ ] 用户文档完成
-- [ ] API 参考完成
-- [ ] @java-tech-lead 审批通过
+- [ ] User documentation completed
+- [ ] API reference completed
+- [ ] Approved by @java-tech-lead
 
-**允许操作**: 模块发布
+**Allowed action**: Module may be released
 
 ---
 
-## 反模式警示
+## Anti-patterns
 
-### ❌ Anti-pattern 1: 无限循环
+### ❌ Anti-pattern 1: Infinite Loop
 
 ```text
 coder → api-designer → coder → api-designer → ...
 ```
 
-**问题**: 缺少迭代限制，永远无法完成
+**Problem**: No iteration limit leads to never-ending cycles
 
-**正确做法**: 3 次迭代后升级到 tech-lead
+**Correct approach**: Escalate to tech-lead after 3 iterations
 
-### ❌ Anti-pattern 2: 跳过审批
-
-```text
-architect → coder (跳过 api-designer)
-```
-
-**问题**: 缺少 API 契约定义，coder 可能实现错误
-
-**正确做法**: 严格按流程 architect → api-designer → coder
-
-### ❌ Anti-pattern 3: 完全阻塞
+### ❌ Anti-pattern 2: Skipping Approval
 
 ```text
-doc-writer: "设计文档不完整，我无法产出任何内容"
+architect → coder (skips api-designer)
 ```
 
-**问题**: 完全阻塞，无进展
+**Problem**: Missing API contract may cause incorrect implementation by coder
 
-**正确做法**: 使用降级策略，产出最小可行内容
+**Correct approach**: Follow the flow architect → api-designer → coder strictly
 
-### ❌ Anti-pattern 4: 无记录反馈
+### ❌ Anti-pattern 3: Complete Block
 
 ```text
-coder: "API 设计有问题"
-(没有说明具体问题、没有迭代计数)
+doc-writer: "Design doc is incomplete; I cannot produce anything"
 ```
 
-**问题**: 模糊反馈，无法追踪
+**Problem**: Complete blocking prevents progress
 
-**正确做法**: 使用迭代追踪模板，明确问题和迭代次数
+**Correct approach**: Use degraded output strategies to deliver minimal viable content
+
+### ❌ Anti-pattern 4: Unrecorded Feedback
+
+```text
+coder: "API design is broken"
+(lacks detail and iteration count)
+```
+
+**Problem**: Vague feedback is not traceable
+
+**Correct approach**: Use the iteration tracking template to state issues and iteration count clearly
 
 ---
 
-## 各 Agent 协作职责
+## Agent Roles and Responsibilities
 
 ### java-architect
 
-- **产出**: Level 1 Architecture Design
-- **接收反馈自**: @java-api-designer
-- **提交审批给**: @java-tech-lead
-- **升级条件**: 与 api-designer 迭代 > 3 次
+- **Deliverable**: Level 1 Architecture Design
+- **Receives feedback from**: @java-api-designer
+- **Submits for approval to**: @java-tech-lead
+- **Escalation condition**: Iterations with api-designer > 3
 
 ### java-api-designer
 
-- **产出**: Level 2 API Specification
-- **接收反馈自**: @java-architect, @java-coder-specialist, @java-doc-writer
-- **提交审批给**: @java-tech-lead
-- **升级条件**: 与任何 agent 迭代 > 3 次
+- **Deliverable**: Level 2 API Specification
+- **Receives feedback from**: @java-architect, @java-coder-specialist, @java-doc-writer
+- **Submits for approval to**: @java-tech-lead
+- **Escalation condition**: Iterations with any agent > 3
 
 ### java-coder-specialist
 
-- **产出**: 代码实现
-- **接收反馈自**: @java-api-designer
-- **提交审批给**: @java-tech-lead
-- **升级条件**: 与 api-designer 迭代 > 3 次
+- **Deliverable**: Implementation code
+- **Receives feedback from**: @java-api-designer
+- **Submits for approval to**: @java-tech-lead
+- **Escalation condition**: Iterations with api-designer > 3
 
 ### java-doc-writer
 
-- **产出**: 用户文档
-- **接收反馈自**: @java-api-designer
-- **提交审批给**: @java-tech-lead
-- **升级条件**: 与 api-designer 迭代 > 3 次
+- **Deliverable**: User documentation
+- **Receives feedback from**: @java-api-designer
+- **Submits for approval to**: @java-tech-lead
+- **Escalation condition**: Iterations with api-designer > 3
 
 ### java-tech-lead
 
-- **职责**: 审批、仲裁、质量把关
-- **接收请求自**: 所有 agent
-- **最终决策权**: 是
+- **Responsibilities**: Approval, arbitration, quality gate
+- **Receives requests from**: All agents
+- **Final decision authority**: Yes
 
 ---
 
-## 版本历史
+## Version History
 
-| 版本 | 日期 | 变更 |
-| ------ | ------ | ------ |
-| 1.0 | 2026-01-24 | 初始版本 |
+| Version | Date | Changes |
+|--------|------|---------|
+| 1.0 | 2026-01-24 | Initial release |
