@@ -1,6 +1,6 @@
 # llm-prompts
 
-![banner](docs/banner.png)
+![banner](docs/banner.svg)
 
 A curated collection of LLM prompts, agent definitions, and templates for building, evaluating, and operating agent-based workflows. Use these prompts and guidelines to standardize agent behaviour, commit workflows, and documentation across projects.
 
