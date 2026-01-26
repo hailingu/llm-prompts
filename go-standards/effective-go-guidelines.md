@@ -316,7 +316,9 @@ package user
 
 ### 4.2 Exported Item Comments
 
-**All exported types, functions, constants must have comments**
+#### All exported types, functions, constants must have comments
+
+All exported types, functions, and constants must have clear godoc comments that begin with the item name and describe its behavior for external callers.
 
 ✅ **Correct**:
 
@@ -338,6 +340,7 @@ const MaxRetryCount = 3
 ```
 
 **Comment starts with the name**:
+
 ```go
 // User represents...     ✅ Good
 // This struct...         ❌ Bad
@@ -365,9 +368,12 @@ y := 10
 
 ### 5.1 If Statements
 
-**Prefer short if with initialization**
+#### Prefer short if with initialization
+
+Prefer short `if` statements that perform initialization (e.g., `if err := doSomething(); err != nil { ... }`) for concise and idiomatic error handling.
 
 ✅ **Correct**:
+
 ```go
 if err := doSomething(); err != nil {
     return err
