@@ -141,13 +141,16 @@ func (u *User) SetName(name string) { u.name = name }   // setter
 ```
 
 ❌ **Incorrect**:
+
 ```go
 func (u *User) GetName() string { return u.name }  // Don't use Get prefix
 ```
 
 ### 1.6 Interface Names
 
-**Single-method interfaces use -er suffix**
+#### Single-method interfaces use -er suffix
+
+Prefer single-method interfaces to use the `-er` suffix (e.g., `Reader`, `Writer`) to convey capability and follow Go naming conventions.
 
 ✅ **Correct**:
 
@@ -187,7 +190,8 @@ type UserRepository interface {
 - No circular dependencies
 
 ✅ **Correct structure**:
-```
+
+```text
 myapp/
 ├── cmd/
 │   └── server/
