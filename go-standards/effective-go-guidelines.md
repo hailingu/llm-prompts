@@ -214,6 +214,7 @@ myapp/
 Group imports into three sections: standard library, third-party packages, and local packages. Separate groups with a blank line to improve readability and follow Go import ordering conventions.
 
 ✅ **Correct**:
+
 ```go
 import (
     // Standard library
@@ -234,7 +235,7 @@ import (
 
 **Use `internal/` for package-private code**
 
-```
+```text
 myapp/
 ├── internal/
 │   └── auth/
@@ -264,9 +265,12 @@ goimports -w .
 
 ### 3.2 Line Length
 
-**No strict limit, but aim for 80-100 characters**
+#### No strict limit, but aim for 80-100 characters
+
+Aim for readable lines (80–100 characters); break long function signatures and long expressions into multiple lines for clarity.
 
 ✅ **Reasonable**:
+
 ```go
 func GetUserByID(ctx context.Context, id string) (*User, error) {
     // ...
@@ -274,6 +278,7 @@ func GetUserByID(ctx context.Context, id string) (*User, error) {
 ```
 
 **If too long, break into multiple lines**:
+
 ```go
 func CreateUser(
     ctx context.Context,
