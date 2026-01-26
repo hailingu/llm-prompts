@@ -76,7 +76,9 @@ package encoding_utils
 
 ### 1.3 Exported vs Unexported
 
-**Exported names start with uppercase, unexported with lowercase**
+#### Exported names start with uppercase, unexported with lowercase
+
+Exported identifiers begin with an uppercase letter and are visible outside the package; unexported identifiers begin with a lowercase letter and are package-private.
 
 ✅ **Correct**:
 
@@ -101,6 +103,7 @@ func validateEmail() {}  // unexported function
 **Keep acronyms consistent: all uppercase or all lowercase**
 
 ✅ **Correct**:
+
 ```go
 type HTTPServer struct {}   // All caps when exported
 var httpServer *HTTPServer  // All lowercase when unexported
