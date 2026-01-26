@@ -225,9 +225,50 @@ Question: How to structure project directories?
    Please update Section 10.2 Design Rationale - Contract with precise specifications.
    ```
 
-5. **If Design Document Missing or Incomplete**:
-   - ❌ **Do not guess architectural decisions**
-   - ✅ **Immediately handoff back to @go-api-designer or @go-architect**
+5. **If Design Document Missing or Incomplete** (CRITICAL - feedback mechanism):
+   - ❌ **Do not guess architectural decisions** (e.g., do not arbitrarily add mutexes/channels)
+   - ✅ **Immediately handoff back to @go-api-designer or @go-architect**:
+   
+**Scenario 1: API Interface definition missing**
+```markdown
+@go-api-designer The design document is missing critical information and cannot be implemented:
+
+Missing parts:
+- Section 10.1: API Interface Definition is missing the XxxService interface definition
+- Section 10.2: Design Rationale is missing the Contract table for key methods
+
+Please provide the complete API definitions and Design Rationale before implementation begins.
+```
+
+**Scenario 2: Error handling strategy unclear**
+```markdown
+@go-architect The design document's error handling strategy is unclear:
+
+Issue: Section 4.1 API Design Guidelines does not specify:
+- Should business failures return nil or a specific error type?
+- Which error types should be returned for system failures?
+- Should errors be wrapped or returned as-is?
+
+Please clarify the error handling strategy.
+```
+
+**Scenario 3: API design issues discovered**
+```markdown
+@go-api-designer Found API design issues during implementation:
+
+Issue:
+- Method Verify(apiKey string) error
+- Implementation needs to connect to a database and may return sql.ErrNoRows
+- JSON parsing may return encoding/json errors
+
+Suggestion:
+- Option 1: Wrap all errors with fmt.Errorf("%w", err)
+- Option 2: Define specific error types (ErrInvalidKey, ErrDatabaseError)
+
+Please confirm how to proceed.
+```
+
+---
 
 **Phase 1: Understand Context & Setup Tools**
 - Search for related Go files in the workspace
@@ -276,17 +317,35 @@ After completing ANY code changes, you MUST immediately:
 
 - **Design Document Compliance (CRITICAL):**
     - Verify implementation matches design document:
-        - [ ] Section 10.1 API Interface signatures match exactly
-        - [ ] Section 10.2 Design Rationale - Contract followed
-        - [ ] Section 4.1 API Design Guidelines followed
-        - [ ] Section 8 Implementation Constraints followed
-        - [ ] Section 6.2 Concurrency Strategy satisfied
+        - [ ] Section 10.1 API Interface signatures match exactly (method names, parameters, return types, error)
+        - [ ] Section 10.2 Design Rationale - Contract followed (implementation behavior matches Contract table)
+        - [ ] Section 4.1 API Design Guidelines followed (error handling strategy)
+        - [ ] Section 8 Implementation Constraints followed (framework constraints)
+        - [ ] Section 6.2 Concurrency Strategy satisfied (goroutine-safety requirements met)
         - [ ] Section 11 Data Model types implemented
-        - [ ] Section 7 Cross-Cutting Concerns considered
-    - **If any mismatch or design issue found**:
-        - **Option 1**: Fix implementation to match design
-        - **Option 2**: Handoff back to @go-api-designer (if API design problem)
-        - **Option 3**: Handoff back to @go-architect (if architectural problem)
+        - [ ] Section 7 Cross-Cutting Concerns considered (performance, security, monitoring)
+    - **If any mismatch or design issue found (CRITICAL - feedback mechanism)**:
+        - **Option 1**: Fix implementation to match design (if it is an implementation error)
+        - **Option 2**: Handoff back to @go-api-designer (if the issue is an API design problem):
+          ```markdown
+          @go-api-designer Found API design issues during implementation:
+
+          Issue: [Describe the specific problem]
+
+          Suggestion: [Provide possible solutions]
+
+          Please confirm whether the design needs to be modified.
+          ```
+        - **Option 3**: Handoff back to @go-architect (if the issue is an architectural problem):
+          ```markdown
+          @go-architect Found architecture constraint conflicts during implementation:
+
+          Issue: [Describe the specific problem]
+
+          Suggestion: [Provide possible solutions]
+
+          Please confirm the architectural decision.
+          ```
 
 **Static Analysis Execution (MANDATORY):**
 
@@ -322,12 +381,18 @@ After completing ANY code changes, you MUST immediately:
    # or
    golangci-lint run
    ```
-   - Address all findings
+   - If plugin not found, refer back to Phase 1 setup and add golangci-lint configuration
+   - Address all findings by priority:
+     - **Critical**: MUST fix immediately (nil dereference, data races)
+     - **High**: Fix before review (unchecked errors, unused variables)
+     - **Medium**: Fix or justify (inefficient patterns, style issues)
    - Common issues to watch:
-     - Unused variables or imports
-     - Error returns not checked
-     - Inefficient code patterns
-     - Race conditions
+     - ❌ Unchecked error returns (`_, err := foo()` without checking err)
+     - ❌ Unused variables or imports
+     - ❌ Inefficient string concatenation in loops (use strings.Builder)
+     - ❌ Potential data races (shared variables without synchronization)
+     - ❌ Missing godoc comments for exported items
+     - ❌ Context not passed as first parameter
 
 6. **IDE Error Check (MUST run):**
    - Use `get_errors` tool to check IDE-reported warnings
@@ -361,9 +426,9 @@ Before generating the report, confirm you have completed:
 **Report Contents:**
 - Summarize files created/modified
 - **Design Document Compliance Report:**
-    - Confirm implementation matches design
-    - List assumptions if design was missing
-    - Suggest formal design if needed for complex module
+    - If design document was used, confirm implementation matches design
+    - If design document was missing, list assumptions made and documented in code
+    - If complex module without design, suggest: "Consider handoff to @go-architect for formal design"
 - **Validation Results (REQUIRED):**
     - ✅ Format: `gofmt -l .` - 0 unformatted files
     - ✅ Imports: `goimports -l .` - 0 files with import issues
