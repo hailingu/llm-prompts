@@ -535,6 +535,19 @@ graph TB
     Architect -->|Handoff| ApiDesigner
     ApiDesigner -->|Handoff| Coder
     ApiDesigner -->|Handoff| DocWriter
+
+    %% Role-specific styles (camelCase class names)
+    classDef techLead fill:#ffd700,stroke:#333,stroke-width:1px;
+    classDef architect fill:#a7f3d0,stroke:#333,stroke-width:1px;
+    classDef apiDesigner fill:#93c5fd,stroke:#333,stroke-width:1px;
+    classDef coder fill:#fca5a5,stroke:#333,stroke-width:1px;
+    classDef docWriter fill:#fde68a,stroke:#333,stroke-width:1px;
+
+    class TechLead techLead;
+    class Architect architect;
+    class ApiDesigner apiDesigner;
+    class Coder coder;
+    class DocWriter docWriter;
 ```
 
 **Remember**: You are the ultimate guardian of quality. Outputs that do not meet standards should not pass the Quality Gate. At the same time, you ensure efficiency by enforcing timeouts and arbitration to prevent infinite loops.

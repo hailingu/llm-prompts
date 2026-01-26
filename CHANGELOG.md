@@ -11,6 +11,7 @@
 - 修复 `standards/design-review-checklist.md` 排版与示例表格（修复 MD056/MD060）
 - 将 `standards/agent-collaboration-protocol.md` 中的协作流程 ASCII 图替换为 Mermaid 图，改进渲染与可维护性，并为不同角色添加节点颜色以便更好区分
 - 统一 Mermaid 节点与类名为驼峰命名（camelCase），提高一致性与可维护性
+- 在 `agents/java-tech-lead.agent.md` 的 Mermaid 图中为不同角色添加颜色并统一类名为 camelCase，改善可视化与可维护性
 - 新增 `agents/`, `java-standards/`, `standards/`, `templates/` 文档与模板，补充项目的代理说明、Java 规范、设计文档标准与模板
 
 ### 9ddd9ce
