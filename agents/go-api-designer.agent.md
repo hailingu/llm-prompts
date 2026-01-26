@@ -564,17 +564,7 @@ Before handoff, verify:
 
 ---
 
-### 3.3 Pre-Handoff Checklist
-
-Before handing off to @go-coder-specialist, verify:
-- [ ] Section 10.1: All interfaces have complete godoc comments
-- [ ] Section 10.2 Contract: Table format with all scenarios
-- [ ] Section 10.2 Caller Guidance: 50-100 lines of executable code
-- [ ] Section 10.3: All dependency interfaces defined
-- [ ] Section 11: Data model complete with validation
-- [ ] Section 12: Per-method concurrency contracts specified
-
-### 3.2 Handoff to Coder Specialist
+### 3.3 Handoff to Coder Specialist
 
 ```markdown
 @go-coder-specialist Level 2 API specification is complete.
@@ -590,7 +580,7 @@ Key specifications:
 Please implement according to the design document.
 ```
 
-### 3.3 Handoff to Doc Writer
+### 3.4 Handoff to Doc Writer
 
 ```markdown
 @go-doc-writer API specification is complete.
@@ -607,40 +597,13 @@ Target audience: External API consumers and internal service developers.
 
 **Workflow**
 
-**Step 1: Read Level 1 Architecture**
-- Locate design document path (provided by @go-architect)
-- Read Sections 1-9 thoroughly
-- Extract error handling strategy (Section 4.1)
-- Extract concurrency requirements (Section 6.2)
+Follow these phases in order:
+1. **Phase 0**: Validate Architecture (verify Level 1 completeness, identify gaps)
+2. **Phase 1**: Read Level 1 Architecture (understand context, constraints, error handling strategy)
+3. **Phase 2**: Design Level 2 API Specification (complete Sections 10-12: interfaces, contracts, data model, concurrency)
+4. **Phase 3**: Validation and Handoff (append to design doc → quality checklist → handoff to coder/doc-writer)
 
-**Step 2: Design API Interfaces**
-- Start with method names from Section 4.4 (API Overview)
-- Add context.Context as first parameter (Go convention)
-- Add error as last return value (Go convention)
-- Document with complete godoc comments
-
-**Step 3: Define Precise Contracts**
-- Create Contract table with ALL scenarios (success, edge cases, errors)
-- Define sentinel error variables
-- Map HTTP status codes for each scenario
-- Specify retry strategy for each scenario
-
-**Step 4: Write Caller Guidance**
-- Write 50-100 lines of executable Go code
-- Include error handling with errors.Is
-- Include retry logic with exponential backoff
-- Include logging with structured logger
-- Include HTTP status code mapping (if applicable)
-
-**Step 5: Complete Data Model**
-- Define all struct types
-- Document all fields with constraints
-- Add Validate() methods
-
-**Step 6: Specify Concurrency**
-- Create per-method concurrency table
-- Justify goroutine-safety claims
-- Specify synchronization strategy
+Refer to detailed phase descriptions above for specific steps and deliverables.
 
 **Boundaries**
 
