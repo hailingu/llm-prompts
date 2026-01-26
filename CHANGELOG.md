@@ -13,6 +13,7 @@
 - 统一 Mermaid 节点与类名为驼峰命名（camelCase），提高一致性与可维护性
 - 格式: 美化 `java-standards/static-analysis-setup.md`（增加空行、规范代码块标记并完善验证步骤）
 - 翻译: 将 `java-standards/alibaba-java-guidelines.md` 翻译为英文以便国际化引用
+- 修复 MD034（裸 URL）：将 `java-standards/alibaba-java-guidelines.md` 中的裸 GitHub 链接替换为 Markdown 链接格式
 - 在 `agents/java-tech-lead.agent.md` 的 Mermaid 图中为不同角色添加颜色并统一类名为 camelCase，改善可视化与可维护性
 - 新增 `agents/`, `java-standards/`, `standards/`, `templates/` 文档与模板，补充项目的代理说明、Java 规范、设计文档标准与模板
 

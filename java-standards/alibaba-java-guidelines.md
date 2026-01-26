@@ -307,5 +307,5 @@ public class UserService {
 ## References
 
 - Alibaba Java Coding Standard (official PDF)
-- GitHub: https://github.com/alibaba/p3c
+- GitHub: [Alibaba p3c repository](https://github.com/alibaba/p3c)
 - IDEA plugin: Alibaba Java Coding Guidelines
