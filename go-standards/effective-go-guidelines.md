@@ -292,7 +292,9 @@ func CreateUser(
 
 ### 3.3 Indentation
 
-**Use tabs for indentation (handled by gofmt)**
+#### Use tabs for indentation (handled by gofmt)
+
+Use tabs for indentation; rely on `gofmt`/`goimports` to enforce formatting automatically.
 
 ---
 
@@ -303,6 +305,7 @@ func CreateUser(
 **Every package should have a package comment**
 
 ✅ **Correct** (in `user.go` or `doc.go`):
+
 ```go
 // Package user provides user management functionality.
 // It includes user creation, retrieval, and authentication.
@@ -314,6 +317,7 @@ package user
 **All exported types, functions, constants must have comments**
 
 ✅ **Correct**:
+
 ```go
 // User represents a system user with authentication credentials.
 type User struct {
