@@ -25,6 +25,7 @@
 **Google AIP Reference**: [AIP-193: Errors](https://google.aip.dev/193)
 
 **Rule**:
+
 - **Business failure** (expected scenario) → Return null or empty Optional
 - **Infrastructure failure** (unexpected) → Throw checked exception
 - **Programming error** (caller bug) → Throw unchecked exception
@@ -32,13 +33,14 @@
 **Example Contract Table**:
 
 | Scenario | Category | Return Value | Exception | HTTP Status |
-|----------|----------|--------------|-----------|-------------|
+| ------------- | ---------- | -------------- | ----------- | -------- |
 | Resource not found | Business | `null` | - | 404 |
 | Resource expired | Business | `null` | - | 200 (with status field) |
 | Network timeout | Infrastructure | - | `IOException(SocketTimeoutException)` | 503 |
 | Invalid parameter | Programming | - | `IllegalArgumentException` | 400 |
 
 **Code Template**:
+
 ```java
 /**
  * Retrieves resource by ID.
@@ -68,16 +70,19 @@ public Resource getResource(String id) throws IOException {
 **Google Practice**: Use null for "not found" scenario to avoid Optional overhead in hot paths.
 
 **When to use Optional**:
+
 - ✅ Method returns value that is **frequently absent** (>20% of calls)
 - ✅ Chaining operations (Optional.map, Optional.flatMap)
 - ✅ Public API where null safety is critical
 
 **When to use null**:
+
 - ✅ Performance-critical code (avoid Optional allocation)
 - ✅ Internal/private methods
 - ✅ Database/repository layer (JDBC returns null)
 
 **Example**:
+
 ```java
 // Public API - use Optional for safety
 public Optional<User> findUserByEmail(String email);
@@ -95,6 +100,7 @@ User findById(Long id);  // null if not found
 **Google SRE Reference**: [The SRE Book - Handling Overload](https://sre.google/sre-book/handling-overload/)
 
 **Standard Parameters**:
+
 ```java
 int maxRetries = 3;
 int initialDelayMs = 1000;      // 1 second
@@ -104,12 +110,14 @@ double jitter = 0.1;             // ±10% randomness
 ```
 
 **Retry Sequence**:
+
 - Attempt 1: immediate
 - Attempt 2: 1s ± 100ms (900ms - 1100ms)
 - Attempt 3: 2s ± 200ms (1800ms - 2200ms)
 - Attempt 4: 4s ± 400ms (3600ms - 4400ms)
 
 **Code Template**:
+
 ```java
 private static final int MAX_RETRIES = 3;
 private static final int INITIAL_DELAY_MS = 1000;
@@ -151,6 +159,7 @@ private <T> T retryable(Supplier<T> operation, String operationName) throws IOEx
 ```
 
 **Which Exceptions to Retry**:
+
 - ✅ `SocketTimeoutException` - Network timeout
 - ✅ `ConnectException` - Connection refused (server down)
 - ✅ `UnknownHostException` - DNS failure (may be transient)
@@ -169,8 +178,8 @@ private <T> T retryable(Supplier<T> operation, String operationName) throws IOEx
 **Google AIP Reference**: [AIP-193: HTTP Status Codes](https://google.aip.dev/193)
 
 | HTTP Status | Scenario | Return Value | Exception | Retry? |
-|-------------|----------|--------------|-----------|--------|
-| **2xx Success** |
+| ------------- | ---------- | -------------- | ----------- | -------- |
+| **2xx Success** |  |  |  |  |
 | 200 OK | Successful operation | Object | - | No |
 | 201 Created | Resource created | Object | - | No |
 | 204 No Content | Successful deletion | void | - | No |
@@ -190,6 +199,7 @@ private <T> T retryable(Supplier<T> operation, String operationName) throws IOEx
 | 504 Gateway Timeout | Upstream timeout | - | `IOException` | Yes |
 
 **Code Template**:
+
 ```java
 public Response handleHttpResponse(int statusCode, String body) throws IOException {
     switch (statusCode) {
@@ -234,11 +244,13 @@ public Response handleHttpResponse(int statusCode, String body) throws IOExcepti
 **Effective Java Item 17**: Minimize mutability
 
 **Benefits**:
+
 - ✅ Inherently thread-safe (no synchronization needed)
 - ✅ Can be freely shared between threads
 - ✅ Simple to reason about
 
 **Template**:
+
 ```java
 /**
  * Immutable value object.
@@ -269,6 +281,7 @@ public final class Subscription {
 **When to use**: Low contention, simple state updates
 
 **Template**:
+
 ```java
 /**
  * Stateful component with synchronized access.
@@ -294,6 +307,7 @@ public class Counter {
 **When to use**: High contention, frequent reads
 
 **Template**:
+
 ```java
 /**
  * Cache with concurrent access.
@@ -325,7 +339,7 @@ public class SubscriptionCache {
 **Reference**: [Google Java Style Guide - Logging](https://google.github.io/styleguide/javaguide.html)
 
 | Level | When to Use | Example |
-|-------|-------------|---------|
+| ------------- | ----------- | ------- |
 | **ERROR** | System failure, requires immediate attention | Database connection failure, external API down |
 | **WARN** | Unexpected but handled situation | Retry attempt, deprecated API usage, rate limit approached |
 | **INFO** | Business-level events | User login, order created, subscription expired |
@@ -333,6 +347,7 @@ public class SubscriptionCache {
 | **TRACE** | Very detailed flow (disabled in production) | Loop iterations, conditional branches |
 
 **Code Template**:
+
 ```java
 private static final Logger logger = LoggerFactory.getLogger(SubscriptionService.class);
 
@@ -362,6 +377,7 @@ public Response verifySubscription(String apiKey) {
 ```
 
 **Critical Rules**:
+
 - ✅ Always log exceptions with stack trace: `logger.error("msg", exception)`
 - ✅ Mask sensitive data (API keys, passwords, PII): `apiKey: ***`
 - ✅ Include context (user ID, request ID): `logger.info("msg userId={}", userId)`
@@ -377,12 +393,14 @@ public Response verifySubscription(String apiKey) {
 **Google SRE Reference**: [The Four Golden Signals](https://sre.google/sre-book/monitoring-distributed-systems/#xref_monitoring_golden-signals)
 
 **Four Golden Signals**:
+
 1. **Latency**: Time to service a request
 2. **Traffic**: Number of requests per second
 3. **Errors**: Rate of failed requests
 4. **Saturation**: Resource utilization (CPU, memory, connections)
 
 **Standard Metrics to Track**:
+
 ```java
 // Counters
 metrics.incrementCounter("subscription.verify.success");
