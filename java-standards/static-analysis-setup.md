@@ -1,14 +1,17 @@
 # Java Static Analysis Setup
 
 ## Overview
+
 This document describes the static code analysis tools configured for the Java SDK to enforce Alibaba Java Coding Guidelines and detect potential issues early.
 
 ## Configured Tools
 
 ### 1. Maven Compiler Plugin (Compiler Warnings)
+
 **Purpose**: Catch compilation warnings and enforce strict compilation rules.
 
 **Configuration**:
+
 ```xml
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
@@ -28,6 +31,7 @@ This document describes the static code analysis tools configured for the Java S
 ```
 
 **What it detects**:
+
 - Uninitialized final fields
 - Unchecked type conversions
 - Deprecated API usage
@@ -38,14 +42,17 @@ This document describes the static code analysis tools configured for the Java S
 **Usage**: `mvn clean compile`
 
 ### 2. PMD with Alibaba P3C Rules ⭐ PRIMARY TOOL
+
 **Purpose**: Enforce Alibaba Java Coding Guidelines through static code analysis.
 
-**Version**: 
+**Version**:
+
 - maven-pmd-plugin: 3.21.0
 - p3c-pmd: 2.1.1
 - pmd-core: 6.55.0
 
 **Configuration**:
+
 ```xml
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
@@ -78,6 +85,7 @@ This document describes the static code analysis tools configured for the Java S
 ```
 
 **What it detects**:
+
 - Missing @author in class Javadoc
 - Magic constants (string literals, numbers)
 - Missing Javadoc for public methods
@@ -93,6 +101,7 @@ This document describes the static code analysis tools configured for the Java S
 **Report Location**: `target/pmd.xml`
 
 ### 3. SpotBugs (Optional)
+
 **Purpose**: Bytecode-level bug detection.
 
 **Version**: 4.8.3.1
@@ -100,6 +109,7 @@ This document describes the static code analysis tools configured for the Java S
 **Status**: Configured with `failOnError=false` due to compatibility issues with Java 11 JDK bytecode.
 
 **Configuration**:
+
 ```xml
 <plugin>
     <groupId>com.github.spotbugs</groupId>
@@ -119,27 +129,35 @@ This document describes the static code analysis tools configured for the Java S
 ## Validation Workflow
 
 ### Phase 1: Compilation with Warnings
+
 ```bash
 mvn clean compile
 ```
+
 **Expected**: Zero errors, zero warnings
 
 ### Phase 2: PMD Static Analysis
+
 ```bash
 mvn pmd:check
 ```
+
 **Expected**: Zero PMD violations
 
 ### Phase 3: SpotBugs (Optional)
+
 ```bash
 mvn spotbugs:check
 ```
+
 **Expected**: Report generated (warnings only)
 
 ### Phase 4: Unit Tests
+
 ```bash
 mvn test
 ```
+
 **Expected**: All tests pass, ≥80% coverage
 
 ## Integration with java-coder-specialist Agent
@@ -147,7 +165,7 @@ mvn test
 The agent's Phase 3 Validation now includes:
 
 1. **Compiler warnings check**: `mvn compile -Xlint:all`
-2. **PMD with P3C rules**: `mvn pmd:check` 
+2. **PMD with P3C rules**: `mvn pmd:check`
 3. **SpotBugs analysis**: `mvn spotbugs:check`
 4. **Unit tests**: `mvn test`
 5. **IDE errors check**: Uses `get_errors` tool
@@ -167,24 +185,29 @@ Before marking any task complete, verify:
 ## Example Issues Detected
 
 ### Compiler Warnings
-```
+
+```text
 [ERROR] private final AppCenterConfig config;
        ^
        error: blank final field may not have been initialized
 ```
+
 **Fix**: Add constructor to initialize final field
 
 ### PMD P3C Violations
-```
+
+```text
 [INFO] PMD Failure: AppCenterClient:85 Rule:UndefineMagicConstantRule
 魔法值【"subscription"】
 ```
+
 **Fix**: Extract to named constant `private static final String KEY_SUBSCRIPTION = "subscription";`
 
-```
+```text
 [INFO] PMD Failure: AppCenterConfig:7 Rule:ClassMustHaveAuthorRule
 【AppCenterConfig】注释缺少@author信息
 ```
+
 **Fix**: Add `@author GitHub Copilot` to class Javadoc
 
 ## References
