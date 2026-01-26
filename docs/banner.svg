@@ -6,8 +6,8 @@
       <stop offset="100%" stop-color="#3B82F6" />
     </linearGradient>
     <style>
-      .title { font: 700 48px/1.1 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: white; }
-      .subtitle { font: 400 18px/1.2 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: rgba(255,255,255,0.95); }
+      .title { font: 700 44px/1.1 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: white; }
+      .subtitle { font: 400 16px/1.2 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: rgba(255,255,255,0.95); }
       .robot { fill: white; }
     </style>
   </defs>
@@ -15,9 +15,9 @@
   <!-- background -->
   <rect width="1200" height="220" rx="12" fill="url(#g)" />
 
-  <!-- cute robot mascot -->
-  <g transform="translate(80,36) scale(1.4)">
-    <rect x="0" y="0" width="128" height="128" rx="18" fill="white" opacity="0.12" />
+  <!-- cute robot mascot (shrunk and pulled left so it doesn't overlap text) -->
+  <g transform="translate(36,46) scale(1.0)">
+    <rect x="0" y="0" width="128" height="128" rx="18" fill="white" opacity="0.08" />
     <rect x="8" y="12" width="112" height="96" rx="12" fill="white" />
     <circle cx="40" cy="56" r="8" fill="#374151" />
     <circle cx="88" cy="56" r="8" fill="#374151" />
@@ -26,9 +26,9 @@
     <circle cx="16" cy="16" r="6" fill="#10B981" />
   </g>
 
-  <!-- text -->
-  <text x="220" y="90" class="title">llm-prompts</text>
-  <text x="220" y="124" class="subtitle">A curated collection of prompts, agents, and templates for building reliable agent workflows</text>
+  <!-- text (moved right to avoid overlap) -->
+  <text x="280" y="92" class="title">llm-prompts</text>
+  <text x="280" y="132" class="subtitle">A curated collection of prompts, agents, and templates for building reliable agent workflows</text>
 
   <!-- small decorative nodes -->
   <g transform="translate(1040,18)">
