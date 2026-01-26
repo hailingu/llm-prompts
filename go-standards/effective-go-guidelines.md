@@ -115,6 +115,7 @@ type userID string          // All lowercase when unexported
 ```
 
 ❌ **Incorrect**:
+
 ```go
 type HttpServer struct {}   // Mixed case
 func ServeHttp() {}         // Inconsistent
@@ -124,9 +125,12 @@ func ServeHttp() {}         // Inconsistent
 
 ### 1.5 Getters and Setters
 
-**Don't use Get prefix for getters**
+#### Don't use Get prefix for getters
+
+Prefer method names without the `Get` prefix (e.g., use `Name()` instead of `GetName()`); this follows Go conventions and avoids redundant naming.
 
 ✅ **Correct**:
+
 ```go
 type User struct {
     name string
