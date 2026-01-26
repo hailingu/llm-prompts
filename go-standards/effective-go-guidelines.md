@@ -381,6 +381,7 @@ if err := doSomething(); err != nil {
 ```
 
 ❌ **Verbose**:
+
 ```go
 err := doSomething()
 if err != nil {
@@ -390,7 +391,9 @@ if err != nil {
 
 ### 5.2 For Loops
 
-**Three forms of for loop**
+#### Three forms of for loop
+
+Cover the three common `for` loop forms: classic, while-style, and infinite loops, plus ranging over slices/maps.
 
 ```go
 // Classic for
@@ -422,6 +425,7 @@ for key, val := range myMap {
 ```
 
 **Ignore unused variables with `_`**:
+
 ```go
 for _, val := range slice {  // Don't need index
     fmt.Println(val)
@@ -430,9 +434,12 @@ for _, val := range slice {  // Don't need index
 
 ### 5.3 Switch Statements
 
-**Cases break automatically (no fallthrough by default)**
+#### Cases break automatically (no fallthrough by default)
+
+Cases do not fall through by default in Go; use the `fallthrough` keyword explicitly when a subsequent case's code should execute.
 
 ✅ **Correct**:
+
 ```go
 switch status {
 case "active":
@@ -445,6 +452,7 @@ default:
 ```
 
 **Use switch without expression for long if-else chains**:
+
 ```go
 switch {
 case x < 0:
@@ -458,7 +466,9 @@ default:
 
 ### 5.4 Defer
 
-**Defer executes when function returns**
+#### Defer executes when function returns
+
+Defer statements run when the surrounding function returns; use `defer` to ensure resources are released even on early returns or errors.
 
 ```go
 func ReadFile(filename string) ([]byte, error) {
@@ -473,6 +483,7 @@ func ReadFile(filename string) ([]byte, error) {
 ```
 
 **Multiple defers execute in LIFO order**:
+
 ```go
 defer fmt.Println("1")
 defer fmt.Println("2")
@@ -486,9 +497,12 @@ defer fmt.Println("3")
 
 ### 6.1 Function Signatures
 
-**Return error as last return value**
+#### Return error as last return value
+
+Return `error` as the last return value following Go conventions; this makes error handling consistent and idiomatic.
 
 ✅ **Correct**:
+
 ```go
 func GetUser(id string) (*User, error) {
     // ...
@@ -496,6 +510,7 @@ func GetUser(id string) (*User, error) {
 ```
 
 ❌ **Incorrect**:
+
 ```go
 func GetUser(id string) (error, *User) {  // Error should be last
     // ...
@@ -505,11 +520,13 @@ func GetUser(id string) (error, *User) {  // Error should be last
 ### 6.2 Receivers
 
 **Use pointer receivers when:**
+
 - Method modifies the receiver
 - Receiver is large (> a few fields)
 - Consistency (if some methods use pointer, all should)
 
 ✅ **Correct**:
+
 ```go
 type User struct {
     Name  string
@@ -530,9 +547,12 @@ func (u *User) GetName() string {
 
 ### 6.3 Named Return Values
 
-**Use named returns for documentation, not for brevity**
+#### Use named returns for documentation, not for brevity
+
+Use named return values when they document the intent of a function's results; avoid using them merely to shorten code as they can obscure control flow.
 
 ✅ **Good use** (documents intent):
+
 ```go
 func Split(path string) (dir, file string) {
     i := strings.LastIndex(path, "/")
@@ -541,6 +561,7 @@ func Split(path string) (dir, file string) {
 ```
 
 ❌ **Bad use** (obscures logic):
+
 ```go
 func Calculate(x int) (result int) {
     result = x * 2
@@ -576,9 +597,12 @@ Sum(nums...)  // Unpack slice
 
 ### 7.1 Struct Literals
 
-**Use field names for clarity**
+#### Use field names for clarity
+
+Prefer struct literals that use field names to make code clearer and resilient to future field reordering.
 
 ✅ **Correct**:
+
 ```go
 u := User{
     ID:    "123",
@@ -587,15 +611,19 @@ u := User{
 ```
 
 ❌ **Fragile** (breaks if fields reordered):
+
 ```go
 u := User{"123", "test@example.com"}
 ```
 
 ### 7.2 Zero Values
 
-**Design structs to have useful zero values**
+#### Design structs to have useful zero values
+
+Design types so their zero value is useful and ready-to-use; this reduces initialization boilerplate and lowers the chance of nil-pointer issues.
 
 ✅ **Good design**:
+
 ```go
 type Buffer struct {
     buf []byte
@@ -618,9 +646,12 @@ u := &User{
 
 ### 7.4 Maps
 
-**Check if key exists before using**
+#### Check if key exists before using
+
+Check for a key's presence using the two-value assignment (`val, ok := myMap[key]`) before using the value to avoid confusing zero values with missing keys.
 
 ✅ **Correct**:
+
 ```go
 val, ok := myMap[key]
 if ok {
@@ -629,6 +660,7 @@ if ok {
 ```
 
 **Initialize maps with `make`**:
+
 ```go
 m := make(map[string]int)  // Empty map
 m["key"] = 42
@@ -636,7 +668,9 @@ m["key"] = 42
 
 ### 7.5 Slices
 
-**Understand slice capacity**
+#### Understand slice capacity
+
+Be mindful of slice length and capacity; preallocate when the size is known to avoid repeated allocations and improve performance.
 
 ```go
 s := make([]int, 0, 10)  // len=0, cap=10
@@ -644,6 +678,7 @@ s = append(s, 1)         // len=1, cap=10
 ```
 
 **Preallocate if size is known**:
+
 ```go
 // Known size
 users := make([]*User, 0, 100)
@@ -655,9 +690,12 @@ users := make([]*User, 0, 100)
 
 ### 8.1 Small Interfaces
 
-**Prefer small, focused interfaces**
+#### Prefer small, focused interfaces
+
+Keep interfaces small and focused; single-method interfaces (the `-er` pattern) promote simple, composable code and are idiomatic in Go.
 
 ✅ **Good** (single method):
+
 ```go
 type Reader interface {
     Read(p []byte) (n int, err error)
@@ -665,6 +703,7 @@ type Reader interface {
 ```
 
 ❌ **Bad** (too many methods):
+
 ```go
 type DataAccess interface {
     GetUser(id string) (*User, error)
@@ -678,6 +717,7 @@ type DataAccess interface {
 ### 8.2 Accept Interfaces, Return Structs
 
 ✅ **Correct**:
+
 ```go
 // Accept interface (flexible)
 func ProcessData(r io.Reader) error {
@@ -721,6 +761,7 @@ go func() {
 ```
 
 **Always ensure goroutines terminate**:
+
 ```go
 ctx, cancel := context.WithCancel(context.Background())
 defer cancel()
@@ -739,7 +780,9 @@ go func(ctx context.Context) {
 
 ### 9.2 Channels
 
-**Use channels to communicate between goroutines**
+#### Use channels to communicate between goroutines
+
+Use channels to coordinate work and transfer data safely between goroutines; prefer channel ownership patterns and close channels when the sender is finished.
 
 ```go
 ch := make(chan int)
@@ -754,6 +797,7 @@ val := <-ch
 ```
 
 **Close channels when done (sender closes)**:
+
 ```go
 ch := make(chan int)
 
@@ -787,6 +831,7 @@ func (c *Counter) Increment() {
 ```
 
 **Use `sync.RWMutex` for read-heavy workloads**:
+
 ```go
 type Cache struct {
     mu   sync.RWMutex
@@ -844,9 +889,12 @@ if errors.Is(err, context.DeadlineExceeded) {
 
 ### 10.1 Check All Errors
 
-**Never ignore errors**
+#### Never ignore errors
+
+Always check and handle errors; ignoring them can hide failures and produce subtle bugs.
 
 ✅ **Correct**:
+
 ```go
 f, err := os.Open(filename)
 if err != nil {
@@ -856,13 +904,16 @@ defer f.Close()
 ```
 
 ❌ **Incorrect**:
+
 ```go
 f, _ := os.Open(filename)  // Ignoring error
 ```
 
 ### 10.2 Error Types
 
-**Use sentinel errors for known error cases**
+#### Use sentinel errors for known error cases
+
+Use sentinel errors (package-level error variables) for well-known conditions so callers can reliably check them with `errors.Is`; prefer wrapping errors to add context for callers.
 
 ```go
 var (
@@ -877,6 +928,7 @@ if errors.Is(err, ErrUserNotFound) {
 ```
 
 **Wrap errors with context**:
+
 ```go
 if err := validateUser(u); err != nil {
     return fmt.Errorf("validate user: %w", err)
@@ -884,6 +936,7 @@ if err := validateUser(u); err != nil {
 ```
 
 **Custom error types for structured errors**:
+
 ```go
 type ValidationError struct {
     Field string
@@ -897,9 +950,12 @@ func (e *ValidationError) Error() string {
 
 ### 10.3 Panic and Recover
 
-**Don't use panic for normal error handling**
+#### Don't use panic for normal error handling
+
+Reserve `panic` for programmer errors or unrecoverable situations; use returned errors for regular error handling and recovery.
 
 ✅ **Correct** (return error):
+
 ```go
 func Divide(a, b int) (int, error) {
     if b == 0 {
@@ -910,6 +966,7 @@ func Divide(a, b int) (int, error) {
 ```
 
 ❌ **Incorrect** (panic):
+
 ```go
 func Divide(a, b int) int {
     if b == 0 {
@@ -920,6 +977,7 @@ func Divide(a, b int) int {
 ```
 
 **Panic only for programmer errors or unrecoverable situations**:
+
 ```go
 func init() {
     if config == nil {
@@ -936,7 +994,7 @@ func init() {
 
 **Test files end with `_test.go`**
 
-```
+```text
 user.go        ← Implementation
 user_test.go   ← Tests
 ```
@@ -957,9 +1015,12 @@ func TestUserService_CreateUser(t *testing.T) {
 
 ### 11.3 Table-Driven Tests
 
-**Use table-driven tests for comprehensive coverage**
+#### Use table-driven tests for comprehensive coverage
+
+Table-driven tests let you express many cases concisely and make adding cases easy; use `t.Run` for subtests so failures are reported per case.
 
 ✅ **Correct**:
+
 ```go
 func TestSum(t *testing.T) {
     tests := []struct {
@@ -1029,13 +1090,16 @@ func BenchmarkSum(b *testing.B) {
 ```
 
 **Run benchmarks**:
+
 ```bash
 go test -bench=.
 ```
 
 ### 12.2 Avoid Allocations
 
-**Reuse buffers when possible**
+#### Reuse buffers when possible
+
+Reuse pooled buffers (e.g., `sync.Pool`) for frequently used temporary buffers to reduce allocations and GC pressure.
 
 ```go
 var bufPool = sync.Pool{
@@ -1058,6 +1122,7 @@ func ProcessData(data []byte) {
 **Use `strings.Builder` for string concatenation**
 
 ✅ **Correct**:
+
 ```go
 var sb strings.Builder
 for _, s := range strs {
@@ -1067,6 +1132,7 @@ result := sb.String()
 ```
 
 ❌ **Slow**:
+
 ```go
 result := ""
 for _, s := range strs {
@@ -1079,16 +1145,19 @@ for _, s := range strs {
 ## Common Anti-Patterns to Avoid
 
 ### ❌ Anti-Pattern 1: Getters with Get prefix
+
 ```go
 func (u *User) GetName() string  // Don't use Get
 ```
 
 ### ❌ Anti-Pattern 2: Ignoring errors
+
 ```go
 _ = doSomething()  // Never ignore errors
 ```
 
 ### ❌ Anti-Pattern 3: Using panic for normal errors
+
 ```go
 if err != nil {
     panic(err)  // Use return err instead
@@ -1096,11 +1165,13 @@ if err != nil {
 ```
 
 ### ❌ Anti-Pattern 4: Global mutable state
+
 ```go
 var userCache = make(map[string]*User)  // Unsafe for concurrent use
 ```
 
 ### ❌ Anti-Pattern 5: Not closing resources
+
 ```go
 f, _ := os.Open(filename)
 // Missing: defer f.Close()
@@ -1117,4 +1188,6 @@ f, _ := os.Open(filename)
 
 ---
 
-**End of Guidelines**
+### End of Guidelines
+
+This document summarizes recommended Go practices; consult the References above for source materials and further reading.

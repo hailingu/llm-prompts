@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- docs(go-standards): 修复 MD036/MD001（将斜体用作标题的行替换为真实标题并修正标题等级），并为多处条目补充简短说明以提高可读性（`go-standards/effective-go-guidelines.md`）
+
 - docs(readme): 移除 README 标题中的 emoji 以修复 TOC 锚点（MD051）
 - docs(readme): 样式优化：在 README 中加入快速链接（CHANGELOG/Contributing/Security/Code of Conduct）以改善导航
 
