@@ -61,7 +61,7 @@ Always check first: `.github/java-standards/alibaba-java-guidelines.md`
 
 **Tier 2: Official Alibaba P3C Repository (SECONDARY)**
 If Tier 1 is unclear or missing details:
-- Read the reference link in `.github/java-standards/alibaba-java-guidelines.md` (Line 5): `https://github.com/alibaba/p3c`
+- Read the reference link in `.github/java-standards/alibaba-java-guidelines.md` (Line 5): [阿里巴巴 p3c 仓库](https://github.com/alibaba/p3c)
 - Search the official repository for latest PDF, PMD rules, and issue discussions
 - Document your findings in code comments if it's a nuanced rule
 
@@ -82,7 +82,7 @@ Question: How to name a DTO class?
 Question: Should I use Lombok @Data annotation?
 ├─ Check Tier 1 (.github/java-standards/alibaba-java-guidelines.md)
 │  └─ Not mentioned
-├─ Check Tier 2 (https://github.com/alibaba/p3c)
+├─ Check Tier 2: [阿里巴巴 p3c 仓库](https://github.com/alibaba/p3c)
 │  └─ Not explicitly covered
 └─ Apply Tier 3 (Industry Standard)
    └─ Document decision: Add comment explaining Lombok usage follows team convention
@@ -498,7 +498,7 @@ Before marking any task complete, verify:
     - Test method naming: `should<Behavior>When<Condition>`
     - Minimum 80% code coverage for business logic
     - All tests pass: `mvn test` or `gradle test`
-- **Tier 2 Lookup:** If Tier 1 was unclear, documented reference to https://github.com/alibaba/p3c
+- **Tier 2 Lookup:** If Tier 1 was unclear, documented reference to [阿里巴巴 p3c 仓库](https://github.com/alibaba/p3c)
 - **Tier 3 Documentation:** If industry standards were used, added explanatory comments
 - **No wildcard imports** (`import java.util.*`)
 - **No magic numbers** (all extracted to named constants)

@@ -2,17 +2,19 @@
 
 本文档提炼《阿里巴巴 Java 开发手册》的核心规范，供 java-coder-specialist agent 参考执行。
 
-完整规范请参考：https://github.com/alibaba/p3c
+完整规范请参考：[阿里巴巴 p3c 仓库](https://github.com/alibaba/p3c)
 
 ## 一、命名规范
 
 ### 1.1 强制规范
+
 - **类名**使用 UpperCamelCase 风格，DO/DTO/VO/DAO 等除外：`UserService`, `OrderDTO`
 - **方法名、参数名、成员变量、局部变量**使用 lowerCamelCase：`getUserName()`, `orderList`
 - **常量命名**全部大写，单词间用下划线隔开：`MAX_STOCK_COUNT`, `DEFAULT_CHARSET`
 - **包名**统一使用小写，点分隔符之间有且仅有一个自然语义的英语单词：`com.alibaba.ai.util`
 
 ### 1.2 推荐规范
+
 - 抽象类命名使用 Abstract 或 Base 开头
 - 异常类命名使用 Exception 结尾
 - 测试类命名以它要测试的类的名称开始，以 Test 结尾：`UserServiceTest`
@@ -21,6 +23,7 @@
 ## 二、常量定义
 
 ### 2.1 强制规范
+
 - 不允许任何魔法值（即未经预先定义的常量）直接出现在代码中
 - `long` 或 `Long` 赋值时，数值后使用大写 L：`2L`（不是 `2l`）
 - 不要使用一个常量类维护所有常量，应按功能分类，分开维护
@@ -272,5 +275,5 @@ public class UserService {
 
 ## 参考资料
 - 《阿里巴巴 Java 开发手册》官方 PDF（最新版）
-- GitHub 仓库：https://github.com/alibaba/p3c
+- GitHub 仓库：[阿里巴巴 p3c 仓库](https://github.com/alibaba/p3c)
 - IDEA 插件：Alibaba Java Coding Guidelines
