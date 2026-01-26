@@ -36,6 +36,8 @@ Workflow (do these in order):
 - The commit message MUST be in Chinese.
 - Follow the commit message template at `.gitmessage` (type(scope): summary + body + optional footer).
 - Summary guidance: <= 50 chars (as per template). Body lines: wrap at <= 72 chars (as per template).
+
+- When adding or updating community docs (`README.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`), add a concise entry under `## Unreleased` in `CHANGELOG.md` describing the change.
 - Explain WHAT changed and WHY; include HOW only when it is necessary for future maintainers.
 - Include a “测试” section stating how the change was validated.
 - If breaking changes exist, add a footer line: `BREAKING CHANGE: ...` (English keyword, Chinese description is ok).

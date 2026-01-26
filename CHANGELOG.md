@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- docs(readme): 移除 README 标题中的 emoji 以修复 TOC 锚点（MD051）
+- docs(readme): 样式优化：在 README 中加入快速链接（CHANGELOG/Contributing/Security/Code of Conduct）以改善导航
+
+- docs(standards): 新增 `README.md`、`CONTRIBUTING.md`、`CODE_OF_CONDUCT.md` 與 `SECURITY.md`，改进入门与社区指南
+
 - docs(standards): 将 `java-standards/checkstyle-alibaba.xml` 中的注释翻译为英文以便国际化与协作
 
 - docs(standards): 用 `subdomain` 替换不常见术语 `subbusiness` 并添加示例，改进 GAV 约定说明
