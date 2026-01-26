@@ -275,7 +275,7 @@ public class UserService {
 
 ### 12.1 应用分层
 
-```
+```text
 ├── controller    // 控制层，接收请求
 ├── service       // 业务逻辑层
 │   ├── impl      // 实现类

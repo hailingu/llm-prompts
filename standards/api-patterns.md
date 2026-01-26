@@ -179,20 +179,20 @@ private <T> T retryable(Supplier<T> operation, String operationName) throws IOEx
 
 | HTTP Status | Scenario | Return Value | Exception | Retry? |
 | ------------- | ---------- | -------------- | ----------- | -------- |
-| **2xx Success** |  |  |  |  |
+| **2xx Success** | | | | |
 | 200 OK | Successful operation | Object | - | No |
 | 201 Created | Resource created | Object | - | No |
 | 204 No Content | Successful deletion | void | - | No |
-| **3xx Redirection** |
+| **3xx Redirection** | | | | |
 | 304 Not Modified | Resource unchanged | null | - | No |
-| **4xx Client Errors** (DO NOT RETRY) |
+| **4xx Client Errors** (DO NOT RETRY) | | | | |
 | 400 Bad Request | Invalid input format | - | `IllegalArgumentException` | No |
 | 401 Unauthorized | Invalid credentials | - | `SecurityException` | No |
 | 403 Forbidden | Permission denied | - | `SecurityException` | No |
 | 404 Not Found | Resource doesn't exist | null | - | No |
 | 409 Conflict | Version conflict | - | `ConcurrentModificationException` | No |
 | 429 Too Many Requests | Rate limit exceeded | - | `RateLimitException` | Yes (with backoff) |
-| **5xx Server Errors** (RETRY) |
+| **5xx Server Errors** (RETRY) | | | | |
 | 500 Internal Server Error | Server bug | - | `IOException` | Yes |
 | 502 Bad Gateway | Proxy error | - | `IOException` | Yes |
 | 503 Service Unavailable | Server overload/maintenance | - | `IOException` | Yes |

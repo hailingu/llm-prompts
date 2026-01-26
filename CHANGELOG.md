@@ -6,6 +6,8 @@
 - 修复 MD034（裸 URL）：将 `java-standards/alibaba-java-guidelines.md` 中的裸链接替换为 `[阿里巴巴 p3c 仓库](https://github.com/alibaba/p3c)`，并微调文档换行以符合规范
 - 修复 MD034（裸 URL）：将 `CHANGELOG.md` 中的 markdownlint 链接改为 Markdown 链接格式
 - 修复 MD056（表格列数）：在 `standards/api-patterns.md` 中将 `**2xx Success**` 行补足为 5 列，避免表格缺失数据
+- 修复 MD060（表格样式）与 MD034（裸 URL）：调整 `standards/agent-collaboration-protocol.md` 表格样式并替换裸链接；微调 `java-standards/alibaba-java-guidelines.md` 的代码块标记
+- 删除过期文档：移除 `standards/agent-improvements-summary.md`（该总结已合并至其他规范文档）
 - 新增 `agents/`, `java-standards/`, `standards/`, `templates/` 文档与模板，补充项目的代理说明、Java 规范、设计文档标准与模板
 
 ### 9ddd9ce
