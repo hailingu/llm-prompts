@@ -74,7 +74,7 @@ sb.append("Rule 1:")
 
 - Access static variables or methods via the class name rather than an instance.
 - All overridden methods must include the `@Override` annotation.
-- Varargs may only be used when parameter types are consistent and intended.
+- Variable-arity parameters (varargs) may only be used when parameter types are consistent and intended.
 - Do not change public method signatures of libraries or external interfaces.
 - Do not use deprecated classes or methods.
 - Call `equals` on a constant or a known-non-null object to avoid NPE: use
