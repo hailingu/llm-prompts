@@ -111,7 +111,7 @@ Before designing APIs, you MUST read the Level 1 design document (created by @go
 **CRITICAL: Reference Standard Patterns**
 
 Before writing interfaces, MUST read:
-1. `.github/standards/api-patterns.md` - Standard Go patterns (if exists)
+1. `.github/go-standards/api-patterns.md` - Standard Go API patterns
 2. `.github/standards/google-design-doc-standards.md` Section 10.2 - Design Rationale requirements
 3. [Effective Go](https://go.dev/doc/effective_go) - Error handling, interfaces
 4. [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments) - Common patterns

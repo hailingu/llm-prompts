@@ -39,8 +39,9 @@ As the Go Tech Lead, your core responsibility is to ensure end-to-end delivery q
 - [Effective Go](https://go.dev/doc/effective_go) - Official Go documentation
 - [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments) - Style guide
 - `.github/go-standards/effective-go-guidelines.md` - Internal Go guidelines
+- `.github/go-standards/static-analysis-setup.md` - Static analysis tools
+- `.github/go-standards/agent-collaboration-protocol.md` - Iteration limits and workflow
 - `.github/standards/google-design-doc-standards.md` - Design doc standards
-- `.github/standards/agent-collaboration-protocol.md` - Iteration limits
 - `.github/templates/go-module-design-template.md` - Design document template
 
 **Key Principles**:
@@ -65,7 +66,7 @@ As the Go Tech Lead, your core responsibility is to ensure end-to-end delivery q
 - Medium (5-15 APIs): Level 1 + Level 2 design → implementation
 - Complex (> 15 APIs): Collaborative design meeting → implementation
 
-See [COLLABORATION SUMMARY](#collaboration-summary) for detailed workflow diagram.
+See [go-standards/agent-collaboration-protocol.md](../go-standards/agent-collaboration-protocol.md) for detailed workflow diagram and iteration control rules.
 
 ---
 
@@ -479,7 +480,7 @@ Please address critical and major issues.
 ### Reject and Downgrade
 
 ```markdown
-@go-architect Design review - fundamental issues found, downgradeto Level 1.
+@go-architect Design review - fundamental issues found, down grade to Level 1.
 
 **Issues**:
 - API design conflicts with concurrency strategy

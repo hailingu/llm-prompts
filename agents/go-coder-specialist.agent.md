@@ -267,7 +267,7 @@ Please confirm how to proceed.
 - Option 2: Handoff to @go-api-designer (API issue)
 - Option 3: Handoff to @go-architect (architecture issue)
 
-**Static Analysis** (see [Tools Reference](#static-analysis-tools) for details):
+**Static Analysis** (see [go-standards/static-analysis-setup.md](../go-standards/static-analysis-setup.md) for details):
 1. Format: `gofmt -l .` → 0 files
 2. Imports: `goimports -w .`
 3. Go Vet: `go vet ./...` → 0 issues

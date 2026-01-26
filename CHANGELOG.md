@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- docs(agents, go-standards): 整理 `go-code-reviewer` 与 `java-code-reviewer` 文档，修复模板层级与重复内容，统一报告与迭代模板；新增 `go-standards/static-analysis-setup.md`、`go-standards/api-patterns.md`、`go-standards/agent-collaboration-protocol.md`。
+
 - docs(go-standards): 修复 MD036/MD001（将斜体用作标题的行替换为真实标题并修正标题等级），并为多处条目补充简短说明以提高可读性（`go-standards/effective-go-guidelines.md`）
 
 - docs(readme): 移除 README 标题中的 emoji 以修复 TOC 锚点（MD051）
