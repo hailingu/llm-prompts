@@ -32,6 +32,7 @@
 Use MixedCaps or mixedCaps for identifier names; avoid underscores in identifiers to follow Go conventions.
 
 ✅ **Correct**:
+
 ```go
 type UserService struct {}
 func getUserByID() {}
@@ -39,6 +40,7 @@ const MaxRetryCount = 3
 ```
 
 ❌ **Incorrect**:
+
 ```go
 type User_Service struct {}
 func get_user_by_id() {}
@@ -47,9 +49,12 @@ const MAX_RETRY_COUNT = 3
 
 ### 1.2 Package Names
 
-**Packages should have short, lowercase, single-word names**
+#### Packages should have short, lowercase, single-word names
+
+Package names should be short, all lowercase, and a single word; they should also match the directory name.
 
 ✅ **Correct**:
+
 ```go
 package user
 package http
@@ -57,6 +62,7 @@ package encoding
 ```
 
 ❌ **Incorrect**:
+
 ```go
 package userService
 package HTTPClient
@@ -64,6 +70,7 @@ package encoding_utils
 ```
 
 **Package name should match directory name**:
+
 - Directory: `user/` → Package: `package user`
 - Directory: `httputil/` → Package: `package httputil`
 
@@ -72,6 +79,7 @@ package encoding_utils
 **Exported names start with uppercase, unexported with lowercase**
 
 ✅ **Correct**:
+
 ```go
 // Exported (visible outside package)
 type User struct {
