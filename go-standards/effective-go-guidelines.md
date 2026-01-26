@@ -100,7 +100,9 @@ func validateEmail() {}  // unexported function
 
 ### 1.4 Acronyms and Initialisms
 
-**Keep acronyms consistent: all uppercase or all lowercase**
+#### Keep acronyms consistent: all uppercase or all lowercase
+
+Keep acronyms consistent: use all-uppercase for exported identifiers (e.g., `HTTP`) and all-lowercase for unexported identifiers (e.g., `http`).
 
 ✅ **Correct**:
 
