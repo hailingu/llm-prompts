@@ -9,7 +9,7 @@
 
 ## 协作流程总览
 
-```
+```text
                         ┌─────────────────────┐
                         │   java-tech-lead    │
                         │  (审批 + 仲裁)        │
@@ -41,7 +41,7 @@
 任何两个 Agent 之间的反馈循环，最多允许 **3 次迭代**。
 
 | 场景 | 允许迭代 | 超过后处理 |
-|------|---------|-----------|
+| -------------------------- | --------- | ----------- |
 | architect ↔ api-designer | 3 次 | 升级到 tech-lead |
 | api-designer ↔ coder | 3 次 | 升级到 tech-lead |
 | coder ↔ api-designer | 3 次 | 升级到 tech-lead |
@@ -186,6 +186,7 @@ Iteration 4: ❌ 超过限制，必须升级到 tech-lead
 ### Gate 1: Design Approved
 
 **进入条件**:
+
 - [ ] Level 1 Architecture Design 完成
 - [ ] Level 2 API Specification 完成
 - [ ] @java-tech-lead 审批通过
@@ -196,6 +197,7 @@ Iteration 4: ❌ 超过限制，必须升级到 tech-lead
 ### Gate 2: Implementation Approved
 
 **进入条件**:
+
 - [ ] 代码实现完成
 - [ ] 所有 static analysis 通过
 - [ ] 测试覆盖率 ≥ 80%
@@ -207,6 +209,7 @@ Iteration 4: ❌ 超过限制，必须升级到 tech-lead
 ### Gate 3: Documentation Approved
 
 **进入条件**:
+
 - [ ] 用户文档完成
 - [ ] API 参考完成
 - [ ] @java-tech-lead 审批通过
@@ -219,7 +222,7 @@ Iteration 4: ❌ 超过限制，必须升级到 tech-lead
 
 ### ❌ Anti-pattern 1: 无限循环
 
-```
+```text
 coder → api-designer → coder → api-designer → ...
 ```
 
@@ -229,7 +232,7 @@ coder → api-designer → coder → api-designer → ...
 
 ### ❌ Anti-pattern 2: 跳过审批
 
-```
+```text
 architect → coder (跳过 api-designer)
 ```
 
@@ -239,7 +242,7 @@ architect → coder (跳过 api-designer)
 
 ### ❌ Anti-pattern 3: 完全阻塞
 
-```
+```text
 doc-writer: "设计文档不完整，我无法产出任何内容"
 ```
 
@@ -249,7 +252,7 @@ doc-writer: "设计文档不完整，我无法产出任何内容"
 
 ### ❌ Anti-pattern 4: 无记录反馈
 
-```
+```text
 coder: "API 设计有问题"
 (没有说明具体问题、没有迭代计数)
 ```
@@ -263,30 +266,35 @@ coder: "API 设计有问题"
 ## 各 Agent 协作职责
 
 ### java-architect
+
 - **产出**: Level 1 Architecture Design
 - **接收反馈自**: @java-api-designer
 - **提交审批给**: @java-tech-lead
 - **升级条件**: 与 api-designer 迭代 > 3 次
 
 ### java-api-designer
+
 - **产出**: Level 2 API Specification
 - **接收反馈自**: @java-architect, @java-coder-specialist, @java-doc-writer
 - **提交审批给**: @java-tech-lead
 - **升级条件**: 与任何 agent 迭代 > 3 次
 
 ### java-coder-specialist
+
 - **产出**: 代码实现
 - **接收反馈自**: @java-api-designer
 - **提交审批给**: @java-tech-lead
 - **升级条件**: 与 api-designer 迭代 > 3 次
 
 ### java-doc-writer
+
 - **产出**: 用户文档
 - **接收反馈自**: @java-api-designer
 - **提交审批给**: @java-tech-lead
 - **升级条件**: 与 api-designer 迭代 > 3 次
 
 ### java-tech-lead
+
 - **职责**: 审批、仲裁、质量把关
 - **接收请求自**: 所有 agent
 - **最终决策权**: 是
@@ -295,6 +303,6 @@ coder: "API 设计有问题"
 
 ## 版本历史
 
-| 版本 | 日期 | 变更 |
+| 版本  | 日期 | 变更 |
 |------|------|------|
 | 1.0 | 2026-01-24 | 初始版本 |
