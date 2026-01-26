@@ -299,7 +299,7 @@ public class UserService {
 
 ### 12.2 Third-party Libraries
 
-- GAV convention: GroupId should follow `com.{company/BU}.business.subbusiness`.
+- GAV convention: GroupId should follow `com.{company/BU}.business.<subdomain>` (where "subdomain" refers to a specific product area or service, e.g., `payments`).
 - When adding/upgrading libraries, keep other dependency arbitration results unchanged.
 
 ---

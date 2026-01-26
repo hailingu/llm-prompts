@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- docs(standards): 用 `subdomain` 替换不常见术语 `subbusiness` 并添加示例，改进 GAV 约定说明
+
 - Prompt: require generated plan documents from `task/plan-breakdown-to-task.prompt.md` to conform to markdownlint v0.40.0 documentation rules ([markdownlint v0.40.0 文档](https://github.com/DavidAnson/markdownlint/tree/v0.40.0/doc))
 - 修复 MD034（裸 URL）：将 `java-standards/alibaba-java-guidelines.md` 中的裸链接替换为 `[阿里巴巴 p3c 仓库](https://github.com/alibaba/p3c)`，并微调文档换行以符合规范
 - 修复 MD034（裸 URL）：将 `CHANGELOG.md` 中的 markdownlint 链接改为 Markdown 链接格式
