@@ -1,13 +1,13 @@
-# Design Review Checklist (Based on Google Practice)
+# Design Review Checklist (Based on Google Practices)
 
-**Purpose**: 提供系统化的设计评审检查清单，确保设计文档质量符合 Google 标准。
+**Purpose**: Provide a systematic design review checklist to ensure design documents meet Google-style quality standards.
 
-**When to Use**: 在以下阶段使用此清单：
+**When to use**: Use this checklist at the following stages:
 
-- java-architect 完成 Level 1 后 (self-review)
-- java-api-designer 完成 Level 2 后 (self-review)
-- java-coder-specialist 实现前 (pre-implementation review)
-- java-doc-writer 写文档前 (documentation review)
+- After the `java-architect` completes Level 1 (self-review)
+- After the `java-api-designer` completes Level 2 (self-review)
+- Before implementation by the `java-coder-specialist` (pre-implementation review)
+- Before writing documentation by the `java-doc-writer` (documentation review)
 
 **Version**: 1.0  
 **Last Updated**: 2026-01-24
