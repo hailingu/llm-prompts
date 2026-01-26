@@ -209,7 +209,9 @@ myapp/
 
 ### 2.2 Import Grouping
 
-**Group imports: stdlib, third-party, local**
+#### Group imports: stdlib, third-party, local
+
+Group imports into three sections: standard library, third-party packages, and local packages. Separate groups with a blank line to improve readability and follow Go import ordering conventions.
 
 ✅ **Correct**:
 ```go
