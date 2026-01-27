@@ -21,6 +21,7 @@ My current task is...
   │   ├─ Text/NLP → modern-algorithms-reference.md (§1: LLMs)
   │   ├─ Images → modern-algorithms-reference.md (§2: Vision Transformers)
   │   ├─ Time series → classic-algorithms-reference.md (§4: Time Series)
+  │   ├─ Quantitative trading → quantitative-trading-guide.md (§2-6: Strategies)
   │   └─ Recommender → recommender-systems-guide.md (§2-4)
   |
   ├─ Designing features
@@ -44,6 +45,7 @@ My current task is...
 ## 🎯 Algorithm Selection (30-Second Guide)
 
 ### By Problem Type
+
 | Problem | First Try | If Not Enough | SOTA (Complex) |
 |---------|-----------|---------------|----------------|
 | **Tabular Classification** | Logistic Regression | XGBoost | TabNet, Deep Nets |
@@ -53,11 +55,13 @@ My current task is...
 | **Image Classification** | ResNet pretrained | EfficientNet | ViT, CLIP |
 | **Object Detection** | YOLO | Faster R-CNN | DETR, SAM |
 | **Time Series Forecast** | ARIMA, Prophet | XGBoost | TimeGPT, TFT |
+| **Quantitative Trading** | Moving Average | Mean Reversion, Pairs Trading | Reinforcement Learning, DL |
 | **Recommender** | Matrix Factorization | Two-tower | Multi-task DL |
 | **Clustering** | K-Means | DBSCAN | Hierarchical, GMM |
 | **Anomaly Detection** | Isolation Forest | Autoencoder | Deep SVDD |
 
 ### By Data Size
+
 | Sample Size | Recommended Approach |
 |-------------|----------------------|
 | < 1,000 | Linear models, shallow trees (max_depth ≤ 5) |
@@ -199,6 +203,72 @@ My current task is...
 
 ---
 
+## 📈 Quantitative Trading Quick Lookup
+
+→ **Full Guide**: quantitative-trading-guide.md (comprehensive strategies and implementations)
+
+### Strategy Selection (30-Second Guide)
+| Strategy Type | Horizon | Algorithm | When to Use |
+|---------------|---------|-----------|-------------|
+| **Trend Following** | Days-Weeks | Moving Averages | Strong trending market |
+| **Mean Reversion** | Hours-Days | Bollinger Bands, RSI | Range-bound market |
+| **Statistical Arbitrage** | Minutes-Hours | Pairs Trading | High correlation pairs |
+| **ML-Based** | Any | XGBoost, LSTM | Pattern-rich data |
+| **Reinforcement Learning** | Any | PPO, DQN | Portfolio optimization |
+
+### Key Performance Metrics
+| Metric | Formula | Target |
+|--------|---------|--------|
+| **Sharpe Ratio** | (R - Rf) / σ | > 1 (good), > 2 (excellent) |
+| **Max Drawdown** | Max(Peak - Trough) / Peak | < 20% |
+| **Win Rate** | Wins / Total Trades | > 50% |
+| **Profit Factor** | Gross Profit / Gross Loss | > 1.5 |
+| **Sortino Ratio** | (R - Rf) / Downside σ | > 1.5 |
+
+### Essential Code Snippets
+
+**Moving Average Crossover**:
+```python
+short_ma = df['close'].rolling(50).mean()
+long_ma = df['close'].rolling(200).mean()
+signal = (short_ma > long_ma).shift(1).astype(int)  # Avoid look-ahead bias
+```
+
+**Pairs Trading Z-Score**:
+```python
+from statsmodels.tsa.stattools import coint
+score, pvalue, _ = coint(stock1, stock2)
+spread = stock1 - hedge_ratio * stock2
+zscore = (spread - spread.rolling(20).mean()) / spread.rolling(20).std()
+```
+
+**Vectorized Backtest**:
+```python
+df['returns'] = df['close'].pct_change()
+df['strategy_returns'] = df['signal'].shift(1) * df['returns']
+df['cumulative'] = (1 + df['strategy_returns']).cumprod()
+```
+
+### Critical Pitfalls to Avoid
+| Pitfall | Quick Fix |
+|---------|----------|
+| **Look-ahead bias** | Always `.shift(1)` signals |
+| **Overfitting** | Walk-forward validation |
+| **Survivorship bias** | Include delisted stocks |
+| **No transaction costs** | Model 0.1-0.5% per trade |
+| **Data snooping** | Reserve holdout period |
+
+### Risk Management Checklist
+- [ ] Position sizing (Kelly Criterion)
+- [ ] Stop-loss: trailing or fixed
+- [ ] Max drawdown limit < 20%
+- [ ] Transaction cost: 0.1-0.5% per trade
+- [ ] Walk-forward validation
+
+→ **For detailed strategies, backtesting frameworks, RL implementations**: Read quantitative-trading-guide.md
+
+---
+
 ## 🎓 When to Use Which Validation Strategy
 
 | Data Type | Recommended Strategy | Why |
@@ -324,10 +394,11 @@ if gap > 0.1:
 1. **Use XGBoost for tabular data** (before trying neural networks)
 2. **Fine-tune BERT instead of training from scratch** (NLP)
 3. **Use pretrained ResNet/ViT** (computer vision)
-4. **Create ratio features** (often more powerful than raw features)
-5. **Use stratified CV for imbalanced classes**
-6. **Set random seeds everywhere** (reproducibility)
-7. **Start with simple model + great features** (not complex model + poor features)
+6. **Backtest trading strategies with transaction costs** (quantitative trading)
+7. **Create ratio features** (often more powerful than raw features)
+8. **Use stratified CV for imbalanced classes**
+9. **Set random seeds everywhere** (reproducibility)
+10. **Start with simple model + great features** (not complex model + poor features)
 
 ---
 
