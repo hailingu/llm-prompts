@@ -14,19 +14,23 @@
 
 ## 1. 模块化架构与 Baseline（含 repo + tag）
 
-| 模块 | Baseline 实现 | Repo / Tag | 备注 |
-|------|---------------|------------|------|
-| 说话人嵌入 | ECAPA-TDNN | https://github.com/pyannote/pyannote-audio @v2.0 | 说话人验证/聚类用 |
-| 语音转换 / TTS | YourTTS (few-shot) | https://github.com/TensorSpeech/yourTTS @commit abcdef1 | few-shot VC baseline |
-| TTS（备用） | VITS + HiFi-GAN | VITS repo @v1.0; HiFi-GAN v2 | 高质量合成路径 |
-| 口型同步 | Wav2Lip | https://github.com/Rudrabha/Wav2Lip @v0.1.1 | 同步 + 插帧支持 |
-| 口型检测 | SyncNet | https://github.com/joonson/syncnet_python (commit xyz) | 用作检测器/报警 |
-| 人脸驱动 | First-Order-Motion-Model | https://github.com/AliaksandrSiarohin/first-order-model @master | 视觉驱动 baseline |
-| 高保真替换 | FaceShifter | https://github.com/foodoo/face-shifter (fork) | temporal-consistency 强化 |
-| 卡通化 | U-GAT-IT / CartoonGAN | Repo + tag as chosen per style | 风格迁移 |
-| deepfake 检测 | XceptionNet-based detector | https://github.com/deepfakes/fake-detection-challenge @baseline | 训练与基准 |
+| 模块 | Baseline 实现 | Repo / Tag (示例 commit) | 复现命令（示例） | 备注 |
+|------|---------------|--------------------------|-------------------|------|
+| 说话人嵌入 | ECAPA-TDNN | https://github.com/pyannote/pyannote-audio @v2.0 (commit: 0a1b2c3) | python extract_embeddings.py --model commit=0a1b2c3 | 说话人验证/聚类用 |
+| 语音转换 / TTS | YourTTS (few-shot) | https://github.com/TensorSpeech/yourTTS @commit abcdef1 | python train.py --config configs/yourtts.yaml --checkpoint abcdef1 | few-shot VC baseline |
+| TTS（备用） | VITS + HiFi-GAN | VITS repo @v1.0 (tag v1.0), HiFi-GAN @v2 (tag v2.0) | bash reproduce_vits.sh --tag v1.0 --hifigan v2.0 | 高质量合成路径 |
+| 口型同步 | Wav2Lip | https://github.com/Rudrabha/Wav2Lip @v0.1.1 (commit: 1234abc) | python inference.py --checkpoint 1234abc | 同步 + 插帧支持 |
+| 口型检测 | SyncNet | https://github.com/joonson/syncnet_python @commit xyz987 | python syncnet_eval.py --checkpoint xyz987 | 用作检测器/报警 |
+| 人脸驱动 | First-Order-Motion-Model | https://github.com/AliaksandrSiarohin/first-order-model @master (commit: ff55ee) | python demo.py --config config.yaml --checkpoint ff55ee | 视觉驱动 baseline |
+| 高保真替换 | FaceShifter | https://github.com/foodoo/face-shifter (fork, commit: dd77aa) | python faceshifter.py --ckpt dd77aa | temporal-consistency 强化 |
+| 卡通化 | U-GAT-IT / CartoonGAN | Repo + tag as chosen per style (请记录 commit) | python cartoonize.py --style cartoon_a --ckpt <tag> | 风格迁移 |
+| deepfake 检测 | XceptionNet-based detector | https://github.com/deepfakes/fake-detection-challenge @baseline (commit: ee11ff) | python train_detector.py --config config_detector.yaml --ckpt ee11ff | 训练与基准 |
 
-> 注：提交实现时必须包含 exact commit hash 或 tag，并在 PR 中注明复现命令与依赖版本（requirements.txt / conda env）。
+> 必须在 PR 中明确填写 `Repo + exact commit/hash` 与 `repro command`，PR review 阶段会验证复现步骤是否可运行（Reviewer: @data-scientist-algorithm-designer & @data-engineer）。
+
+---
+
+*注：在后续提交中，Author 应把 `requirements.txt` / `conda` 环境文件与 minimal reproduce scripts 一并包含，以便在 CI 中做 smoke test。*
 
 ---
 
@@ -35,9 +39,25 @@
 - **切分策略**：主训练/验证/测试按时间序列或说话人隔离两套规则任选其一（以避免同一说话人同时出现在 train 和 test 中）：
   - 时间序列优先用于时间敏感任务（chronological split）
   - 说话人隔离用于 speaker-invariant 测试（speaker holdout）——建议对生成任务两者都保留一个独立的冲突检查集
-- **重叠检测**：实现 speaker overlap 检查（Jaccard 融合 speaker_id 集），若 overlap > 0 给出警告并阻止切分
-- **标签泄露检查**：禁止使用未来信息（例如：未来用户行为）作为特征；特征工程脚本必须记录时间窗口与滑动窗口逻辑
-- **Consent 筛选**：训练集仅包含已通过 `consent_id` 验证的样本
+- **重叠检测**：实现 speaker overlap 检查（Jaccard 融合 speaker_id 集），若 overlap > 0 给出警告并阻止切分。
+
+  示例验证脚本（伪代码）：
+  ```python
+  # speaker_overlap_check.py
+  train_speakers = set(load_speakers('train_manifest.csv'))
+  test_speakers = set(load_speakers('test_manifest.csv'))
+  overlap = train_speakers.intersection(test_speakers)
+  assert len(overlap) == 0, f"Speaker overlap detected: {len(overlap)}" 
+  ```
+
+- **标签泄露检查**：禁止使用未来信息（例如：未来用户行为）作为特征；特征工程脚本必须记录时间窗口与滑动窗口逻辑，并在 PR 中提供时间切分校验工具。
+- **Consent 筛选（强制）**：训练/验证/测试数据 **必须** 包含 `consent_id` 且该 `consent_id` 在合规数据库中有效；入库时若未发现有效 consent，则该样本应被隔离并进入待审队列（自动工单）。
+
+  验证示例：
+  ```bash
+  # 检查所有训练样本是否均有有效 consent
+  python scripts/check_consent.py --manifest train_manifest.csv --consent-db /data/consents.db
+  ```
 
 ---
 
@@ -46,9 +66,23 @@
 ### 3.1 语音转换 (YourTTS) - 基线训练
 - 预训练模型：使用 upstream pre-trained weights（记录 commit）
 - Fine-tune：few-shot setup（5-30s sample）与 speaker embedding fusion
-- 超参示例：batch_size 32, lr range [1e-4, 1e-3], scheduler: CosineAnnealing, weight_decay 1e-6
-- Checkpoint：每 N=1000 step checkpoint；保留 5 最佳（by val loss + speaker-similarity）
+- 超参示例（模板）：
+  | param | candidate values | notes |
+  |-------|------------------:|-------|
+  | batch_size | [16, 32, 64] | 根据显存调整 |
+  | lr | [1e-5, 5e-5, 1e-4, 5e-4, 1e-3] | 使用 CosineAnnealing 或 ReduceLROnPlateau |
+  | weight_decay | [0, 1e-6, 1e-5] | |
+  | dropout | [0.1, 0.3, 0.5] | |
+  | n_epochs | [10,20,50] | 结合 early stopping |
+- 超参搜索策略：首轮采用随机搜索 (n=20 trials)，关键参数再用 Bayesian 优化 (Optuna)
+- Checkpoint & 实验记录：
+  - 每 N=1000 steps checkpoint 保存一次，使用 MLflow/W&B 记录 metrics、params 与 artifacts
+  - 每次 experiment 必须记录：data_snapshot_id, model_commit, seed, hyperparams, artifact_uri
 - 随机种子：设置 seed = 42，并在 MLflow 中记录所有参数
+- 复现命令示例：
+  ```bash
+  python train.py --config configs/yourtts.yaml --seed 42 --batch_size 32 --lr 1e-4 --output ./runs/run_001
+  ```
 
 ### 3.2 视觉替换（First-Order / FaceShifter）
 - 训练/微调使用 paired 或 unpaired 数据（视供应数据情况），冻结低层特征保留动画能力
@@ -75,6 +109,16 @@
 
 ### 统计要求
 - A/B 测试设计需满足 power ≥ 0.8，α=0.05；提前计算 MDE 并列入实验 plan
+- 样本量计算工具：`evaluation/scripts/sample_size_calc.py`（示例：`python evaluation/scripts/sample_size_calc.py --delta 0.3 --sigma 1.0`）
+
+---
+
+## 13. 验收测试（可执行）
+- **Baseline smoke test**：在 CI 中实现 smoke test（运行 baseline reproduce command，生成 10 示例视频并跑 compute_metrics.py，确保无致命错误）
+- **Data & Consent check**：运行 `scripts/check_consent.py` 与 GE checks，CI 阻断规则：missing_consent_pct > 0
+- **Watermark robustness test**：执行 Watermark Baseline Test（见 Watermark 测试协议），报告 FN/FP 与 ROC
+- **MOS smoke**：随机抽取 50 个样本进行快速 MOS 内部打分，若 MOS < 3.5 则阻断发布并需修正
+- **Sync smoke**：运行 LSE-C/LSE-D 自动检测，若 sync fail rate > 15% 触发人工复核
 
 ---
 
@@ -86,10 +130,25 @@
 ---
 
 ## 6. Watermark 与 Provenance 集成
-- **嵌入点**：在后处理阶段（合成完音视频后）植入 learned watermark 与频域冗余
-- **检测 API**：POST /internal/wm/check -> {detected, confidence, payload}
-- **验收**：FN ≤ 1%，confidence < 0.6 标记人工复核
-- **元数据**：为每条生成记录 {model_version, model_commit, data_snapshot_id, consent_id, generator_user_id, timestamp, signature}
+- **嵌入点**：在后处理阶段（合成完音视频后）植入 learned watermark（时域/频域混合）与冗余编码，确保对常见压缩与转码具鲁棒性。
+
+- **检测 API（合同）**：
+  - Endpoint: POST /internal/wm/check
+  - Request: { "artifact_uri": "s3://.../gen.mp4", "expected_consensus": true }
+  - Response: { "detected": true|false, "confidence": 0.0-1.0, "payload": {"wm_id": "...", "method": "learned" } }
+
+- **测试协议（自动化）**：
+  1. **Baseline test set**：创建 1000 合成样本（多编码、多压缩）并标签为正样本。  
+  2. **Negative test set**：1000 真实未标注水印样本为负样本。  
+  3. **Robustness matrix**：对 Baseline test set 进行压缩（CRF 18/23/28/33）、转码（mp4->webm->mp4）、SNR 添加（30/20/10dB）并评估检测结果。
+  4. **Metric**：计算 FN rate（目标 ≤ 1%）、FP rate（目标 ≤ 0.5%），并输出 confusion matrix 与 ROC curve。
+  5. **Acceptance**：若 FN > 1% 或任一重要压缩档上 FN > 2%，标记为不通过并回退到 watermark 参数调整（或改进嵌入算法）。
+
+- **验收与复核**：confidence < 0.6 的样本应进入人工复核队列；所有检测日志需入审计链并与 `consent_id` 相关联。
+
+- **元数据**：为每条生成记录 {model_version, model_commit, data_snapshot_id, consent_id, generator_user_id, timestamp, signature, watermark_id}
+
+- **注**：测试协议要在 CI 中实现（nightly runs）并将结果作为质量门（quality gate）。
 
 ---
 
