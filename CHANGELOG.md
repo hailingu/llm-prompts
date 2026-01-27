@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### 未命名变更
+
+- feat(project): 完善短视频替换系统的算法、数据与评估规范；新增 Research Design、算法规格、数据 schema、Great Expectations 示例、评估计划与 MOS 模板，便于 CI 自动化与合规审查。
+
+
 ### 3cd194d
 
 - docs(changelog): 恢复并规范化 `c7f16bd` 段落格式，确保提交 id 小节与条目格式一致。
