@@ -1,0 +1,8 @@
+numpy
+scipy
+librosa
+pesq
+torch
+pyannote.audio
+lpips
+soundfile
