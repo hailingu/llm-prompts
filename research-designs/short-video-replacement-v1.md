@@ -55,6 +55,58 @@
 
 ---
 
+## 6.1) 数据质量与管道（新增）📦
+
+**问题摘要**：当前数据 pipeline 需要补充 schema 校验、同意证据绑定、自动化质量检测（损坏/噪声）、标签完备性检查与 lineage/version 控制。下列为拟采取的具体措施与验收准则。
+
+**数据合同（Schema）**
+- 必填字段：file_id, speaker_id, length_s, sample_rate, channels, language, consent_id, timestamp, checksum, source, data_snapshot_id
+- 可选字段：emotion_tag, device, mic_type, ambient_noise_db
+- 不满足 schema 的文件将被拒绝入库并记录错误原因。
+
+**入库验证（自动化）**
+- 使用 Great Expectations（或等效）实现自动化检查：
+  - 长度检查：length_s >= 5s
+  - 采样率检查：sample_rate ∈ {16000, 22050, 24000, 44100}
+  - checksum 校验
+  - consent_id 必填且在同意库中可查
+  - 重复检测：基于 checksum 与音频指纹
+- 失败策略：失败样本进入隔离队列并触发工单（Auto-ticket）给数据负责人。
+
+**数据清洗与补标**
+- 清洗：去重、时区标准化、异常 timestamp 修正、音频重采样、低质量标注（SNR 阈值）
+- 补标流程：半自动标签 + 人工抽样校验（QA）
+
+**Lineage 与版本控制**
+- 每次数据快照写入 data_snapshot_id（含 git commit / data hash），并记录到元数据（immutable log）。
+
+**监控与告警**
+- 核心指标：missing_consent_pct, invalid_audio_pct, low_quality_pct, ingestion_failure_rate
+- 阈值示例：missing_consent_pct > 0% → 阻塞发布；invalid_audio_pct > 1% → 告警并人工检查
+
+**测试计划与 CI**
+- 单元测试：损坏文件测试、checksum 校验测试、schema 边界测试
+- 集成测试：上传一批样本（含坏样本），验证入库/隔离/工单流转
+- 在 CI 中加入 Great Expectations 快照测试（nightly run）
+
+**验收标准**
+- 入库自动校验覆盖 100% 的新数据
+- Speaker-count ≥ 100 且每 speaker ≥ 30s（MVP 要求）
+- Consent 100% 绑定或未绑定进入隔离并关联工单
+- 自动报警触发后 24h 内响应（SLA）
+- 人工抽检通过率 ≥ 95%
+
+**相关文件（已创建）**：
+- `data/contracts/short-video-schema.md`（数据合同）
+- `data/tests/great_expectations/short_video_expectations.yml`（Great Expectations 示例）
+
+**Owner / Action Items**：
+- Data Owner: @data-engineer — 负责实现入库校验与清洗脚本（目标完成日见负责人分配表）
+- QA: @data-scientist-evaluator — 负责抽检计划与人工评审
+- Infra: @infra-team — 负责监控报警与工单自动化
+
+---
+
 ## 7) Baseline 算法与参考实现（明确库与版本）🔧
 > 推荐基线实现（MVP 阶段使用开源/可复现）
 

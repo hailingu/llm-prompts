@@ -1,0 +1,47 @@
+expectations:
+  - expectation: expect_table_row_count_to_be_between
+    kwargs:
+      min_value: 1
+      max_value: 100000000
+
+  - expectation: expect_column_values_to_not_be_null
+    kwargs:
+      column: file_id
+
+  - expectation: expect_column_values_to_be_in_type_list
+    kwargs:
+      column: length_s
+      type_list: ["float", "int"]
+
+  - expectation: expect_column_values_to_be_between
+    kwargs:
+      column: length_s
+      min_value: 5
+
+  - expectation: expect_column_values_to_be_in_set
+    kwargs:
+      column: sample_rate
+      value_set: [16000, 22050, 24000, 44100]
+
+  - expectation: expect_column_values_to_not_be_null
+    kwargs:
+      column: consent_id
+
+  - expectation: expect_column_values_to_match_regex
+    kwargs:
+      column: checksum
+      regex: "^[a-f0-9]{64}$"
+
+  - expectation: expect_column_values_to_be_in_type_list
+    kwargs:
+      column: timestamp
+      type_list: ["datetime"]
+
+  - expectation: expect_column_values_to_be_unique
+    kwargs:
+      column: file_id
+
+  - expectation: expect_column_values_to_be_in_set
+    kwargs:
+      column: language
+      value_set: ["zh-CN", "en-US"]
