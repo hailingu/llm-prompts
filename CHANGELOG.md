@@ -12,6 +12,7 @@
 
 - docs(prompts): 为 `plan-breakdown-to-task` 与 `task-execute` 提示新增 Execution Parameters（机器可读参数）、参数校验、执行流程與回滚计划，使任务拆分与自动化执行互操作；同时更新示例与错误返回格式。
 - docs(prompts): 提交信息修正 — 补充文件名引用与变更说明（见后续提交）
+- docs(readme): 更新 `README.md` 为 2026 标准并新增 `changelog-specialist` agent定义。
 
 
 
