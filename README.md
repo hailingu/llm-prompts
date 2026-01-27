@@ -2,7 +2,16 @@
 
 ![banner](docs/banner.svg)
 
-A curated collection of LLM prompts, agent definitions, and templates for building, evaluating, and operating agent-based workflows. Use these prompts and guidelines to standardize agent behaviour, commit workflows, and documentation across projects.
+A curated collection of LLM prompts, agent roles, and templates to standardize agent-based workflows, documentation, and contributor experience across projects.
+
+---
+
+<!-- Badges -->
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/hailingu/llm-prompts/actions)
+[![Version](https://img.shields.io/badge/version-v0.1.0--beta.1-blue)](https://github.com/hailingu/llm-prompts/releases)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Test Coverage](https://img.shields.io/badge/coverage-unknown-yellow)](https://github.com/hailingu/llm-prompts)
+[![Community](https://img.shields.io/badge/community-discussions-lightgrey)](https://github.com/hailingu/llm-prompts/discussions)
 
 > Quick link: [CHANGELOG](./CHANGELOG.md) • [Contributing guide](./CONTRIBUTING.md) • [Security](./SECURITY.md) • [Code of Conduct](./CODE_OF_CONDUCT.md)
 
@@ -39,7 +48,7 @@ A curated collection of LLM prompts, agent definitions, and templates for buildi
 - Git >= 2.30
 - Java >= 17 (for Checkstyle/Java guides)
 - Maven >= 3.6 (if you run Java static-analysis locally)
-- Node.js >= 18 (optional; for JS tooling)
+- Node.js >= 22 (recommended for modern JS tooling)
 - Python >= 3.12 (optional; for automation scripts)
 
 ### Installation

@@ -1,14 +1,19 @@
 # Changelog
 
-## Unreleased
+## [Unreleased]
 
-### 未命名变更
+> 建议版本更新：**MINOR**（包含新特性 `feat(...)`）
+
+### Added
 
 - feat(project): 完善短视频替换系统的算法、数据与评估规范；新增 Research Design、算法规格、数据 schema、Great Expectations 示例、评估计划与 MOS 模板，便于 CI 自动化与合规审查。
 
-- docs(prompts): 为 `plan-breakdown-to-task` 与 `task-execute` 提示新增 Execution Parameters（机器可读参数）、参数校验、执行流程与回滚计划，使任务拆分与自动化执行互操作；同时更新示例与错误返回格式。
+### Changed
 
+- docs(prompts): 为 `plan-breakdown-to-task` 与 `task-execute` 提示新增 Execution Parameters（机器可读参数）、参数校验、执行流程與回滚计划，使任务拆分与自动化执行互操作；同时更新示例与错误返回格式。
 - docs(prompts): 提交信息修正 — 补充文件名引用与变更说明（见后续提交）
+- docs(readme): 更新 `README.md` 为 2026 标准并新增 `changelog-specialist` agent定义。
+
 
 
 ### 3cd194d
@@ -59,3 +64,8 @@
 - 更新 `evaluation/project-evaluate.prompt.md`：重写为英文提示（要求输出为简体中文表格），修复格式损坏并补全内容
 - 更新 `README.md`，说明如何启用该仓库的提交模板
 - 新增 `analysis/architecture-analysis.prompt.md`：提供全面的架构文档编写指导
+
+---
+
+[Unreleased]: https://github.com/hailingu/llm-prompts/compare/v0.1.0-beta.1...HEAD
+[v0.1.0-beta.1]: https://github.com/hailingu/llm-prompts/releases/tag/v0.1.0-beta.1
