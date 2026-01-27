@@ -1,0 +1,9 @@
+docs(readme): 更新 README 为 2026 标准并新增 changelog-specialist agent
+
+Changes:
+- 重写 README 头部并新增标准化徽章（Build/Version/License/Test Coverage/Community）。
+- 将 Prerequisites 中 Node.js 建议升级为 >=22，优化 Quick Start、Roadmap 与 Usage 文案。
+- 新增 `.github/agents/changelog-specialist.agent.md`，作为 CHANGELOG 维护 agent 定义。
+
+Testing:
+- 手动校验 README.md 文档与链接；建议在 CI 中运行 `markdownlint` 验证格式。
