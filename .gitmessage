@@ -55,13 +55,16 @@
 # ----------------------------------------------------------------------
 # Write your commit message below (comment lines starting with # are ignored)
 
-type(scope): summary
+docs(changelog): 规范 Unreleased 分类并补充比较链接
 
 Changes:
-- 
+- 将 Unreleased 重组为 Keep a Changelog 的分类（Added / Changed），并将现有未发布条目按类型归类。
+- 在 Unreleased 段落顶部添加版本更新建议（MINOR）。
+- 在文件末尾添加比较链接 `[Unreleased]` 与最近发布 tag 的链接，便于生成发布对比。
 
 Testing:
-- 
+- 手动校验 CHANGELOG.md 内容格式与链接。
+- 建议在 CI 中运行 markdownlint 与校验脚本来验证格式一致性。
 
 # Optional footer lines (uncomment and fill if applicable):
 # BREAKING CHANGE: 
