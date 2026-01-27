@@ -27,7 +27,7 @@
 
 ## What to Monitor: 3-Layer Framework
 
-```
+```text
 Layer 1: System Metrics (Infrastructure)
    ├─ Latency (p50, p95, p99)
    ├─ Throughput (QPS)

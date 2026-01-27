@@ -61,6 +61,12 @@ This directory contains all data science standards organized in a **3-tier syste
   - Two-tower models, multi-task learning
   - Cold start and session-based recommendations
 
+- **quantitative-trading-guide.md** (45 min read)
+  - Trading strategies (trend following, mean reversion, statistical arbitrage)
+  - Machine learning for price prediction
+  - Reinforcement learning for portfolio management
+  - Backtesting frameworks and risk management
+
 - **model-deployment-guide.md** (35 min read)
   - Model compression (quantization, pruning, distillation)
   - Serving patterns (batch, streaming, edge)
@@ -92,6 +98,11 @@ This directory contains all data science standards organized in a **3-tier syste
 ### For Feature Engineering
 1. Read: **cheat-sheet.md** → Feature problems section
 2. Read: **feature-engineering-patterns.md** §3-5 (by your data type)
+
+### For Quantitative Trading
+1. Read: **cheat-sheet.md** → Quantitative Trading Quick Lookup
+2. Read: **quantitative-trading-guide.md** §3-6 (classical to ML strategies)
+3. Read: **quantitative-trading-guide.md** §8-9 (backtesting and risk management)
 
 ---
 
