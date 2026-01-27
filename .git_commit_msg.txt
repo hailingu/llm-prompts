@@ -1,0 +1,12 @@
+docs(quant): 新增量化交易指南并重构 cheat-sheet 索引
+
+Changes:
+- 新增文件 `data-science-standards/quantitative-trading-guide.md`，包含策略、回测、风险管理与生产部署示例。
+- 将 `cheat-sheet.md` 中的量化交易内容精简为速查表并添加到详细指南的跳转链接。
+- 更新 `tech-lead-standards-overview.md`，在 Tier 3 中加入量化交易指南索引并补充快速开始场景。
+- 修正 `model-monitoring-guide.md` 的代码区块语言标注（``` -> ```text）。
+- 更新 `CHANGELOG.md`：新增 Unreleased 条目，记录本次新增文档与变更说明。
+
+Testing:
+- 手动打开新增与修改后的文档，验证目录、速查表、链接与示例代码存在并可读。
+- 建议在 CI 中运行 `markdownlint` 验证 Markdown 格式一致性.
