@@ -1,0 +1,73 @@
+
+# Git commit message template
+#
+# Conventions (common in open-source projects):
+#   type(scope): summary
+#
+# Guidelines:
+# - Keep the summary <= 50 characters.
+# - Wrap body lines at <= 72 characters.
+# - Use the body to explain WHAT and WHY (not every HOW).
+#
+# Suggested types (type : Chinese meaning):
+# - feat    : 新功能
+# - fix     : 修复 bug
+# - docs    : 文档变更
+# - style   : 代码风格（不影响逻辑）
+# - refactor: 重构（不改变功能）
+# - perf    : 性能优化
+# - test    : 测试相关
+# - chore   : 构建/维护相关
+# - ci      : CI 配置相关
+# - build   : 构建系统相关
+# - revert  : 回退先前提交
+#
+# Footer:
+# - Breaking changes:
+#     BREAKING CHANGE: <what changed and what users must do>
+# - Issue/PR references:
+#     Issue: #123
+#     PR: #456
+# - Sign-off (only if your project requires it):
+#     Signed-off-by: Your Name <you@example.com>
+#
+# Example (regular commit):
+# feat(cli): add interactive commit message generator
+#
+# Changes: Implement an interactive CLI flow to help users generate commit
+# messages following the repository template. Add basic validation for type
+# and optional scope.
+#
+# Testing: Add unit tests and a CLI integration test verifying generated
+# messages match the template rules.
+#
+# Example (breaking change):
+# feat(config): migrate configuration format to v2
+#
+# Changes: Update config parsing to support v2 schema and add migration
+# notes to documentation.
+#
+# Testing: Add fixtures for v1/v2 and regression tests for config loading.
+#
+# BREAKING CHANGE: Configuration file format changed from v1 to v2; manual
+# migration of configuration items is required.
+#
+# ----------------------------------------------------------------------
+# Write your commit message below (comment lines starting with # are ignored)
+
+docs(changelog): 规范 Unreleased 分类并补充比较链接
+
+Changes:
+- 将 Unreleased 重组为 Keep a Changelog 的分类（Added / Changed），并将现有未发布条目按类型归类。
+- 在 Unreleased 段落顶部添加版本更新建议（MINOR）。
+- 在文件末尾添加比较链接 `[Unreleased]` 与最近发布 tag 的链接，便于生成发布对比。
+
+Testing:
+- 手动校验 CHANGELOG.md 内容格式与链接。
+- 建议在 CI 中运行 markdownlint 与校验脚本来验证格式一致性。
+
+# Optional footer lines (uncomment and fill if applicable):
+# BREAKING CHANGE: 
+# Issue: 
+# PR: 
+# Signed-off-by: 

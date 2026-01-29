@@ -1,0 +1,66 @@
+{
+  "_comment": "Default configuration for technical-review presentations",
+  "presentation_type": "technical-review",
+  "philosophy": ["presentation-zen", "assertion-evidence"],
+  
+  "max_bullets_per_slide": 5,
+  "max_lines_per_slide": 8,
+  "max_words_per_slide": 40,
+  "min_title_font_pt": 24,
+  "min_body_font_pt": 18,
+  "max_text_density_percent": 40,
+  "require_speaker_notes": true,
+  "require_decision_slide_within_first_n": 5,
+  "require_image_attribution": true,
+  "require_citation": false,
+  "wcag_contrast_level": "AA",
+  "min_contrast_ratio": 4.5,
+  "qa_pass_threshold": 70,
+  
+  "max_slides_for_pitch": 15,
+  "require_assertion_title": false,
+  "min_visual_elements_per_slide": 0,
+  "y_axis_starts_at_zero": true,
+  "max_chart_categories": 5,
+  "max_unique_colors": 5,
+  "max_font_families": 2,
+  "allow_animations": false,
+  "allow_decorative_elements": false,
+  
+  "_presets": {
+    "technical-review": {
+      "philosophy": ["assertion-evidence", "tufte"],
+      "require_citation": true,
+      "min_visual_elements_per_slide": 1,
+      "y_axis_starts_at_zero": true,
+      "max_bullets_per_slide": 5
+    },
+    "executive-pitch": {
+      "philosophy": ["10-20-30-rule", "pyramid-principle"],
+      "max_slides_for_pitch": 15,
+      "min_body_font_pt": 30,
+      "max_bullets_per_slide": 3,
+      "require_decision_slide_within_first_n": 3
+    },
+    "product-roadmap": {
+      "philosophy": ["presentation-zen", "signal-vs-noise"],
+      "max_bullets_per_slide": 3,
+      "max_text_density_percent": 30,
+      "allow_decorative_elements": false
+    },
+    "academic-report": {
+      "philosophy": ["assertion-evidence", "tufte"],
+      "require_assertion_title": true,
+      "require_citation": true,
+      "min_visual_elements_per_slide": 1,
+      "y_axis_starts_at_zero": true
+    },
+    "fast-paced-talk": {
+      "philosophy": ["takahashi"],
+      "max_bullets_per_slide": 0,
+      "max_words_per_slide": 3,
+      "min_body_font_pt": 80,
+      "require_speaker_notes": false
+    }
+  }
+}

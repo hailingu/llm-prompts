@@ -1,0 +1,44 @@
+{
+  "template_id": "waterfall-chart",
+  "name": "Waterfall Chart（瀑布图）",
+  "category": "financial-analysis",
+  "industry": ["finance", "consulting", "business-intelligence"],
+  "description": "显示累积效应的图表，常用于利润分析、现金流分析",
+  
+  "layout": {
+    "type": "waterfall",
+    "orientation": "vertical"
+  },
+  
+  "data_structure": {
+    "title": "2025年利润瀑布分析",
+    "starting_value": {
+      "label": "年初净利润",
+      "value": 1000
+    },
+    "changes": [
+      {"label": "收入增长", "value": 500, "type": "positive"},
+      {"label": "成本上升", "value": -200, "type": "negative"},
+      {"label": "运营费用", "value": -150, "type": "negative"}
+    ],
+    "ending_value": {
+      "label": "年末净利润",
+      "value": 1150
+    }
+  },
+  
+  "visualization": {
+    "positive_color": "#10B981",
+    "negative_color": "#EF4444",
+    "total_color": "#3B82F6",
+    "connector_style": "dashed",
+    "show_values": true,
+    "show_cumulative_line": true
+  },
+  
+  "design_rules": {
+    "max_categories": 12,
+    "min_bar_width": 40,
+    "show_percentage_change": true
+  }
+}

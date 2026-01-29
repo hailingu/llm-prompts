@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="220" viewBox="0 0 1200 220" role="img" aria-label="llm-prompts banner">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0%" stop-color="#6EE7B7" />
+      <stop offset="100%" stop-color="#3B82F6" />
+    </linearGradient>
+    <style>
+      .title { font: 700 44px/1.1 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: white; }
+      .subtitle { font: 400 16px/1.2 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; fill: rgba(255,255,255,0.95); }
+      .robot { fill: white; }
+    </style>
+  </defs>
+
+  <!-- background -->
+  <rect width="1200" height="220" rx="12" fill="url(#g)" />
+
+  <!-- cute robot mascot (shrunk and pulled left so it doesn't overlap text) -->
+  <g transform="translate(36,46) scale(1.0)">
+    <rect x="0" y="0" width="128" height="128" rx="18" fill="white" opacity="0.08" />
+    <rect x="8" y="12" width="112" height="96" rx="12" fill="white" />
+    <circle cx="40" cy="56" r="8" fill="#374151" />
+    <circle cx="88" cy="56" r="8" fill="#374151" />
+    <rect x="44" y="84" width="40" height="8" rx="4" fill="#D1D5DB" />
+    <rect x="24" y="98" width="80" height="8" rx="4" fill="#E5E7EB" />
+    <circle cx="16" cy="16" r="6" fill="#10B981" />
+  </g>
+
+  <!-- text (moved right to avoid overlap) -->
+  <text x="280" y="92" class="title">llm-prompts</text>
+  <text x="280" y="132" class="subtitle">A curated collection of prompts, agents, and templates for building reliable agent workflows</text>
+
+  <!-- small decorative nodes -->
+  <g transform="translate(1040,18)">
+    <circle cx="0" cy="0" r="8" fill="#FDE68A" />
+    <circle cx="28" cy="12" r="6" fill="#FCA5A5" />
+    <circle cx="-20" cy="30" r="5" fill="#BFDBFE" />
+  </g>
+</svg>
