@@ -18,19 +18,22 @@ This document outlines the philosophical foundations and guiding principles that
 
 ## Core Principles
 
-### 1. Occam's Razor (Lex Parsimoniae)
+### 1. Occam's Razor (Lex Parsimony)
+
 **Principle**: *"Entities should not be multiplied beyond necessity"* — Among competing hypotheses, the simplest explanation is usually correct.
 
 **Data Science Translation**: Start with the simplest model that could reasonably solve the problem.
 
 **Application**:
+
 - **DO**: Try logistic regression before deep neural networks
 - **DO**: Use linear regression before ensemble methods
 - **DON'T**: Jump to complex models without justification
 - **DON'T**: Add features without testing if they improve performance
 
 **Example**:
-```
+
+```text
 Problem: Customer churn prediction (10,000 samples, 20 features)
 
 ❌ Wrong approach:
@@ -50,18 +53,21 @@ Problem: Customer churn prediction (10,000 samples, 20 features)
 ---
 
 ### 2. No Free Lunch Theorem (NFLT)
+
 **Principle**: *"No algorithm is universally superior across all problems"* — Different algorithms work better for different types of data and problems.
 
 **Data Science Translation**: Don't assume "state-of-the-art" on benchmark X will work on your problem Y.
 
 **Application**:
+
 - **DO**: Experiment with multiple algorithms
 - **DO**: Use domain knowledge to select candidates
 - **DON'T**: Assume one algorithm is always best
 - **DON'T**: Skip experimentation because "X always wins"
 
 **Example**:
-```
+
+```text
 Scenario: Paper shows Transformer achieves 98% accuracy on ImageNet
 
 ❌ Wrong thinking:
@@ -77,11 +83,13 @@ Scenario: Paper shows Transformer achieves 98% accuracy on ImageNet
 ---
 
 ### 3. Data > Algorithms (The Unreasonable Effectiveness of Data)
+
 **Principle**: *"More data beats clever algorithms"* — Improving data quality and quantity often yields better results than algorithmic sophistication.
 
 **Data Science Translation**: Invest in data before investing in algorithm complexity.
 
 **Application**:
+
 - **DO**: Spend time cleaning and understanding data
 - **DO**: Collect more high-quality data if possible
 - **DO**: Focus on feature engineering before model tuning
@@ -89,7 +97,8 @@ Scenario: Paper shows Transformer achieves 98% accuracy on ImageNet
 - **DON'T**: Ignore data quality issues
 
 **Hierarchy of Impact**:
-```
+
+```text
 1. More data (10x improvement potential)
 2. Better features (5x improvement)
 3. Better algorithms (2x improvement)
@@ -97,7 +106,8 @@ Scenario: Paper shows Transformer achieves 98% accuracy on ImageNet
 ```
 
 **Example**:
-```
+
+```text
 Scenario: Model achieves 70% accuracy on 1,000 samples
 
 Option A: Tune hyperparameters for 2 weeks
@@ -114,14 +124,17 @@ Option B: Collect 10,000 more samples
 ---
 
 ### 4. Bias-Variance Tradeoff
+
 **Principle**: *"You cannot simultaneously minimize bias and variance"* — Balance model complexity to achieve good generalization.
 
 **Definitions**:
+
 - **Bias**: Error from overly simplistic assumptions (underfitting)
 - **Variance**: Error from sensitivity to training data fluctuations (overfitting)
 
 **Visual**:
-```
+
+```text
 High Bias (Underfitting)    Balanced           High Variance (Overfitting)
      |                         |                         |
 Linear model on             XGBoost with           Deep NN with
@@ -132,6 +145,7 @@ Test error:  High         Test error:  Medium      Test error:  High
 ```
 
 **Application**:
+
 - **High Bias (underfitting)**:
   - Symptom: Train error is high
   - Fix: Increase model complexity, add features, reduce regularization
@@ -141,6 +155,7 @@ Test error:  High         Test error:  Medium      Test error:  High
   - Fix: Reduce complexity, add regularization, get more data, use cross-validation
 
 **Example**:
+
 ```python
 # Detecting overfitting
 train_f1 = 0.95
@@ -160,26 +175,30 @@ train_val_gap = 0.95 - 0.72 = 0.23  # Large gap → Overfitting!
 ---
 
 ### 5. KISS (Keep It Simple, Stupid)
+
 **Principle**: *"Simplicity should be a key goal in design"* — Simple solutions are easier to understand, maintain, and debug.
 
 **Data Science Translation**: Prefer interpretable models over black boxes when performance is comparable.
 
 **Application**:
+
 - **DO**: Choose simpler model if accuracy difference is < 2%
 - **DO**: Document model decisions clearly
 - **DO**: Consider maintenance and deployment costs
 - **DON'T**: Sacrifice significant performance for interpretability
-- **DON'T**: Overcomplicate for marginal gains
+- **DON'T**: Overcomplicated for marginal gains
 
 **Decision Matrix**:
+
 | Scenario | Accuracy Diff | Complexity Diff | Choice |
-|----------|---------------|-----------------|--------|
+| ---------- | --------------- | ----------------- | -------- |
 | Medical diagnosis | Logistic: 92% vs XGBoost: 94% | Low vs High | XGBoost (accuracy critical) |
 | Marketing campaign | Logistic: 85% vs NN: 86% | Low vs Very High | Logistic (1% not worth complexity) |
 | Fraud detection | Rule-based: 80% vs NN: 95% | Very Low vs High | NN (15% improvement huge) |
 
 **Example**:
-```
+
+```text
 Scenario: Predicting if customer will click ad
 
 Model A: Logistic Regression
@@ -201,11 +220,13 @@ Decision: Choose Model A
 ---
 
 ### 6. Garbage In, Garbage Out (GIGO)
+
 **Principle**: *"The quality of output is determined by the quality of input"* — No algorithm can compensate for fundamentally flawed data.
 
 **Data Science Translation**: Data quality is the foundation of all ML success.
 
 **Application**:
+
 - **DO**: Validate data quality before modeling
 - **DO**: Understand data collection process
 - **DO**: Clean and preprocess data rigorously
@@ -213,6 +234,7 @@ Decision: Choose Model A
 - **DON'T**: Skip exploratory data analysis
 
 **Data Quality Dimensions**:
+
 1. **Completeness**: Missing values acceptable?
 2. **Accuracy**: Are values correct?
 3. **Consistency**: Do values make logical sense?
@@ -220,6 +242,7 @@ Decision: Choose Model A
 5. **Validity**: Do values conform to schema?
 
 **Example**:
+
 ```python
 # Bad data example
 df = pd.read_csv('customers.csv')
@@ -239,11 +262,13 @@ df = clean_and_validate_data(df)
 ---
 
 ### 7. Cross-Validation is King
+
 **Principle**: *"Never trust a model trained and tested on the same data"* — Proper validation strategy is essential for reliable performance estimates.
 
 **Data Science Translation**: Always use cross-validation or hold-out test set.
 
 **Application**:
+
 - **DO**: Use k-fold cross-validation for small datasets
 - **DO**: Use time-series split for temporal data
 - **DO**: Use stratified sampling for imbalanced classes
@@ -251,6 +276,7 @@ df = clean_and_validate_data(df)
 - **DON'T**: Touch test set until final evaluation
 
 **Validation Strategies**:
+
 ```python
 # 1. K-Fold Cross-Validation (IID data)
 from sklearn.model_selection import cross_val_score
@@ -272,6 +298,7 @@ cv = GroupKFold(n_splits=5)
 ```
 
 **Anti-pattern**:
+
 ```python
 # ❌ WRONG: Train and test on same data
 model.fit(X, y)
@@ -286,11 +313,13 @@ accuracy = model.score(X_test, y_test)  # 85% (realistic)
 ---
 
 ### 8. Feature Engineering > Model Selection
+
 **Principle**: *"A better feature beats a fancier algorithm"* — Feature engineering often has more impact than algorithm choice.
 
 **Data Science Translation**: Invest time in creating meaningful features from domain knowledge.
 
 **Application**:
+
 - **DO**: Use domain expertise to create features
 - **DO**: Create interaction and polynomial features
 - **DO**: Aggregate temporal features
@@ -298,7 +327,8 @@ accuracy = model.score(X_test, y_test)  # 85% (realistic)
 - **DON'T**: Skip feature engineering for deep learning
 
 **Impact Comparison**:
-```
+
+```text
 Experiment: Customer churn prediction
 
 Round 1: Raw features + XGBoost
@@ -313,6 +343,7 @@ Round 3: Engineered features + XGBoost
 ```
 
 **Good Feature Engineering Examples**:
+
 ```python
 # Time-based features
 df['signup_month'] = df['signup_date'].dt.month
@@ -336,11 +367,13 @@ df['age_income_interaction'] = df['age'] * df['income']
 ---
 
 ### 9. Reproducibility Matters
+
 **Principle**: *"Science requires reproducible results"* — If you can't reproduce it, you can't trust it.
 
 **Data Science Translation**: Every experiment must be reproducible with documentation.
 
 **Application**:
+
 - **DO**: Set random seeds everywhere
 - **DO**: Version control code and data
 - **DO**: Log all hyperparameters
@@ -349,6 +382,7 @@ df['age_income_interaction'] = df['age'] * df['income']
 - **DON'T**: Modify data without recording changes
 
 **Reproducibility Checklist**:
+
 ```python
 # 1. Set all random seeds
 import random
@@ -383,17 +417,20 @@ Data Pipeline v1.0
 ---
 
 ### 10. Baseline First
+
 **Principle**: *"Establish a simple baseline before anything else"* — You need a performance floor to measure improvement.
 
 **Data Science Translation**: Always start with the simplest reasonable model.
 
 **Application**:
+
 - **DO**: Implement simple baseline first
 - **DO**: Measure all improvements relative to baseline
 - **DON'T**: Claim success without baseline comparison
 - **DON'T**: Skip baseline to "save time"
 
 **Baseline Examples by Task**:
+
 ```python
 # Classification
 from sklearn.dummy import DummyClassifier
@@ -414,7 +451,8 @@ print(f"Improvement: {(model_accuracy - baseline_accuracy)/baseline_accuracy*100
 ```
 
 **Real Example**:
-```
+
+```text
 Task: Predict customer churn (20% churn rate)
 
 Baseline: Predict "no churn" for everyone
@@ -434,12 +472,14 @@ Model: XGBoost
 ## Advanced Principles
 
 ### 12. The Bitter Lesson (Rich Sutton, 2019)
+
 **Principle**: *"General methods that leverage computation are ultimately the most effective"* — Historically, simple algorithms that scale with compute beat clever hand-crafted approaches.
 
 **Data Science Translation**: Don't over-engineer; trust in scalable, general-purpose methods.
 
 **Historical Evidence**:
-```
+
+```text
 1997: Deep Blue (hand-crafted chess evaluation) vs
 2017: AlphaZero (simple MCTS + neural network + massive compute)
       → AlphaZero wins without any chess knowledge
@@ -454,6 +494,7 @@ Model: XGBoost
 ```
 
 **Application**:
+
 - **DO**: Prefer scalable, general methods
 - **DO**: Invest in compute infrastructure
 - **DO**: Trust in data and scale
@@ -465,12 +506,14 @@ Model: XGBoost
 ---
 
 ### 13. Ensemble Wisdom (Wisdom of Crowds)
+
 **Principle**: *"The aggregation of many weak learners often outperforms a single strong learner"* — Diversity in models leads to error cancellation.
 
 **Data Science Translation**: When in doubt, ensemble.
 
 **Mathematical Foundation**:
-```
+
+```text
 For M independent models with error ε:
    Single model error: ε
    Ensemble error (averaging): ε / √M
@@ -479,6 +522,7 @@ For M independent models with error ε:
 ```
 
 **Ensemble Strategies**:
+
 ```python
 # 1. Bagging (Bootstrap Aggregating)
 #    - Same algorithm, different data subsets
@@ -511,11 +555,13 @@ def blend_predictions(models, X):
 ```
 
 **When Ensembles Work Best**:
+
 - Models make **different** errors (diversity is key!)
 - Individual models are better than random
 - Correlation between models is low
 
 **Anti-pattern**:
+
 ```python
 # ❌ WRONG: Ensemble of identical models
 ensemble = [LogisticRegression() for _ in range(10)]  # No diversity!
@@ -533,10 +579,12 @@ ensemble = [
 ---
 
 ### 14. The Curse of Dimensionality
+
 **Principle**: *"As dimensions increase, space becomes increasingly sparse"* — High-dimensional spaces behave counter-intuitively.
 
 **Mathematical Insight**:
-```
+
+```text
 Volume of unit hypersphere in d dimensions:
    d=2:  π (3.14)
    d=5:  8.4/15 * π^2 (5.26)
@@ -549,6 +597,7 @@ Distance paradox:
 ```
 
 **Practical Implications**:
+
 ```python
 # Problem: K-NN fails in high dimensions
 # As d increases, nearest neighbor becomes "not so near"
@@ -567,13 +616,15 @@ knn = KNeighborsClassifier().fit(X_reduced, y)  # Much better
 ```
 
 **Rule of Thumb**:
+
 - Need exponentially more data as dimensions grow
 - Sample size needed: O(10^d) for d dimensions
 - **Hughes Phenomenon**: Performance peaks then degrades as features increase
 
 **When Dimensionality Hurts**:
+
 | Algorithm | Sensitivity to Dimensions |
-|-----------|---------------------------|
+| ----------- | --------------------------- |
 | K-NN | Very High (fails above ~50 dims) |
 | K-Means | High |
 | SVM | Moderate |
@@ -583,13 +634,15 @@ knn = KNeighborsClassifier().fit(X_reduced, y)  # Much better
 ---
 
 ### 15. Inductive Bias (Model Assumptions)
+
 **Principle**: *"Every learning algorithm has implicit assumptions about the nature of the solution"* — These biases are necessary for generalization.
 
 **Data Science Translation**: Choose models whose biases match your problem structure.
 
 **Examples of Inductive Biases**:
+
 | Model | Inductive Bias |
-|-------|----------------|
+| ------- | ---------------- |
 | Linear Regression | Relationship is linear |
 | Decision Trees | Axis-aligned decision boundaries |
 | CNN | Spatial locality, translation invariance |
@@ -598,7 +651,8 @@ knn = KNeighborsClassifier().fit(X_reduced, y)  # Much better
 | Graph NN | Data has graph structure |
 
 **Why Bias is Necessary**:
-```
+
+```text
 Without bias, we cannot generalize beyond training data.
 
 Consider: Function that maps points to labels
@@ -609,6 +663,7 @@ We NEED bias to prefer certain functions (e.g., smooth, simple)
 ```
 
 **Matching Bias to Problem**:
+
 ```python
 # Image classification → CNN (spatial bias)
 # Time series → LSTM/Transformer (temporal bias)
@@ -627,11 +682,13 @@ cnn.fit(images, labels)  # Exploits image structure
 ---
 
 ### 16. Exploration vs Exploitation (The Multi-Armed Bandit)
+
 **Principle**: *"Balance trying new things (exploration) with doing what works (exploitation)"* — Fundamental tradeoff in sequential decision-making.
 
 **Data Science Applications**:
 
 **1. Hyperparameter Tuning**:
+
 ```python
 # Pure exploitation: Use best known params (may miss better)
 # Pure exploration: Random search forever (never converge)
@@ -652,6 +709,7 @@ search = BayesSearchCV(
 ```
 
 **2. A/B Testing**:
+
 ```python
 # Traditional A/B: 50/50 split (heavy exploration)
 # Multi-Armed Bandit: Shift traffic to winner
@@ -677,6 +735,7 @@ class ThompsonSampling:
 ```
 
 **3. Feature Selection**:
+
 - Explore: Try new feature combinations
 - Exploit: Use features known to work
 - Balance: Forward selection with validation
@@ -684,10 +743,12 @@ class ThompsonSampling:
 ---
 
 ### 17. Regularization as Prior (Bayesian Perspective)
+
 **Principle**: *"Regularization encodes prior beliefs about model parameters"* — L1/L2 regularization are just Gaussian/Laplacian priors.
 
 **Mathematical Connection**:
-```
+
+```text
 Maximum Likelihood:        argmax P(D|θ)
 Maximum A Posteriori:      argmax P(D|θ) * P(θ)
 L2 Regularization:         argmax P(D|θ) * N(θ|0,σ²)
@@ -698,7 +759,8 @@ L1 loss + λ||θ||₁ ≡ MAP with Laplacian prior
 ```
 
 **Intuition**:
-```
+
+```text
 L2 (Ridge): "I believe parameters are small but non-zero"
    → Shrinks all coefficients toward zero
    → Gaussian prior: most parameters near zero
@@ -708,10 +770,11 @@ L1 (Lasso): "I believe most parameters are exactly zero"
    → Laplacian prior: sharp peak at zero
 
 Dropout: "I believe model should work with any subset of features"
-   → Implicit ensemble of subnetworks
+   → Implicit ensemble of subnet
 ```
 
 **Application**:
+
 ```python
 # When to use which regularization
 
@@ -731,10 +794,12 @@ model = ElasticNet(alpha=0.1, l1_ratio=0.5)  # Mix of priors
 ---
 
 ### 18. Uncertainty Quantification (Knowing What You Don't Know)
+
 **Principle**: *"A model that knows its own uncertainty is more valuable than one that doesn't"* — Point predictions without confidence are dangerous.
 
 **Types of Uncertainty**:
-```
+
+```text
 1. Aleatoric Uncertainty (Data noise)
    - Inherent randomness in the problem
    - Cannot be reduced with more data
@@ -747,6 +812,7 @@ model = ElasticNet(alpha=0.1, l1_ratio=0.5)  # Mix of priors
 ```
 
 **Methods for Uncertainty**:
+
 ```python
 # 1. Bayesian Methods
 import pymc3 as pm
@@ -785,6 +851,7 @@ y_pred, y_set = mapie.predict(X_test, alpha=0.1)  # 90% coverage guaranteed!
 ```
 
 **When Uncertainty Matters Most**:
+
 - Medical diagnosis ("I'm 60% confident it's benign")
 - Autonomous driving ("Low confidence → ask human")
 - Financial predictions (risk management)
@@ -793,10 +860,12 @@ y_pred, y_set = mapie.predict(X_test, alpha=0.1)  # 90% coverage guaranteed!
 ---
 
 ### 19. Correlation ≠ Causation (The Ladder of Causation)
+
 **Principle**: *"Observing correlation does not imply the ability to intervene"* — Predictive models learn correlations, not causal mechanisms.
 
 **Pearl's Ladder of Causation**:
-```
+
+```text
 Level 3: Counterfactuals (Imagining)
    "What if I had done X instead of Y?"
    Example: "Would this patient have survived with treatment A?"
@@ -811,6 +880,7 @@ Level 1: Association (Seeing)  ← Most ML lives here
 ```
 
 **Danger of Confusing Levels**:
+
 ```python
 # Scenario: Hospital data shows patients who take drug X have higher survival
 
@@ -828,6 +898,7 @@ Confounding variable: patient health
 ```
 
 **When Causation Matters**:
+
 ```python
 # Prediction: Correlation is enough
 # "Will this customer churn?" → Yes, use correlations
@@ -856,10 +927,12 @@ print(f"Causal effect of discount: {estimate.value}")
 ---
 
 ### 20. Model Degradation (The Concept Drift Problem)
+
 **Principle**: *"Models decay over time as the world changes"* — Yesterday's model may not work tomorrow.
 
 **Types of Drift**:
-```
+
+```text
 1. Concept Drift: P(y|X) changes
    - Relationship between features and target changes
    - Example: Customer preferences evolve
@@ -874,6 +947,7 @@ print(f"Causal effect of discount: {estimate.value}")
 ```
 
 **Detection Methods**:
+
 ```python
 # 1. Performance Monitoring
 def monitor_model(model, X_new, y_new):
@@ -903,6 +977,7 @@ def monitor_predictions(model, X_train, X_new):
 ```
 
 **Mitigation Strategies**:
+
 - **Scheduled retraining**: Weekly/monthly model refresh
 - **Continuous learning**: Online updates with new data
 - **Ensemble of time windows**: Weight recent data more
@@ -911,10 +986,12 @@ def monitor_predictions(model, X_train, X_new):
 ---
 
 ### 21. Scaling Laws (The Power of Scale)
+
 **Principle**: *"Model performance follows predictable power laws with compute, data, and parameters"* — Understanding scaling helps resource allocation.
 
 **The Chinchilla Scaling Law (2022)**:
-```
+
+```text
 Optimal allocation for LLMs:
    Parameters ∝ FLOPs^0.5
    Data tokens ∝ FLOPs^0.5
@@ -928,6 +1005,7 @@ Example:
 ```
 
 **Practical Scaling**:
+
 ```python
 # Observed: Performance scales as power law
 # Loss ∝ 1/N^α where N is data size, α ≈ 0.1-0.4
@@ -952,7 +1030,8 @@ print(f"Predicted error at 1M: {predicted_error:.4f}")
 ```
 
 **Decision Framework**:
-```
+
+```text
 Given fixed budget, what to scale?
 
 1. If data is limiting: Collect more data
@@ -965,10 +1044,12 @@ Balanced scaling: Scale all three proportionally
 ---
 
 ### 22. Transfer Learning Philosophy (Standing on Giants' Shoulders)
+
 **Principle**: *"Knowledge learned from one task can accelerate learning on related tasks"* — Don't start from scratch.
 
 **The Transfer Learning Hierarchy**:
-```
+
+```text
 Level 4: Zero-shot (most transfer)
    - Use pretrained model directly, no task-specific training
    - Example: GPT-4 answering questions
@@ -990,6 +1071,7 @@ Level 0: Train from scratch (least transfer)
 ```
 
 **When to Transfer**:
+
 ```python
 # Computer Vision
 from torchvision import models
@@ -1020,8 +1102,9 @@ model = AutoModelForSequenceClassification.from_pretrained(
 ```
 
 **Transfer Learning Decision**:
+
 | Your Data Size | Similarity to Pretrain Data | Strategy |
-|----------------|----------------------------|----------|
+| ---------------- | ---------------------------- | ---------- |
 | Small | High | Feature extraction only |
 | Small | Low | Feature extraction, careful fine-tuning |
 | Large | High | Fine-tune all layers |
@@ -1030,10 +1113,12 @@ model = AutoModelForSequenceClassification.from_pretrained(
 ---
 
 ### 23. The Representation Hypothesis (Latent Space Philosophy)
+
 **Principle**: *"Good representations make downstream tasks easier"* — Learning meaningful embeddings is often more important than the final model.
 
 **Core Insight**:
-```
+
+```text
 Raw data → [Representation Learning] → Embedding → [Simple Model] → Prediction
 
 If the embedding captures the right structure, even simple models work!
@@ -1044,6 +1129,7 @@ Example:
 ```
 
 **Self-Supervised Learning Revolution**:
+
 ```python
 # Learn representations without labels!
 
@@ -1067,6 +1153,7 @@ classifier = LogisticRegression().fit(embeddings, labels)
 ```
 
 **Properties of Good Representations**:
+
 1. **Disentangled**: Different factors captured by different dimensions
 2. **Smooth**: Similar inputs → similar embeddings
 3. **Compact**: Low-dimensional but informative
@@ -1077,8 +1164,10 @@ classifier = LogisticRegression().fit(embeddings, labels)
 ## Mathematical Foundations
 
 ### The Bias-Variance-Noise Decomposition
+
 **Full Error Decomposition**:
-```
+
+```text
 Expected Error = Bias² + Variance + Irreducible Noise
 
 Bias² = [E[f̂(x)] - f(x)]²
@@ -1095,6 +1184,7 @@ Irreducible Noise = σ²
 ```
 
 **Practical Implications**:
+
 ```python
 # Measuring bias and variance empirically
 def estimate_bias_variance(model_class, X, y, n_bootstrap=100):
@@ -1131,8 +1221,10 @@ print(f"Tree:   Bias²={bias_tree:.4f}, Var={var_tree:.4f}")
 ---
 
 ### Information Theory in ML
+
 **Key Concepts**:
-```
+
+```text
 Entropy H(X): Uncertainty in random variable
    H(X) = -Σ p(x) log p(x)
    
@@ -1144,6 +1236,7 @@ KL Divergence KL(P||Q): "Distance" between distributions
 ```
 
 **Applications in ML**:
+
 ```python
 # 1. Feature Selection via Mutual Information
 from sklearn.feature_selection import mutual_info_classif
@@ -1163,8 +1256,10 @@ def cross_entropy_loss(y_true, y_pred):
 ---
 
 ### PAC Learning (Probably Approximately Correct)
+
 **Core Theorem**:
-```
+
+```text
 With probability at least (1-δ), a model trained on m samples
 will have error ≤ ε if:
 
@@ -1177,12 +1272,14 @@ where:
 ```
 
 **Practical Implications**:
+
 - More complex models (larger |H|) need more data
 - Lower error tolerance (smaller ε) needs more data
 - Higher confidence (smaller δ) needs more data
 
 **VC Dimension**:
-```
+
+```text
 VC(H) = maximum number of points that can be shattered
 
 For linear classifiers in d dimensions:
@@ -1200,7 +1297,7 @@ Rule of thumb: Need at least 10 × VC(H) samples
 
 ### Framework 1: Model Selection Decision Tree
 
-```
+```text
 Problem Type?
   |
   ├─ Classification
@@ -1230,7 +1327,7 @@ Problem Type?
 
 ### Framework 2: Complexity vs Performance Tradeoff
 
-```
+```text
 When is complexity justified?
 
 1. Performance gain > 5% AND business value is high
@@ -1248,7 +1345,7 @@ When is complexity justified?
 
 ### Framework 3: Data Size vs Model Complexity
 
-```
+```text
 Sample Size Guidelines:
 
 < 1,000 samples:
@@ -1284,7 +1381,7 @@ Sample Size Guidelines:
 
 ### Framework 4: The ML Project Prioritization Matrix
 
-```
+```text
                     Business Impact
                     Low         High
                 ┌─────────┬─────────┐
@@ -1301,7 +1398,7 @@ Prioritize: High impact + Easy implementation first!
 
 ### Framework 5: Debugging ML Models
 
-```
+```text
 Performance Issue Diagnosis Tree:
 
 Model performs poorly?
@@ -1336,9 +1433,11 @@ Model performs poorly?
 ## Common Pitfalls and How to Avoid Them
 
 ### Pitfall 1: Data Leakage
+
 **Problem**: Using information from the future or test set during training.
 
 **Examples**:
+
 ```python
 # ❌ WRONG: Using test data to compute statistics
 all_data = pd.concat([train, test])
@@ -1353,27 +1452,33 @@ test['age'].fillna(mean_age, inplace=True)
 ```
 
 ### Pitfall 2: Selection Bias
+
 **Problem**: Choosing model based on test performance.
 
 **Solution**: Use proper train/validation/test split. Never touch test set until final evaluation.
 
 ### Pitfall 3: Ignoring Class Imbalance
+
 **Problem**: 95% accuracy on 95% majority class (useless).
 
 **Solutions**:
+
 - Use F1, precision, recall instead of accuracy
 - Apply class weights or sampling (SMOTE)
 - Adjust classification threshold
 
 ### Pitfall 4: Overfitting on Validation Set
+
 **Problem**: Tuning hyperparameters too much on validation set.
 
 **Solution**: Use nested cross-validation or final hold-out test set.
 
 ### Pitfall 5: The Target Leakage Trap
+
 **Problem**: Features that contain information about the target that wouldn't be available at prediction time.
 
 **Examples**:
+
 ```python
 # ❌ WRONG: Target leakage
 # Predicting if customer will churn next month
@@ -1386,15 +1491,18 @@ df['days_since_last_purchase'] = (today - df['last_purchase_date']).days
 ```
 
 **Detection**:
+
 - Suspiciously high performance (AUC > 0.99)
 - Single feature dominates importance
 - Performance drops dramatically in production
 
 ### Pitfall 6: Survivorship Bias
+
 **Problem**: Only analyzing data that "survived" some selection process.
 
 **Classic Example**:
-```
+
+```text
 WW2: Airplanes returning from combat had bullet holes in wings/tail.
 Wrong conclusion: "Reinforce wings and tail"
 Right conclusion: "Planes hit in engines/cockpit didn't return!"
@@ -1402,20 +1510,24 @@ Right conclusion: "Planes hit in engines/cockpit didn't return!"
 ```
 
 **Data Science Examples**:
+
 - Training churn model only on active customers (churned already gone!)
 - Analyzing successful products only (what about failures?)
 - Studying users who completed onboarding (what about dropoffs?)
 
 ### Pitfall 7: p-Hacking and Multiple Comparisons
+
 **Problem**: Testing many hypotheses increases false positive rate.
 
 **Math**:
-```
+
+```text
 With 20 features tested at α=0.05:
    P(at least one false positive) = 1 - (0.95)^20 = 64%!
 ```
 
 **Solutions**:
+
 ```python
 # Bonferroni Correction
 from statsmodels.stats.multitest import multipletests
@@ -1428,10 +1540,12 @@ rejected, corrected_p, _, _ = multipletests(p_values, method='fdr_bh')
 ```
 
 ### Pitfall 8: The Accuracy Paradox
+
 **Problem**: High accuracy can be misleading with imbalanced classes.
 
 **Example**:
-```
+
+```text
 Fraud detection: 0.1% fraud rate
 
 Model: Predict "no fraud" always
@@ -1442,15 +1556,18 @@ Model: Predict "no fraud" always
 ```
 
 **Solution**: Use appropriate metrics
+
 - Imbalanced: F1, AUC-PR, MCC
 - Cost-sensitive: Custom cost matrix
 - Always: Confusion matrix analysis
 
 ### Pitfall 9: Simpson's Paradox
+
 **Problem**: Aggregate trend reverses when data is grouped.
 
 **Famous Example**:
-```
+
+```text
 UC Berkeley Admissions (1973):
    Overall: Men admitted at higher rate (44% vs 35%)
    But by department: Women admitted at equal or higher rates!
@@ -1459,14 +1576,17 @@ Explanation: Women applied to more competitive departments.
 ```
 
 **Data Science Lesson**:
+
 - Always analyze at appropriate granularity
 - Check for confounding variables
 - Stratify analysis when needed
 
 ### Pitfall 10: The Streetlight Effect
+
 **Problem**: Looking only where it's easy to look, not where the answer is.
 
 **Examples**:
+
 - Using readily available data instead of needed data
 - Optimizing easy-to-measure metrics instead of true objective
 - Applying familiar algorithms instead of appropriate ones
@@ -1478,9 +1598,11 @@ Explanation: Women applied to more competitive departments.
 ## Ethical Considerations
 
 ### Principle 24: Fairness and Bias
+
 **Principle**: *"Algorithms can perpetuate and amplify societal biases"* — Proactively check for and mitigate bias.
 
 **Application**:
+
 - **DO**: Check model performance across demographic groups
 - **DO**: Test for disparate impact
 - **DO**: Use fairness metrics (demographic parity, equalized odds)
@@ -1488,6 +1610,7 @@ Explanation: Women applied to more competitive departments.
 - **DON'T**: Assume "objective" data is bias-free
 
 **Fairness Metrics**:
+
 ```python
 # 1. Demographic Parity
 #    P(ŷ=1|A=0) = P(ŷ=1|A=1)
@@ -1520,6 +1643,7 @@ print(metric_frame.by_group)
 ```
 
 **Bias Mitigation Strategies**:
+
 ```python
 # Pre-processing: Fix the data
 from fairlearn.preprocessing import CorrelationRemover
@@ -1541,9 +1665,11 @@ postprocess.fit(X, y, sensitive_features=gender)
 ---
 
 ### Principle 25: Transparency and Explainability
+
 **Principle**: *"Stakeholders have a right to understand how decisions are made"* — Black boxes erode trust.
 
 **Explainability Methods**:
+
 ```python
 # 1. Global Interpretability: Feature Importance
 import shap
@@ -1572,6 +1698,7 @@ print(f"Change {explanation.cf['diff']} to get opposite prediction")
 ```
 
 **When Explainability is Critical**:
+
 - Regulated industries (finance, healthcare, hiring)
 - High-stakes decisions (loans, bail, medical diagnosis)
 - Debugging and model improvement
@@ -1580,9 +1707,11 @@ print(f"Change {explanation.cf['diff']} to get opposite prediction")
 ---
 
 ### Principle 26: Privacy and Data Protection
+
 **Principle**: *"Respect user privacy and minimize data exposure"* — Collect only what's needed, protect what's collected.
 
 **Privacy Techniques**:
+
 ```python
 # 1. Differential Privacy
 from diffprivlib.models import LogisticRegression as DPLogisticRegression
@@ -1618,7 +1747,7 @@ def anonymize(df):
 
 ### The Scientific Method for ML
 
-```
+```text
 1. OBSERVE: Explore data, understand the problem
    - EDA, statistics, visualizations
    - Domain expert interviews
@@ -1643,7 +1772,7 @@ def anonymize(df):
 
 ### The ML Debugging Manifesto
 
-```
+```text
 1. Assume your code has bugs until proven otherwise
 2. Check data at every step (print shapes, samples, statistics)
 3. Start with a simple model that SHOULD work
@@ -1656,7 +1785,7 @@ def anonymize(df):
 
 ### The Production ML Checklist
 
-```
+```text
 Before deploying any model, verify:
 
 □ Baseline comparison documented
@@ -1675,20 +1804,15 @@ Before deploying any model, verify:
 
 > "All models are wrong, but some are useful."
 > — George Box
-
 > "Torture the data, and it will confess to anything."
 > — Ronald Coase
-
 > "The goal is to turn data into information, and information into insight."
 > — Carly Fiorina
-
 > "In God we trust. All others must bring data."
 > — W. Edwards Deming
-
 > "It is a capital mistake to theorize before one has data."
 > — Arthur Conan Doyle (Sherlock Holmes)
-
-> "The combination of some data and an aching desire for an answer 
+> "The combination of some data and an aching desire for an answer
 > does not ensure that a reasonable answer can be extracted from a given body of data."
 > — John Tukey
 
@@ -1697,6 +1821,7 @@ Before deploying any model, verify:
 ## Summary: The Data Scientist's Oath
 
 **Foundations** (Principles 1-11):
+
 1. **Start simple** (Occam's Razor)
 2. **Experiment broadly** (No Free Lunch)
 3. **Prioritize data quality** (Data > Algorithms)
@@ -1731,7 +1856,7 @@ Before deploying any model, verify:
 
 ## The Golden Rules
 
-```
+```text
 ┌────────────────────────────────────────────────────────┐
 │                   THE GOLDEN RULES                      │
 ├────────────────────────────────────────────────────────┤
