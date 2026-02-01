@@ -88,11 +88,12 @@ Your output must be an **Algorithm Design Specification** with the following sec
 
 ### 2.1 Input Features (from data-engineer)
 [List features provided by @data-engineer]
-| Feature | Type | Range | Description |
-|---------|------|-------|-------------|
-| age | numerical | 18-80 | User age |
-| country | categorical | 50 values | ISO country code |
-| tenure_days | numerical | 0-3650 | Days since signup |
+| Feature     | Type        | Range     | Description       |
+| ----------- | ----------- | --------- | ----------------- |
+| ---------   | ------      | -------   | -------------     |
+| age         | numerical   | 18-80     | User age          |
+| country     | categorical | 50 values | ISO country code  |
+| tenure_days | numerical   | 0-3650    | Days since signup |
 
 ### 2.2 Feature Transformations
 

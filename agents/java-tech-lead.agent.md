@@ -320,12 +320,13 @@ architect + api-designer (collaborative design)
 ```markdown
 ## Iteration Tracking
 
-| From | To | Iteration | Max | Status |
-|------|-----|-----------|-----|--------|
-| architect | api-designer | 2 | 3 | ✅ OK |
-| api-designer | coder | 1 | 3 | ✅ OK |
-| coder | api-designer | 3 | 3 | ⚠️ LAST |
-| doc-writer | api-designer | 4 | 3 | ❌ EXCEEDED |
+| From         | To           | Iteration   | Max   | Status      |
+| ------------ | ------------ | ----------- | ----- | ----------- |
+| ------       | -----        | ----------- | ----- | --------    |
+| architect    | api-designer | 2           | 3     | ✅ OK       |
+| api-designer | coder        | 1           | 3     | ✅ OK       |
+| coder        | api-designer | 3           | 3     | ⚠️ LAST     |
+| doc-writer   | api-designer | 4           | 3     | ❌ EXCEEDED |
 ```
 
 **Timeout handling**:

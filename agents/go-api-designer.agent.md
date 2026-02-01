@@ -212,14 +212,15 @@ This is the **most important** section. It defines the **precise contract** that
 
 **MUST be in table format with all scenarios**:
 
-| Scenario | Input | Return Value | Error | HTTP Status | Retry? | Pattern |
-|----------|-------|--------------|-------|-------------|--------|---------|
-| Success | Valid UUID | *User | nil | 200 | No | - |
-| Not Found | Valid UUID | nil | ErrUserNotFound | 404 | No | Sentinel error |
-| Invalid ID | Empty string | nil | ErrInvalidInput | 400 | No | Validation |
-| Invalid ID | Malformed UUID | nil | ErrInvalidInput | 400 | No | Validation |
-| DB Timeout | Valid UUID | nil | fmt.Errorf("db timeout: %w", context.DeadlineExceeded) | 503 | Yes (3x) | Wrapped error |
-| DB Unavailable | Valid UUID | nil | ErrDatabaseUnavailable | 503 | Yes (3x) | Sentinel |
+| Scenario       | Input          | Return Value   | Error                                                  | HTTP Status   | Retry?   | Pattern        |
+| -------------- | -------------- | -------------- | ------------------------------------------------------ | ------------- | -------- | -------------- |
+| ----------     | -------        | -------------- | -------                                                | ------------- | -------- | ---------      |
+| Success        | Valid UUID     | *User          | nil                                                    | 200           | No       | -              |
+| Not Found      | Valid UUID     | nil            | ErrUserNotFound                                        | 404           | No       | Sentinel error |
+| Invalid ID     | Empty string   | nil            | ErrInvalidInput                                        | 400           | No       | Validation     |
+| Invalid ID     | Malformed UUID | nil            | ErrInvalidInput                                        | 400           | No       | Validation     |
+| DB Timeout     | Valid UUID     | nil            | fmt.Errorf("db timeout: %w", context.DeadlineExceeded) | 503           | Yes (3x) | Wrapped error  |
+| DB Unavailable | Valid UUID     | nil            | ErrDatabaseUnavailable                                 | 503           | Yes (3x) | Sentinel       |
 
 **Error Types (defined as package-level sentinels)**:
 ```go
@@ -488,11 +489,12 @@ func (u *User) Validate() error {
 
 **Define per-method goroutine-safety contracts**:
 
-| Method | Goroutine-Safe? | Expected QPS | Response Time | Synchronization |
-|--------|----------------|--------------|---------------|-----------------|
-| GetUserByID | Yes | 500 | p95 < 100ms | Stateless (no sync) |
-| CreateUser | Yes | 50 | p95 < 200ms | Stateless (DB handles concurrency) |
-| UpdateUser | Yes | 100 | p95 < 150ms | Stateless (DB handles concurrency) |
+| Method      | Goroutine-Safe?  | Expected QPS   | Response Time   | Synchronization                    |
+| ----------- | ---------------- | -------------- | --------------- | ---------------------------------- |
+| --------    | ---------------- | -------------- | --------------- | -----------------                  |
+| GetUserByID | Yes              | 500            | p95 < 100ms     | Stateless (no sync)                |
+| CreateUser  | Yes              | 50             | p95 < 200ms     | Stateless (DB handles concurrency) |
+| UpdateUser  | Yes              | 100            | p95 < 150ms     | Stateless (DB handles concurrency) |
 
 **Concurrency Strategy**:
 - Design Pattern: Stateless service

@@ -402,13 +402,14 @@ def monitoring_pipeline():
 
 ### Open Source
 
-| Tool | Purpose |
-|------|---------|
-| **Evidently AI** | Drift detection, data quality |
-| **Great Expectations** | Data validation |
-| **Prometheus + Grafana** | Metrics + visualization |
-| **MLflow** | Experiment tracking |
-| **WhyLabs** | ML observability |
+| Tool                     | Purpose                       |
+| ------------------------ | ----------------------------- |
+| ------                   | ---------                     |
+| **Evidently AI**         | Drift detection, data quality |
+| **Great Expectations**   | Data validation               |
+| **Prometheus + Grafana** | Metrics + visualization       |
+| **MLflow**               | Experiment tracking           |
+| **WhyLabs**              | ML observability              |
 
 ### Example: Evidently AI
 

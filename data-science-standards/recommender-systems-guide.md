@@ -38,11 +38,12 @@
 
 ### 1.2 Types of Feedback
 
-| Feedback Type | Examples | Characteristics | Algorithm Choice |
-|---------------|----------|-----------------|------------------|
-| **Explicit** | Ratings (1-5 stars), thumbs up/down | Sparse, accurate | SVD, PMF, NCF |
-| **Implicit** | Clicks, views, watch time, purchases | Dense, noisy | ALS, BPR, Two-Tower |
-| **Contextual** | Time, location, device, session | Rich features | FM, DCN, Transformers |
+| Feedback Type   | Examples                             | Characteristics   | Algorithm Choice      |
+| --------------- | ------------------------------------ | ----------------- | --------------------- |
+| --------------- | ----------                           | ----------------- | ------------------    |
+| **Explicit**    | Ratings (1-5 stars), thumbs up/down  | Sparse, accurate  | SVD, PMF, NCF         |
+| **Implicit**    | Clicks, views, watch time, purchases | Dense, noisy      | ALS, BPR, Two-Tower   |
+| **Contextual**  | Time, location, device, session      | Rich features     | FM, DCN, Transformers |
 
 **Implicit > Explicit in Production**: Most systems use implicit feedback (abundant data)
 
@@ -151,11 +152,12 @@ See [classic-algorithms-reference.md](classic-algorithms-reference.md#30-collabo
 
 **Quick Comparison**:
 
-| Approach | How It Works | Scalability | Cold Start |
-|----------|-------------|-------------|------------|
-| **User-based CF** | Find similar users, recommend what they liked | O(n_users²) | Poor for new users |
-| **Item-based CF** | Find similar items, recommend similar to what user liked | O(n_items²) | Poor for new items |
-| **Matrix Factorization** | Learn latent user/item embeddings | O(k×interactions) | Poor for both |
+| Approach                 | How It Works                                             | Scalability       | Cold Start         |
+| ------------------------ | -------------------------------------------------------- | ----------------- | ------------------ |
+| ----------               | -------------                                            | -------------     | ------------       |
+| **User-based CF**        | Find similar users, recommend what they liked            | O(n_users²)       | Poor for new users |
+| **Item-based CF**        | Find similar items, recommend similar to what user liked | O(n_items²)       | Poor for new items |
+| **Matrix Factorization** | Learn latent user/item embeddings                        | O(k×interactions) | Poor for both      |
 
 **Production Recommendation**: Item-based CF (more stable than user-based, easier to explain)
 

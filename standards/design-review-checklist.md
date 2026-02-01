@@ -173,12 +173,13 @@
 
 **Example of good Contract**:
 
-| Scenario | HTTP Status | Response Body | Return Value | Exception | Retry? | Pattern |
-| ------------- | ----------- | -------------- | ----------- | ----------- | -------- | ------- |
-| Success | 200 | {"status":"active"} | Subscription | - | No | - |
-| Not found | 404 | {"error":"not_found"} | null | - | No | 1.1 |
-| Timeout | - | - | - | IOException(SocketTimeoutException) | Yes | 2.1 |
-| Null param | - | - | - | IllegalArgumentException | No | 1.1 |
+| Scenario      | HTTP Status | Response Body         | Return Value | Exception                           | Retry?   | Pattern |
+| ------------- | ----------- | --------------------- | ------------ | ----------------------------------- | -------- | ------- |
+| ------------- | ----------- | --------------        | -----------  | -----------                         | -------- | ------- |
+| Success       | 200         | {"status":"active"}   | Subscription | -                                   | No       | -       |
+| Not found     | 404         | {"error":"not_found"} | null         | -                                   | No       | 1.1     |
+| Timeout       | -           | -                     | -            | IOException(SocketTimeoutException) | Yes      | 2.1     |
+| Null param    | -           | -                     | -            | IllegalArgumentException            | No       | 1.1     |
 
 **Anti-patterns**:
 
@@ -252,10 +253,11 @@
 ```markdown
 ### 12. Concurrency Requirements
 
-| Method | Thread-Safe? | Expected QPS | Response Time | Synchronization Strategy |
-|--------|--------------|--------------|---------------|-------------------------|
-| verify() | Yes | 100 | p95 < 200ms | Stateless (no sync needed) |
-| startPeriodicCheck() | No | 1 (called once) | N/A | Single-threaded caller assumed |
+| Method               | Thread-Safe?   | Expected QPS    | Response Time   | Synchronization Strategy       |
+| -------------------- | -------------- | --------------- | --------------- | ------------------------------ |
+| --------             | -------------- | --------------  | --------------- | -------------------------      |
+| verify()             | Yes            | 100             | p95 < 200ms     | Stateless (no sync needed)     |
+| startPeriodicCheck() | No             | 1 (called once) | N/A             | Single-threaded caller assumed |
 ```
 
 ---

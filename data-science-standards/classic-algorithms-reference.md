@@ -343,12 +343,13 @@ model.fit(X_train, y_train)
 ```
 
 **Comparison**:
-| Feature | XGBoost | LightGBM | CatBoost |
-|---------|---------|----------|----------|
-| Speed | Medium | Fast | Medium-Fast |
-| Categorical handling | Manual encoding | Manual encoding | Automatic |
-| Default performance | Good | Good | Excellent |
-| Tuning required | High | Medium | Low |
+| Feature              | XGBoost         | LightGBM        | CatBoost    |
+| -------------------- | --------------- | --------------- | ----------- |
+| ---------            | ---------       | ----------      | ----------  |
+| Speed                | Medium          | Fast            | Medium-Fast |
+| Categorical handling | Manual encoding | Manual encoding | Automatic   |
+| Default performance  | Good            | Good            | Excellent   |
+| Tuning required      | High            | Medium          | Low         |
 
 ---
 
@@ -1535,7 +1536,8 @@ class A2CAgent:
 
 ```
 Start
-  |
+|  |
+|  |
   ├─ Tabular Data?
   │    ├─ Yes → Try: Gradient Boosting (XGBoost/LightGBM) → Random Forest → MLP
   │    └─ No → Go to Data Type
@@ -1854,12 +1856,13 @@ svd_model = svd_recommendations()
 
 ### Algorithms Comparison
 
-| Algorithm | Feedback Type | Loss Function | Best For |
-|-----------|---------------|---------------|----------|
-| **SVD** | Explicit (ratings) | MSE | Rating prediction |
-| **ALS** | Implicit (clicks) | Weighted MSE | Large-scale implicit feedback |
-| **BPR** | Implicit | Pairwise ranking | Ranking optimization |
-| **NMF** | Non-negative | KL divergence | Interpretable factors |
+| Algorithm   | Feedback Type      | Loss Function    | Best For                      |
+| ----------- | ------------------ | ---------------- | ----------------------------- |
+| ----------- | ---------------    | ---------------  | ----------                    |
+| **SVD**     | Explicit (ratings) | MSE              | Rating prediction             |
+| **ALS**     | Implicit (clicks)  | Weighted MSE     | Large-scale implicit feedback |
+| **BPR**     | Implicit           | Pairwise ranking | Ranking optimization          |
+| **NMF**     | Non-negative       | KL divergence    | Interpretable factors         |
 
 ### When NOT to Use
 - Need to incorporate item/user features → Use Factorization Machines or neural models

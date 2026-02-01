@@ -136,11 +136,12 @@ If decisions must be made with incomplete information:
 - Show data flow direction
 
 **Component Responsibilities Table**:
-| Component | Responsibility | Technology |
-|-----------|---------------|------------|
-| HTTP Server | Handle REST API requests | net/http |
-| User Service | Business logic for users | Go stdlib |
-| Repository | Data persistence | database/sql + PostgreSQL |
+| Component    | Responsibility           | Technology                |
+| ------------ | ------------------------ | ------------------------- |
+| -----------  | ---------------          | ------------              |
+| HTTP Server  | Handle REST API requests | net/http                  |
+| User Service | Business logic for users | Go stdlib                 |
+| Repository   | Data persistence         | database/sql + PostgreSQL |
 
 **Technology Stack**:
 - Go Version: 1.21+ (specify minimum)
@@ -194,11 +195,12 @@ If decisions must be made with incomplete information:
 - Response Time: p50 < 50ms, p95 < 100ms, p99 < 200ms
 
 **Concurrency Strategy**:
-| Component | Goroutine-Safe? | Strategy |
-|-----------|----------------|----------|
-| UserService | Yes | Stateless (no shared state) |
-| ConfigLoader | Yes | Immutable after initialization |
-| Cache | Yes | sync.Map or concurrent map |
+| Component    | Goroutine-Safe?  | Strategy                       |
+| ------------ | ---------------- | ------------------------------ |
+| -----------  | ---------------- | ----------                     |
+| UserService  | Yes              | Stateless (no shared state)    |
+| ConfigLoader | Yes              | Immutable after initialization |
+| Cache        | Yes              | sync.Map or concurrent map     |
 
 **What NOT to include**:
 - ❌ Method-level concurrency contracts (belongs to Level 2)
@@ -519,11 +521,12 @@ graph TD
 
 **Components**:
 
-| Component | Responsibility | Technology |
-|-----------|---------------|------------|
-| Verifier | Sync verification | net/http |
-| PeriodicChecker | Background checks | time.Ticker + goroutine |
-| HTTPClient | API communication | net/http with connection pool |
+| Component       | Responsibility    | Technology                    |
+| --------------- | ----------------- | ----------------------------- |
+| -----------     | ---------------   | ------------                  |
+| Verifier        | Sync verification | net/http                      |
+| PeriodicChecker | Background checks | time.Ticker + goroutine       |
+| HTTPClient      | API communication | net/http with connection pool |
 
 **Technology Stack**:
 - Go Version: 1.21+
@@ -562,19 +565,21 @@ graph TD
 ## 6. Concurrency Requirements
 
 ### 6.1 Performance Targets
-| Metric | Target |
-|--------|--------|
-| Throughput | 100 QPS |
-| Latency (p95) | < 200ms |
-| Latency (p99) | < 500ms |
+| Metric        | Target   |
+| ------------- | -------- |
+| --------      | -------- |
+| Throughput    | 100 QPS  |
+| Latency (p95) | < 200ms  |
+| Latency (p99) | < 500ms  |
 
 ### 6.2 Concurrency Strategy
 
-| Component | Goroutine-Safe? | Strategy |
-|-----------|----------------|----------|
-| Verifier | Yes | Stateless (no shared mutable state) |
-| PeriodicChecker | Yes | Single background goroutine with context cancellation |
-| HTTPClient | Yes | Connection pooling (MaxIdleConns=100) |
+| Component       | Goroutine-Safe?  | Strategy                                              |
+| --------------- | ---------------- | ----------------------------------------------------- |
+| -----------     | ---------------- | ----------                                            |
+| Verifier        | Yes              | Stateless (no shared mutable state)                   |
+| PeriodicChecker | Yes              | Single background goroutine with context cancellation |
+| HTTPClient      | Yes              | Connection pooling (MaxIdleConns=100)                 |
 
 ## 7. Cross-Cutting Concerns
 

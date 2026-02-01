@@ -12,10 +12,12 @@
 
 ```text
 My current task is...
-  |
+|  |
+|  |
   ├─ Starting a new ML project
   │   └─ → algorithm-selection-guidelines.md (Core Principles §1-10)
-  |
+|  |
+|  |
   ├─ Choosing an algorithm
   │   ├─ Tabular data → classic-algorithms-reference.md (§1: Supervised Learning)
   │   ├─ Text/NLP → modern-algorithms-reference.md (§1: LLMs)
@@ -23,17 +25,21 @@ My current task is...
   │   ├─ Time series → classic-algorithms-reference.md (§4: Time Series)
   │   ├─ Quantitative trading → quantitative-trading-guide.md (§2-6: Strategies)
   │   └─ Recommender → recommender-systems-guide.md (§2-4)
-  |
+|  |
+|  |
   ├─ Designing features
   │   └─ → feature-engineering-patterns.md (§3-5: Patterns by data type)
-  |
+|  |
+|  |
   ├─ Running A/B test or causal analysis
   │   └─ → experimentation-design-guide.md (§2-4: A/B testing, Causal inference)
-  |
+|  |
+|  |
   ├─ Deploying to production
   │   ├─ Need monitoring → model-monitoring-guide.md (§3-5: Drift, Alerts)
   │   └─ Need optimization → model-deployment-guide.md (§2-3: Compression, Serving)
-  |
+|  |
+|  |
   └─ Debugging poor performance
       ├─ Training issue → algorithm-selection-guidelines.md (§5.5: Debugging Tree)
       ├─ Production issue → model-monitoring-guide.md (§6: Incident Response)
@@ -46,29 +52,31 @@ My current task is...
 
 ### By Problem Type
 
-| Problem | First Try | If Not Enough | SOTA (Complex) |
-| --------- | ----------- | --------------- | ---------------- |
-| **Tabular Classification** | Logistic Regression | XGBoost | TabNet, Deep Nets |
-| **Tabular Regression** | Linear/Ridge | XGBoost/LightGBM | Neural Networks |
-| **Text Classification** | TF-IDF + LR | BERT fine-tuned | GPT-4, Claude |
-| **Text Generation** | Template-based | GPT-3.5 | GPT-4, Claude 3.5 |
-| **Image Classification** | ResNet pretrained | EfficientNet | ViT, CLIP |
-| **Object Detection** | YOLO | Faster R-CNN | DETR, SAM |
-| **Time Series Forecast** | ARIMA, Prophet | XGBoost | TimeGPT, TFT |
-| **Quantitative Trading** | Moving Average | Mean Reversion, Pairs Trading | Reinforcement Learning, DL |
-| **Recommender** | Matrix Factorization | Two-tower | Multi-task DL |
-| **Clustering** | K-Means | DBSCAN | Hierarchical, GMM |
-| **Anomaly Detection** | Isolation Forest | Autoencoder | Deep SVDD |
+| Problem                    | First Try            | If Not Enough                 | SOTA (Complex)             |
+| -------------------------- | -------------------- | ----------------------------- | -------------------------- |
+| ---------                  | -----------          | ---------------               | ----------------           |
+| **Tabular Classification** | Logistic Regression  | XGBoost                       | TabNet, Deep Nets          |
+| **Tabular Regression**     | Linear/Ridge         | XGBoost/LightGBM              | Neural Networks            |
+| **Text Classification**    | TF-IDF + LR          | BERT fine-tuned               | GPT-4, Claude              |
+| **Text Generation**        | Template-based       | GPT-3.5                       | GPT-4, Claude 3.5          |
+| **Image Classification**   | ResNet pretrained    | EfficientNet                  | ViT, CLIP                  |
+| **Object Detection**       | YOLO                 | Faster R-CNN                  | DETR, SAM                  |
+| **Time Series Forecast**   | ARIMA, Prophet       | XGBoost                       | TimeGPT, TFT               |
+| **Quantitative Trading**   | Moving Average       | Mean Reversion, Pairs Trading | Reinforcement Learning, DL |
+| **Recommender**            | Matrix Factorization | Two-tower                     | Multi-task DL              |
+| **Clustering**             | K-Means              | DBSCAN                        | Hierarchical, GMM          |
+| **Anomaly Detection**      | Isolation Forest     | Autoencoder                   | Deep SVDD                  |
 
 ### By Data Size
 
-| Sample Size | Recommended Approach |
-| ------------- | ---------------------- |
-| < 1,000 | Linear models, shallow trees (max_depth ≤ 5) |
-| 1K - 10K | Tree ensembles (RF, XGBoost), simple NNs |
-| 10K - 100K | Gradient boosting, moderate NNs, fine-tuned transformers |
-| 100K - 1M | Deep learning, large transformers |
-| > 1M | Foundation models, self-supervised pretraining |
+| Sample Size   | Recommended Approach                                     |
+| ------------- | -------------------------------------------------------- |
+| ------------- | ----------------------                                   |
+| < 1,000       | Linear models, shallow trees (max_depth ≤ 5)             |
+| 1K - 10K      | Tree ensembles (RF, XGBoost), simple NNs                 |
+| 10K - 100K    | Gradient boosting, moderate NNs, fine-tuned transformers |
+| 100K - 1M     | Deep learning, large transformers                        |
+| > 1M          | Foundation models, self-supervised pretraining           |
 
 ---
 
@@ -107,7 +115,7 @@ My current task is...
 
 ## 🔧 Common Problems & Solutions
 
-### "My model overfits"
+### "My model overfitting"
 
 → **Read**: algorithm-selection-guidelines.md §4 (Bias-Variance Tradeoff)
 **Quick fix**: Increase regularization, reduce complexity, get more data
@@ -143,33 +151,36 @@ My current task is...
 
 ### Classification
 
-| Metric | When to Use | Formula |
-| -------- | ------------- | --------- |
-| **Accuracy** | Balanced classes | (TP+TN)/(P+N) |
-| **Precision** | False positives costly | TP/(TP+FP) |
-| **Recall** | False negatives costly | TP/(TP+FN) |
-| **F1-Score** | Imbalanced classes | 2×(P×R)/(P+R) |
-| **AUC-ROC** | Ranking quality | Area under ROC curve |
-| **AUC-PR** | Severe imbalance | Area under Precision-Recall |
+| Metric        | When to Use            | Formula                     |
+| ------------- | ---------------------- | --------------------------- |
+| --------      | -------------          | ---------                   |
+| **Accuracy**  | Balanced classes       | (TP+TN)/(P+N)               |
+| **Precision** | False positives costly | TP/(TP+FP)                  |
+| **Recall**    | False negatives costly | TP/(TP+FN)                  |
+| **F1-Score**  | Imbalanced classes     | 2×(P×R)/(P+R)               |
+| **AUC-ROC**   | Ranking quality        | Area under ROC curve        |
+| **AUC-PR**    | Severe imbalance       | Area under Precision-Recall |
 
 ### Regression
 
-| Metric | When to Use | Robust to Outliers? |
-| -------- | ------------- | --------------------- |
-| **MAE** | Interpret error in original units | ✅ Yes |
-| **RMSE** | Penalize large errors | ❌ No |
-| **MAPE** | Percentage error | ❌ No |
-| **R²** | Variance explained | ❌ No |
+| Metric   | When to Use                       | Robust to Outliers?   |
+| -------- | --------------------------------- | --------------------- |
+| -------- | -------------                     | --------------------- |
+| **MAE**  | Interpret error in original units | ✅ Yes                |
+| **RMSE** | Penalize large errors             | ❌ No                 |
+| **MAPE** | Percentage error                  | ❌ No                 |
+| **R²**   | Variance explained                | ❌ No                 |
 
 ### Ranking (Recommender/Search)
 
-| Metric | Meaning | Formula |
-| -------- | --------- | --------- |
-| **Precision@K** | Relevant items in top K | relevant ∩ top-K / K |
-| **Recall@K** | Coverage of relevant items | relevant ∩ top-K / \|relevant\| |
-| **NDCG@K** | Ranking quality with position discount | DCG@K / Ideal-DCG@K |
-| **MAP** | Mean Average Precision | Mean of Precision@i for relevant items |
-| **MRR** | Mean Reciprocal Rank (first relevant) | 1 / rank of first relevant item |
+| Metric          | Meaning                                | Formula                                |           |  |
+| --------------- | -------------------------------------- | -------------------------------------- | --------- |  |
+| --------        | ---------                              | ---------                              |           |  |
+| **Precision@K** | Relevant items in top K                | relevant ∩ top-K / K                   |           |  |
+| **Recall@K**    | Coverage of relevant items             | relevant ∩ top-K / \                   | relevant\ |  |
+| **NDCG@K**      | Ranking quality with position discount | DCG@K / Ideal-DCG@K                    |           |  |
+| **MAP**         | Mean Average Precision                 | Mean of Precision@i for relevant items |           |  |
+| **MRR**         | Mean Reciprocal Rank (first relevant)  | 1 / rank of first relevant item        |           |  |
 
 ---
 
@@ -177,30 +188,33 @@ My current task is...
 
 ### By Scale & Data
 
-| Scale | Data Type | Algorithm | Latency |
-| ------- | ----------- | ----------- | --------- |
-| **Small** (< 10K users) | Explicit ratings | SVD, User-based CF | Batch |
-| **Medium** (10K - 1M) | Implicit feedback | ALS, Item-item CF | Batch/Real-time |
-| **Large** (> 1M) | Implicit + features | Two-Tower + DCN | Real-time (< 100ms) |
+| Scale                   | Data Type           | Algorithm          | Latency             |
+| ----------------------- | ------------------- | ------------------ | ------------------- |
+| -------                 | -----------         | -----------        | ---------           |
+| **Small** (< 10K users) | Explicit ratings    | SVD, User-based CF | Batch               |
+| **Medium** (10K - 1M)   | Implicit feedback   | ALS, Item-item CF  | Batch/Real-time     |
+| **Large** (> 1M)        | Implicit + features | Two-Tower + DCN    | Real-time (< 100ms) |
 
 ### By Use Case
 
-| Use Case | Retrieval | Ranking | Key Challenge |
-| --------- | ----------- | --------- | --------------- |
-| **E-commerce** | Item-Item CF | XGBoost | Cold start (new products) |
-| **Video streaming** | Two-Tower | Multi-task (watch time + CTR) | Sequential behavior |
-| **News** | Content-based | Contextual bandits | Freshness, diversity |
-| **Social feeds** | Graph-based | GNN + engagement | Virality, network effects |
+| Use Case            | Retrieval     | Ranking                       | Key Challenge             |
+| ------------------- | ------------- | ----------------------------- | ------------------------- |
+| ---------           | -----------   | ---------                     | ---------------           |
+| **E-commerce**      | Item-Item CF  | XGBoost                       | Cold start (new products) |
+| **Video streaming** | Two-Tower     | Multi-task (watch time + CTR) | Sequential behavior       |
+| **News**            | Content-based | Contextual bandits            | Freshness, diversity      |
+| **Social feeds**    | Graph-based   | GNN + engagement              | Virality, network effects |
 
 ### Common Problems & Solutions
 
-| Problem | Solution | Example |
-| --------- | ---------- | --------- |
+| Problem                    | Solution                                    | Example                     |
+| -------------------------- | ------------------------------------------- | --------------------------- |
+| ---------                  | ----------                                  | ---------                   |
 | **Cold start (new users)** | Popularity + demographics + onboarding quiz | TikTok diverse initial feed |
-| **Cold start (new items)** | Content-based + early exploration | Netflix uses metadata |
-| **Popularity bias** | Debiasing (inverse propensity weighting) | YouTube boosts long-tail |
-| **Filter bubble** | Diversity constraints (MMR), serendipity | Spotify's Discovery Weekly |
-| **Scalability** | Two-stage (retrieval + ranking) + FAISS | YouTube, Pinterest |
+| **Cold start (new items)** | Content-based + early exploration           | Netflix uses metadata       |
+| **Popularity bias**        | Debiasing (inverse propensity weighting)    | YouTube boosts long-tail    |
+| **Filter bubble**          | Diversity constraints (MMR), serendipity    | Spotify's Discovery Weekly  |
+| **Scalability**            | Two-stage (retrieval + ranking) + FAISS     | YouTube, Pinterest          |
 
 ### Evaluation Checklist
 
@@ -224,23 +238,25 @@ My current task is...
 
 ### Strategy Selection (30-Second Guide)
 
-| Strategy Type | Horizon | Algorithm | When to Use |
-| --------------- | --------- | ----------- | ------------- |
-| **Trend Following** | Days-Weeks | Moving Averages | Strong trending market |
-| **Mean Reversion** | Hours-Days | Bollinger Bands, RSI | Range-bound market |
-| **Statistical Arbitrage** | Minutes-Hours | Pairs Trading | High correlation pairs |
-| **ML-Based** | Any | XGBoost, LSTM | Pattern-rich data |
-| **Reinforcement Learning** | Any | PPO, DQN | Portfolio optimization |
+| Strategy Type              | Horizon       | Algorithm            | When to Use            |
+| -------------------------- | ------------- | -------------------- | ---------------------- |
+| ---------------            | ---------     | -----------          | -------------          |
+| **Trend Following**        | Days-Weeks    | Moving Averages      | Strong trending market |
+| **Mean Reversion**         | Hours-Days    | Bollinger Bands, RSI | Range-bound market     |
+| **Statistical Arbitrage**  | Minutes-Hours | Pairs Trading        | High correlation pairs |
+| **ML-Based**               | Any           | XGBoost, LSTM        | Pattern-rich data      |
+| **Reinforcement Learning** | Any           | PPO, DQN             | Portfolio optimization |
 
 ### Key Performance Metrics
 
-| Metric | Formula | Target |
-| --------- | --------- | -------- |
-| **Sharpe Ratio** | (R - Rf) / σ | > 1 (good), > 2 (excellent) |
-| **Max Drawdown** | Max(Peak - Trough) / Peak | < 20% |
-| **Win Rate** | Wins / Total Trades | > 50% |
-| **Profit Factor** | Gross Profit / Gross Loss | > 1.5 |
-| **Sortino Ratio** | (R - Rf) / Downside σ | > 1.5 |
+| Metric            | Formula                   | Target                      |
+| ----------------- | ------------------------- | --------------------------- |
+| ---------         | ---------                 | --------                    |
+| **Sharpe Ratio**  | (R - Rf) / σ              | > 1 (good), > 2 (excellent) |
+| **Max Drawdown**  | Max(Peak - Trough) / Peak | < 20%                       |
+| **Win Rate**      | Wins / Total Trades       | > 50%                       |
+| **Profit Factor** | Gross Profit / Gross Loss | > 1.5                       |
+| **Sortino Ratio** | (R - Rf) / Downside σ     | > 1.5                       |
 
 ### Essential Code Snippets
 
@@ -271,13 +287,14 @@ df['cumulative'] = (1 + df['strategy_returns']).cumprod()
 
 ### Critical Pitfalls to Avoid
 
-| Pitfall | Quick Fix |
-| --------- | ---------- |
-| **Look-ahead bias** | Always `.shift(1)` signals |
-| **Overfitting** | Walk-forward validation |
-| **Survivorship bias** | Include delisted stocks |
-| **No transaction costs** | Model 0.1-0.5% per trade |
-| **Data snooping** | Reserve holdout period |
+| Pitfall                  | Quick Fix                  |
+| ------------------------ | -------------------------- |
+| ---------                | ----------                 |
+| **Look-ahead bias**      | Always `.shift(1)` signals |
+| **Overfitting**          | Walk-forward validation    |
+| **Survivorship bias**    | Include delisted stocks    |
+| **No transaction costs** | Model 0.1-0.5% per trade   |
+| **Data snooping**        | Reserve holdout period     |
 
 ### Risk Management Checklist
 
@@ -293,14 +310,15 @@ df['cumulative'] = (1 + df['strategy_returns']).cumprod()
 
 ## 🎓 When to Use Which Validation Strategy
 
-| Data Type | Recommended Strategy | Why |
-| --------- | ---------------------- | ----- |
-| **IID tabular** | K-Fold CV (k=5) | Assumes data is independent |
-| **Imbalanced classes** | Stratified K-Fold | Maintains class distribution |
-| **Time series** | Time Series Split | Respects temporal order |
-| **Grouped data** (e.g., users) | Group K-Fold | Prevents leakage across groups |
-| **Small dataset** (< 1K) | Leave-One-Out CV | Maximizes training data |
-| **Large dataset** (> 100K) | Single holdout (80/20) | K-fold too expensive |
+| Data Type                      | Recommended Strategy   | Why                            |
+| ------------------------------ | ---------------------- | ------------------------------ |
+| ---------                      | ---------------------- | -----                          |
+| **IID tabular**                | K-Fold CV (k=5)        | Assumes data is independent    |
+| **Imbalanced classes**         | Stratified K-Fold      | Maintains class distribution   |
+| **Time series**                | Time Series Split      | Respects temporal order        |
+| **Grouped data** (e.g., users) | Group K-Fold           | Prevents leakage across groups |
+| **Small dataset** (< 1K)       | Leave-One-Out CV       | Maximizes training data        |
+| **Large dataset** (> 100K)     | Single holdout (80/20) | K-fold too expensive           |
 
 ---
 
@@ -331,34 +349,37 @@ df['cumulative'] = (1 + df['strategy_returns']).cumprod()
 
 ### Core Files (Read First)
 
-| File | Size | When to Read | Key Sections |
-| ------ | ------ | -------------- | -------------- |
-| **algorithm-selection-guidelines.md** | 54KB | Every project start | §1-10 (Core Principles), §4 (Frameworks) |
-| **classic-algorithms-reference.md** | 42KB | Choosing traditional ML | §1 (Supervised), Flowchart (§6) |
-| **modern-algorithms-reference.md** | 46KB | Need SOTA/foundation models | §1 (LLMs), §2 (Vision) |
+| File                                  | Size   | When to Read                | Key Sections                             |
+| ------------------------------------- | ------ | --------------------------- | ---------------------------------------- |
+| ------                                | ------ | --------------              | --------------                           |
+| **algorithm-selection-guidelines.md** | 54KB   | Every project start         | §1-10 (Core Principles), §4 (Frameworks) |
+| **classic-algorithms-reference.md**   | 42KB   | Choosing traditional ML     | §1 (Supervised), Flowchart (§6)          |
+| **modern-algorithms-reference.md**    | 46KB   | Need SOTA/foundation models | §1 (LLMs), §2 (Vision)                   |
 
 ### Specialized Guides (Read When Needed)
 
-| File | Size | When to Read |
-| ------ | ------ | -------------- |
-| **experimentation-design-guide.md** | 35KB | Designing A/B test, causal inference |
-| **feature-engineering-patterns.md** | 28KB | Building features, feature store |
-| **model-monitoring-guide.md** | 32KB | Deploying to production, monitoring |
-| **recommender-systems-guide.md** | 25KB | Building recommender systems |
-| **model-deployment-guide.md** | 30KB | Optimization, compression, serving |
-| **data-quality-validation-guide.md** | 22KB | Data validation, pipeline quality |
+| File                                 | Size   | When to Read                         |
+| ------------------------------------ | ------ | ------------------------------------ |
+| ------                               | ------ | --------------                       |
+| **experimentation-design-guide.md**  | 35KB   | Designing A/B test, causal inference |
+| **feature-engineering-patterns.md**  | 28KB   | Building features, feature store     |
+| **model-monitoring-guide.md**        | 32KB   | Deploying to production, monitoring  |
+| **recommender-systems-guide.md**     | 25KB   | Building recommender systems         |
+| **model-deployment-guide.md**        | 30KB   | Optimization, compression, serving   |
+| **data-quality-validation-guide.md** | 22KB   | Data validation, pipeline quality    |
 
 ---
 
 ## 🔗 Cross-References (Related Topics)
 
-| If You're Reading... | Also Check... |
-| --------------------- | --------------- |
-| Algorithm selection | → Feature engineering (better features often beat better models) |
-| A/B testing | → Model monitoring (test setup similar to monitoring) |
-| Feature engineering | → Data quality validation (features need clean data) |
-| Model deployment | → Model monitoring (deployed models need monitoring) |
-| Recommender systems | → Feature engineering (embeddings, interactions) |
+| If You're Reading...  | Also Check...                                                    |
+| --------------------- | ---------------------------------------------------------------- |
+| --------------------- | ---------------                                                  |
+| Algorithm selection   | → Feature engineering (better features often beat better models) |
+| A/B testing           | → Model monitoring (test setup similar to monitoring)            |
+| Feature engineering   | → Data quality validation (features need clean data)             |
+| Model deployment      | → Model monitoring (deployed models need monitoring)             |
+| Recommender systems   | → Feature engineering (embeddings, interactions)                 |
 
 ---
 
@@ -407,14 +428,15 @@ if gap > 0.1:
 
 ## 📞 When to Escalate (Agent Boundaries)
 
-| Situation | Action |
-| --------- | ------ |
-| **Unclear business requirements** | Escalate to stakeholders |
-| **Insufficient data** | Escalate to data engineering team |
-| **No feasible algorithm found** | Escalate to @data-scientist-tech-lead |
-| **Ethical concerns** (bias, fairness) | Escalate to @data-scientist-tech-lead + ethics committee |
-| **Infrastructure limitations** | Escalate to ML platform team |
-| **Iteration limit exceeded** (>3 cycles) | Escalate to @data-scientist-tech-lead |
+| Situation                                | Action                                                   |
+| ---------------------------------------- | -------------------------------------------------------- |
+| ---------                                | ------                                                   |
+| **Unclear business requirements**        | Escalate to stakeholders                                 |
+| **Insufficient data**                    | Escalate to data engineering team                        |
+| **No feasible algorithm found**          | Escalate to @data-scientist-tech-lead                    |
+| **Ethical concerns** (bias, fairness)    | Escalate to @data-scientist-tech-lead + ethics committee |
+| **Infrastructure limitations**           | Escalate to ML platform team                             |
+| **Iteration limit exceeded** (>3 cycles) | Escalate to @data-scientist-tech-lead                    |
 
 ---
 

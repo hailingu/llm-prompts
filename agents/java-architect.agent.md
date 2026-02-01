@@ -71,14 +71,15 @@ Before starting architecture design, you must understand the following core ques
 
 **Level 1 vs Level 2 Responsibility Boundaries**:
 
-| Level | Responsibility | Example | Responsible Agent |
-|-------|--------------|---------|----------------|
-| Level 1 | Architectural direction | "Require a Subscription Verification Service" | java-architect |
-| Level 2 | API Interface | `Subscription verify(String apiKey)` | java-api-designer |
-| Level 1 | Technology choice | "Use Redis as cache" | java-architect |
-| Level 2 | Interface Contract | "When apiKey is null → Throw IllegalArgumentException" | java-api-designer |
-| Level 1 | Performance target | "Support 100 QPS" | java-architect |
-| Level 2 | Thread-safety requirement | "SubscriptionVerifier must be thread-safe" | java-api-designer |
+| Level   | Responsibility            | Example                                                | Responsible Agent |
+| ------- | ------------------------- | ------------------------------------------------------ | ----------------- |
+| ------- | --------------            | ---------                                              | ----------------  |
+| Level 1 | Architectural direction   | "Require a Subscription Verification Service"          | java-architect    |
+| Level 2 | API Interface             | `Subscription verify(String apiKey)`                   | java-api-designer |
+| Level 1 | Technology choice         | "Use Redis as cache"                                   | java-architect    |
+| Level 2 | Interface Contract        | "When apiKey is null → Throw IllegalArgumentException" | java-api-designer |
+| Level 1 | Performance target        | "Support 100 QPS"                                      | java-architect    |
+| Level 2 | Thread-safety requirement | "SubscriptionVerifier must be thread-safe"             | java-api-designer |
 
 **Decision Process**:
 1. Analyze system boundaries and module decomposition
@@ -408,10 +409,11 @@ If decisions must be made with incomplete information:
    - Example:
    ```markdown
    ### Key Entities
-   | Entity | Purpose | Key Fields (summary) |
-   |--------|---------|------------------|
-   | Subscription | Subscription info | apiKey, status, expiryDate |
-   | Config | Configuration info | serverUrl, timeout |
+| Entity       | Purpose            | Key Fields (summary)       |
+| ------------ | ------------------ | -------------------------- |
+| --------     | ---------          | ------------------         |
+| Subscription | Subscription info  | apiKey, status, expiryDate |
+| Config       | Configuration info | serverUrl, timeout         |
    ```
    - **Note**: only define key entities and main fields; detailed field definitions (types, constraints, comments) are provided by @java-api-designer
 
@@ -460,13 +462,14 @@ If decisions must be made with incomplete information:
    
    **Component: SubscriptionVerifier**
    
-   | Aspect | Decision | Rationale |
-   |--------|----------|----------|
-   | **Design Pattern** | Stateless | Supports horizontal scaling, no instance-level shared state |
-   | **Thread-Safety** | Method-level stateless, no synchronization needed | No shared mutable state |
-   | **Instance Lifecycle** | Singleton per application | Reuse connection pool, reduce resource overhead |
-   | **Caching Strategy** | External Redis cache (thread-safe by Redis) | Avoid synchronization overhead of instance-level caches |
-   | **Connection Pooling** | HikariCP (min=5, max=20) | Balances performance and resource usage |
+| Aspect                 | Decision                                          | Rationale                                                   |
+| ---------------------- | ------------------------------------------------- | ----------------------------------------------------------- |
+| --------               | ----------                                        | ----------                                                  |
+| **Design Pattern**     | Stateless                                         | Supports horizontal scaling, no instance-level shared state |
+| **Thread-Safety**      | Method-level stateless, no synchronization needed | No shared mutable state                                     |
+| **Instance Lifecycle** | Singleton per application                         | Reuse connection pool, reduce resource overhead             |
+| **Caching Strategy**   | External Redis cache (thread-safe by Redis)       | Avoid synchronization overhead of instance-level caches     |
+| **Connection Pooling** | HikariCP (min=5, max=20)                          | Balances performance and resource usage                     |
    
    **Concurrency Scenarios**:
    - **Scenario 1**: 100 concurrent HTTP threads call `verify()` simultaneously
@@ -489,13 +492,14 @@ If decisions must be made with incomplete information:
    ```markdown
    **Component: [ComponentName]**
    
-   | Aspect | Decision | Rationale |
-   |--------|----------|----------|
-   | Design Pattern | [Stateless/Stateful/Immutable] | [Why] |
-   | Thread-Safety | [None/Synchronized/ConcurrentHashMap/Lock/Atomic] | [Why] |
-   | Instance Lifecycle | [Singleton/Prototype/Request-scoped] | [Why] |
-   | Caching Strategy | [No cache/Instance cache/External cache] | [Why] |
-   | Connection Pooling | [If applicable: min/max size] | [Why] |
+| Aspect             | Decision                                          | Rationale  |
+| ------------------ | ------------------------------------------------- | ---------- |
+| --------           | ----------                                        | ---------- |
+| Design Pattern     | [Stateless/Stateful/Immutable]                    | [Why]      |
+| Thread-Safety      | [None/Synchronized/ConcurrentHashMap/Lock/Atomic] | [Why]      |
+| Instance Lifecycle | [Singleton/Prototype/Request-scoped]              | [Why]      |
+| Caching Strategy   | [No cache/Instance cache/External cache]          | [Why]      |
+| Connection Pooling | [If applicable: min/max size]                     | [Why]      |
    ```
    
    **6.3 Scalability Requirements**
@@ -1199,18 +1203,20 @@ public interface ConfigProvider {
 
 ## 5. Data Model
 
-| Entity | Fields | Description |
-|--------|--------|-------------|
+| Entity       | Fields                                           | Description              |
+| ------------ | ------------------------------------------------ | ------------------------ |
+| --------     | --------                                         | -------------            |
 | Subscription | apiKey: String, status: Status, expiryDate: Date | Subscription information |
 
 ## 6. Concurrency Requirements
 
 ### 6.1 Performance Targets
 
-| Metric | Target | Context |
-|--------|--------|----------|
-| Throughput | 100 QPS | concurrent calls to verify() |
-| Latency (p95) | < 200ms | response time for verify() |
+| Metric        | Target   | Context                      |
+| ------------- | -------- | ---------------------------- |
+| --------      | -------- | ----------                   |
+| Throughput    | 100 QPS  | concurrent calls to verify() |
+| Latency (p95) | < 200ms  | response time for verify()   |
 
 ### 6.2 Concurrency Characteristics
 

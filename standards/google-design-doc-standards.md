@@ -1,6 +1,9 @@
 # Java Module Design & API Specification Standards
 
-**Purpose**: Define standards for Java module design documents, covering two levels: Architecture Design and API Specification. These standards ensure architects, API designers, developers, and technical writers can collaborate under a single, consistent format.
+**Purpose**: Define standards for Java module design documents, covering two levels: Architecture Design and API Specification.
+
+These standards ensure architects, API designers, developers, and technical writers
+can collaborate under a single, consistent format.
 
 **Scope**: Applies to design and API specifications for all Java modules.
 
@@ -188,13 +191,15 @@ java-architect (Level 1 + Level 2)
 
 ## Comparison with Google Practice
 
-| Aspect | Google Practice | Our Standard (Option A) | Our Standard (Option B) |
-| -------- | ---------------- | ------------------------ | ------------------------ |
-| **High-level Design** | Tech Lead writes Design Doc | java-architect writes Level 1 | java-architect writes Level 1 |
-| **API Definition** | Engineer writes .proto | java-api-designer writes Level 2 | java-architect writes Level 2 |
-| **Implementation** | Engineer implements | java-coder-specialist implements | java-coder-specialist implements |
-| **Documentation** | Tech Writer generates docs | java-doc-writer generates docs | java-doc-writer generates docs |
-| **Total Roles** | 3 roles, 2 documents | 4 roles, 1 document | 3 roles, 1 document |
+| Aspect                | Google Practice              | Our Standard (Option A)          | Our Standard (Option B)          |
+| --------------------- | ---------------------------- | -------------------------------- | -------------------------------- |
+| --------------------- | ---------------------------- | -------------------------------- | -------------------------------- |
+| --------------------- | ---------------------------- | -------------------------------  | -------------------------------  |
+| **High-level Design** | Tech Lead writes Design Doc  | java-architect writes Level 1    | java-architect writes Level 1    |
+| **API Definition**    | Engineer writes .proto       | java-api-designer writes Level 2 | java-architect writes Level 2    |
+| **Implementation**    | Engineer implements          | java-coder-specialist implements | java-coder-specialist implements |
+| **Documentation**     | Tech Writer generates docs   | java-doc-writer generates docs   | java-doc-writer generates docs   |
+| **Total Roles**       | 3 roles, 2 documents         | 4 roles, 1 document              | 3 roles, 1 document              |
 
 **Key Differences**:
 
@@ -383,7 +388,8 @@ public interface SubscriptionVerifier {
 **CRITICAL Requirements (Based on Google Protocol Buffers + AIP Guidelines)**:
 
 - ✅ **Contract MUST be precise** - must include a complete mapping of status codes and exceptions (table format)
-- ✅ **Caller Guidance MUST include executable code** - must include 50–100 lines of executable code (including logging, metrics, retry logic)
+- ✅ **Caller Guidance MUST include executable code** - must include 50–100 lines of executable code
+  (including logging, metrics, retry logic)
 - ✅ **All edge cases MUST be covered** - must include null/empty/invalid inputs
 - ❌ **NO ambiguous language** - avoid vague terms such as "may", "should", or "typically"
 
@@ -395,12 +401,15 @@ public interface SubscriptionVerifier {
 1. **Decision**: [concise decision statement]
 
 1. **Contract** (MUST be table format for HTTP APIs):
-   | Scenario | HTTP Status | Response Body | Return Value | Exception | Retry? |
-   | ---------- | ------------- | --------------- | -------------- | ----------- | -------- |
-   | Normal flow | 200 | {"status":"active"} | Subscription object | - | No |
-   | Subscription not found | 404 | {"error":"not_found"} | null | - | No |
-   | Network timeout | - | - | - | IOException (SocketTimeoutException) | Yes |
-   | Parameter error | - | - | - | IllegalArgumentException | No |
+
+| Scenario                 | HTTP Status | Response Body               | Return Value         | Exception                                    | Retry? |
+| ------------------------ | ----------- | --------------------------- | -------------------- | -------------------------------------------- | ------ |
+| ------------------------ | ----------- | --------------------------- | -------------------- | -------------------------------------------- | ------ |
+| ------------------------ | ----------- | --------------------------- | -------------------- | -------------------------------------------- | ------ |
+| Normal flow              | 200         | {"status":"active"}         | Subscription object  | -                                            | No     |
+| Subscription not found   | 404         | {"error":"not_found"}       | null                 | -                                            | No     |
+| Network timeout          | -           | -                           | -                    | IOException (SocketTimeoutException)         | Yes    |
+| Parameter error          | -           | -                           | -                    | IllegalArgumentException                     | No     |
 
 1. **Caller Guidance** (MUST include complete executable code):
    ```java
@@ -642,13 +651,15 @@ public interface HttpSender {
 ```markdown
 ## 5. Data Model
 
-| Entity | Fields | Type | Constraints | Description |
-| -------- | -------- | ------ | ------------- | ------------- |
-| Subscription | apiKey | String | Non-null, 32 chars | Subscription API key |
-| | status | Enum | ACTIVE/EXPIRED/CANCELLED | Subscription status |
-| | expiryDate | Date | Nullable | Expiration date |
-| Config | serverUrl | String | Non-null, valid URL | Service endpoint |
-| | timeout | int | > 0, milliseconds | Timeout |
+| Entity       | Fields     | Type    | Constraints                   | Description             |
+| ------------ | ---------- | ------- | ----------------------------- | ----------------------- |
+| ------------ | ---------- | ------- | ----------------------------- | ----------------------- |
+| ------------ | ---------  | ------- | ----------------------------- | ----------------------- |
+| Subscription | apiKey     | String  | Non-null, 32 chars            | Subscription API key    |
+|              | status     | Enum    | ACTIVE/EXPIRED/CANCELLED      | Subscription status     |
+|              | expiryDate | Date    | Nullable                      | Expiration date         |
+| Config       | serverUrl  | String  | Non-null, valid URL           | Service endpoint        |
+|              | timeout    | int     | > 0, milliseconds             | Timeout                 |
 ```
 
 ---
@@ -673,10 +684,12 @@ public interface HttpSender {
 
 ### 6.1 Performance Targets
 
-| Method | Concurrent? | Expected QPS | Response Time (p95) | Response Time (p99) |
-| -------- | ------------- | -------------- | --------------------- | --------------------- |
-| verify() | Yes | 100 | < 200ms | < 500ms |
-| startPeriodicVerification() | No | N/A | < 10ms | < 50ms |
+| Method                      | Concurrent? | Expected QPS | Response Time (p95)  | Response Time (p99)  |
+| --------------------------- | ----------- | ------------ | -------------------- | -------------------- |
+| --------------------------- | ----------- | ------------ | -------------------- | -------------------- |
+| --------------------------- | ----------- | ------------ | -------------------- | -------------------- |
+| verify()                    | Yes         | 100          | < 200ms              | < 500ms              |
+| startPeriodicVerification() | No          | N/A          | < 10ms               | < 50ms               |
 
 ### 6.2 Thread Safety Requirements
 
@@ -862,7 +875,8 @@ Before submitting a design document, verify the following conditions:
 
 ### Required content checks
 
-- [ ] Includes all 8 required sections (Context, Goals, Design Overview, API Design, Data Model, Concurrency, Cross-Cutting Concerns, Alternatives)
+- [ ] Includes all 8 required sections (Context, Goals, Design Overview,  
+  API Design, Data Model, Concurrency, Cross-Cutting Concerns, Alternatives)
 - [ ] API Design contains Interface Definition, Design Rationale, Dependency Interfaces
 - [ ] Design Rationale includes Decision, Contract, Caller Guidance, Rationale, Alternatives Considered
 - [ ] Component Diagram clearly shows module dependencies
@@ -1055,7 +1069,8 @@ When conflicts arise between levels, the priority order is:
 - Design Rationale (Section 10.2)
 - Interface-Level Concurrency Contract (Section 12)
 
-**Principle**: Level 2 must comply with Level 1 constraints. If a conflict is found, amend Level 2 or escalate to Level 1 for reassessment.
+**Principle**: Level 2 must comply with Level 1 constraints. If a conflict is found,
+amend Level 2 or escalate to Level 1 for reassessment.
 
 ---
 
@@ -1128,7 +1143,8 @@ If conflicts cannot be resolved at the current level:
 1. **Third**: Escalate to senior architect or tech lead
 1. **Final**: Team vote or product decision
 
-**Record decisions**: All conflicts and resolutions must be recorded in the design document's Alternatives Considered or Design Rationale section.
+**Record decisions**: All conflicts and resolutions must be recorded in the design document's
+Alternatives Considered or Design Rationale section.
 
 **Example**:
 
@@ -1166,6 +1182,8 @@ If conflicts cannot be resolved at the current level:
 ## Change Log
 
 | Version | Date       | Changes                                                          | Author            |
+| ------- | ---------- | ---------------------------------------------------------------- | ----------------- |
+| ------- | ---------- | ---------------------------------------------------------------- | ----------------- |
 | ------- | ---------- | ---------------------------------------------------------------- | ----------------- |
 | 1.0     | 2026-01-24 | Initial release: defined Google Design Doc standard structure    | Architecture Team |
 | 1.1     | 2026-01-24 | Added Conflict Resolution section                                | Architecture Team |
