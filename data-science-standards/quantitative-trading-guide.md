@@ -64,13 +64,14 @@ graph LR
 
 ### 2.1 By Time Horizon
 
-| Category | Holding Period | Update Frequency | Typical Algorithm | Infrastructure |
-|----------|----------------|------------------|-------------------|----------------|
-| **High-Frequency Trading (HFT)** | Microseconds - Seconds | Sub-second | Latency arbitrage, market making | Co-location, FPGA |
-| **Intraday Trading** | Minutes - Hours | Tick/minute data | Mean reversion, momentum | Low-latency feeds |
-| **Swing Trading** | Days - Weeks | Daily bars | Trend following, breakout | Standard APIs |
-| **Position Trading** | Weeks - Months | Daily/weekly | Factor models, ML | Batch processing |
-| **Long-term Investing** | Months - Years | Monthly | Fundamental factors | Portfolio rebalancing |
+| Category                         | Holding Period         | Update Frequency   | Typical Algorithm                | Infrastructure        |
+| -------------------------------- | ---------------------- | ------------------ | -------------------------------- | --------------------- |
+| ----------                       | ----------------       | ------------------ | -------------------              | ----------------      |
+| **High-Frequency Trading (HFT)** | Microseconds - Seconds | Sub-second         | Latency arbitrage, market making | Co-location, FPGA     |
+| **Intraday Trading**             | Minutes - Hours        | Tick/minute data   | Mean reversion, momentum         | Low-latency feeds     |
+| **Swing Trading**                | Days - Weeks           | Daily bars         | Trend following, breakout        | Standard APIs         |
+| **Position Trading**             | Weeks - Months         | Daily/weekly       | Factor models, ML                | Batch processing      |
+| **Long-term Investing**          | Months - Years         | Monthly            | Fundamental factors              | Portfolio rebalancing |
 
 ### 2.2 By Strategy Type
 
@@ -1659,13 +1660,14 @@ def optimize_portfolio_with_risk_constraint(returns, max_volatility=0.15):
 
 ### 10.1 Risk-Adjusted Returns
 
-| Metric | Formula | Interpretation | Target |
-|--------|---------|----------------|--------|
-| **Sharpe Ratio** | $(R_p - R_f) / \sigma_p$ | Return per unit of risk | > 1 (good), > 2 (excellent) |
-| **Sortino Ratio** | $(R_p - R_f) / \sigma_{downside}$ | Return per unit of downside risk | > 1.5 |
-| **Calmar Ratio** | $R_p / MaxDD$ | Return per unit of max drawdown | > 0.5 |
-| **Information Ratio** | $(R_p - R_b) / TE$ | Excess return per unit of tracking error | > 0.5 |
-| **Omega Ratio** | $\frac{\int_\tau^\infty (1-F(r))dr}{\int_{-\infty}^\tau F(r)dr}$ | Probability-weighted gains vs losses | > 1.5 |
+| Metric                | Formula                                                          | Interpretation                           | Target                      |
+| --------------------- | ---------------------------------------------------------------- | ---------------------------------------- | --------------------------- |
+| --------              | ---------                                                        | ----------------                         | --------                    |
+| **Sharpe Ratio**      | $(R_p - R_f) / \sigma_p$                                         | Return per unit of risk                  | > 1 (good), > 2 (excellent) |
+| **Sortino Ratio**     | $(R_p - R_f) / \sigma_{downside}$                                | Return per unit of downside risk         | > 1.5                       |
+| **Calmar Ratio**      | $R_p / MaxDD$                                                    | Return per unit of max drawdown          | > 0.5                       |
+| **Information Ratio** | $(R_p - R_b) / TE$                                               | Excess return per unit of tracking error | > 0.5                       |
+| **Omega Ratio**       | $\frac{\int_\tau^\infty (1-F(r))dr}{\int_{-\infty}^\tau F(r)dr}$ | Probability-weighted gains vs losses     | > 1.5                       |
 
 ### 10.2 Implementation
 

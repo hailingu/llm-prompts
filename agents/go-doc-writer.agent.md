@@ -75,12 +75,13 @@ As the Technical Writer, your primary responsibility is to generate clear, user-
 
 **Design Doc (Section 10.2 - Contract Precision Table)**:
 ```markdown
-| Scenario | Input | Return Value | Error | HTTP Status | Retry? |
-|----------|-------|--------------|-------|-------------|--------|
-| Success | Valid UUID | *User | nil | 200 | No |
-| Not Found | Valid UUID | nil | ErrUserNotFound | 404 | No |
-| Invalid ID | Empty string | nil | ErrInvalidInput | 400 | No |
-| DB Timeout | Valid UUID | nil | wrapped context.DeadlineExceeded | 503 | Yes (3x) |
+| Scenario   | Input        | Return Value   | Error                            | HTTP Status   | Retry?   |
+| ---------- | ------------ | -------------- | -------------------------------- | ------------- | -------- |
+| ---------- | -------      | -------------- | -------                          | ------------- | -------- |
+| Success    | Valid UUID   | *User          | nil                              | 200           | No       |
+| Not Found  | Valid UUID   | nil            | ErrUserNotFound                  | 404           | No       |
+| Invalid ID | Empty string | nil            | ErrInvalidInput                  | 400           | No       |
+| DB Timeout | Valid UUID   | nil            | wrapped context.DeadlineExceeded | 503           | Yes (3x) |
 ```
 
 **User Guide (API Reference)**:

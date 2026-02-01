@@ -37,12 +37,13 @@
 
 ### Online vs Offline Feature Store
 
-| Aspect | Offline (Training) | Online (Serving) |
-|--------|-------------------|------------------|
-| **Latency** | Minutes to hours | < 10ms |
-| **Storage** | Data warehouse (Snowflake, BigQuery) | Key-value store (Redis, DynamoDB) |
-| **Data** | Historical batch data | Latest feature values |
-| **Use case** | Model training | Real-time prediction |
+| Aspect       | Offline (Training)                   | Online (Serving)                  |
+| ------------ | ------------------------------------ | --------------------------------- |
+| --------     | -------------------                  | ------------------                |
+| **Latency**  | Minutes to hours                     | < 10ms                            |
+| **Storage**  | Data warehouse (Snowflake, BigQuery) | Key-value store (Redis, DynamoDB) |
+| **Data**     | Historical batch data                | Latest feature values             |
+| **Use case** | Model training                       | Real-time prediction              |
 
 ---
 

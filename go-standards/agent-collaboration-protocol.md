@@ -46,12 +46,13 @@ flowchart TD
 
 Any feedback loop between two Agents is limited to **3 iterations**.
 
-| Scenario | Allowed Iterations | After Limit |
-| -------------------------- | ----------------- | ---------------- |
-| architect ↔ api-designer | 3 | Escalate to tech-lead |
-| api-designer ↔ coder | 3 | Escalate to tech-lead |
-| coder ↔ code-reviewer | 3 | Escalate to tech-lead |
-| doc-writer ↔ api-designer | 3 | Escalate to tech-lead |
+| Scenario                   | Allowed Iterations | After Limit           |
+| -------------------------- | ------------------ | --------------------- |
+| -------------------------- | -----------------  | ----------------      |
+| architect ↔ api-designer   | 3                  | Escalate to tech-lead |
+| api-designer ↔ coder       | 3                  | Escalate to tech-lead |
+| coder ↔ code-reviewer      | 3                  | Escalate to tech-lead |
+| doc-writer ↔ api-designer  | 3                  | Escalate to tech-lead |
 
 ### Rule 2: Iteration Counting
 
@@ -112,12 +113,13 @@ escalate to @go-tech-lead
 [Detailed description of the problem]
 
 ## Iteration History Summary
-| Iteration | From | To | Summary |
-|-----------|------|-----|---------|
-| 1 | @agent1 | @agent2 | [Initial request] |
-| 2 | @agent2 | @agent1 | [Feedback: issue X] |
-| 3 | @agent1 | @agent2 | [Resubmission after changes] |
-| 4 | @agent2 | @agent1 | [Still issue Y] ← exceeded limit |
+| Iteration   | From    | To      | Summary                          |
+| ----------- | ------- | ------- | -------------------------------- |
+| ----------- | ------  | -----   | ---------                        |
+| 1           | @agent1 | @agent2 | [Initial request]                |
+| 2           | @agent2 | @agent1 | [Feedback: issue X]              |
+| 3           | @agent1 | @agent2 | [Resubmission after changes]     |
+| 4           | @agent2 | @agent1 | [Still issue Y] ← exceeded limit |
 
 ## Positions
 **@agent1 position**: [description]
@@ -158,10 +160,11 @@ Please @[upstream-agent] supply the missing items; I will update the output acco
 
 Because upstream did not specify the following, I produce output based on reasonable assumptions:
 
-| Item | Assumed Value | Impact if Wrong |
-|------|---------------|-----------------|
-| Error handling strategy | return nil with error | may require return handling changes |
-| Concurrency requirement | 1000 QPS | may require goroutine-safety changes |
+| Item                    | Assumed Value         | Impact if Wrong                      |
+| ----------------------- | --------------------- | ------------------------------------ |
+| ------                  | ---------------       | -----------------                    |
+| Error handling strategy | return nil with error | may require return handling changes  |
+| Concurrency requirement | 1000 QPS              | may require goroutine-safety changes |
 
 ⚠️ **Risk**: If an assumption is incorrect, rework will be required
 
@@ -394,9 +397,10 @@ All design and implementation decisions MUST follow [Effective Go](https://go.de
 
 ## Version History
 
-| Version | Date | Changes |
-| -------- | ------ | --------- |
-| 1.0 | 2026-01-26 | Initial release for Go development workflow |
+| Version  | Date       | Changes                                     |
+| -------- | ---------- | ------------------------------------------- |
+| -------- | ------     | ---------                                   |
+| 1.0      | 2026-01-26 | Initial release for Go development workflow |
 
 ---
 

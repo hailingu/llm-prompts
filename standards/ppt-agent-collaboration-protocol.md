@@ -55,11 +55,12 @@ graph TB
 - ✅ **Creative coordination**: tech-lead → creative-director (aligned to creative director role, not tech lead)
 
 **Industry Alignment**:
-| Agent | Real-World Role | Representative Companies/People |
-|-------|----------------|--------------------------------|
-| content-planner | Content Strategist | McKinsey Consultants, Barbara Minto |
-| visual-designer | Visual Designer + Chart Expert | Apple Keynote, Edward Tufte, Cole Nussbaumer Knaflic |
-| creative-director | Creative Director | IDEO, Pentagram, Duarte Design |
+| Agent             | Real-World Role                | Representative Companies/People                      |
+| ----------------- | ------------------------------ | ---------------------------------------------------- |
+| -------           | ----------------               | --------------------------------                     |
+| content-planner   | Content Strategist             | McKinsey Consultants, Barbara Minto                  |
+| visual-designer   | Visual Designer + Chart Expert | Apple Keynote, Edward Tufte, Cole Nussbaumer Knaflic |
+| creative-director | Creative Director              | IDEO, Pentagram, Duarte Design                       |
 
 ---
 
@@ -255,10 +256,11 @@ actions:
 
 Any feedback loop between two agents is limited to **2 iterations**.
 
-| Interaction | Max Iterations | Escalation |
-|-------------|---------------|-----------|
-| content-planner ↔ visual-designer | 2 | creative-director arbitration |
-| creative-director → auto-fix → re-evaluate | 2 | human-review required |
+| Interaction                                | Max Iterations  | Escalation                    |
+| ------------------------------------------ | --------------- | ----------------------------- |
+| -------------                              | --------------- | -----------                   |
+| content-planner ↔ visual-designer          | 2               | creative-director arbitration |
+| creative-director → auto-fix → re-evaluate | 2               | human-review required         |
 
 ### Rule 2: Iteration Counting
 
@@ -512,6 +514,7 @@ Fix critical issues manually or adjust design requirements
 
 ## Version History
 
-| Version | Date | Changes |
-| -------- | ------ | --------- |
-| 1.0 | 2026-01-28 | Initial release (3-agent architecture)<br/>- Established content-planner, visual-designer, creative-director roles<br/>- Defined quality gates and evaluation formula<br/>- Set iteration limits (2) and escalation rules<br/>- Separated from general agent-collaboration-protocol.md |
+| Version  | Date       | Changes                                                                                                                                                                                                                                                                                |
+| -------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| -------- | ------     | ---------                                                                                                                                                                                                                                                                              |
+| 1.0      | 2026-01-28 | Initial release (3-agent architecture)<br/>- Established content-planner, visual-designer, creative-director roles<br/>- Defined quality gates and evaluation formula<br/>- Set iteration limits (2) and escalation rules<br/>- Separated from general agent-collaboration-protocol.md |

@@ -32,12 +32,13 @@
 
 **Example Contract Table**:
 
-| Scenario | Category | Return Value | Error | HTTP Status |
-| ------------- | ---------- | -------------- | ----------- | -------- |
-| Resource not found | Domain | `nil` | `ErrUserNotFound` | 404 |
-| Invalid input | Validation | `nil` | `ErrInvalidInput` | 400 |
-| DB timeout | Infrastructure | `nil` | `fmt.Errorf("db query: %w", context.DeadlineExceeded)` | 503 |
-| DB unavailable | Infrastructure | `nil` | `ErrDatabaseUnavailable` | 503 |
+| Scenario           | Category       | Return Value   | Error                                                  | HTTP Status |
+| ------------------ | -------------- | -------------- | ------------------------------------------------------ | ----------- |
+| -------------      | ----------     | -------------- | -----------                                            | --------    |
+| Resource not found | Domain         | `nil`          | `ErrUserNotFound`                                      | 404         |
+| Invalid input      | Validation     | `nil`          | `ErrInvalidInput`                                      | 400         |
+| DB timeout         | Infrastructure | `nil`          | `fmt.Errorf("db query: %w", context.DeadlineExceeded)` | 503         |
+| DB unavailable     | Infrastructure | `nil`          | `ErrDatabaseUnavailable`                               | 503         |
 
 **Code Template**:
 
@@ -291,26 +292,27 @@ func (s *Service) GetUserWithRetry(ctx context.Context, id string) (*User, error
 
 **Reference**: [Go HTTP Status Constants](https://pkg.go.dev/net/http#pkg-constants)
 
-| HTTP Status | Scenario | Return Value | Error | Retry? |
-| ------------- | ---------- | -------------- | ----------- | -------- |
-| **2xx Success** | | | | |
-| 200 OK | Successful operation | `*Object` | `nil` | No |
-| 201 Created | Resource created | `*Object` | `nil` | No |
-| 204 No Content | Successful deletion | `nil` | `nil` | No |
-| **3xx Redirection** | | | | |
-| 304 Not Modified | Resource unchanged | `nil` | `nil` | No |
-| **4xx Client Errors** (DO NOT RETRY) | | | | |
-| 400 Bad Request | Invalid input format | `nil` | `ErrInvalidInput` | No |
-| 401 Unauthorized | Invalid credentials | `nil` | `ErrUnauthorized` | No |
-| 403 Forbidden | Permission denied | `nil` | `ErrForbidden` | No |
-| 404 Not Found | Resource doesn't exist | `nil` | `ErrNotFound` | No |
-| 409 Conflict | Version conflict | `nil` | `ErrConflict` | No |
-| 429 Too Many Requests | Rate limit exceeded | `nil` | `ErrRateLimitExceeded` | Yes (with backoff) |
-| **5xx Server Errors** (RETRY) | | | | |
-| 500 Internal Server Error | Server bug | `nil` | wrapped error | Yes |
-| 502 Bad Gateway | Proxy error | `nil` | wrapped error | Yes |
-| 503 Service Unavailable | Server overload/maintenance | `nil` | `ErrServiceUnavailable` | Yes |
-| 504 Gateway Timeout | Upstream timeout | `nil` | wrapped context error | Yes |
+| HTTP Status                          | Scenario                    | Return Value   | Error                   | Retry?             |
+| ------------------------------------ | --------------------------- | -------------- | ----------------------- | ------------------ |
+| -------------                        | ----------                  | -------------- | -----------             | --------           |
+| **2xx Success**                      |                             |                |                         |                    |
+| 200 OK                               | Successful operation        | `*Object`      | `nil`                   | No                 |
+| 201 Created                          | Resource created            | `*Object`      | `nil`                   | No                 |
+| 204 No Content                       | Successful deletion         | `nil`          | `nil`                   | No                 |
+| **3xx Redirection**                  |                             |                |                         |                    |
+| 304 Not Modified                     | Resource unchanged          | `nil`          | `nil`                   | No                 |
+| **4xx Client Errors** (DO NOT RETRY) |                             |                |                         |                    |
+| 400 Bad Request                      | Invalid input format        | `nil`          | `ErrInvalidInput`       | No                 |
+| 401 Unauthorized                     | Invalid credentials         | `nil`          | `ErrUnauthorized`       | No                 |
+| 403 Forbidden                        | Permission denied           | `nil`          | `ErrForbidden`          | No                 |
+| 404 Not Found                        | Resource doesn't exist      | `nil`          | `ErrNotFound`           | No                 |
+| 409 Conflict                         | Version conflict            | `nil`          | `ErrConflict`           | No                 |
+| 429 Too Many Requests                | Rate limit exceeded         | `nil`          | `ErrRateLimitExceeded`  | Yes (with backoff) |
+| **5xx Server Errors** (RETRY)        |                             |                |                         |                    |
+| 500 Internal Server Error            | Server bug                  | `nil`          | wrapped error           | Yes                |
+| 502 Bad Gateway                      | Proxy error                 | `nil`          | wrapped error           | Yes                |
+| 503 Service Unavailable              | Server overload/maintenance | `nil`          | `ErrServiceUnavailable` | Yes                |
+| 504 Gateway Timeout                  | Upstream timeout            | `nil`          | wrapped context error   | Yes                |
 
 **Code Template**:
 
@@ -663,12 +665,13 @@ func (p *Pool) Shutdown() {
 
 **Log Levels**:
 
-| Level | When to Use | Example |
-| ------------- | ----------- | ------- |
-| **Error** | System failure, requires immediate attention | Database connection failure, external API down |
-| **Warn** | Unexpected but handled situation | Retry attempt, deprecated API usage, rate limit approached |
-| **Info** | Business-level events | User login, order created, subscription expired |
-| **Debug** | Detailed diagnostic info (disabled in production) | Method entry/exit, variable values |
+| Level         | When to Use                                       | Example                                                    |
+| ------------- | ------------------------------------------------- | ---------------------------------------------------------- |
+| ------------- | -----------                                       | -------                                                    |
+| **Error**     | System failure, requires immediate attention      | Database connection failure, external API down             |
+| **Warn**      | Unexpected but handled situation                  | Retry attempt, deprecated API usage, rate limit approached |
+| **Info**      | Business-level events                             | User login, order created, subscription expired            |
+| **Debug**     | Detailed diagnostic info (disabled in production) | Method entry/exit, variable values                         |
 
 **Code Template**:
 

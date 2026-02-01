@@ -283,12 +283,13 @@ Generate a detailed review report with the following sections:
 **Overall Status**: NEEDS_REVISION
 
 ### Statistics
-| Category | Pass | Fail | Total |
-|----------|------|------|-------|
-| Contract Compliance | 8 | 2 | 10 |
-| Coding Standards | 15 | 3 | 18 |
-| Test Coverage | 4 | 1 | 5 |
-| Static Analysis | 20 | 0 | 20 |
+| Category            | Pass   | Fail   | Total   |
+| ------------------- | ------ | ------ | ------- |
+| ----------          | ------ | ------ | ------- |
+| Contract Compliance | 8      | 2      | 10      |
+| Coding Standards    | 15     | 3      | 18      |
+| Test Coverage       | 4      | 1      | 5       |
+| Static Analysis     | 20     | 0      | 20      |
 
 ### Critical Issues (Must Fix)
 
@@ -366,11 +367,12 @@ catch (SocketTimeoutException e) {
 **Remaining Iterations**: 1
 
 **Previous Issues Status**:
-| Issue | Status |
-|-------|--------|
-| Issue 1: Contract violation | ✅ Fixed |
-| Issue 2: Missing Javadoc | ❌ Not Fixed |
-| Issue 3: Naming convention | ⚠️ Partially Fixed |
+| Issue                       | Status             |
+| --------------------------- | ------------------ |
+| -------                     | --------           |
+| Issue 1: Contract violation | ✅ Fixed           |
+| Issue 2: Missing Javadoc    | ❌ Not Fixed       |
+| Issue 3: Naming convention  | ⚠️ Partially Fixed |
 
 **Remaining Issues**: See detailed report below
 
@@ -434,14 +436,15 @@ graph TD
 
 ### Decision Rules
 
-| Scenario | Critical | Major | Minor | Coverage | Static | Decision |
-|----------|----------|-------|-------|----------|--------|----------|
-| Perfect code | 0 | 0 | 0 | ≥80% | Pass | APPROVED |
-| Minor issues only | 0 | 0 | >0 | ≥80% | Pass | APPROVED (with notes) |
-| Major issues, first review | 0 | >0 | Any | Any | Any | NEEDS_REVISION (1/3) |
-| Critical issues, iteration <3 | >0 | Any | Any | Any | Any | NEEDS_REVISION |
-| Critical issues, iteration =3 | >0 | Any | Any | Any | Any | ESCALATE |
-| Contract unimplementable | N/A | N/A | N/A | N/A | N/A | REJECTED |
+| Scenario                      | Critical   | Major   | Minor   | Coverage   | Static   | Decision              |
+| ----------------------------- | ---------- | ------- | ------- | ---------- | -------- | --------------------- |
+| ----------                    | ---------- | ------- | ------- | ---------- | -------- | ----------            |
+| Perfect code                  | 0          | 0       | 0       | ≥80%       | Pass     | APPROVED              |
+| Minor issues only             | 0          | 0       | >0      | ≥80%       | Pass     | APPROVED (with notes) |
+| Major issues, first review    | 0          | >0      | Any     | Any        | Any      | NEEDS_REVISION (1/3)  |
+| Critical issues, iteration <3 | >0         | Any     | Any     | Any        | Any      | NEEDS_REVISION        |
+| Critical issues, iteration =3 | >0         | Any     | Any     | Any        | Any      | ESCALATE              |
+| Contract unimplementable      | N/A        | N/A     | N/A     | N/A        | N/A      | REJECTED              |
 
 ### APPROVED (LGTM)
 
@@ -665,14 +668,15 @@ mvn jacoco:check
 
 **Command Reference Summary**:
 
-| Tool | Command | Purpose | Expected Result |
-|------|---------|---------|-----------------|
-| Maven Compiler | `mvn compile -Xlint:all` | Compiler warnings | 0 warnings |
-| PMD (P3C) | `mvn pmd:check` | Alibaba Guidelines | 0 violations |
-| SpotBugs | `mvn spotbugs:check` | Bytecode analysis | 0 high/critical bugs |
-| Checkstyle | `mvn checkstyle:check` | Code style | 0 violations |
-| JaCoCo | `mvn jacoco:report` | Test coverage | ≥80% line, ≥70% branch |
-| Full Build | `mvn clean verify` | All checks | BUILD SUCCESS |
+| Tool           | Command                  | Purpose            | Expected Result        |
+| -------------- | ------------------------ | ------------------ | ---------------------- |
+| ------         | ---------                | ---------          | -----------------      |
+| Maven Compiler | `mvn compile -Xlint:all` | Compiler warnings  | 0 warnings             |
+| PMD (P3C)      | `mvn pmd:check`          | Alibaba Guidelines | 0 violations           |
+| SpotBugs       | `mvn spotbugs:check`     | Bytecode analysis  | 0 high/critical bugs   |
+| Checkstyle     | `mvn checkstyle:check`   | Code style         | 0 violations           |
+| JaCoCo         | `mvn jacoco:report`      | Test coverage      | ≥80% line, ≥70% branch |
+| Full Build     | `mvn clean verify`       | All checks         | BUILD SUCCESS          |
 
 **Priority Levels**:
 

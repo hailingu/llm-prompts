@@ -71,13 +71,14 @@
 - 字体限制为 1-2 种（检测：unique font families ≤ 2）
 
 ### 哲学选择指南（按场景）
-| 场景 | 推荐哲学 | 关键规则启用 |
-|------|---------|-------------|
-| 技术架构评审 | Assertion-Evidence + Tufte | `require_citation=true`, 图表强制, Y 轴从 0 |
-| 高管汇报 (Pitch) | 10/20/30 Rule + Pyramid | `max_slides=15`, `min_font=30pt`, 结论前置 |
-| 产品 Roadmap | Presentation Zen + Signal vs Noise | `max_bullets=3`, 去除装饰, 视觉优先 |
-| 学术报告 | Assertion-Evidence + Tufte | 标题为论断, 数据完整标注, 来源强制 |
-| 快节奏演讲 | Takahashi (可选) | `max_words=3`, `min_font=80pt`, 大量幻灯片 |
+| 场景             | 推荐哲学                           | 关键规则启用                                |
+| ---------------- | ---------------------------------- | ------------------------------------------- |
+| ------           | ---------                          | -------------                               |
+| 技术架构评审     | Assertion-Evidence + Tufte         | `require_citation=true`, 图表强制, Y 轴从 0 |
+| 高管汇报 (Pitch) | 10/20/30 Rule + Pyramid            | `max_slides=15`, `min_font=30pt`, 结论前置  |
+| 产品 Roadmap     | Presentation Zen + Signal vs Noise | `max_bullets=3`, 去除装饰, 视觉优先         |
+| 学术报告         | Assertion-Evidence + Tufte         | 标题为论断, 数据完整标注, 来源强制          |
+| 快节奏演讲       | Takahashi (可选)                   | `max_words=3`, `min_font=80pt`, 大量幻灯片  |
 
 ### 实施建议
 - Agent 在生成前询问 `presentation_type`（默认 `technical-review`），自动应用对应哲学的规则组合。

@@ -3,7 +3,7 @@
 **Author**: [Your Name]  
 **Date**: [YYYY-MM-DD]  
 **Status**: Draft | In Review | Approved  
-**Reviewers**: @go-architect, @go-api-designer  
+**Reviewers**: @go-architect, @go-api-designer
 
 ---
 
@@ -80,12 +80,13 @@ graph LR
 
 ### 3.2 Component Responsibilities
 
-| Component | Responsibility | Technology |
-|-----------|---------------|------------|
-| API Layer | HTTP/gRPC handlers, request validation | net/http, grpc-go |
-| Service Layer | Business logic, orchestration | Go stdlib |
-| Repository Layer | Data access, caching | database/sql, redis |
-| Client Layer | External API integration | net/http |
+| Component        | Responsibility                         | Technology          |
+| ---------------- | -------------------------------------- | ------------------- |
+| ---------------- | -------------------------------------- | ------------------  |
+| API Layer        | HTTP/gRPC handlers, request validation | net/http, grpc-go   |
+| Service Layer    | Business logic, orchestration          | Go stdlib           |
+| Repository Layer | Data access, caching                   | database/sql, redis |
+| Client Layer     | External API integration               | net/http            |
 
 ### 3.3 Technology Stack
 
@@ -115,6 +116,7 @@ graph LR
   - HTTP: Map to 500 or 503
 
 - **Error Response Format** (for HTTP APIs):
+
   ```json
   {
     "error": {
@@ -167,6 +169,7 @@ graph LR
 - **Order**: Represents a purchase order
 
 **Entity Relationships**:
+
 - User has many Subscriptions (1:N)
 - Subscription belongs to User (N:1)
 - Order references User and Subscription (N:1, N:1)
@@ -191,12 +194,13 @@ graph LR
 
 **Which components need to be goroutine-safe?**
 
-| Component | Goroutine-Safe? | Strategy |
-|-----------|----------------|----------|
-| UserService | Yes | Stateless (no shared mutable state) |
-| ConfigLoader | Yes | Immutable after initialization |
-| Cache | Yes | Use sync.Map or third-party concurrent map |
-| PeriodicChecker | No | Single goroutine only |
+| Component       | Goroutine-Safe? | Strategy                                    |
+| --------------- | --------------- | ------------------------------------------- |
+| --------------- | --------------- | ------------------------------------------- |
+| UserService     | Yes             | Stateless (no shared mutable state)         |
+| ConfigLoader    | Yes             | Immutable after initialization              |
+| Cache           | Yes             | Use sync.Map or third-party concurrent map  |
+| PeriodicChecker | No              | Single goroutine only                       |
 
 **Note**: Detailed concurrency contracts are in Section 12.
 
@@ -207,27 +211,32 @@ graph LR
 ### 7.1 Observability
 
 **Logging Strategy**:
+
 - Use structured logging (e.g., `log/slog` or `zap`)
 - Log levels: DEBUG, INFO, WARN, ERROR
 - Include correlation IDs for request tracing
 
 **Metrics**:
+
 - Request count, latency, error rate
 - Resource usage (memory, goroutines)
 - Use Prometheus format
 
 **Tracing**:
+
 - OpenTelemetry for distributed tracing
 - Trace all external calls (DB, HTTP, gRPC)
 
 ### 7.2 Security
 
 **Threat Model**:
+
 - Input validation (prevent injection attacks)
 - Rate limiting (prevent abuse)
 - Authentication/Authorization (see Section 4.3)
 
 **Mitigation**:
+
 - Validate all inputs with strong typing
 - Use prepared statements for SQL
 - Implement rate limiting at API gateway or service level
@@ -235,11 +244,13 @@ graph LR
 ### 7.3 Reliability
 
 **Error Handling**:
+
 - All errors must be checked and handled
 - Use exponential backoff for retries
 - Circuit breaker for external dependencies
 
 **Retry Strategy**:
+
 - Idempotent operations: retry up to 3 times
 - Non-idempotent operations: no retry (or use idempotency keys)
 
@@ -250,11 +261,13 @@ graph LR
 ### 8.1 Framework Constraints
 
 **Must use**:
+
 - Go standard library for HTTP (net/http) or specify framework
 - database/sql with appropriate driver
 - context.Context for cancellation and timeout
 
 **Must NOT use**:
+
 - Reflection for performance-critical paths
 - Global mutable state
 - Goroutine leaks (always ensure cleanup)
@@ -262,6 +275,7 @@ graph LR
 ### 8.2 Coding Standards
 
 **Must follow**:
+
 - Effective Go conventions
 - Go Code Review Comments
 - gofmt formatting (enforced by CI)
@@ -276,10 +290,12 @@ graph LR
 **Description**: [Brief description of alternative approach]
 
 **Pros**:
+
 - [Advantage 1]
 - [Advantage 2]
 
 **Cons**:
+
 - [Disadvantage 1]
 - [Disadvantage 2]
 
@@ -290,9 +306,11 @@ graph LR
 **Description**: [Brief description of alternative approach]
 
 **Pros**:
+
 - [Advantage 1]
 
 **Cons**:
+
 - [Disadvantage 1]
 
 **Decision**: Rejected because [specific reason].
@@ -364,13 +382,14 @@ type UserService interface {
 
 **Contract Table** (defines exact behavior for all scenarios):
 
-| Scenario | Input | Return Value | Error | HTTP Status | Retry? | Pattern |
-|----------|-------|--------------|-------|-------------|--------|---------|
-| Success | Valid ID | *User | nil | 200 | No | - |
-| Not Found | Valid ID | nil | ErrUserNotFound | 404 | No | Sentinel error |
-| Invalid ID | Empty/malformed | nil | ErrInvalidInput | 400 | No | Validation error |
-| DB Timeout | Valid ID | nil | fmt.Errorf("db timeout: %w", context.DeadlineExceeded) | 503 | Yes (3x) | Wrapped error |
-| DB Unavailable | Valid ID | nil | ErrDatabaseUnavailable | 503 | Yes (3x) | Sentinel error |
+| Scenario       | Input           | Return Value | Error                                                  | HTTP Status | Retry?   | Pattern          |
+| -------------- | --------------- | ------------ | ------------------------------------------------------ | ----------- | -------- | ---------------- |
+| -------------- | --------------- | ------------ | ------------------------------------------------------ | ----------- | -------- | ---------------- |
+| Success        | Valid ID        | *User        | nil                                                    | 200         | No       | -                |
+| Not Found      | Valid ID        | nil          | ErrUserNotFound                                        | 404         | No       | Sentinel error   |
+| Invalid ID     | Empty/malformed | nil          | ErrInvalidInput                                        | 400         | No       | Validation error |
+| DB Timeout     | Valid ID        | nil          | fmt.Errorf("db timeout: %w", context.DeadlineExceeded) | 503         | Yes (3x) | Wrapped error    |
+| DB Unavailable | Valid ID        | nil          | ErrDatabaseUnavailable                                 | 503         | Yes (3x) | Sentinel error   |
 
 **Error Types** (defined as package-level sentinels):
 
@@ -506,19 +525,20 @@ func handleGetUser(w http.ResponseWriter, r *http.Request) {
 - **Goroutine-safety**: Stateless service design avoids synchronization overhead
 
 **Trade-offs**:
+
 - Chose sentinel errors over custom error types for simplicity (can add error types later if needed)
 - Chose stateless service to maximize concurrency (no locks needed)
 - Chose context.Context for cancellation (slight overhead but standard practice)
 
 #### 10.2.4 Alternatives Considered
 
-**Alternative 1: Return (User, bool) instead of (User, error)**
+##### Alternative 1: Return (User, bool) instead of (User, error)
 
 **Pros**: Simpler for "not found" case  
 **Cons**: Cannot distinguish between "not found" and infrastructure failures  
 **Decision**: Rejected; need detailed error information for proper handling
 
-**Alternative 2: Use custom error types with methods**
+##### Alternative 2: Use custom error types with methods
 
 **Pros**: More structured error handling  
 **Cons**: More complex; sentinel errors are sufficient for this use case  
@@ -650,23 +670,26 @@ CREATE INDEX idx_users_status ON users(status);
 
 **Per-method concurrency requirements:**
 
-| Method | Goroutine-Safe? | Expected QPS | Response Time Target | Synchronization Strategy |
-|--------|----------------|--------------|---------------------|-------------------------|
-| GetUserByID | Yes | 500 | p95 < 100ms | Stateless (no sync needed) |
-| CreateUser | Yes | 50 | p95 < 200ms | Stateless (DB handles concurrency) |
-| UpdateUser | Yes | 100 | p95 < 150ms | Stateless (DB handles concurrency) |
+| Method      | Goroutine-Safe? | Expected QPS | Response Time Target | Synchronization Strategy           |
+| ----------- | --------------- | ------------ | -------------------- | ---------------------------------- |
+| ----------- | --------------- | ------------ | -------------------- | ---------------------------------- |
+| GetUserByID | Yes             | 500          | p95 < 100ms          | Stateless (no sync needed)         |
+| CreateUser  | Yes             | 50           | p95 < 200ms          | Stateless (DB handles concurrency) |
+| UpdateUser  | Yes             | 100          | p95 < 150ms          | Stateless (DB handles concurrency) |
 
 ### 12.2 Concurrency Strategy
 
 **Design Pattern**: Stateless service
 
 **Why stateless?**
+
 - No shared mutable state
 - Each request is independent
 - No synchronization overhead
 - Horizontally scalable
 
 **Implementation Notes**:
+
 - UserService implementation has no instance fields (or only read-only fields set at initialization)
 - All state is in the database or cache (which handle their own concurrency)
 - Use connection pooling for database (configured in repository layer)
@@ -753,6 +776,7 @@ func TestUserService_GetUserByID(t *testing.T) {
 **Scope**: Test with real database (use testcontainers for PostgreSQL)
 
 **Example**:
+
 ```go
 func TestUserRepository_Integration(t *testing.T) {
     if testing.Short() {
@@ -817,6 +841,7 @@ func BenchmarkUserService_GetUserByID(b *testing.B) {
 ### 14.1 Configuration
 
 **Environment variables**:
+
 - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
 - `REDIS_URL` (if using cache)
 - `LOG_LEVEL` (debug, info, warn, error)
@@ -825,12 +850,14 @@ func BenchmarkUserService_GetUserByID(b *testing.B) {
 ### 14.2 Health Checks
 
 **Endpoints**:
+
 - `/healthz`: Liveness probe (always returns 200 if server is running)
 - `/readyz`: Readiness probe (checks DB and cache connectivity)
 
 ### 14.3 Graceful Shutdown
 
 **Implementation**:
+
 ```go
 srv := &http.Server{Addr: ":8080", Handler: handler}
 
@@ -859,7 +886,7 @@ if err := srv.Shutdown(ctx); err != nil {
 
 **Recommended Go project layout:**
 
-```
+```text
 mymodule/
 ├── cmd/
 │   └── server/
@@ -890,6 +917,7 @@ mymodule/
 ```
 
 **Package Guidelines**:
+
 - `cmd/`: Main applications (entry points)
 - `internal/`: Private application code (not importable by external projects)
 - `pkg/`: Public library code (can be imported by external projects)
@@ -923,4 +951,4 @@ mymodule/
 
 ---
 
-**End of Template**
+## End of Template

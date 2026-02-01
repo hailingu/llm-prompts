@@ -284,12 +284,13 @@ print(f"Target: {target_rate:.2%}")
 
 ### Practical Rules of Thumb
 
-| Metric Type | Baseline | Realistic MDE | Sample Size (per variant) |
-|-------------|----------|---------------|---------------------------|
-| CTR | 10% | 0.5% absolute (5% relative) | ~60,000 |
-| CTR | 10% | 1% absolute (10% relative) | ~15,000 |
-| Conversion | 5% | 0.25% absolute (5% relative) | ~120,000 |
-| Revenue | $50 ± $20 | $1 (2% relative) | ~6,300 |
+| Metric Type   | Baseline   | Realistic MDE                | Sample Size (per variant)   |
+| ------------- | ---------- | ---------------------------- | --------------------------- |
+| ------------- | ---------- | ---------------              | --------------------------- |
+| CTR           | 10%        | 0.5% absolute (5% relative)  | ~60,000                     |
+| CTR           | 10%        | 1% absolute (10% relative)   | ~15,000                     |
+| Conversion    | 5%         | 0.25% absolute (5% relative) | ~120,000                    |
+| Revenue       | $50 ± $20  | $1 (2% relative)             | ~6,300                      |
 
 **Takeaway**: Small lifts need HUGE sample sizes!
 
@@ -339,12 +340,13 @@ for i in range(10000):
 
 #### When to Use MAB vs A/B
 
-| Use A/B Testing | Use Multi-Armed Bandit |
-|-----------------|------------------------|
-| Need precise effect size estimate | Care more about total reward |
-| Low traffic (< 10K/day) | High traffic (> 100K/day) |
-| Long-term decision (ship or not) | Short-term optimization (daily deals) |
-| Single experiment | Continuous optimization |
+| Use A/B Testing                   | Use Multi-Armed Bandit                |
+| --------------------------------- | ------------------------------------- |
+| -----------------                 | ------------------------              |
+| Need precise effect size estimate | Care more about total reward          |
+| Low traffic (< 10K/day)           | High traffic (> 100K/day)             |
+| Long-term decision (ship or not)  | Short-term optimization (daily deals) |
+| Single experiment                 | Continuous optimization               |
 
 ---
 
@@ -851,11 +853,12 @@ print(f"Significant (FDR): {sum(rejected_fdr)}")
 
 ### When to Use Which
 
-| Method | Use When |
-|--------|----------|
-| **Bonferroni** | Few tests (< 10), need strong control |
-| **FDR (BH)** | Many tests (10-1000), exploration |
-| **No correction** | Single pre-planned test |
+| Method            | Use When                              |
+| ----------------- | ------------------------------------- |
+| --------          | ----------                            |
+| **Bonferroni**    | Few tests (< 10), need strong control |
+| **FDR (BH)**      | Many tests (10-1000), exploration     |
+| **No correction** | Single pre-planned test               |
 
 ---
 
@@ -930,23 +933,25 @@ print(f"Need {n_per_variant:.0f} users per variant")
 
 ### Python Libraries
 
-| Library | Use Case |
-|---------|----------|
-| **scipy.stats** | Basic statistical tests |
-| **statsmodels** | Power analysis, regression |
-| **dowhy** | Causal inference |
-| **causalml (Uber)** | Uplift modeling, heterogeneous effects |
-| **PyMC** | Bayesian A/B testing |
-| **Weights & Biases** | Experiment tracking |
+| Library              | Use Case                               |
+| -------------------- | -------------------------------------- |
+| ---------            | ----------                             |
+| **scipy.stats**      | Basic statistical tests                |
+| **statsmodels**      | Power analysis, regression             |
+| **dowhy**            | Causal inference                       |
+| **causalml (Uber)**  | Uplift modeling, heterogeneous effects |
+| **PyMC**             | Bayesian A/B testing                   |
+| **Weights & Biases** | Experiment tracking                    |
 
 ### Commercial Platforms
 
-| Platform | Features |
-|----------|----------|
-| **Optimizely** | Full-service A/B testing |
+| Platform            | Features                        |
+| ------------------- | ------------------------------- |
+| ----------          | ----------                      |
+| **Optimizely**      | Full-service A/B testing        |
 | **Google Optimize** | Free, integrates with Analytics |
-| **LaunchDarkly** | Feature flags + experiments |
-| **VWO** | A/B testing + personalization |
+| **LaunchDarkly**    | Feature flags + experiments     |
+| **VWO**             | A/B testing + personalization   |
 
 ---
 

@@ -464,12 +464,13 @@ print("⚠️ If curve is above diagonal → underconfident")
 
 ## 1. Performance Metrics
 
-| Metric | Value | Target | Status |
-|--------|-------|--------|--------|
-| F1-Score | 0.78 | >= 0.75 | ✅ PASS |
-| Precision | 0.75 | >= 0.70 | ✅ PASS |
-| Recall | 0.82 | >= 0.80 | ✅ PASS |
-| AUC-ROC | 0.87 | >= 0.85 | ✅ PASS |
+| Metric    | Value   | Target   | Status   |
+| --------- | ------- | -------- | -------- |
+| --------  | ------- | -------- | -------- |
+| F1-Score  | 0.78    | >= 0.75  | ✅ PASS  |
+| Precision | 0.75    | >= 0.70  | ✅ PASS  |
+| Recall    | 0.82    | >= 0.80  | ✅ PASS  |
+| AUC-ROC   | 0.87    | >= 0.85  | ✅ PASS  |
 
 ### Confusion Matrix
 ```

@@ -197,17 +197,19 @@ validation_result = ge_df.validate()
 **Columns**: 25
 
 ### Completeness
-| Column | Missing % | Action |
-|--------|-----------|--------|
-| user_id | 0% | ✅ OK |
-| email | 5% | ⚠️ Fill with 'unknown' |
-| age | 15% | ⚠️ Drop rows or impute |
+| Column   | Missing %   | Action                 |
+| -------- | ----------- | ---------------------- |
+| -------- | ----------- | --------               |
+| user_id  | 0%          | ✅ OK                  |
+| email    | 5%          | ⚠️ Fill with 'unknown' |
+| age      | 15%         | ⚠️ Drop rows or impute |
 
 ### Accuracy
-| Column | Issue | Count | Action |
-|--------|-------|-------|--------|
-| age | Negative values | 100 | ❌ Remove |
-| country | Invalid codes | 50 | ❌ Map to valid codes |
+| Column   | Issue           | Count   | Action                |
+| -------- | --------------- | ------- | --------------------- |
+| -------- | -------         | ------- | --------              |
+| age      | Negative values | 100     | ❌ Remove             |
+| country  | Invalid codes   | 50      | ❌ Map to valid codes |
 
 ### Duplicates
 - **Total duplicates**: 5,000 (0.5%)
@@ -353,13 +355,14 @@ temp = df.iloc[temp_idx]
 
 ### Features
 
-| Column | Type | Description | Example | Missing % |
-|--------|------|-------------|---------|-----------|
-| user_id | int64 | Unique user identifier | 12345 | 0% |
-| age | int64 | User age | 25 | 0% (imputed) |
-| country | object | ISO country code | 'US' | 0% |
-| is_premium | int64 | Premium subscription (0/1) | 1 | 0% |
-| label | int64 | Churn indicator (0/1) | 0 | 0% |
+| Column     | Type   | Description                | Example   | Missing %    |
+| ---------- | ------ | -------------------------- | --------- | ------------ |
+| --------   | ------ | -------------              | --------- | -----------  |
+| user_id    | int64  | Unique user identifier     | 12345     | 0%           |
+| age        | int64  | User age                   | 25        | 0% (imputed) |
+| country    | object | ISO country code           | 'US'      | 0%           |
+| is_premium | int64  | Premium subscription (0/1) | 1         | 0%           |
+| label      | int64  | Churn indicator (0/1)      | 0         | 0%           |
 
 ### Target Variable
 - **Column**: `label`

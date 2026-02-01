@@ -136,10 +136,12 @@ Option B: Collect 10,000 more samples
 
 ```text
 High Bias (Underfitting)    Balanced           High Variance (Overfitting)
-     |                         |                         |
+|  |  |
+|  |  |
 Linear model on             XGBoost with           Deep NN with
 non-linear data         proper validation           no regularization
-     |                         |                         |
+|  |  |
+|  |  |
 Train error: High         Train error: Medium      Train error: Very low
 Test error:  High         Test error:  Medium      Test error:  High
 ```
@@ -190,11 +192,12 @@ train_val_gap = 0.95 - 0.72 = 0.23  # Large gap → Overfitting!
 
 **Decision Matrix**:
 
-| Scenario | Accuracy Diff | Complexity Diff | Choice |
-| ---------- | --------------- | ----------------- | -------- |
-| Medical diagnosis | Logistic: 92% vs XGBoost: 94% | Low vs High | XGBoost (accuracy critical) |
-| Marketing campaign | Logistic: 85% vs NN: 86% | Low vs Very High | Logistic (1% not worth complexity) |
-| Fraud detection | Rule-based: 80% vs NN: 95% | Very Low vs High | NN (15% improvement huge) |
+| Scenario           | Accuracy Diff                 | Complexity Diff   | Choice                             |
+| ------------------ | ----------------------------- | ----------------- | ---------------------------------- |
+| ----------         | ---------------               | ----------------- | --------                           |
+| Medical diagnosis  | Logistic: 92% vs XGBoost: 94% | Low vs High       | XGBoost (accuracy critical)        |
+| Marketing campaign | Logistic: 85% vs NN: 86%      | Low vs Very High  | Logistic (1% not worth complexity) |
+| Fraud detection    | Rule-based: 80% vs NN: 95%    | Very Low vs High  | NN (15% improvement huge)          |
 
 **Example**:
 
@@ -623,13 +626,14 @@ knn = KNeighborsClassifier().fit(X_reduced, y)  # Much better
 
 **When Dimensionality Hurts**:
 
-| Algorithm | Sensitivity to Dimensions |
-| ----------- | --------------------------- |
-| K-NN | Very High (fails above ~50 dims) |
-| K-Means | High |
-| SVM | Moderate |
-| Random Forest | Low |
-| Neural Networks | Low (with sufficient data) |
+| Algorithm       | Sensitivity to Dimensions        |
+| --------------- | -------------------------------- |
+| -----------     | ---------------------------      |
+| K-NN            | Very High (fails above ~50 dims) |
+| K-Means         | High                             |
+| SVM             | Moderate                         |
+| Random Forest   | Low                              |
+| Neural Networks | Low (with sufficient data)       |
 
 ---
 
@@ -641,14 +645,15 @@ knn = KNeighborsClassifier().fit(X_reduced, y)  # Much better
 
 **Examples of Inductive Biases**:
 
-| Model | Inductive Bias |
-| ------- | ---------------- |
-| Linear Regression | Relationship is linear |
-| Decision Trees | Axis-aligned decision boundaries |
-| CNN | Spatial locality, translation invariance |
-| RNN/LSTM | Sequential dependencies |
-| Transformer | All-to-all attention is useful |
-| Graph NN | Data has graph structure |
+| Model             | Inductive Bias                           |
+| ----------------- | ---------------------------------------- |
+| -------           | ----------------                         |
+| Linear Regression | Relationship is linear                   |
+| Decision Trees    | Axis-aligned decision boundaries         |
+| CNN               | Spatial locality, translation invariance |
+| RNN/LSTM          | Sequential dependencies                  |
+| Transformer       | All-to-all attention is useful           |
+| Graph NN          | Data has graph structure                 |
 
 **Why Bias is Necessary**:
 
@@ -1103,12 +1108,13 @@ model = AutoModelForSequenceClassification.from_pretrained(
 
 **Transfer Learning Decision**:
 
-| Your Data Size | Similarity to Pretrain Data | Strategy |
-| ---------------- | ---------------------------- | ---------- |
-| Small | High | Feature extraction only |
-| Small | Low | Feature extraction, careful fine-tuning |
-| Large | High | Fine-tune all layers |
-| Large | Low | Fine-tune or train from scratch |
+| Your Data Size   | Similarity to Pretrain Data  | Strategy                                |
+| ---------------- | ---------------------------- | --------------------------------------- |
+| ---------------- | ---------------------------- | ----------                              |
+| Small            | High                         | Feature extraction only                 |
+| Small            | Low                          | Feature extraction, careful fine-tuning |
+| Large            | High                         | Fine-tune all layers                    |
+| Large            | Low                          | Fine-tune or train from scratch         |
 
 ---
 
@@ -1268,7 +1274,8 @@ will have error ≤ ε if:
 where:
    ε = error tolerance
    δ = failure probability
-   |H| = hypothesis space size (model complexity)
+| H |
+| - |
 ```
 
 **Practical Implications**:
@@ -1299,28 +1306,33 @@ Rule of thumb: Need at least 10 × VC(H) samples
 
 ```text
 Problem Type?
-  |
+|  |
+|  |
   ├─ Classification
   │   |
   │   ├─ Linear separable? → Logistic Regression
   │   ├─ Tabular data? → XGBoost → Random Forest
   │   ├─ Image data? → CNN (ResNet, EfficientNet)
   │   └─ Text data? → Transformer (BERT)
-  |
+|  |
+|  |
   ├─ Regression
   │   |
   │   ├─ Linear relationship? → Linear/Ridge/Lasso
   │   ├─ Tabular data? → XGBoost → Random Forest
   │   └─ Time series? → ARIMA → Prophet → LSTM
-  |
+|  |
+|  |
   ├─ Clustering
   │   |
   │   ├─ Known K? → K-Means
   │   ├─ Unknown K? → DBSCAN → Hierarchical
   │   └─ High dimensions? → PCA + K-Means
-  |
+|  |
+|  |
   └─ Dimensionality Reduction
-      |
+|  |
+|  |
       ├─ Visualization? → t-SNE → UMAP
       └─ Feature reduction? → PCA → Feature Selection
 ```

@@ -131,11 +131,12 @@ Example:
 [Primary evaluation metrics from Evaluator Report]
 
 Example:
-| Metric | Overall | Age 18-25 | Age 25-35 | Age 35-50 | Age 50+ |
-|--------|---------|-----------|-----------|-----------|---------|
-| **Precision@10** | 0.65 | 0.70 | 0.68 | 0.62 | 0.58 |
-| **NDCG@10** | 0.72 | 0.75 | 0.73 | 0.70 | 0.68 |
-| **Coverage** | 15% | 18% | 16% | 14% | 12% |
+| Metric           | Overall   | Age 18-25   | Age 25-35   | Age 35-50   | Age 50+   |
+| ---------------- | --------- | ----------- | ----------- | ----------- | --------- |
+| --------         | --------- | ----------- | ----------- | ----------- | --------- |
+| **Precision@10** | 0.65      | 0.70        | 0.68        | 0.62        | 0.58      |
+| **NDCG@10**      | 0.72      | 0.75        | 0.73        | 0.70        | 0.68      |
+| **Coverage**     | 15%       | 18%         | 16%         | 14%         | 12%       |
 
 **Decision thresholds**: 
 - Classification threshold: 0.5 (optimized for F1)
@@ -200,12 +201,13 @@ Example:
 [Performance across multiple factors simultaneously]
 
 Example:
-| Age Group | Gender | Precision@10 | NDCG@10 |
-|-----------|--------|--------------|---------|
-| 18-25 | Male | 0.71 | 0.76 |
-| 18-25 | Female | 0.69 | 0.74 |
-| 50+ | Male | 0.59 | 0.69 |
-| 50+ | Female | 0.57 | 0.67 |
+| Age Group   | Gender   | Precision@10   | NDCG@10   |
+| ----------- | -------- | -------------- | --------- |
+| ----------- | -------- | -------------- | --------- |
+| 18-25       | Male     | 0.71           | 0.76      |
+| 18-25       | Female   | 0.69           | 0.74      |
+| 50+         | Male     | 0.59           | 0.69      |
+| 50+         | Female   | 0.57           | 0.67      |
 
 **Interpretation**:
 - Age is the dominant factor affecting performance (not gender)
@@ -327,13 +329,14 @@ Top-20 Recommendations
 - **Time period**: 2024-01-01 to 2025-12-31
 
 **Features**:
-| Feature | Type | Range/Values | Missing % | Description |
-|---------|------|--------------|-----------|-------------|
-| user_id | Categorical | 100K unique | 0% | Unique user identifier |
-| item_id | Categorical | 50K unique | 0% | Unique item identifier |
-| timestamp | Timestamp | 2024-2025 | 0% | Interaction time |
-| rating | Numerical | 1-5 | 12% | Explicit rating (optional) |
-| purchase | Binary | 0/1 | 0% | Purchase indicator |
+| Feature   | Type        | Range/Values   | Missing %   | Description                |
+| --------- | ----------- | -------------- | ----------- | -------------------------- |
+| --------- | ------      | -------------- | ----------- | -------------              |
+| user_id   | Categorical | 100K unique    | 0%          | Unique user identifier     |
+| item_id   | Categorical | 50K unique     | 0%          | Unique item identifier     |
+| timestamp | Timestamp   | 2024-2025      | 0%          | Interaction time           |
+| rating    | Numerical   | 1-5            | 12%         | Explicit rating (optional) |
+| purchase  | Binary      | 0/1            | 0%          | Purchase indicator         |
 
 **Label distribution**:
 - Positive (purchase): 12% (120K samples)
@@ -345,11 +348,12 @@ Top-20 Recommendations
 - Handled via: Treated as implicit feedback (clicks, views)
 
 **Data splits**:
-| Split | Size | % | Selection Method |
-|-------|------|---|------------------|
-| Train | 700K | 70% | Chronological (2024-01 to 2025-06) |
-| Validation | 150K | 15% | Chronological (2025-07 to 2025-09) |
-| Test | 150K | 15% | Chronological (2025-10 to 2025-12) |
+| Split      | Size   | %   | Selection Method                   |
+| ---------- | ------ | --- | ---------------------------------- |
+| -------    | ------ | --- | ------------------                 |
+| Train      | 700K   | 70% | Chronological (2024-01 to 2025-06) |
+| Validation | 150K   | 15% | Chronological (2025-07 to 2025-09) |
+| Test       | 150K   | 15% | Chronological (2025-10 to 2025-12) |
 
 **Relationships**:
 - User-item interactions (many-to-many)
@@ -513,26 +517,29 @@ Example:
 
 ### Primary Metric: Click-Through Rate
 
-| Variant | CTR | 95% CI | Relative Lift | P-value |
-|---------|-----|--------|---------------|---------|
-| Control | 8.2% | [8.0%, 8.4%] | - | - |
-| Treatment | 9.5% | [9.3%, 9.7%] | **+15.9%** | < 0.001 |
+| Variant   | CTR   | 95% CI       | Relative Lift   | P-value   |
+| --------- | ----- | ------------ | --------------- | --------- |
+| --------- | ----- | --------     | --------------- | --------- |
+| Control   | 8.2%  | [8.0%, 8.4%] | -               | -         |
+| Treatment | 9.5%  | [9.3%, 9.7%] | **+15.9%**      | < 0.001   |
 
 **Interpretation**: Treatment increases CTR by 15.9% (1.3 percentage points), statistically significant (p < 0.001).
 
 ### Secondary Metrics
 
-| Metric | Control | Treatment | Lift | P-value | Decision |
-|--------|---------|-----------|------|---------|----------|
-| **Conversion Rate** | 1.2% | 1.4% | +16.7% | 0.002 | ✅ Significant |
-| **Revenue per User** | $15.30 | $16.80 | +9.8% | 0.021 | ✅ Significant |
+| Metric               | Control   | Treatment   | Lift   | P-value   | Decision       |
+| -------------------- | --------- | ----------- | ------ | --------- | -------------- |
+| --------             | --------- | ----------- | ------ | --------- | ----------     |
+| **Conversion Rate**  | 1.2%      | 1.4%        | +16.7% | 0.002     | ✅ Significant |
+| **Revenue per User** | $15.30    | $16.80      | +9.8%  | 0.021     | ✅ Significant |
 
 ### Guardrail Metrics
 
-| Metric | Control | Treatment | Change | Status |
-|--------|---------|-----------|--------|--------|
-| **Session Length** | 12.3 min | 12.5 min | +1.6% | ✅ OK (not worse) |
-| **Bounce Rate** | 35% | 34% | -1 pp | ✅ OK (improved) |
+| Metric             | Control   | Treatment   | Change   | Status            |
+| ------------------ | --------- | ----------- | -------- | ----------------- |
+| --------           | --------- | ----------- | -------- | --------          |
+| **Session Length** | 12.3 min  | 12.5 min    | +1.6%    | ✅ OK (not worse) |
+| **Bounce Rate**    | 35%       | 34%         | -1 pp    | ✅ OK (improved)  |
 
 **Verdict**: All guardrails passed. No negative side effects detected.
 
@@ -542,12 +549,13 @@ Example:
 
 Performance by user segment:
 
-| Segment | Control CTR | Treatment CTR | Lift | Significant? |
-|---------|-------------|---------------|------|--------------|
-| **New Users** | 5.2% | 7.1% | +36.5% | ✅ Yes |
-| **Active Users** | 10.1% | 11.2% | +10.9% | ✅ Yes |
-| **Age 18-25** | 9.8% | 11.5% | +17.3% | ✅ Yes |
-| **Age 50+** | 6.5% | 7.2% | +10.8% | ⚠️ Marginally sig (p=0.06) |
+| Segment          | Control CTR   | Treatment CTR   | Lift   | Significant?               |
+| ---------------- | ------------- | --------------- | ------ | -------------------------- |
+| ---------        | ------------- | --------------- | ------ | --------------             |
+| **New Users**    | 5.2%          | 7.1%            | +36.5% | ✅ Yes                     |
+| **Active Users** | 10.1%         | 11.2%           | +10.9% | ✅ Yes                     |
+| **Age 18-25**    | 9.8%          | 11.5%           | +17.3% | ✅ Yes                     |
+| **Age 50+**      | 6.5%          | 7.2%            | +10.8% | ⚠️ Marginally sig (p=0.06) |
 
 **Insight**: Largest lift for new users (+36.5%), indicating strong value for onboarding.
 
@@ -679,11 +687,12 @@ Authorization: Bearer YOUR_API_KEY
 
 #### Request Parameters
 
-| Parameter | Type | Required | Description | Example |
-|-----------|------|----------|-------------|---------|
-| `user_id` | string | Yes | User identifier | "12345" |
-| `context` | object | No | Contextual features | {"device": "mobile"} |
-| `num_recommendations` | integer | No | Number of items to return (default: 10, max: 50) | 10 |
+| Parameter             | Type    | Required   | Description                                      | Example              |
+| --------------------- | ------- | ---------- | ------------------------------------------------ | -------------------- |
+| -----------           | ------  | ---------- | -------------                                    | ---------            |
+| `user_id`             | string  | Yes        | User identifier                                  | "12345"              |
+| `context`             | object  | No         | Contextual features                              | {"device": "mobile"} |
+| `num_recommendations` | integer | No         | Number of items to return (default: 10, max: 50) | 10                   |
 
 #### Response (Success)
 
@@ -721,15 +730,16 @@ Authorization: Bearer YOUR_API_KEY
 
 #### Status Codes
 
-| Code | Meaning | Action |
-|------|---------|--------|
-| 200 | Success | Recommendations returned |
-| 400 | Bad Request | Check request format |
-| 401 | Unauthorized | Verify API key |
-| 404 | User Not Found | User ID does not exist |
-| 429 | Rate Limit Exceeded | Retry after 60 seconds |
-| 500 | Internal Server Error | Contact support |
-| 503 | Service Unavailable | Model is retraining, retry in 5 minutes |
+| Code   | Meaning               | Action                                  |
+| ------ | --------------------- | --------------------------------------- |
+| ------ | ---------             | --------                                |
+| 200    | Success               | Recommendations returned                |
+| 400    | Bad Request           | Check request format                    |
+| 401    | Unauthorized          | Verify API key                          |
+| 404    | User Not Found        | User ID does not exist                  |
+| 429    | Rate Limit Exceeded   | Retry after 60 seconds                  |
+| 500    | Internal Server Error | Contact support                         |
+| 503    | Service Unavailable   | Model is retraining, retry in 5 minutes |
 
 ---
 
@@ -1023,10 +1033,11 @@ optimizer:
 - Test Recall: 0.66
 
 ## Performance by Demographic
-| Age Group | F1 | AUC |
-|-----------|-----|-----|
-| 18-25 | 0.72 | 0.85 |
-| 50+ | 0.60 | 0.76 |
+| Age Group   | F1    | AUC   |
+| ----------- | ----- | ----- |
+| ----------- | ----- | ----- |
+| 18-25       | 0.72  | 0.85  |
+| 50+         | 0.60  | 0.76  |
 
 ## Known Issues
 - Model struggles with age 50+ (20% worse than 18-25)
@@ -1039,10 +1050,11 @@ optimizer:
 
 **Model performance measures**:
 
-| Metric | Overall | Age 18-25 | Age 50+ |
-|--------|---------|-----------|---------|
-| **F1 Score** | 0.68 | 0.72 | 0.60 |
-| **AUC** | 0.82 | 0.85 | 0.76 |
+| Metric       | Overall   | Age 18-25   | Age 50+   |
+| ------------ | --------- | ----------- | --------- |
+| --------     | --------- | ----------- | --------- |
+| **F1 Score** | 0.68      | 0.72        | 0.60      |
+| **AUC**      | 0.82      | 0.85        | 0.76      |
 
 **Interpretation**:
 - Model performs 20% worse for users aged 50+ (F1: 0.60 vs 0.72 for 18-25)
@@ -1084,12 +1096,13 @@ optimizer:
 
 #### Request Parameters
 
-| Parameter | Type | Required | Description | Example |
-|-----------|------|----------|-------------|---------|
-| `user_id` | string | Yes | User identifier | "12345" |
-| `num_recommendations` | integer | No | Number of items to return (default: 10, max: 50) | 10 |
-| `context.device` | string | No | Device type (web, mobile, tablet) | "mobile" |
-| `context.time_of_day` | string | No | Time of day (morning, afternoon, evening, night) | "evening" |
+| Parameter             | Type    | Required   | Description                                      | Example   |
+| --------------------- | ------- | ---------- | ------------------------------------------------ | --------- |
+| -----------           | ------  | ---------- | -------------                                    | --------- |
+| `user_id`             | string  | Yes        | User identifier                                  | "12345"   |
+| `num_recommendations` | integer | No         | Number of items to return (default: 10, max: 50) | 10        |
+| `context.device`      | string  | No         | Device type (web, mobile, tablet)                | "mobile"  |
+| `context.time_of_day` | string  | No         | Time of day (morning, afternoon, evening, night) | "evening" |
 
 #### Response
 

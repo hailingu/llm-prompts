@@ -493,18 +493,19 @@ Every key decision MUST have:
 
 ### Visual Type Selection Guide
 
-| Content Type | Recommended Visual Type | Example |
-|--------------|------------------------|---------|
-| System components & interactions | `architecture` | Browser → Backend → Database |
-| User flows & process steps | `flowchart` or `sequence` | User login flow, approval workflow |
-| Time-based events | `sequence` | API call sequence, async task timeline |
-| State transitions | `state_machine` | Order status FSM, connection lifecycle |
-| Metrics comparison | `comparison` (bar/column chart) | Before/after, A vs B performance |
-| Trends over time | `timeline` (line chart) | Monthly revenue, latency over 30 days |
-| Project schedule | `gantt` | MVP roadmap, sprint timeline |
-| Multi-dimensional trade-offs | `matrix` (2x2 matrix) | Eisenhower matrix, risk/impact |
-| Correlation analysis | `scatter` | Latency vs load, cost vs performance |
-| Data distribution | `heatmap` | Geographic data, confusion matrix |
+| Content Type                     | Recommended Visual Type         | Example                                |
+| -------------------------------- | ------------------------------- | -------------------------------------- |
+| --------------                   | ------------------------        | ---------                              |
+| System components & interactions | `architecture`                  | Browser → Backend → Database           |
+| User flows & process steps       | `flowchart` or `sequence`       | User login flow, approval workflow     |
+| Time-based events                | `sequence`                      | API call sequence, async task timeline |
+| State transitions                | `state_machine`                 | Order status FSM, connection lifecycle |
+| Metrics comparison               | `comparison` (bar/column chart) | Before/after, A vs B performance       |
+| Trends over time                 | `timeline` (line chart)         | Monthly revenue, latency over 30 days  |
+| Project schedule                 | `gantt`                         | MVP roadmap, sprint timeline           |
+| Multi-dimensional trade-offs     | `matrix` (2x2 matrix)           | Eisenhower matrix, risk/impact         |
+| Correlation analysis             | `scatter`                       | Latency vs load, cost vs performance   |
+| Data distribution                | `heatmap`                       | Geographic data, confusion matrix      |
 
 ### Content Scope Guidelines
 
