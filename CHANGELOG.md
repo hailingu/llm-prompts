@@ -16,6 +16,8 @@
 - docs(prompts): 提交信息修正 — 补充文件名引用与变更说明（见后续提交）
 - docs(readme): 更新 `README.md` 为 2026 标准并新增 `changelog-specialist` agent定义。
 - docs(templates): 移除一组已弃用的 PPT 模板（`bcg-matrix`, `gantt-chart`, `porter-five-forces`, `swot-analysis`, `waterfall-chart`, `basic_template`），以精简模板库并减少维护负担。
+- docs(agent): 修复 `agents/cortana.agent.md` 与 `.github/agents/cortana.agent.md` 中的 Mermaid 流程解析错误，
+  通过预声明节点、简化边标签与转义特殊符号来消除解析异常，并改进可读性与稳定性。
 
 ---
 

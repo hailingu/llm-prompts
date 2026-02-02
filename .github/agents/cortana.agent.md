@@ -363,85 +363,56 @@ tools: ['read', 'edit', 'search', 'execute']
 
 #### 5.2.2 任务分解与匹配流程
 
-```yaml
-step1_任务分析:
-  提取关键特征:
-    - 核心目标: 用户想达成什么？(审查代码/生成文档/设计API)
-    - 输出物: 产出是什么？(代码/Markdown文档/PPT/分析报告)
-    - 技术栈: 涉及什么技术？(Go/Java/Python/无特定语言)
-    - 特殊标识: 是否有明确的文件名？(README.md/CHANGELOG.md)
+以下流程已用 Mermaid 可视化；若需查看实现细节（包括评分权重与匹配函数），
+请参阅代码实现：`tools/agent_matching.py`。
 
-step2_Agent发现:
-  1. 扫描 agents/ 和 .github/agents/ 目录
-  2. 读取所有 *.agent.md 文件的 frontmatter
-  3. 提取 name, description, (可选)MISSION 前50字
-  4. 构建 Agent 能力索引:
-     {
-       "markdown-writer-specialist": {
-         "description": "Markdown技术文档写作专家 - 以读者为中心...",
-         "mission_preview": "让读者能在最短时间内找到所需信息并完成任务",
-         "keywords": ["Markdown", "文档", "写作", "技术文档"]
-       },
-       "go-code-reviewer": {
-         "description": "Go代码审查专家 - 确保代码质量、性能和规范",
-         "mission_preview": "审查Go代码，提供改进建议",
-         "keywords": ["Go", "代码审查", "质量"]
-       }
-     }
+```mermaid
+flowchart TD
+  S1[Step1: 提取任务特征]
+  S2[Step2: 扫描 agents/ & 读取 frontmatter]
+  S3[Step3: 计算匹配分数并排序]
+  S4{Step4: 阈值判断}
+  S5[Step5: 验证与回退]
+  A["直接委托 (delegate_to)"]
+  B["读取 MISSION 并做深度匹配"]
+  C["自己执行 (self_execute)"]
 
-step3_语义匹配:
-  对每个 Agent 计算匹配分数:
-    score = 0
-    
-    # 特定文件名精确匹配 (+100)
-    if task.target_file in ["README.md", "CHANGELOG.md", "CODE_OF_CONDUCT.md"]:
-      if task.target_file.lower().replace('.md','').replace('_','-') in agent.name:
-        score += 100
-    
-    # description 关键词匹配 (+50 per keyword)
-    task_keywords = extract_keywords(task.goal + task.output_type)
-    for keyword in task_keywords:
-      if keyword in agent.description.lower():
-        score += 50
-    
-    # 输出物类型匹配 (+30)
-    if task.output_type == "Markdown文档" and "markdown" in agent.description.lower():
-      score += 30
-    if task.output_type == "代码" and "code" in agent.description.lower():
-      score += 30
-    
-    # 技术栈匹配 (+40)
-    if task.tech_stack and task.tech_stack.lower() in agent.name:
-      score += 40
-    
-    # 工作类型匹配 (+20)
-    work_type_map = {"审查": "review", "设计": "design", "写作": "writ"}
-    for chinese, english in work_type_map.items():
-      if chinese in task.goal and english in agent.name:
-        score += 20
+  S1 --> S2
+  S2 --> S3
+  S3 --> S4
+  S4 -->|GE 100| A
+  S4 -->|50-99| B
+  B -->|匹配| A
+  B -->|不匹配| C
+  S4 -->|LT 50| C
+  A --> S5
+  C --> S5
+```
 
-step4_委托决策:
-  best_match = max(agents, key=lambda a: a.score)
-  
-  if best_match.score >= 100:
-    # 高置信度匹配 - 直接委托
-    delegate_to(best_match)
-  
-  elif best_match.score >= 50:
-    # 中等置信度 - 读取完整 MISSION 验证
-    full_mission = read_agent_mission(best_match)
-    if semantic_similarity(task, full_mission) > 0.7:
-      delegate_to(best_match)
-    else:
-      self_execute()  # 匹配不够精确，自己做
-  
-  else:
-    # 低置信度 - 自己执行
-    self_execute()
+```mermaid
+flowchart LR
+  subgraph scoring[评分细则]
+    direction TB
+    F1[文件名精确匹配 +100]
+    F2[描述关键词匹配 +50/keyword]
+    F3[输出类型匹配 +30]
+    F4[技术栈匹配 +40]
+    F5[工作类型匹配 +20]
+  end
+  scoring --> S3
+```
 
-step5_验证与回退:
-  - 委托前：向用户说明委托原因 (可选)
-  - 委托后：检查输出是否满足要求
+```mermaid
+flowchart TD
+  Verify{验证结果是否通过?} -->|是| Done[完成]
+  Verify -->|否| AutoFix[自动修复（formatter）]
+  AutoFix --> ReVerify{仍有错误?}
+  ReVerify -->|是| Report[报告并人工介入]
+  ReVerify -->|否| Done
+```
+
+> 实现说明：评分与匹配的可执行实现已迁移到 `tools/agent_matching.py`，
+> 文档中保留了可视化流程与简要注释以便审阅与决策追溯。
   - 失败回退：自己重新执行或请求用户澄清
 ```
 
@@ -664,7 +635,6 @@ trace:
 ### 6.2 可配置项
 
 | 配置项                     | 默认值                     | 说明               |
-| -------------------------- | -------------------------- | ------------------ |
 | --------                   | --------                   | ------             |
 | `max_clarification_rounds` | 2                          | 最大澄清轮数       |
 | `auto_execute_threshold`   | low-risk                   | 自动执行的风险阈值 |
