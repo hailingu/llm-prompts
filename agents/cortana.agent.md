@@ -373,13 +373,18 @@ flowchart TD
   S3[Step3: 计算匹配分数并排序]
   S4{Step4: 阈值判断}
   S5[Step5: 验证与回退]
+  A["直接委托 (delegate_to)"]
+  B["读取 MISSION 并做深度匹配"]
+  C["自己执行 (self_execute)"]
 
-  S1 --> S2 --> S3 --> S4
-  S4 -->|>= 100| A[直接委托 \n(delegate_to)]
-  S4 -->|50 - 99| B[读取 MISSION 并做深度匹配]
+  S1 --> S2
+  S2 --> S3
+  S3 --> S4
+  S4 -->|GE 100| A
+  S4 -->|50-99| B
   B -->|匹配| A
-  B -->|不匹配| C[自己执行 \n(self_execute)]
-  S4 -->|< 50| C
+  B -->|不匹配| C
+  S4 -->|LT 50| C
   A --> S5
   C --> S5
 ```
