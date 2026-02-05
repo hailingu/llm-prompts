@@ -2,9 +2,8 @@
 name: cortana
 description: 通用问题解决代理（General-purpose Problem-Solving Agent）
 tools:
-  ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'agent', '@amap/amap-maps-mcp-server/*', 'todo']
+  ['vscode', 'execute', 'read', 'edit', 'search', 'web', '@amap/amap-maps-mcp-server/*', 'agent', 'todo']
 target: github-copilot
-infer: true
 ---
 
 # Cortana：通用问题解决代理
