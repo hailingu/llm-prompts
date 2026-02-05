@@ -44,12 +44,13 @@ flowchart TD
 
 Any feedback loop between two Agents is limited to **3 iterations**.
 
-| Scenario | Allowed Iterations | After Limit |
-| -------------------------- | ----------------- | ---------------- |
-| architect ↔ api-designer | 3 | Escalate to tech-lead |
-| api-designer ↔ coder | 3 | Escalate to tech-lead |
-| coder ↔ api-designer | 3 | Escalate to tech-lead |
-| doc-writer ↔ api-designer | 3 | Escalate to tech-lead |
+| Scenario                   | Allowed Iterations | After Limit           |
+| -------------------------- | ------------------ | --------------------- |
+| -------------------------- | -----------------  | ----------------      |
+| architect ↔ api-designer   | 3                  | Escalate to tech-lead |
+| api-designer ↔ coder       | 3                  | Escalate to tech-lead |
+| coder ↔ api-designer       | 3                  | Escalate to tech-lead |
+| doc-writer ↔ api-designer  | 3                  | Escalate to tech-lead |
 
 ### Rule 2: Iteration Counting
 
@@ -110,12 +111,13 @@ escalate to @java-tech-lead
 [Detailed description of the problem]
 
 ## Iteration History Summary
-| Iteration | From | To | Summary |
-|-----------|------|-----|---------|
-| 1 | @agent1 | @agent2 | [Initial request] |
-| 2 | @agent2 | @agent1 | [Feedback: issue X] |
-| 3 | @agent1 | @agent2 | [Resubmission after changes] |
-| 4 | @agent2 | @agent1 | [Still issue Y] ← exceeded limit |
+| Iteration   | From    | To      | Summary                          |
+| ----------- | ------- | ------- | -------------------------------- |
+| ----------- | ------  | -----   | ---------                        |
+| 1           | @agent1 | @agent2 | [Initial request]                |
+| 2           | @agent2 | @agent1 | [Feedback: issue X]              |
+| 3           | @agent1 | @agent2 | [Resubmission after changes]     |
+| 4           | @agent2 | @agent1 | [Still issue Y] ← exceeded limit |
 
 ## Positions
 **@agent1 position**: [description]
@@ -159,10 +161,11 @@ Please @[upstream-agent] supply the missing items; I will update the output acco
 Because upstream did not specify the following, I produce output based on reasonable
 assumptions:
 
-| Item | Assumed Value | Impact if Wrong |
-|------|---------------|-----------------|
-| Error handling strategy | return null | may require changes to return handling |
-| Concurrency requirement | 100 QPS | may require synchronization changes |
+| Item                    | Assumed Value   | Impact if Wrong                        |
+| ----------------------- | --------------- | -------------------------------------- |
+| ------                  | --------------- | -----------------                      |
+| Error handling strategy | return null     | may require changes to return handling |
+| Concurrency requirement | 100 QPS         | may require synchronization changes    |
 
 ⚠️ **Risk**: If an assumption is incorrect, rework will be required
 
@@ -311,7 +314,8 @@ coder: "API design is broken"
 
 ## Version History
 
-| Version | Date | Changes |
-| -------- | ------ | --------- |
-| 1.1 | 2026-01-28 | Separated PPT collaboration to ppt-agent-collaboration-protocol.md |
-| 1.0 | 2026-01-24 | Initial release (Java/Go teams) |
+| Version  | Date       | Changes                                                            |
+| -------- | ---------- | ------------------------------------------------------------------ |
+| -------- | ------     | ---------                                                          |
+| 1.1      | 2026-01-28 | Separated PPT collaboration to ppt-agent-collaboration-protocol.md |
+| 1.0      | 2026-01-24 | Initial release (Java/Go teams)                                    |

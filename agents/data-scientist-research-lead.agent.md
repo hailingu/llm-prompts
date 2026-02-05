@@ -275,13 +275,14 @@ Your output must be a **Research Design Document** with the following sections:
 ## 7. Cost & Timeline Estimation
 
 ### Compute Cost Estimation
-| Phase | Resource | Duration | Est. Cost |
-|-------|----------|----------|------------|
-| Data Prep | CPU (32 cores) | 2 days | $50 |
-| Training | GPU (A100 x 4) | 5 days | $2,000 |
-| Hyperparameter Search | GPU (A100 x 4) | 3 days | $1,200 |
-| Evaluation | CPU | 1 day | $25 |
-| **Total** | | 11 days | **$3,275** |
+| Phase                 | Resource       | Duration   | Est. Cost    |
+| --------------------- | -------------- | ---------- | ------------ |
+| -------               | ----------     | ---------- | ------------ |
+| Data Prep             | CPU (32 cores) | 2 days     | $50          |
+| Training              | GPU (A100 x 4) | 5 days     | $2,000       |
+| Hyperparameter Search | GPU (A100 x 4) | 3 days     | $1,200       |
+| Evaluation            | CPU            | 1 day      | $25          |
+| **Total**             |                | 11 days    | **$3,275**   |
 
 ### Data Cost Estimation (if applicable)
 - Data acquisition: [$X]
@@ -289,15 +290,16 @@ Your output must be a **Research Design Document** with the following sections:
 - Data storage: [$X/month]
 
 ### Timeline Estimation
-| Phase | Duration | Dependencies |
-|-------|----------|---------------|
-| Research Design | 3 days | None |
-| Data Preparation | 5 days | Research approval |
-| Algorithm Design | 3 days | Research approval |
-| Implementation | 7 days | Data + Design ready |
-| Evaluation | 3 days | Implementation complete |
-| Iteration Buffer | 5 days | For 1-2 iteration cycles |
-| **Total** | **26 days** | |
+| Phase            | Duration    | Dependencies             |
+| ---------------- | ----------- | ------------------------ |
+| -------          | ----------  | ---------------          |
+| Research Design  | 3 days      | None                     |
+| Data Preparation | 5 days      | Research approval        |
+| Algorithm Design | 3 days      | Research approval        |
+| Implementation   | 7 days      | Data + Design ready      |
+| Evaluation       | 3 days      | Implementation complete  |
+| Iteration Buffer | 5 days      | For 1-2 iteration cycles |
+| **Total**        | **26 days** |                          |
 
 ### ROI Analysis
 - Estimated Business Value: [$X annual savings/revenue]
@@ -456,17 +458,18 @@ For each candidate algorithm, assess:
 ```markdown
 ## Feasibility Assessment Matrix
 
-| Criterion | Algorithm A | Algorithm B | Algorithm C |
-|-----------|-------------|-------------|-------------|
-| Theoretical fit | ✅ High | ⚠️ Medium | ✅ High |
-| Data requirements | ✅ Met | ❌ Need 10x more | ✅ Met |
-| Compute cost | ⚠️ $5K | ❌ $50K | ✅ $500 |
-| Implementation | ✅ OSS available | ⚠️ Custom needed | ✅ OSS available |
-| Latency requirement | ✅ 10ms | ❌ 500ms | ✅ 15ms |
-| Interpretability | ⚠️ SHAP needed | ❌ Black box | ✅ Native |
-| Team expertise | ✅ Familiar | ❌ New stack | ⚠️ Some experience |
-| Production readiness | ✅ Proven | ⚠️ Experimental | ✅ Proven |
-| **Overall Score** | **8/8** | **2/8** | **7/8** |
+| Criterion            | Algorithm A      | Algorithm B      | Algorithm C        |
+| -------------------- | ---------------- | ---------------- | ------------------ |
+| -----------          | -------------    | -------------    | -------------      |
+| Theoretical fit      | ✅ High          | ⚠️ Medium        | ✅ High            |
+| Data requirements    | ✅ Met           | ❌ Need 10x more | ✅ Met             |
+| Compute cost         | ⚠️ $5K           | ❌ $50K          | ✅ $500            |
+| Implementation       | ✅ OSS available | ⚠️ Custom needed | ✅ OSS available   |
+| Latency requirement  | ✅ 10ms          | ❌ 500ms         | ✅ 15ms            |
+| Interpretability     | ⚠️ SHAP needed   | ❌ Black box     | ✅ Native          |
+| Team expertise       | ✅ Familiar      | ❌ New stack     | ⚠️ Some experience |
+| Production readiness | ✅ Proven        | ⚠️ Experimental  | ✅ Proven          |
+| **Overall Score**    | **8/8**          | **2/8**          | **7/8**            |
 ```
 
 ### Step 4: Stakeholder Alignment
@@ -572,24 +575,26 @@ Once Research Design is approved:
 ## 7. Cost & Timeline Estimation
 
 ### Compute Cost
-| Phase | Resource | Duration | Est. Cost |
-|-------|----------|----------|------------|
-| Data Prep | 8-core CPU | 1 day | $20 |
-| Training | 32-core CPU | 2 days | $100 |
-| Hyperparameter Search | 32-core CPU | 3 days | $150 |
-| Evaluation | 8-core CPU | 0.5 days | $10 |
-| **Total** | | **6.5 days** | **$280** |
+| Phase                 | Resource    | Duration     | Est. Cost    |
+| --------------------- | ----------- | ------------ | ------------ |
+| -------               | ----------  | ----------   | ------------ |
+| Data Prep             | 8-core CPU  | 1 day        | $20          |
+| Training              | 32-core CPU | 2 days       | $100         |
+| Hyperparameter Search | 32-core CPU | 3 days       | $150         |
+| Evaluation            | 8-core CPU  | 0.5 days     | $10          |
+| **Total**             |             | **6.5 days** | **$280**     |
 
 ### Timeline
-| Phase | Duration |
-|-------|----------|
-| Research Design | 2 days |
-| Data Preparation | 3 days |
-| Algorithm Design | 2 days |
-| Implementation | 4 days |
-| Evaluation | 2 days |
-| Iteration Buffer | 3 days |
-| **Total** | **16 days** |
+| Phase            | Duration    |
+| ---------------- | ----------- |
+| -------          | ----------  |
+| Research Design  | 2 days      |
+| Data Preparation | 3 days      |
+| Algorithm Design | 2 days      |
+| Implementation   | 4 days      |
+| Evaluation       | 2 days      |
+| Iteration Buffer | 3 days      |
+| **Total**        | **16 days** |
 
 ### ROI Analysis
 - Current churn: 5% monthly (5,000 customers)
@@ -650,11 +655,12 @@ Once Research Design is approved:
 
 ## 7. Cost Comparison
 
-| Approach | Training Cost | Monthly Inference (100K docs) | Year 1 Total |
-|----------|--------------|-------------------------------|---------------|
-| BERT | $100 | $200 | $2,500 |
-| Longformer | $500 | $400 | $5,300 |
-| GPT-4 API | $0 | $3,000 | $36,000 |
+| Approach   | Training Cost  | Monthly Inference (100K docs)   | Year 1 Total    |
+| ---------- | -------------- | ------------------------------- | --------------- |
+| ---------- | -------------- | ------------------------------- | --------------- |
+| BERT       | $100           | $200                            | $2,500          |
+| Longformer | $500           | $400                            | $5,300          |
+| GPT-4 API  | $0             | $3,000                          | $36,000         |
 
 **Decision**: Longformer wins on cost at scale
 ```

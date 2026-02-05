@@ -117,12 +117,13 @@ As the Go Code Reviewer, your core responsibility is to perform independent code
 
 1. **Extract Contract Table from Section 10.2**:
    ```markdown
-   | Scenario | Input | Return Value | Error | HTTP Status | Retry? |
-   |----------|-------|--------------|-------|-------------|--------|
-   | Success  | Valid UUID | *User | nil | 200 | No |
-   | Not Found | Valid UUID | nil | ErrUserNotFound | 404 | No |
-   | Invalid ID | Empty string | nil | ErrInvalidInput | 400 | No |
-   | DB Timeout | Valid UUID | nil | wrapped context.DeadlineExceeded | 503 | Yes |
+| Scenario   | Input        | Return Value   | Error                            | HTTP Status   | Retry?   |
+| ---------- | ------------ | -------------- | -------------------------------- | ------------- | -------- |
+| ---------- | -------      | -------------- | -------                          | ------------- | -------- |
+| Success    | Valid UUID   | *User          | nil                              | 200           | No       |
+| Not Found  | Valid UUID   | nil            | ErrUserNotFound                  | 404           | No       |
+| Invalid ID | Empty string | nil            | ErrInvalidInput                  | 400           | No       |
+| DB Timeout | Valid UUID   | nil            | wrapped context.DeadlineExceeded | 503           | Yes      |
    ```
 
 2. **For Each Scenario, Find Implementation**:
@@ -305,12 +306,13 @@ Generate a detailed review report with the following sections:
 **Overall Status**: NEEDS_REVISION
 
 ### Statistics
-| Category | Pass | Fail | Total |
-|----------|------|------|-------|
-| Contract Compliance | 8 | 2 | 10 |
-| Effective Go Standards | 15 | 3 | 18 |
-| Test Coverage | 4 | 1 | 5 |
-| Static Analysis | 20 | 0 | 20 |
+| Category               | Pass   | Fail   | Total   |
+| ---------------------- | ------ | ------ | ------- |
+| ----------             | ------ | ------ | ------- |
+| Contract Compliance    | 8      | 2      | 10      |
+| Effective Go Standards | 15     | 3      | 18      |
+| Test Coverage          | 4      | 1      | 5       |
+| Static Analysis        | 20     | 0      | 20      |
 
 ### Critical Issues (Must Fix)
 
@@ -376,11 +378,12 @@ return nil, ErrUserNotFound
 **Remaining Iterations**: 1
 
 **Previous Issues Status**:
-| Issue | Status |
-|-------|--------|
-| Issue 1: Contract violation | ✅ Fixed |
-| Issue 2: Missing error check | ❌ Not Fixed |
-| Issue 3: Naming convention | ⚠️ Partially Fixed |
+| Issue                        | Status             |
+| ---------------------------- | ------------------ |
+| -------                      | --------           |
+| Issue 1: Contract violation  | ✅ Fixed           |
+| Issue 2: Missing error check | ❌ Not Fixed       |
+| Issue 3: Naming convention   | ⚠️ Partially Fixed |
 
 **Remaining Issues**: See detailed report below
 
@@ -451,14 +454,15 @@ graph TD
 
 ### Decision Rules
 
-| Scenario | Critical | Major | Minor | Coverage | Static | Decision |
-|----------|----------|-------|-------|----------|--------|----------|
-| Perfect code | 0 | 0 | 0 | ≥80% | Pass | APPROVED |
-| Minor issues only | 0 | 0 | >0 | ≥80% | Pass | APPROVED (with notes) |
-| Major issues, first review | 0 | >0 | Any | Any | Any | NEEDS_REVISION (1/3) |
-| Critical issues, iteration <3 | >0 | Any | Any | Any | Any | NEEDS_REVISION |
-| Critical issues, iteration =3 | >0 | Any | Any | Any | Any | ESCALATE |
-| Contract unimplementable | N/A | N/A | N/A | N/A | N/A | REJECTED |
+| Scenario                      | Critical   | Major   | Minor   | Coverage   | Static   | Decision              |
+| ----------------------------- | ---------- | ------- | ------- | ---------- | -------- | --------------------- |
+| ----------                    | ---------- | ------- | ------- | ---------- | -------- | ----------            |
+| Perfect code                  | 0          | 0       | 0       | ≥80%       | Pass     | APPROVED              |
+| Minor issues only             | 0          | 0       | >0      | ≥80%       | Pass     | APPROVED (with notes) |
+| Major issues, first review    | 0          | >0      | Any     | Any        | Any      | NEEDS_REVISION (1/3)  |
+| Critical issues, iteration <3 | >0         | Any     | Any     | Any        | Any      | NEEDS_REVISION        |
+| Critical issues, iteration =3 | >0         | Any     | Any     | Any        | Any      | ESCALATE              |
+| Contract unimplementable      | N/A        | N/A     | N/A     | N/A        | N/A      | REJECTED              |
 
 ### APPROVED (LGTM)
 
@@ -736,16 +740,17 @@ go test -bench=. -benchmem ./...
 
 **Command Reference Summary**:
 
-| Tool | Command | Purpose | Expected Result |
-|------|---------|---------|-----------------|
-| gofmt | `gofmt -l .` | Format check | 0 unformatted files |
-| goimports | `goimports -l .` | Import check | All imports organized |
-| go vet | `go vet ./...` | Static analysis | 0 issues |
-| staticcheck | `staticcheck ./...` | Advanced linting | 0 issues |
-| golangci-lint | `golangci-lint run` | Comprehensive linting | 0 critical/high issues |
-| go build | `go build ./...` | Compilation | Success |
-| go test -race | `go test -race ./...` | Race detection | 0 races |
-| go test -cover | `go test -cover ./...` | Test coverage | ≥80% |
+| Tool           | Command                | Purpose               | Expected Result        |
+| -------------- | ---------------------- | --------------------- | ---------------------- |
+| ------         | ---------              | ---------             | -----------------      |
+| gofmt          | `gofmt -l .`           | Format check          | 0 unformatted files    |
+| goimports      | `goimports -l .`       | Import check          | All imports organized  |
+| go vet         | `go vet ./...`         | Static analysis       | 0 issues               |
+| staticcheck    | `staticcheck ./...`    | Advanced linting      | 0 issues               |
+| golangci-lint  | `golangci-lint run`    | Comprehensive linting | 0 critical/high issues |
+| go build       | `go build ./...`       | Compilation           | Success                |
+| go test -race  | `go test -race ./...`  | Race detection        | 0 races                |
+| go test -cover | `go test -cover ./...` | Test coverage         | ≥80%                   |
 
 **Priority Levels**:
 

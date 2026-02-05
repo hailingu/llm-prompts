@@ -1,0 +1,37 @@
+# Commands for md-table-fixer
+
+commands:
+  - name: detect
+    cmd: "python3 skills/md-table-fixer/bin/md_table_tool.py detect {path}"
+    description: "Detect misaligned Markdown tables under path (file or directory)."
+    arguments:
+      - name: path
+        type: string
+        required: true
+    exit_codes:
+      0: "no misaligned tables"
+      1: "misaligned tables found"
+      2: "runtime or configuration error"
+    outputs_schema:
+      file_path: string
+      misaligned_tables: [string]
+    example_invocations:
+      - "python3 tools/md_table_tool.py detect docs/"
+
+  - name: fix
+    cmd: "python3 skills/md-table-fixer/bin/md_table_tool.py fix {path}"
+    description: "Fix misaligned Markdown tables (creates .bak backups)."
+    arguments:
+      - name: path
+        type: string
+        required: true
+    exit_codes:
+      0: "tables fixed or none found"
+      1: "some tables failed to fix"
+      2: "runtime or configuration error"
+    outputs_schema:
+      file_path: string
+      tables_fixed: int
+      actions_taken: [string]
+    example_invocations:
+      - "python3 tools/md_table_tool.py fix docs/"

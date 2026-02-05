@@ -73,14 +73,15 @@ graph LR
 
 **各阶段权重分配**（总分100分）：
 
-| Stage | 权重 | Pass门槛 | 检查内容 |
-|-------|------|---------|---------|
-| Stage 1: Schema Validation | 10% | 无critical缺失 | design_spec.json和slides.md结构完整性 |
-| Stage 2: Content Quality | 15% | 无critical问题 | McKinsey Pyramid Principle、SCQA结构、bullets数量 |
-| Stage 3: Design Compliance | 12% | Token使用率≥90% | 颜色/字体/间距必须来自design_spec，禁止hardcoded值 |
-| Stage 4: Accessibility | 25% | WCAG AA合规 | 对比度/层次/留白/对齐/字体/认知负荷（6维度） |
-| Stage 5: Performance Budget | 18% | 文件≤50MB | PPTX大小、图片DPI、字体子集大小 |
-| Stage 6: Technical Validation | 20% | 无critical错误 | PPTX完整性、字体覆盖、布局bounds |
+| Stage                         | 权重   | Pass门槛        | 检查内容                                           |
+| ----------------------------- | ------ | --------------- | -------------------------------------------------- |
+| -------                       | ------ | ---------       | ---------                                          |
+| Stage 1: Schema Validation    | 10%    | 无critical缺失  | design_spec.json和slides.md结构完整性              |
+| Stage 2: Content Quality      | 15%    | 无critical问题  | McKinsey Pyramid Principle、SCQA结构、bullets数量  |
+| Stage 3: Design Compliance    | 12%    | Token使用率≥90% | 颜色/字体/间距必须来自design_spec，禁止hardcoded值 |
+| Stage 4: Accessibility        | 25%    | WCAG AA合规     | 对比度/层次/留白/对齐/字体/认知负荷（6维度）       |
+| Stage 5: Performance Budget   | 18%    | 文件≤50MB       | PPTX大小、图片DPI、字体子集大小                    |
+| Stage 6: Technical Validation | 20%    | 无critical错误  | PPTX完整性、字体覆盖、布局bounds                   |
 
 **总分计算公式**：
 ```python
@@ -100,13 +101,14 @@ result = 'PASS' if overall_score >= pass_threshold else 'FAIL'
 
 ### 1.2 评分等级
 
-| 分数区间 | 等级 | 描述 | 行动建议 |
-|---------|------|------|---------|
-| 90-100 | A | 优秀 | 可直接发布，符合所有标准 |
-| 80-89 | B | 良好 | 建议修复minor问题后发布 |
-| 70-79 | C | 合格 | 必须修复所有major问题 |
-| 60-69 | D | 不合格 | 禁止发布，需要重大改进 |
-| 0-59 | F | 失败 | 禁止发布，需要完全重构 |
+| 分数区间  | 等级   | 描述   | 行动建议                 |
+| --------- | ------ | ------ | ------------------------ |
+| --------- | ------ | ------ | ---------                |
+| 90-100    | A      | 优秀   | 可直接发布，符合所有标准 |
+| 80-89     | B      | 良好   | 建议修复minor问题后发布  |
+| 70-79     | C      | 合格   | 必须修复所有major问题    |
+| 60-69     | D      | 不合格 | 禁止发布，需要重大改进   |
+| 0-59      | F      | 失败   | 禁止发布，需要完全重构   |
 
 ---
 
@@ -136,13 +138,14 @@ result = 'PASS' if overall_score >= pass_threshold else 'FAIL'
 
 **检查项**：
 
-| 检查维度 | 标准 | Severity |
-|---------|------|---------|
-| Key Decisions slide位置 | 前5页内 | critical |
-| Bullets数量 | Executive≤3, Technical≤5 | major |
-| Speaker notes覆盖率 | ≥80% | major |
-| Visual coverage | ≥30% | minor |
-| SCQA结构完整性 | 3个部分齐全 | major |
+| 检查维度                | 标准                     | Severity  |
+| ----------------------- | ------------------------ | --------- |
+| ---------               | ------                   | --------- |
+| Key Decisions slide位置 | 前5页内                  | critical  |
+| Bullets数量             | Executive≤3, Technical≤5 | major     |
+| Speaker notes覆盖率     | ≥80%                     | major     |
+| Visual coverage         | ≥30%                     | minor     |
+| SCQA结构完整性          | 3个部分齐全              | major     |
 
 **McKinsey Pyramid Principle合规性**：
 - 每页必须有清晰的key message（标题即结论）
@@ -172,14 +175,15 @@ compliance_rate = (使用token的元素数) / (总元素数)
 
 **权重分配**（Stage 4内部，总计25%）：
 
-| 维度 | 权重 | 标准 | Pass门槛 |
-|------|------|------|---------|
-| 对比度 (Contrast) | 20% | WCAG 2.1 AA: 正文≥4.5:1, 标题≥3:1 | 所有文字≥阈值 |
-| 层次 (Hierarchy) | 18% | 标题≥32pt, 标题/正文比≥1.8 | 符合3:2:1比例 |
-| 留白 (Whitespace) | 18% | 内容密度40-60% | 密度≤70% |
-| 对齐 (Alignment) | 18% | 8px网格对齐 | 对齐率≥80% |
-| 字体 (Typography) | 13% | ≤2种字体, 行距1.5-1.8 | 无混用 |
-| 认知负荷 (Cognitive Load) | 13% | CLT总分≤30 | 无critical负荷 |
+| 维度                      | 权重   | 标准                              | Pass门槛       |
+| ------------------------- | ------ | --------------------------------- | -------------- |
+| ------                    | ------ | ------                            | ---------      |
+| 对比度 (Contrast)         | 20%    | WCAG 2.1 AA: 正文≥4.5:1, 标题≥3:1 | 所有文字≥阈值  |
+| 层次 (Hierarchy)          | 18%    | 标题≥32pt, 标题/正文比≥1.8        | 符合3:2:1比例  |
+| 留白 (Whitespace)         | 18%    | 内容密度40-60%                    | 密度≤70%       |
+| 对齐 (Alignment)          | 18%    | 8px网格对齐                       | 对齐率≥80%     |
+| 字体 (Typography)         | 13%    | ≤2种字体, 行距1.5-1.8             | 无混用         |
+| 认知负荷 (Cognitive Load) | 13%    | CLT总分≤30                        | 无critical负荷 |
 
 ### 3.1 对比度检查 (Contrast)
 
@@ -449,13 +453,14 @@ load2 = calculate_cognitive_load(slide2)
 
 **性能预算标准**：
 
-| 检查项 | 限制 | Severity |
-|-------|------|---------|
-| PPTX总大小 | ≤50MB | critical |
-| 单个图片大小 | ≤5MB | major |
-| 图表DPI | ≥300 | minor |
-| 照片DPI | ≥200 | minor |
-| 字体子集大小 | ≤500KB | minor |
+| 检查项       | 限制   | Severity  |
+| ------------ | ------ | --------- |
+| -------      | ------ | --------- |
+| PPTX总大小   | ≤50MB  | critical  |
+| 单个图片大小 | ≤5MB   | major     |
+| 图表DPI      | ≥300   | minor     |
+| 照片DPI      | ≥200   | minor     |
+| 字体子集大小 | ≤500KB | minor     |
 
 **评分规则**：
 - Critical超标：扣25分/项
@@ -466,13 +471,14 @@ load2 = calculate_cognitive_load(slide2)
 
 **检查项**：
 
-| 检查维度 | 标准 | Severity |
-|---------|------|---------|
-| PPTX文件完整性 | 可被PowerPoint打开 | critical |
-| 中文字体字符覆盖 | 100%覆盖slides.md中的中文字符 | critical |
-| 布局aspect ratio | 16:9 (1.778) 或 4:3 (1.333) | major |
-| Diagrams存在性 | 所有VISUAL blocks对应图片存在 | major |
-| Speaker notes长度 | ≤10000字符/页 | minor |
+| 检查维度          | 标准                          | Severity  |
+| ----------------- | ----------------------------- | --------- |
+| ---------         | ------                        | --------- |
+| PPTX文件完整性    | 可被PowerPoint打开            | critical  |
+| 中文字体字符覆盖  | 100%覆盖slides.md中的中文字符 | critical  |
+| 布局aspect ratio  | 16:9 (1.778) 或 4:3 (1.333)   | major     |
+| Diagrams存在性    | 所有VISUAL blocks对应图片存在 | major     |
+| Speaker notes长度 | ≤10000字符/页                 | minor     |
 
 **评分规则**：
 - Critical错误：扣30分/项

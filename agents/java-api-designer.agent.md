@@ -316,12 +316,13 @@ try {
 
 ### 12.1 Thread Safety Contract
 
-| Class/Interface | Thread Safety | Rationale | Implementation Constraint |
-|----------------|---------------|-----------|--------------------------|
-| SubscriptionVerifier | Thread-safe (can be called concurrently by multiple threads) | System must support 100 QPS; multiple request threads may access concurrently | All internal state must be immutable or use concurrent data structures |
-| Subscription (entity) | Immutable | Will be passed between threads; must avoid race conditions | All fields final; do not provide setter methods |
-| ConfigProvider | Thread-safe (read-only) | Multiple threads will read configuration | Use volatile or immutable configuration objects |
-| PeriodicCheckScheduler | Not thread-safe | Start/stop should only be invoked from the main thread | No synchronization required |
+| Class/Interface        | Thread Safety                                                | Rationale                                                                     | Implementation Constraint                                              |
+| ---------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| ----------------       | ---------------                                              | -----------                                                                   | --------------------------                                             |
+| SubscriptionVerifier   | Thread-safe (can be called concurrently by multiple threads) | System must support 100 QPS; multiple request threads may access concurrently | All internal state must be immutable or use concurrent data structures |
+| Subscription (entity)  | Immutable                                                    | Will be passed between threads; must avoid race conditions                    | All fields final; do not provide setter methods                        |
+| ConfigProvider         | Thread-safe (read-only)                                      | Multiple threads will read configuration                                      | Use volatile or immutable configuration objects                        |
+| PeriodicCheckScheduler | Not thread-safe                                              | Start/stop should only be invoked from the main thread                        | No synchronization required                                            |
 
 ### 12.2 Method-Level Concurrency Contract
 
@@ -377,11 +378,12 @@ try {
 
 ### 6.2 Thread Safety Requirements
 
-| Class/Interface | Thread Safety | Rationale |
-|----------------|---------------|-----------|
-| SubscriptionVerifier | Thread-safe | Shared instance across multiple request threads |
-| Subscription (entity) | Immutable | Passed between threads, must be immutable |
-| SubscriptionRepository | Thread-safe | Accessed by multiple verifier instances |
+| Class/Interface        | Thread Safety   | Rationale                                       |
+| ---------------------- | --------------- | ----------------------------------------------- |
+| ----------------       | --------------- | -----------                                     |
+| SubscriptionVerifier   | Thread-safe     | Shared instance across multiple request threads |
+| Subscription (entity)  | Immutable       | Passed between threads, must be immutable       |
+| SubscriptionRepository | Thread-safe     | Accessed by multiple verifier instances         |
 
 ### 6.3 Concurrency Patterns
 - **Caching**: Use thread-safe cache for verified subscriptions (5-minute TTL)

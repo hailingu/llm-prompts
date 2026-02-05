@@ -346,13 +346,14 @@ The algorithm design is comprehensive and ready for implementation.
 
 ### Final Decision Matrix
 
-| Scenario | Val F1 | Test F1 | Overfitting? | Data Leakage? | Decision |
-|----------|--------|---------|--------------|---------------|----------|
-| Ideal | >= Target | >= Target | No | No | ✅ APPROVE |
-| Good | >= Target | Close to target | Minor | No | ✅ APPROVE (with monitoring) |
-| Borderline | < Target | Close to target | No | No | ⚠️ ONE MORE ITERATION |
-| Poor | << Target | << Target | Severe | No | ❌ REJECT - Redesign |
-| Critical | Any | Any | Any | Yes | ❌ REJECT - Fix leakage |
+| Scenario   | Val F1    | Test F1         | Overfitting?   | Data Leakage?   | Decision                     |
+| ---------- | --------- | --------------- | -------------- | --------------- | ---------------------------- |
+| ---------- | --------  | ---------       | -------------- | --------------- | ----------                   |
+| Ideal      | >= Target | >= Target       | No             | No              | ✅ APPROVE                   |
+| Good       | >= Target | Close to target | Minor          | No              | ✅ APPROVE (with monitoring) |
+| Borderline | < Target  | Close to target | No             | No              | ⚠️ ONE MORE ITERATION        |
+| Poor       | << Target | << Target       | Severe         | No              | ❌ REJECT - Redesign         |
+| Critical   | Any       | Any             | Any            | Yes             | ❌ REJECT - Fix leakage      |
 
 ### Decision Actions
 
@@ -596,12 +597,13 @@ pytest --cov=src --cov-report=term-missing
 ```markdown
 ## Iteration Tracking
 
-| Phase | From | To | Iteration | Max | Status |
-|-------|------|-----|-----------|-----|--------|
-| Research | research-lead | algorithm-designer | 2 | 3 | ✅ OK |
-| Algorithm Design | algorithm-designer | engineer | 1 | 3 | ✅ OK |
-| Implementation | engineer | evaluator | 3 | 5 | ⚠️ Monitor |
-| Evaluation | evaluator | algorithm-designer | 4 | 5 | ⚠️ Last Iteration |
+| Phase            | From               | To                 | Iteration   | Max   | Status            |
+| ---------------- | ------------------ | ------------------ | ----------- | ----- | ----------------- |
+| -------          | ------             | -----              | ----------- | ----- | --------          |
+| Research         | research-lead      | algorithm-designer | 2           | 3     | ✅ OK             |
+| Algorithm Design | algorithm-designer | engineer           | 1           | 3     | ✅ OK             |
+| Implementation   | engineer           | evaluator          | 3           | 5     | ⚠️ Monitor        |
+| Evaluation       | evaluator          | algorithm-designer | 4           | 5     | ⚠️ Last Iteration |
 ```
 
 ### Timeout Handling
@@ -859,13 +861,14 @@ All major decisions must be documented:
 ```markdown
 ## Daily Agent Status Check
 
-| Agent | Current Task | Status | Last Update | Blocked? |
-|-------|--------------|--------|-------------|----------|
-| research-lead | Research Design | ✅ Completed | 2026-01-25 | No |
-| data-engineer | Data Pipeline | 🔄 In Progress | 2026-01-26 | No |
-| algorithm-designer | Waiting for data | ⏳ Waiting | 2026-01-26 | Yes (24h) |
-| engineer | Not started | ⬜ Pending | - | No |
-| evaluator | Not started | ⬜ Pending | - | No |
+| Agent              | Current Task     | Status         | Last Update   | Blocked?   |
+| ------------------ | ---------------- | -------------- | ------------- | ---------- |
+| -------            | --------------   | --------       | ------------- | ---------- |
+| research-lead      | Research Design  | ✅ Completed   | 2026-01-25    | No         |
+| data-engineer      | Data Pipeline    | 🔄 In Progress | 2026-01-26    | No         |
+| algorithm-designer | Waiting for data | ⏳ Waiting     | 2026-01-26    | Yes (24h)  |
+| engineer           | Not started      | ⬜ Pending     | -             | No         |
+| evaluator          | Not started      | ⬜ Pending     | -             | No         |
 
 **Action Required**: Unblock algorithm-designer by checking data-engineer progress
 ```

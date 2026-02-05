@@ -1,0 +1,40 @@
+name: md-table-fixer
+version: 1.0.0
+schema_version: 1
+description: "Detect and fix Markdown table alignment (MD060). Display-width aware (CJK support)."
+owner: markdown-writer-specialist
+category: formatting
+tags:
+  - markdown
+  - tables
+  - md060
+dependencies:
+  - python3/tools/md_table_tool.py
+integration:
+  agents:
+    - markdown-writer-specialist
+last_updated: 2026-02-05
+
+readme: README.md
+commands: commands.yml
+examples: examples.yml
+
+outputs:
+  success:
+    description: "Table(s) fixed or none found"
+    fields:
+      file_path: string
+      tables_fixed: int
+      actions_taken: [string]
+  partial:
+    description: "Some tables failed to fix"
+    fields:
+      file_path: string
+      tables_fixed: int
+      failed_tables: [string]
+      actions_taken: [string]
+  error:
+    description: "Runtime or configuration error"
+    fields:
+      error_message: string
+      hint: string

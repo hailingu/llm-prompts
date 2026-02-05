@@ -32,12 +32,13 @@
 
 **Example Contract Table**:
 
-| Scenario | Category | Return Value | Exception | HTTP Status |
-| ------------- | ---------- | -------------- | ----------- | -------- |
-| Resource not found | Business | `null` | - | 404 |
-| Resource expired | Business | `null` | - | 200 (with status field) |
-| Network timeout | Infrastructure | - | `IOException(SocketTimeoutException)` | 503 |
-| Invalid parameter | Programming | - | `IllegalArgumentException` | 400 |
+| Scenario           | Category       | Return Value   | Exception                             | HTTP Status             |
+| ------------------ | -------------- | -------------- | ------------------------------------- | ----------------------- |
+| -------------      | ----------     | -------------- | -----------                           | --------                |
+| Resource not found | Business       | `null`         | -                                     | 404                     |
+| Resource expired   | Business       | `null`         | -                                     | 200 (with status field) |
+| Network timeout    | Infrastructure | -              | `IOException(SocketTimeoutException)` | 503                     |
+| Invalid parameter  | Programming    | -              | `IllegalArgumentException`            | 400                     |
 
 **Code Template**:
 
@@ -177,26 +178,27 @@ private <T> T retryable(Supplier<T> operation, String operationName) throws IOEx
 
 **Google AIP Reference**: [AIP-193: HTTP Status Codes](https://google.aip.dev/193)
 
-| HTTP Status | Scenario | Return Value | Exception | Retry? |
-| ------------- | ---------- | -------------- | ----------- | -------- |
-| **2xx Success** | | | | |
-| 200 OK | Successful operation | Object | - | No |
-| 201 Created | Resource created | Object | - | No |
-| 204 No Content | Successful deletion | void | - | No |
-| **3xx Redirection** | | | | |
-| 304 Not Modified | Resource unchanged | null | - | No |
-| **4xx Client Errors** (DO NOT RETRY) | | | | |
-| 400 Bad Request | Invalid input format | - | `IllegalArgumentException` | No |
-| 401 Unauthorized | Invalid credentials | - | `SecurityException` | No |
-| 403 Forbidden | Permission denied | - | `SecurityException` | No |
-| 404 Not Found | Resource doesn't exist | null | - | No |
-| 409 Conflict | Version conflict | - | `ConcurrentModificationException` | No |
-| 429 Too Many Requests | Rate limit exceeded | - | `RateLimitException` | Yes (with backoff) |
-| **5xx Server Errors** (RETRY) | | | | |
-| 500 Internal Server Error | Server bug | - | `IOException` | Yes |
-| 502 Bad Gateway | Proxy error | - | `IOException` | Yes |
-| 503 Service Unavailable | Server overload/maintenance | - | `IOException` | Yes |
-| 504 Gateway Timeout | Upstream timeout | - | `IOException` | Yes |
+| HTTP Status                          | Scenario                    | Return Value   | Exception                         | Retry?             |
+| ------------------------------------ | --------------------------- | -------------- | --------------------------------- | ------------------ |
+| -------------                        | ----------                  | -------------- | -----------                       | --------           |
+| **2xx Success**                      |                             |                |                                   |                    |
+| 200 OK                               | Successful operation        | Object         | -                                 | No                 |
+| 201 Created                          | Resource created            | Object         | -                                 | No                 |
+| 204 No Content                       | Successful deletion         | void           | -                                 | No                 |
+| **3xx Redirection**                  |                             |                |                                   |                    |
+| 304 Not Modified                     | Resource unchanged          | null           | -                                 | No                 |
+| **4xx Client Errors** (DO NOT RETRY) |                             |                |                                   |                    |
+| 400 Bad Request                      | Invalid input format        | -              | `IllegalArgumentException`        | No                 |
+| 401 Unauthorized                     | Invalid credentials         | -              | `SecurityException`               | No                 |
+| 403 Forbidden                        | Permission denied           | -              | `SecurityException`               | No                 |
+| 404 Not Found                        | Resource doesn't exist      | null           | -                                 | No                 |
+| 409 Conflict                         | Version conflict            | -              | `ConcurrentModificationException` | No                 |
+| 429 Too Many Requests                | Rate limit exceeded         | -              | `RateLimitException`              | Yes (with backoff) |
+| **5xx Server Errors** (RETRY)        |                             |                |                                   |                    |
+| 500 Internal Server Error            | Server bug                  | -              | `IOException`                     | Yes                |
+| 502 Bad Gateway                      | Proxy error                 | -              | `IOException`                     | Yes                |
+| 503 Service Unavailable              | Server overload/maintenance | -              | `IOException`                     | Yes                |
+| 504 Gateway Timeout                  | Upstream timeout            | -              | `IOException`                     | Yes                |
 
 **Code Template**:
 
@@ -338,13 +340,14 @@ public class SubscriptionCache {
 
 **Reference**: [Google Java Style Guide - Logging](https://google.github.io/styleguide/javaguide.html)
 
-| Level | When to Use | Example |
-| ------------- | ----------- | ------- |
-| **ERROR** | System failure, requires immediate attention | Database connection failure, external API down |
-| **WARN** | Unexpected but handled situation | Retry attempt, deprecated API usage, rate limit approached |
-| **INFO** | Business-level events | User login, order created, subscription expired |
-| **DEBUG** | Detailed diagnostic info (disabled in production) | Method entry/exit, variable values |
-| **TRACE** | Very detailed flow (disabled in production) | Loop iterations, conditional branches |
+| Level         | When to Use                                       | Example                                                    |
+| ------------- | ------------------------------------------------- | ---------------------------------------------------------- |
+| ------------- | -----------                                       | -------                                                    |
+| **ERROR**     | System failure, requires immediate attention      | Database connection failure, external API down             |
+| **WARN**      | Unexpected but handled situation                  | Retry attempt, deprecated API usage, rate limit approached |
+| **INFO**      | Business-level events                             | User login, order created, subscription expired            |
+| **DEBUG**     | Detailed diagnostic info (disabled in production) | Method entry/exit, variable values                         |
+| **TRACE**     | Very detailed flow (disabled in production)       | Loop iterations, conditional branches                      |
 
 **Code Template**:
 

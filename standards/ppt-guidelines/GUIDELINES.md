@@ -234,14 +234,15 @@ logo_only_on_title_end: true  # Logo仅首尾页
 
 ## 哲学组合策略（按场景选择）
 
-| 演示类型 | 推荐哲学组合 | 关键规则 |
-|---------|------------|---------|
-| 技术架构评审 | Assertion-Evidence + Tufte | 论断标题，图表强制，Y轴从0，数据来源 |
-| 融资路演 (Pitch) | 10/20/30 Rule + Pyramid Principle | ≤10页，30pt字号，结论前置，SCQA |
-| 产品发布会 | Presentation Zen + Signal vs Noise | ≤3 bullets，60%留白，无装饰，视觉优先 |
-| 学术报告 | Assertion-Evidence + Tufte | 论断句，完整标注，来源强制 |
-| 快节奏演讲 | Takahashi + Signal vs Noise | ≤3词/页，80pt字号，无噪音 |
-| 战略咨询 | Pyramid Principle + Tufte | SCQA框架，Executive Summary，数据诚信 |
+| 演示类型         | 推荐哲学组合                       | 关键规则                              |
+| ---------------- | ---------------------------------- | ------------------------------------- |
+| ---------        | ------------                       | ---------                             |
+| 技术架构评审     | Assertion-Evidence + Tufte         | 论断标题，图表强制，Y轴从0，数据来源  |
+| 融资路演 (Pitch) | 10/20/30 Rule + Pyramid Principle  | ≤10页，30pt字号，结论前置，SCQA       |
+| 产品发布会       | Presentation Zen + Signal vs Noise | ≤3 bullets，60%留白，无装饰，视觉优先 |
+| 学术报告         | Assertion-Evidence + Tufte         | 论断句，完整标注，来源强制            |
+| 快节奏演讲       | Takahashi + Signal vs Noise        | ≤3词/页，80pt字号，无噪音             |
+| 战略咨询         | Pyramid Principle + Tufte          | SCQA框架，Executive Summary，数据诚信 |
 
 ---
 
@@ -557,13 +558,14 @@ slides = generate_bcg_matrix(template, business_units)
 
 ### 模板选择指南
 
-| 分析目标 | 推荐模板 | 关键输出 |
-|---------|---------|---------|
-| 评估业务组合 | BCG Matrix | 资源分配优先级 |
-| 识别优劣势 | SWOT Analysis | 战略方向（SO/WT） |
-| 评估行业吸引力 | Porter's Five Forces | 进入/退出决策 |
-| 制定项目计划 | Gantt Chart | 时间线+关键路径 |
-| 分析利润变化 | Waterfall Chart | 贡献因素分解 |
+| 分析目标       | 推荐模板             | 关键输出          |
+| -------------- | -------------------- | ----------------- |
+| ---------      | ---------            | ---------         |
+| 评估业务组合   | BCG Matrix           | 资源分配优先级    |
+| 识别优劣势     | SWOT Analysis        | 战略方向（SO/WT） |
+| 评估行业吸引力 | Porter's Five Forces | 进入/退出决策     |
+| 制定项目计划   | Gantt Chart          | 时间线+关键路径   |
+| 分析利润变化   | Waterfall Chart      | 贡献因素分解      |
 
 ---
 

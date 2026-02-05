@@ -1,0 +1,67 @@
+# Machine-friendly command definitions for automation
+
+commands:
+
+- name: lint
+    cmd: "npx markdownlint-cli {path}"
+    description: "Run markdownlint on a file or directory and emit a machine-readable report."
+    arguments:
+  - name: path
+        type: string
+        description: "Path to file or directory to lint"
+        required: true
+    exit_codes:
+      0: "no errors"
+      1: "errors found"
+      2: "configuration or runtime error"
+    outputs_schema:
+      status: string # success|partial|error
+      file_path: string
+      errors_before: int
+      errors_after: int
+      remaining_errors:
+    - line: int
+          rule: string
+          message: string
+      actions_taken: [string]
+    example_invocations:
+  - "npx markdownlint-cli docs/example.md"
+
+- name: fix
+    cmd: "npx markdownlint-cli --fix {path}"
+    description: "Attempt to auto-fix fixable markdownlint issues using --fix."
+    arguments:
+  - name: path
+        type: string
+        required: true
+    exit_codes:
+      0: "all issues fixed or no issues"
+      1: "remaining issues after fix"
+      2: "configuration or runtime error"
+    outputs_schema:
+      status: string # success|partial|error
+      file_path: string
+      errors_before: int
+      errors_after: int
+      actions_taken: [string]
+    example_invocations:
+  - "npx markdownlint-cli --fix docs/example.md"
+
+- name: table_fix
+    cmd: "python3 tools/md_table_tool.py fix {path}"
+    description: "Fix markdown table alignment using the project md_table_tool.py."
+    arguments:
+  - name: path
+        type: string
+        required: true
+    exit_codes:
+      0: "tables fixed or none found"
+      1: "some tables failed to fix"
+      2: "tool runtime error"
+    outputs_schema:
+      status: string # success|partial|error
+      file_path: string
+      tables_fixed: int
+      actions_taken: [string]
+    example_invocations:
+  - "python3 tools/md_table_tool.py fix docs/example.md"
