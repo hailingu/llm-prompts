@@ -182,13 +182,17 @@ audience:
 
 ### 6.1 格式层（自动化，阻断性）
 
-**格式验证由 `markdown-formatter.skill` 保证**：
+**格式验证由 `skills/markdown-formatter` 提供（见 `skills/markdown-formatter/manifest.yml` 与 `skills/markdown-formatter/README.md`）。**
+
+推荐使用 manifest 中定义的命令（`lint` / `fix` / `table_fix`），示例：
 
 ```yaml
-tool: markdown-formatter.skill
+# 推荐的 agent 命令调用（使用 manifest 中的 commands）
+tool: skills/markdown-formatter/manifest.yml
 commands:
-  - npx markdownlint-cli --fix {file}        # 自动修复基础格式
-  - python3 tools/md_table_tool.py fix {file} # 修复表格对齐
+  - lint: "npx markdownlint-cli {file}"
+  - fix: "npx markdownlint-cli --fix {file}"
+  - table_fix: "python3 tools/md_table_tool.py fix {file}"
 threshold: 0 errors
 config: .markdownlint.json
 ```
@@ -436,7 +440,7 @@ flowchart TD
 
 **关于步骤 6（格式验证与修复）**：
 
-使用 `markdown-formatter.skill` 确保格式合规：
+使用 `skills/markdown-formatter`（见 `skills/markdown-formatter/manifest.yml`） 确保格式合规：
 
 ```bash
 # 检测格式问题
@@ -463,7 +467,7 @@ run_in_terminal: npx markdownlint-cli {output_path}
 ```mermaid
 flowchart TD
     Start([开始审阅]) --> Check1{markdownlint<br/>通过?}
-    Check1 -->|否| Fail1[❌ 格式不合规<br/>运行 markdown-formatter.skill]
+    Check1 -->|否| Fail1[❌ 格式不合规<br/>运行 `skills/markdown-formatter` 中的命令（manifest 中定义）]
     Check1 -->|是| Check2{结构符合<br/>类型模式?}
     Check2 -->|否| Fail2[❌ 补充缺失 sections]
     Check2 -->|是| Check3{首段<br/>清晰?}

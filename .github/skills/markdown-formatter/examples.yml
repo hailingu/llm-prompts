@@ -1,0 +1,36 @@
+# Structured examples for automated tests
+
+- name: lint_detects_issues
+  input:
+    path: tests/fixtures/with_issues.md
+    command: lint
+  expected_output:
+    status: partial
+    errors_before: 12
+    errors_after: 4
+    remaining_errors:
+      - line: 10
+        rule: MD013
+        message: "Line length: 200 (max 120)"
+    actions_taken: []
+
+- name: fix_resolves_all
+  input:
+    path: tests/fixtures/fixable.md
+    command: fix
+  expected_output:
+    status: success
+    errors_before: 8
+    errors_after: 0
+    actions_taken:
+      - "markdownlint --fix"
+
+- name: table_fix_fixes_tables
+  input:
+    path: tests/fixtures/tables.md
+    command: table_fix
+  expected_output:
+    status: success
+    tables_fixed: 3
+    actions_taken:
+      - "md_table_tool.py fix"

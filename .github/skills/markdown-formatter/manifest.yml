@@ -1,0 +1,50 @@
+name: markdown-formatter
+version: 1.0.0
+schema_version: 1
+description: "Automated validation and fixing of Markdown documents using markdownlint, prettier and md_table_tool."
+owner: markdown-writer-specialist
+category: formatting
+tags:
+  - markdown
+  - lint
+  - formatter
+  - markdownlint
+dependencies:
+  - markdownlint-cli
+  - prettier
+  - python3/tools/md_table_tool.py
+integration:
+  agents:
+    - markdown-writer-specialist
+  skills:
+    - md-table-fixer
+last_updated: 2026-02-05
+
+# Reference to auxiliary files in the directory
+readme: README.md
+commands: commands.yml
+examples: examples.yml
+
+# High-level outputs schema (machine-readable summary)
+outputs:
+  success:
+    description: "All detected issues fixed."
+    fields:
+      errors_before: int
+      errors_after: int
+      actions_taken: [string]
+  partial:
+    description: "Some issues remain after automated fixes. Manual intervention required."
+    fields:
+      errors_before: int
+      errors_after: int
+      remaining_errors:
+        - line: int
+          rule: string
+          message: string
+      actions_taken: [string]
+  error:
+    description: "Runtime or configuration error prevented processing."
+    fields:
+      error_message: string
+      hint: string
