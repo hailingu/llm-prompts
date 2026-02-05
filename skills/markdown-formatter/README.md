@@ -33,10 +33,10 @@ npx markdownlint-cli --fix <file_or_directory>
 npx prettier --write --prose-wrap always <file>
 
 # Detect table issues (md_table_tool.py)
-python3 tools/md_table_tool.py detect <file_or_directory>
+python3 skills/md-table-fixer/bin/md_table_tool.py detect <file_or_directory>
 
 # Fix table alignment
-python3 tools/md_table_tool.py fix <file_or_directory>
+python3 skills/md-table-fixer/bin/md_table_tool.py fix <file_or_directory>
 ```
 
 Agent workflow (example: `markdown-writer-specialist`)

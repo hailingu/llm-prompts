@@ -450,7 +450,7 @@ run_in_terminal: npx markdownlint-cli {output_path}
 run_in_terminal: npx markdownlint-cli --fix {output_path}
 
 # 修复表格对齐（如有表格）
-run_in_terminal: python3 tools/md_table_tool.py fix {output_path}
+`run_in_terminal: python3 skills/md-table-fixer/bin/md_table_tool.py fix {output_path}`
 
 # 重新验证
 run_in_terminal: npx markdownlint-cli {output_path}

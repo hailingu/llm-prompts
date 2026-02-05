@@ -2,7 +2,7 @@
 
 commands:
   - name: detect
-    cmd: "python3 tools/md_table_tool.py detect {path}"
+    cmd: "python3 skills/md-table-fixer/bin/md_table_tool.py detect {path}"
     description: "Detect misaligned Markdown tables under path (file or directory)."
     arguments:
       - name: path
@@ -19,7 +19,7 @@ commands:
       - "python3 tools/md_table_tool.py detect docs/"
 
   - name: fix
-    cmd: "python3 tools/md_table_tool.py fix {path}"
+    cmd: "python3 skills/md-table-fixer/bin/md_table_tool.py fix {path}"
     description: "Fix misaligned Markdown tables (creates .bak backups)."
     arguments:
       - name: path
