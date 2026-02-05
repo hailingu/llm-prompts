@@ -1,11 +1,12 @@
 # Machine-friendly command definitions for automation
 
 commands:
-  - name: lint
+
+- name: lint
     cmd: "npx markdownlint-cli {path}"
     description: "Run markdownlint on a file or directory and emit a machine-readable report."
     arguments:
-      - name: path
+  - name: path
         type: string
         description: "Path to file or directory to lint"
         required: true
@@ -19,18 +20,18 @@ commands:
       errors_before: int
       errors_after: int
       remaining_errors:
-        - line: int
+    - line: int
           rule: string
           message: string
       actions_taken: [string]
     example_invocations:
-      - "npx markdownlint-cli docs/example.md"
+  - "npx markdownlint-cli docs/example.md"
 
-  - name: fix
+- name: fix
     cmd: "npx markdownlint-cli --fix {path}"
     description: "Attempt to auto-fix fixable markdownlint issues using --fix."
     arguments:
-      - name: path
+  - name: path
         type: string
         required: true
     exit_codes:
@@ -44,13 +45,13 @@ commands:
       errors_after: int
       actions_taken: [string]
     example_invocations:
-      - "npx markdownlint-cli --fix docs/example.md"
+  - "npx markdownlint-cli --fix docs/example.md"
 
-  - name: table_fix
+- name: table_fix
     cmd: "python3 tools/md_table_tool.py fix {path}"
     description: "Fix markdown table alignment using the project md_table_tool.py."
     arguments:
-      - name: path
+  - name: path
         type: string
         required: true
     exit_codes:
@@ -63,4 +64,4 @@ commands:
       tables_fixed: int
       actions_taken: [string]
     example_invocations:
-      - "python3 tools/md_table_tool.py fix docs/example.md"
+  - "python3 tools/md_table_tool.py fix docs/example.md"

@@ -5,27 +5,30 @@ description: "Automated validation and fixing of Markdown documents using markdo
 owner: markdown-writer-specialist
 category: formatting
 tags:
-  - markdown
-  - lint
-  - formatter
-  - markdownlint
+
+- markdown
+- lint
+- formatter
+- markdownlint
 dependencies:
-  - markdownlint-cli
-  - prettier
-  - python3/tools/md_table_tool.py
+- markdownlint-cli
+- prettier
+- python3/tools/md_table_tool.py
 integration:
   agents:
-    - markdown-writer-specialist
+  - markdown-writer-specialist
   skills:
-    - md-table-fixer
+  - md-table-fixer
 last_updated: 2026-02-05
 
 # Reference to auxiliary files in the directory
+
 readme: README.md
 commands: commands.yml
 examples: examples.yml
 
 # High-level outputs schema (machine-readable summary)
+
 outputs:
   success:
     description: "All detected issues fixed."
