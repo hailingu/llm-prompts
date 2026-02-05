@@ -1,0 +1,234 @@
+{
+  "qa_report": {
+    "total_score": 46,
+    "grade": "needs_work",
+    "breakdown": {
+      "content": 46,
+      "visual": null,
+      "structure": null,
+      "aesthetic": null
+    },
+    "issues": [
+      {
+        "slide_number": 1,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 2,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 3,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 4,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 5,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 8,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 9,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 10,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 11,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 12,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 13,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 14,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 15,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 16,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 18,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 19,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 20,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 21,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 22,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 23,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 24,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 25,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 26,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 27,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 28,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 29,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      },
+      {
+        "slide_number": 30,
+        "rule_id": "title-assertion",
+        "severity": "suggestion",
+        "detail": "Title may be topic-style; consider using an assertion or metric",
+        "location": "title"
+      }
+    ],
+    "suggestions": [
+      "Slide 1: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 2: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 3: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 4: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 5: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 8: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 9: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 10: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 11: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 12: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 13: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 14: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 15: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 16: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 18: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 19: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 20: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 21: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 22: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 23: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 24: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 25: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 26: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 27: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 28: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 29: consider making the title an assertion (e.g., 'Latency reduced by 30%')",
+      "Slide 30: consider making the title an assertion (e.g., 'Latency reduced by 30%')"
+    ],
+    "timestamp": "2026-02-05T13:31:29.145Z"
+  },
+  "source": "/Users/guhailin/Git/llm-prompts/tools/reveal-builder/dist/slides.json"
+}

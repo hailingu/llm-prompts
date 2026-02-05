@@ -1,0 +1,46 @@
+{{!-- Determine layout class from visual hint or fallback to 'bullets' --}}
+{{~#with this~}}
+  {{~#if visual_raw~}}
+    {{~!-- visual_raw is YAML string; render.js will parse into visual if available --}}
+  {{~/if}}
+  {{~!-- Basic mapping: title-only if title slide, two-column if reveal_hint.layout startsWith('two-column') --}}
+  {{~#if metadata}}{{~#if metadata.slide_type}}{{~#if (eq metadata.slide_type "title")}}<section class="title-slide">
+    <div>
+      <h1 class="hero-title">{{title}}</h1>
+      {{#if subtitle}}<p class="h-sub">{{subtitle}}</p>{{/if}}
+    </div>
+  </section>{{~else}}
+  <section class="bullets card">
+    <h3 class="h-title">{{title}}</h3>
+    {{#if content}}
+      <ul class="body-large">
+        {{#each content}}<li>{{this}}</li>{{/each}}
+      </ul>
+    {{/if}}
+    {{#if speaker_notes}}
+      <aside class="notes">{{speaker_notes}}</aside>
+    {{/if}}
+  </section>
+  {{/if}}{{else}}
+    {{!-- fallback: if first slide -> title-slide; otherwise bullets --}}
+    {{#if @first}}
+      <section class="title-slide">
+        <div>
+          <h1 class="hero-title">{{title}}</h1>
+          {{#if speaker_notes}}<p class="h-sub">{{speaker_notes}}</p>{{/if}}
+        </div>
+      </section>
+    {{else}}
+      <section class="bullets card">
+        <h3 class="h-title">{{title}}</h3>
+        {{#if content}}
+          <ul class="body-large">
+            {{#each content}}<li>{{this}}</li>{{/each}}
+          </ul>
+        {{/if}}
+        {{#if speaker_notes}}
+          <aside class="notes">{{speaker_notes}}</aside>
+        {{/if}}
+      </section>
+    {{/if}}
+  {{/if}}{{/with}}

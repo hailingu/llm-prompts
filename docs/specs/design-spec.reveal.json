@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "session_id": "mft-20260205",
+    "timestamp": "2026-02-05T00:00:00Z",
+    "design_system_version": "1.0.0",
+    "base_system": "Material Design 3",
+    "designer": "ppt-visual-designer"
+  },
+  "tokens": {
+    "primary": "#2563EB",
+    "on_primary": "#FFFFFF",
+    "secondary": "#10B981",
+    "tertiary": "#F59E0B",
+    "surface": "#FFFFFF",
+    "on_surface": "#1A1C1E",
+    "surface_variant": "#E1E2EC",
+    "outline": "#74777F",
+    "shadow": "rgba(0,0,0,0.16)"
+  },
+  "typography": {
+    "type_scale": {
+      "display_large": {"size": 56, "weight": 700, "line_height": 1.05},
+      "headline_large": {"size": 44, "weight": 700, "line_height": 1.2},
+      "headline_medium": {"size": 32, "weight": 600, "line_height": 1.25},
+      "body_large": {"size": 20, "weight": 400, "line_height": 1.5},
+      "body_medium": {"size": 16, "weight": 400, "line_height": 1.4}
+    }
+  },
+  "spacing": {
+    "base_unit": 4,
+    "scale": [4,8,12,16,24,32,48,64]
+  },
+  "layouts": {
+    "grid_columns": 12,
+    "gutter": 24,
+    "margin_horizontal": 80,
+    "layouts": {
+      "title-slide": {"description":"Centered hero title","content_columns":[3,10]},
+      "two-column-6040": {"description":"60% left content +40% visual","content_columns":[1,7],"image_columns":[8,12]},
+      "two-column-5050": {"description":"50/50 split","content_columns":[1,6],"image_columns":[7,12]},
+      "bullets": {"description":"Full width content with margins","content_columns":[2,11]},
+      "chart-focused": {"description":"small annotation left + large chart right","content_columns":[1,3],"image_columns":[4,12]}
+    }
+  },
+  "chart_palette": {
+    "primary": "#2563EB",
+    "accent1": "#10B981",
+    "accent2": "#F59E0B",
+    "neutral1": "#6B7280",
+    "neutral2": "#A1A1AA"
+  },
+  "animation_tokens": {
+    "entrance": {"effect":"fade_slide_up","duration_ms":300,"easing":"ease-out"},
+    "emphasis": {"effect":"scale","from":1.0,"to":1.05,"duration_ms":200,"easing":"ease-in-out"}
+  },
+  "accessibility": {
+    "minContrast": 4.5,
+    "diagramContrast": 7.0,
+    "colorblind_safe": true
+  },
+  "fonts": {
+    "en": "Roboto, Arial, Helvetica, sans-serif",
+    "zh": "Noto Sans SC, PingFang SC, Microsoft YaHei, sans-serif",
+    "embed_policy": "subset-en-zh-common"
+  }
+}

@@ -1,0 +1,10 @@
+const fs = require('fs');
+const raw = fs.readFileSync('/Users/guhailin/Git/llm-prompts/docs/example-chart-raw.md', 'utf8');
+const m = raw.match(/^---\s*\n([\s\S]*?)\n---\s*\n/);
+console.log('fm', !!m);
+const body = m ? raw.slice(m[0].length) : raw;
+console.log('body start:\n', body.slice(0,80));
+const headerRegex = /##\s+Slide\s+(\d+):\s*(.*)/g;
+const headers = [...body.matchAll(headerRegex)];
+console.log('headers length:', headers.length);
+console.log(headers);

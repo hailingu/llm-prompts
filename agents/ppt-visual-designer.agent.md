@@ -4,7 +4,6 @@ description: "PPT Visual Designer — define design systems, create visual speci
 tools:
   - read
   - edit
-  - create
   - search
 handoffs:
   - label: submit for implementation

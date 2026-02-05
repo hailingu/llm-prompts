@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "QA Report Schema",
+  "type": "object",
+  "required": ["overall_score","timestamp","summary","checks","issues"],
+  "properties": {
+    "overall_score": {"type":"number","minimum":0,"maximum":100},
+    "timestamp": {"type":"string","format":"date-time"},
+    "summary": {"type":"string","enum":["PASS","FAIL","WARN"]},
+    "checks": {
+      "type":"object",
+      "properties":{
+        "content": {"$ref": "#/definitions/check"},
+        "design": {"$ref": "#/definitions/check"},
+        "accessibility": {"$ref": "#/definitions/check"},
+        "performance": {"$ref": "#/definitions/check"},
+        "technical": {"$ref": "#/definitions/check"}
+      }
+    },
+    "issues": {
+      "type":"array",
+      "items": {"$ref": "#/definitions/issue"}
+    },
+    "warnings": {"type":"array","items":{"type":"string"}},
+    "fix_suggestions": {"type":"array","items":{"type":"object"}}
+  },
+  "definitions":{
+    "check":{
+      "type":"object",
+      "properties":{
+        "status":{"type":"string","enum":["PASS","WARN","FAIL"]},
+        "score":{"type":"number","minimum":0,"maximum":100},
+        "details":{"type":"object"}
+      },
+      "required":["status","score"]
+    },
+    "issue":{
+      "type":"object",
+      "properties":{
+        "id":{"type":"string"},
+        "slide":{"type":["number","null"]},
+        "severity":{"type":"string","enum":["critical","major","minor","info"]},
+        "category":{"type":"string","enum":["content","design","accessibility","performance","technical"]},
+        "title":{"type":"string"},
+        "description":{"type":"string"},
+        "location":{"type":"string"},
+        "suggested_fix":{"type":"string"}
+      },
+      "required":["id","severity","category","title","description"]
+    }
+  }
+}

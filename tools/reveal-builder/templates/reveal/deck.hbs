@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{meta.title}} - Reveal POC</title>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4/dist/reveal.css">
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      {{#each slides}}
+        {{> slide}}
+      {{/each}}
+    </div>
+  </div>
+  <script src="https://unpkg.com/reveal.js@4/dist/reveal.js"></script>
+  <!-- Chart.js for data visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Mermaid (client-side fallback if CLI not available) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>
+    function initCharts() {
+      const configs = document.querySelectorAll('canvas.chart-canvas');
+      configs.forEach(c => {
+        try {
+          const raw = c.getAttribute('data-chart-config');
+          if (!raw) return;
+          const cfgStr = decodeURIComponent(raw);
+          const cfg = JSON.parse(cfgStr);
+          cfg.options = cfg.options || {};
+          cfg.options.responsive = true;
+          cfg.options.maintainAspectRatio = false;
+          new Chart(c.getContext('2d'), cfg);
+        } catch (e) {
+          console.warn('Chart init failed', e);
+        }
+      });
+    }
+
+    function initMermaid() {
+      try {
+        if (window.mermaid && typeof window.mermaid.initialize === 'function') {
+          window.mermaid.initialize({ startOnLoad: true, theme: 'default' });
+        }
+      } catch (e) {
+        console.warn('Mermaid init failed', e);
+      }
+    }
+
+    if (window.Reveal && Reveal.isReady) { initCharts(); initMermaid(); } else {
+      window.addEventListener('DOMContentLoaded', () => { initCharts(); initMermaid(); });
+    }
+  </script>
+  <script>Reveal.initialize({hash:true});</script>
+</body>
+</html>
