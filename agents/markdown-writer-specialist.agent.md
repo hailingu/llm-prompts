@@ -253,7 +253,7 @@ config: .markdownlint.json
 >
 > 1. 所有表格使用 `aligned` 风格（管道符垂直对齐）
 > 2. 每列内容用空格填充到该列最大宽度
-> 3. **必须使用 md-table-fixer.skill 工具修复**：`python3 tools/md_table_tool.py fix {file}`
+> 3. **必须使用 `md-table-fixer` 工具修复（见 `skills/md-table-fixer/README.md`）**：`python3 tools/md_table_tool.py fix {file}`
 > 4. 该工具正确处理 CJK 字符的显示宽度（中文字符占 2 个显示宽度）
 >
 > **正确示例**（注意管道符垂直对齐）：
