@@ -28,3 +28,20 @@ replay_pid*
 
 # VSCode workspace settings
 .vscode/
+# JetBrains IDEs
+.idea/
+*.iml
+
+# Node
+node_modules/
+dist/
+build/
+npm-debug.log
+.env
+
+# Go
+bin/
+pkg/
+vendor/
+*.exe
+coverage.out
