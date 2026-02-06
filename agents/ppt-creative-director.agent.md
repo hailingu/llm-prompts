@@ -47,6 +47,15 @@ Creative Director facilitates stakeholder workshop → define audience, goals, k
 **1.5) Content Strategy Review**  
 Creative Director reviews slides.md structure, key decisions, SCQA mapping, content_qa_report → approve or request revision (prevent downstream rework)
 
+**Content Strategy Review Checklist:**
+- [ ] **Hierarchical SCQA**: Macro-level story arc validated; section-level SCQA mappings cover all major sections; transition logic between sections is coherent
+- [ ] **KPI Traceability**: KPIs defined in early slides are consistently referenced in evidence, demo, and summary slides; no orphaned or contradictory KPIs
+- [ ] **Timing & Pacing**: Total slide count fits allocated time (avg ≤1.5 min/slide); no section exceeds comfortable pacing; dense sections flagged with pacing notes
+- [ ] **Cognitive Intent**: Critical visuals (≥3 per deck) have `cognitive_intent` annotations; primary_message is audience-actionable; emotional_tone matches presentation context
+- [ ] **Domain Extension Packs**: Activated packs match source document domain; no missing domain vocabulary; decision extraction covers domain-specific patterns
+- [ ] **Visual Type Coverage**: Visual types span at least 2 taxonomy levels; analytical/domain-specific types used where data warrants (not just basic charts)
+- [ ] **slides_semantic.json Completeness**: All slides have entries; visual_type and placeholder_data align with slides.md annotations
+
 **2) Design Philosophy Approval**  
 Creative Director approves recommended philosophy (Presentation Zen / McKinsey / Kawasaki / Assertion-Evidence)
 
@@ -71,8 +80,8 @@ Creative Director reviews machine-readable QA (`qa_report.json`), `slides_semant
 - Approve visual direction & brand compliance: Approve theme, color palette, typography strategy, and accessibility constraints (WCAG AA contrast ≥4.5:1 for normal text, ≥3:1 for large text); ensure adherence to company brand guidelines
 
 **Quality Assurance:**
-- Conduct content strategy review: Approve slides.md structure, key decisions, SCQA mapping before visual design begins (prevent rework)
-- Review QA reports & enforce quality gates: Examine `qa_report.json` from ppt-specialist; verify Key Decisions slide presence, assertion-style titles, bullets ≤5, speaker notes ≥80%, visual coverage ≥30%; enforce gates (final_score ≥ 70, critical == 0). Approve or comment on machine-readable artifacts (`slides_semantic.json`, `design_spec.json`, `visual_report.json`) so downstream automation can proceed.
+- Conduct content strategy review: Approve slides.md structure, key decisions, hierarchical SCQA mapping (macro + section-level), KPI traceability, timing/pacing analysis, cognitive_intent on critical visuals, and domain extension pack activation before visual design begins (prevent rework)
+- Review QA reports & enforce quality gates: Examine `qa_report.json` from ppt-specialist; verify Key Decisions slide presence, assertion-style titles, bullets ≤5, speaker notes ≥80%, visual coverage ≥30%, KPI traceability ≥80%, timing feasibility, slides_semantic.json completeness; enforce gates (final_score ≥ 70, critical == 0). Approve or comment on machine-readable artifacts (`slides_semantic.json`, `design_spec.json`, `visual_report.json`) so downstream automation can proceed.
 - Set QA thresholds & auto-fix policies: Define quality gates, auto-fix iteration limits (≤2), and escalation rules at project initiation
 - Final delivery sign-off: Approve auto-delivery only when all gates pass; escalate to human-review on critical issues or policy ambiguity
 
@@ -130,29 +139,37 @@ Creative Director reviews machine-readable QA (`qa_report.json`), `slides_semant
 - **critical_issues == 0** (mandatory)
 - **visual_coverage ≥ 30%** (recommended)
 - **speaker_notes ≥ 80%** (recommended)
+- **kpi_traceability_score ≥ 80%** (recommended — all defined KPIs referenced in evidence/summary slides)
+- **timing_feasibility** = pass (no section exceeds 2× average pace)
+- **slides_semantic_completeness** = 100% (every slide has a semantic entry)
 
 ### Decision Logic
 
 **Auto-deliver:**
-- final_score ≥ 70 AND critical_issues == 0
+- final_score ≥ 70 AND critical_issues == 0 AND kpi_traceability ≥ 80%
 
 **Auto-fix:**
 - All issues auto-fixable AND attempts < 2
 - Then re-evaluate
 
 **Human review required:**
-- critical_issues > 0 OR final_score < 50
+- critical_issues > 0 OR final_score < 50 OR kpi_traceability < 50% OR timing_feasibility == fail
 
 ### Gate Severity Levels
 
 **Blocker (hard fail):**
 - critical_issues > 0 OR missing Key Decisions in first 5 slides → human review
+- slides_semantic.json missing or empty → human review
+- KPI defined in Key Decisions slide but never referenced in evidence slides → blocker
 
 **Major:**
 - final_score < 70 → attempt auto-fix; escalate if not deterministic
+- kpi_traceability < 80% → flag KPI gaps and request content-planner revision
+- timing_feasibility == warning (section pace > 1.5× average) → review with content-planner
 
 **Minor:**
 - visual_coverage < 30% OR speaker_notes < 80% → auto-fix attempt and re-evaluate
+- cognitive_intent missing on critical visuals → request content-planner to annotate
 
 **Audit:**
 - Every auto-delivery must include `qa_report.json`, `visual_report.json`, and `auto_fix.log` entry if fixes were applied
@@ -166,14 +183,17 @@ Creative Director reviews machine-readable QA (`qa_report.json`), `slides_semant
 
 ## HANDOFF EXAMPLES
 
-**Content Planner:**
-"Draft a 12–15 slide technical-review `slides.md` for `docs/online-ps-algorithm-v1.md`. Emphasize key decisions and mark slides that require diagrams."
+**Content Planner (Software Domain):**
+"Draft a 12–15 slide technical-review `slides.md` for `docs/online-ps-algorithm-v1.md`. Emphasize key decisions, apply hierarchical SCQA, annotate cognitive_intent on critical visuals, emit `slides_semantic.json` with KPI traceability, and produce `content_qa_report.json`."
+
+**Content Planner (Industrial/Hardware Domain):**
+"Analyze `MFT_slides.md` (30-slide MFT industry report) for engineering management audience with high decision authority. Activate Power Electronics, Manufacturing, and Standards domain packs. Apply hierarchical SCQA across 6 sections (Market → Technical → Engineering → Demo → Business → Risk). Include timing analysis for 30-minute slot. Produce `slides.md`, `slides_semantic.json` (with engineering_schematic, radar, waterfall, kpi_dashboard visual types), and `content_qa_report.json`."
 
 **Visual Designer:**
-"Design diagrams for the listed slides: blue-green palette, WCAG contrast, export 150 DPI PNGs named consistently."
+"Design diagrams for the listed slides using the `cognitive_intent` annotations from `slides_semantic.json`: apply primary_message emphasis, attention_flow, and key_contrast. Support all visual types including Level 2 (waterfall, tornado, radar, sankey) and Level 3 (engineering_schematic, kpi_dashboard). Blue-green palette, WCAG contrast, export 150 DPI PNGs named consistently."
 
 **PPT Specialist:**
-"Generate PPTX from `slides.md`; run `standards/ppt-guidelines` checks and produce `qa_report.json` and artifacts. If fixable, run auto-fix once."
+"Generate PPTX from `slides.md` + `slides_semantic.json` + `design_spec.json`; validate KPI traceability across slides; run `standards/ppt-guidelines` checks and produce `qa_report.json` and artifacts. If fixable, run auto-fix once."
 
 ---
 
@@ -207,11 +227,21 @@ All major decisions must be recorded in `docs/presentations/<session-id>/decisio
 - Key Decisions slide in slides 2–3 with clear assertion + 2–4 rationale bullets
 - Bullets ≤5 per slide; prefer visuals for comparisons
 - Speaker notes coverage ≥ 80%
+- Hierarchical SCQA validated: macro story arc + section-level SCQA + transitions
+- KPI traceability: every KPI defined in Key Decisions must appear in ≥1 evidence slide and summary
+- Timing feasibility: total slides / allocated time ≤ 1.5 min/slide average
 
 **Visual Standards:**
 - Visual coverage ≥ 30% (export ≥150–200 DPI)
+- Visual types should leverage the 3-level taxonomy: basic → analytical → domain-specific
+- Critical visuals (≥3/deck) must have `cognitive_intent` annotations from content-planner
 - Run contrast, colorblind, and typography checks before final QA
 - Maintain a single source of truth for theme tokens and images in the session folder
+
+**Domain Awareness:**
+- Verify domain extension packs are activated appropriately (match source document domain)
+- Ensure domain-specific vocabulary is used correctly in decision extraction and speaker notes
+- For industrial/hardware domains: verify physical units, engineering standards references, and regulatory compliance mentions
 
 ---
 

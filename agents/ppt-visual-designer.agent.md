@@ -185,12 +185,19 @@ As the PPT Visual Designer, your mission is to define comprehensive design syste
 ### Phase 1: Requirements Analysis
 1. **Receive inputs** from `ppt-content-planner`:
    - `slides.md` with content structure and VISUAL placeholders
-   - Approved design philosophy (e.g., Assertion-Evidence, Presentation Zen)
+   - `slides_semantic.json` with visual_type, placeholder_data, and **cognitive_intent** annotations
+   - Approved design philosophy (e.g., Assertion-Evidence, Presentation Zen, McKinsey Pyramid)
    - Brand guidelines (if available): colors, logos, typography constraints
    - Audience persona: technical depth, cultural context, presentation setting
+   - **Domain extension packs activated** (e.g., Power Electronics, Manufacturing, Standards)
 
 2. **Analyze visual requirements**:
    - Identify slide types: hero, bullet-list, data-heavy, diagram, comparison, timeline
+   - **Map visual_type from slides_semantic.json to 3-level taxonomy**:
+     - Level 1 (Basic, 10): architecture, flowchart, sequence, state_machine, comparison, timeline, gantt, matrix, scatter, heatmap
+     - Level 2 (Analytical, 8): waterfall, tornado, radar, sankey, bubble, treemap, pareto, funnel
+     - Level 3 (Domain-Specific, 6): engineering_schematic, kpi_dashboard, decision_tree, confidence_band, process_control, none
+   - **Parse cognitive_intent** for critical visuals: extract primary_message, visual_hierarchy, emotional_tone, attention_flow, key_contrast
    - Determine complexity level based on audience (executive: minimal, technical: detailed)
    - Map content to Material Design component patterns (cards, tables, chips)
 
@@ -222,11 +229,43 @@ As the PPT Visual Designer, your mission is to define comprehensive design syste
      - Visual hierarchy: emphasis through type scale, color, spacing
      - Visual flow: F-pattern (western) / Z-pattern (scan-oriented)
 
-6. **Specify chart and diagram designs**:
+6. **Specify chart and diagram designs** (all 3 taxonomy levels):
+
+   **Level 1 — Basic Types:**
    - Chart type selection: bar (comparison), line (trend), position encoding preferred
    - Visual encoding: color mappings (primary for main data, secondary for secondary)
    - Data table styles: alignment rules, header emphasis, row height
    - Diagram styles: architecture (boxes + connectors), flowchart (Material icons), timeline (horizontal Material steppers)
+
+   **Level 2 — Analytical Types:**
+   - **Waterfall**: Running total with positive (secondary) / negative (error) / total (primary) color coding; connector lines between bars; start/end labels
+   - **Tornado**: Horizontal diverging bars from center; paired comparison (e.g., cost vs benefit); symmetric axis
+   - **Radar/Spider**: Multi-axis comparison (≤8 axes); filled area with alpha 0.3; outline primary; useful for material property comparison
+   - **Sankey**: Flow diagram with proportional width; source→target node mapping; max 3 levels deep; color by source node
+   - **Bubble**: Scatter + size encoding (3 variables); bubble area proportional to value; max 20 bubbles; label top-5 by size
+   - **Treemap**: Hierarchical area chart; 2 levels max; color by category (primary/secondary/tertiary); label leaves only
+   - **Pareto**: Combined bar (descending) + cumulative line (secondary); 80/20 threshold line (tertiary dashed); dual Y-axis
+   - **Funnel**: Staged process with decreasing width; percentage labels; color gradient from primary to surface_variant
+
+   **Level 3 — Domain-Specific Types:**
+   - **Engineering Schematic**: Technical diagram with standardized symbols (ISO/IEC); component blocks with parameter annotations; signal flow arrows; use monospace font for engineering values; grid background optional
+   - **KPI Dashboard**: Multi-metric panel layout (2×2 or 3×2 grid); each cell: metric name + value + trend arrow + sparkline; color-coded status (green/amber/red); Material card component per metric
+   - **Decision Tree**: Binary/multi-branch tree; decision nodes (diamond) + outcome nodes (rounded rect); branch labels with criteria; highlight recommended path in primary color
+   - **Confidence Band**: Line chart with shaded uncertainty region (alpha 0.2); median line solid, bounds dashed; annotation at key inflection points; useful for forecasts/projections
+   - **Process Control**: SPC-style chart with center line + UCL/LCL (tertiary dashed); data points with out-of-control markers (error color); Western Electric rules annotations
+
+6.5. **Apply cognitive_intent to visual specifications** (when present in `slides_semantic.json`):
+   - **primary_message** → Set as chart title or prominent annotation; ensure it's the first thing the eye reads
+   - **visual_hierarchy** → Map to Material elevation/emphasis: `hero` = Display scale + Level 2 elevation; `supporting` = Body scale + Level 0
+   - **emotional_tone** → Translate to design tokens:
+     - `urgency` → error/tertiary accent, bold borders, exclamation iconography
+     - `confidence` → primary + secondary palette, solid fills, upward visual flow
+     - `analytical` → neutral surface palette, thin lines, grid emphasis
+     - `aspirational` / `inspirational` → gradient fills, forward-pointing arrows, hero typography
+     - `calm` → muted surface palette, soft edges, generous whitespace, low-contrast accents
+     - `comparative` → side-by-side layout emphasis, contrasting color pairs, split compositions
+   - **attention_flow** → Set layout reading order and animation sequence; position key data at flow start point
+   - **key_contrast** → Apply contrasting visual encodings (color, size, position) to highlight the contrast pair
 
 7. **Define animation specifications**:
    - Material Motion principles: entrance (fade-in + slide-up), exit (fade-out), emphasis (scale 1.0→1.05)
@@ -392,6 +431,14 @@ As the PPT Visual Designer, your mission is to define comprehensive design syste
 - **Line charts**: Temporal trends, direct labeling preferred over legend
 - **Scatter plots**: Correlation analysis (position encoding - rank 1)
 - **Pie charts**: Part-to-whole ONLY for ≤5 categories (angle encoding - rank 3)
+- **Waterfall charts**: Running totals and breakdowns (e.g., loss decomposition, cost build-up)
+- **Tornado charts**: Sensitivity analysis, paired factor comparison (diverging horizontal bars)
+- **Radar/Spider charts**: Multi-attribute comparison (≤8 axes; e.g., material properties, capability assessment)
+- **Sankey diagrams**: Flow and allocation visualization (energy flow, cost allocation, process routing)
+- **Bubble charts**: 3-variable comparison (X, Y, size); max 20 bubbles for readability
+- **Treemap charts**: Hierarchical proportions (market share, cost breakdown by category)
+- **Pareto charts**: Combined frequency + cumulative %; 80/20 analysis (defect types, risk factors)
+- **Funnel charts**: Staged process conversion (sales pipeline, manufacturing yield stages)
 
 **Visual Encoding Hierarchy** (Cleveland & McGill)
 1. **Position** (most accurate): scatter plots, dot plots
@@ -560,11 +607,22 @@ Self-review design-spec.json before submitting to Creative Director:
 
 ### Chart & Diagram Specifications
 - [ ] Chart types follow Cleveland Hierarchy: position/length preferred
+- [ ] **All 3 taxonomy levels supported**: Basic (10 types: architecture, flowchart, sequence, state_machine, comparison, timeline, gantt, matrix, scatter, heatmap) + Analytical (8 types) + Domain-Specific (6 types)
+- [ ] **Level 2 specs complete**: waterfall (running total colors), tornado (symmetric axis), radar (≤8 axes), sankey (proportional width), bubble (area encoding), treemap (2-level max), pareto (dual Y-axis), funnel (gradient)
+- [ ] **Level 3 specs complete**: engineering_schematic (ISO symbols), kpi_dashboard (metric grid), decision_tree (branching), confidence_band (shaded region), process_control (UCL/LCL)
 - [ ] Visual encodings specified: color mappings, axis scales, labels
 - [ ] Data table styles: alignment rules (numbers right, text left), header emphasis
 - [ ] Diagram styles: architecture/flowchart/timeline specs with Material iconography
 - [ ] No misleading scales: Y-axis starts at 0 for bar charts (or justified exception noted)
 - [ ] Color usage: max 5 colors per chart, semantic meaning consistent
+
+### Cognitive Intent Consumption
+- [ ] **cognitive_intent parsed** from slides_semantic.json for all critical visuals
+- [ ] **primary_message** applied as chart title or prominent annotation
+- [ ] **emotional_tone** translated to design tokens (urgency→error accent, confidence→primary, analytical→neutral, aspirational→gradient)
+- [ ] **attention_flow** mapped to layout reading order and animation sequence
+- [ ] **key_contrast** applied as contrasting visual encodings (color/size/position)
+- [ ] **visual_hierarchy** mapped to Material elevation and typography emphasis
 
 ### Animation Specifications
 - [ ] Motion follows Material Motion: entrance (fade+slide), exit (fade), emphasis (scale)
@@ -979,7 +1037,20 @@ Complete design system specification with all tokens, components, layouts, and v
       "comparison_categorical": "bar/column chart",
       "trend_temporal": "line chart",
       "part_to_whole": "stacked bar (preferred) or pie chart (≤5 categories only)",
-      "correlation": "scatter plot"
+      "correlation": "scatter plot",
+      "running_total_breakdown": "waterfall chart",
+      "sensitivity_paired_comparison": "tornado chart",
+      "multi_attribute_comparison": "radar/spider chart (≤8 axes)",
+      "flow_allocation": "sankey diagram",
+      "three_variable_comparison": "bubble chart",
+      "hierarchical_proportion": "treemap chart",
+      "frequency_cumulative": "pareto chart (80/20 analysis)",
+      "staged_process_conversion": "funnel chart",
+      "technical_topology": "engineering_schematic (Level 3)",
+      "multi_metric_status": "kpi_dashboard (Level 3)",
+      "branching_decisions": "decision_tree (Level 3)",
+      "forecast_with_uncertainty": "confidence_band (Level 3)",
+      "statistical_process_monitoring": "process_control (Level 3)"
     }
   },
   
@@ -1073,6 +1144,10 @@ Complete design system specification with all tokens, components, layouts, and v
 - "Specify chart designs for revenue comparison (bar) and user growth (line) using Material color system. Follow Cleveland Hierarchy for encodings."
 - "Design architecture diagram specifications: minimalist style, Material icons, primary/secondary color mapping for API/database layers."
 - "Create 2-3 alternative layout options for slide 6 (complex data + diagram). Show component composition and visual hierarchy."
+- "Design radar chart specs for comparing 5 material candidates across 6 properties (permeability, saturation flux, core loss, temperature stability, cost, availability). Use filled area with alpha 0.3, color-code by material family."
+- "Specify waterfall chart for power loss breakdown (core loss → copper loss → stray loss → total). Use secondary for positive contributions, error for losses, primary for totals."
+- "Design KPI dashboard layout for 6 engineering metrics: efficiency, power density, MTBF, temperature rise, THD, availability. Use 3×2 Material card grid with sparklines and trend arrows."
+- "Apply cognitive_intent from slides_semantic.json: translate urgency tone to error-accent design tokens for risk matrix slide; translate analytical tone to neutral-surface palette for methodology comparison."
 
 **Accessibility & i18n**
 - "Validate color contrast specifications in design-spec.json against WCAG AA. Document contrast ratios for all text/background combinations."

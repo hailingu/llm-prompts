@@ -70,7 +70,7 @@ graph TB
 
 **Role**: Content Strategist (aligned to McKinsey, Barbara Minto)
 
-**Deliverables**: `.slides.md` with structured content and outline
+**Deliverables**: `.slides.md` + `slides_semantic.json` + `content_qa_report.json`
 
 **Input**: User request, design documents
 
@@ -78,14 +78,21 @@ graph TB
 
 **Core Responsibilities**:
 - **Content Planning**: Slide count, story flow, bullet points
-- **Structure Design**: Pyramid Principle, SCQA framework
-- **Content Quality Self-Check**: Logic consistency, Key Decisions completeness, bullet compliance
+- **Structure Design**: Hierarchical SCQA (macro + section-level + transitions), Pyramid Principle
+- **Visual Type Assignment**: Assign visual_type from 3-level taxonomy (10 basic + 8 analytical + 6 domain-specific)
+- **KPI Traceability**: Define KPIs in Key Decisions, trace through evidence and summary slides
+- **Timing & Pacing Analysis**: Validate slide count fits allocated time; flag dense sections
+- **Cognitive Intent Annotation**: Annotate critical visuals with primary_message, emotional_tone, attention_flow, key_contrast
+- **Domain Extension Packs**: Activate domain-specific decision extraction patterns (e.g., Power Electronics, Manufacturing, Standards)
+- **Content Quality Self-Check**: Logic consistency, Key Decisions completeness, bullet compliance, KPI traceability, timing feasibility
 
 **Key Decisions**:
 - Slide count and story flow
-- Which slides need visualizations
+- Which slides need visualizations (with specific visual_type from taxonomy)
 - Key Decisions placement (first 3-5 slides)
 - Bullet points and text density (content level)
+- KPI definition and traceability mapping
+- Domain extension pack activation
 
 **Quality Ownership**: Content quality (40/100 points)
 
@@ -110,15 +117,17 @@ graph TB
 
 **Core Responsibilities**:
 - **Visual Design**: Theme, colors, typography, layouts
-- **Chart Design**: Architecture, flowchart, comparison, timeline, matrix
+- **Chart Design**: All 3 taxonomy levels — Basic (bar, line, pie, flowchart...), Analytical (waterfall, tornado, radar, sankey, bubble, treemap, pareto, funnel), Domain-Specific (engineering_schematic, kpi_dashboard, decision_tree, confidence_band, process_control)
+- **Cognitive Intent Consumption**: Translate content-planner's cognitive_intent (emotional_tone, attention_flow, key_contrast) into Material Design tokens and visual specifications
 - **Visual Quality Self-Check**: Contrast, aesthetic consistency, chart readability
 
 **Key Decisions**:
-- Design philosophy selection (Assertion-Evidence, Tufte, etc.)
+- Design philosophy selection (Assertion-Evidence, Tufte, McKinsey Pyramid, etc.)
 - Color scheme (primary, secondary, accent)
 - Typography (fonts, sizes)
-- Chart type selection and visual encoding
+- Chart type selection and visual encoding (across 3-level taxonomy)
 - Layout templates (title-only, bullet-list, two-column, full-image)
+- Cognitive intent translation to design tokens
 
 **Quality Ownership**: Visual quality (40/100 points)
 
@@ -298,19 +307,26 @@ Every feedback message MUST include the iteration count:
 
 ### Content Quality (Self-Check by ppt-content-planner)
 
-- ✅ Key Decisions in first 3-5 slides
+- ✅ Key Decisions in first 3-5 slides (with KPIs defined)
 - ✅ Bullet points ≤ max_bullets (per presentation_type)
 - ✅ Text density ≤ max_chars (per slide)
 - ✅ Speaker notes coverage ≥ 80%
-- ✅ Logical structure (SCQA, Pyramid)
+- ✅ Logical structure (Hierarchical SCQA + Pyramid Principle)
+- ✅ KPI traceability ≥ 80% (all defined KPIs traced through evidence slides)
+- ✅ Timing feasibility (avg ≤1.5 min/slide; no section >2× average)
+- ✅ slides_semantic.json completeness (100% slide coverage)
+- ✅ Cognitive intent on ≥3 critical visuals
+- ✅ Domain extension packs activated appropriately
 
 ### Visual Quality (Self-Check by ppt-visual-designer)
 
 - ✅ Color contrast ratio ≥ 4.5:1 (WCAG AA)
 - ✅ Visual coverage ≥ 30% (charts/images)
 - ✅ Aesthetic consistency (same theme)
-- ✅ Chart quality (Cleveland Hierarchy)
+- ✅ Chart quality (Cleveland Hierarchy) across all 3 taxonomy levels
 - ✅ Layout balance (white space)
+- ✅ Cognitive intent consumed (emotional_tone → design tokens applied)
+- ✅ Level 2/3 visual types rendered correctly
 
 ### Overall Quality (Final Gate by ppt-creative-director)
 
@@ -318,10 +334,15 @@ Every feedback message MUST include the iteration count:
 - ❌ Final Score < 70
 - ❌ Critical issues > 0
 - ❌ Key Decisions missing
+- ❌ slides_semantic.json missing or empty
+- ❌ KPI defined in Key Decisions but never referenced in evidence slides
 
 **Warning Conditions** (deliver with notes):
 - ⚠️ Major issues > 2
 - ⚠️ Visual coverage < 30%
+- ⚠️ KPI traceability < 80%
+- ⚠️ Timing feasibility = warning (sections pacing > 1.5× average)
+- ⚠️ Cognitive intent missing on >50% of critical visuals
 
 ---
 
@@ -330,24 +351,30 @@ Every feedback message MUST include the iteration count:
 ```python
 # Content Quality (40分)
 content_score = 40 * (
-    0.3 * key_decisions_score +      # 关键决策 12分
-    0.3 * bullets_compliance +        # bullets规范 12分
-    0.2 * speaker_notes_coverage +    # speaker notes 8分
-    0.2 * text_density_compliance     # 文本密度 8分
+    0.20 * key_decisions_score +      # 关键决策 8分
+    0.20 * bullets_compliance +        # bullets规范 8分
+    0.15 * speaker_notes_coverage +    # speaker notes 6分
+    0.10 * text_density_compliance +   # 文本密度 4分
+    0.15 * kpi_traceability +          # KPI 可追溯性 6分 (NEW)
+    0.10 * timing_feasibility +        # 时间/节奏 4分 (NEW)
+    0.10 * semantic_json_completeness  # slides_semantic.json 完整性 4分 (NEW)
 )
 
 # Visual Quality (40分)
 visual_score = 40 * (
-    0.3 * color_contrast +            # 对比度 12分
-    0.3 * visual_coverage +           # 可视化覆盖 12分
-    0.2 * aesthetic_consistency +     # 美学一致性 8分
-    0.2 * chart_quality               # 图表质量 8分
+    0.25 * color_contrast +            # 对比度 10分
+    0.25 * visual_coverage +           # 可视化覆盖 10分
+    0.15 * aesthetic_consistency +     # 美学一致性 6分
+    0.15 * chart_quality +             # 图表质量 6分
+    0.10 * cognitive_intent_applied +  # 认知意图消费 4分 (NEW)
+    0.10 * visual_type_diversity       # 视觉类型多样性 4分 (NEW)
 )
 
 # Overall Quality (20分)
 overall_score = 20 * (
-    0.5 * slide_count_compliance +    # 页数 10分
-    0.5 * design_philosophy_match     # 哲学符合 10分
+    0.4 * slide_count_compliance +     # 页数 8分
+    0.3 * design_philosophy_match +    # 哲学符合 6分
+    0.3 * domain_pack_appropriateness  # 领域包适当性 6分 (NEW)
 )
 
 final_score = content_score + visual_score + overall_score
@@ -517,4 +544,5 @@ Fix critical issues manually or adjust design requirements
 | Version  | Date       | Changes                                                                                                                                                                                                                                                                                |
 | -------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | -------- | ------     | ---------                                                                                                                                                                                                                                                                              |
+| 2.0      | 2026-02-05 | Domain-agnostic upgrade<br/>- Added slides_semantic.json to content-planner deliverables<br/>- Added hierarchical SCQA, KPI traceability, timing/pacing, cognitive intent<br/>- Expanded visual type taxonomy (10→24 types across 3 levels)<br/>- Updated evaluation formula with new dimensions (KPI traceability, timing, cognitive intent, visual diversity, domain pack)<br/>- Added blocking conditions: slides_semantic.json missing, KPI inconsistency<br/>- Updated visual-designer to consume cognitive_intent<br/>- Updated quality gates with KPI and timing checks |
 | 1.0      | 2026-01-28 | Initial release (3-agent architecture)<br/>- Established content-planner, visual-designer, creative-director roles<br/>- Defined quality gates and evaluation formula<br/>- Set iteration limits (2) and escalation rules<br/>- Separated from general agent-collaboration-protocol.md |

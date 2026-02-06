@@ -112,11 +112,20 @@ As the PPT Content Planner, you are the **content strategist** who transforms so
 - Validate completeness: Each decision has rationale + alternatives + risks + success criteria
 - Create "Key Decisions" slide (slide 2 or 3) with structured format
 
-**4) SCQA Story Structure**
+**4) SCQA Story Structure (Hierarchical)**
 - Map content to SCQA framework: Situation → Complication → Question → Answer
-- Assign slides to SCQA roles: Situation (1-2 slides), Complication (1-2 slides), Question (implicit or explicit), Answer (main body), Next Steps (final slide)
+- **Macro-level**: Assign slides to overall SCQA roles (Situation, Complication, Question, Answer, Next Steps)
+- **Section-level** (for decks ≥15 slides): Group slides into logical sections; define each section’s role and internal logic
+- **Transition validation** (for decks ≥15 slides): Verify section-to-section transitions are smooth and logically justified
 - Validate Pyramid structure: Conclusion-first (slides 1-2), key arguments (3-5), supporting evidence (6-N)
-- Output SCQA mapping in front-matter
+- Output hierarchical SCQA mapping in front-matter (macro + sections + transitions)
+
+**4.5) Timing & Pacing Analysis**
+- Calculate total_slides / total_time to get avg_time_per_slide
+- Allocate time per section based on content complexity and priority
+- Flag warnings: sections with ≥5 high-complexity slides in ≤5 minutes; individual slides requiring >3 min to present
+- Suggest remediation: merge slides, move to appendix, simplify visuals
+- Output timing analysis in front-matter
 
 **5) slides.md Draft Generation (and slides_semantic.json)**
 - For each slide:
@@ -130,11 +139,18 @@ As the PPT Content Planner, you are the **content strategist** who transforms so
 - Provide `placeholder_data` for visuals (example: `chart_config` or `mermaid_code`) to enable immediate rendering and testing by `ppt-visual-designer` and `ppt-specialist`.
 - Ensure Key Decisions are captured in both `slides.md` and `slides_semantic.json` (slides 2-3) and that structure follows conclusion-first (answer before evidence).
 
-**6) Content QA**
-- Run automated checks: bullets count, speaker notes coverage (≥90%), key decisions presence, SCQA structure completeness, visual annotations quality
+**6) Content QA (Enhanced)**
+- Run automated checks:
+  - Bullets count, speaker notes coverage (≥90%), key decisions presence
+  - SCQA structure completeness (macro + section-level for ≥15 slides)
+  - Visual annotations quality and type validity (against VISUAL TYPE TAXONOMY)
+  - **KPI traceability**: Cross-slide KPI consistency check (same KPI cited on multiple slides must use identical target values)
+  - **Timing feasibility**: Flag sections where slide count × complexity exceeds allocated time
+  - **slides_semantic.json completeness**: Verify JSON exists and matches slides.md (slide count, titles, visual types)
+  - **Domain pack activation**: Report which domain extension packs were activated for decision extraction
 - Generate content_qa_report.json with overall_score, per-check status, warnings, fix suggestions
 - **Do NOT auto-fix issues** — flag for Creative Director review instead
-- If critical issues found (missing key decisions, broken SCQA structure), mark draft as "requires revision"
+- If critical issues found (missing key decisions, broken SCQA structure, KPI inconsistency, missing slides_semantic.json), mark draft as "requires revision"
 
 **7) Submit for Approval**
 - Handoff to ppt-creative-director with:
@@ -198,15 +214,56 @@ alternative_philosophies:
   - name: "Guy Kawasaki (10/20/30)"
     reason_rejected: "Time constraint (30min) exceeds Kawasaki's 20-minute rule; not optimized for investor pitch"
 
-# Story Structure (SCQA)
+# Story Structure (SCQA) — Hierarchical
 story_structure:
   framework: "SCQA"                    # SCQA / Pyramid / Hero's Journey
-  mapping:
-    situation: [1]                     # 在线 PS 现状与目标
-    complication: [2, 3]               # 问题与机会、关键决策
-    question: "如何设计低延迟、可扩展的在线图像编辑系统？"  # implicit in slide 3
-    answer: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]  # MVP范围、架构、算法、性能
-    next_steps: [15, 16]               # 风险、下一步行动
+  # Macro-level: Overall deck SCQA
+  macro:
+    situation: [1]                     # 现状与背景
+    complication: [2, 3]               # 问题/机会 + 关键决策
+    question: "如何设计低延迟、可扩展的在线图像编辑系统？"
+    answer: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    next_steps: [15, 16]
+  # Section-level: Internal logic of each section (for ≥15 slide decks)
+  sections:
+    - label: "核心方案"
+      slides: [4, 5, 6, 7]
+      section_role: "answer (架构与技术路径)"
+      internal_logic: "MVP范围 → 架构 → 算法 → 性能"
+    - label: "验证与风险"
+      slides: [8, 9, 10, 11, 12, 13, 14]
+      section_role: "evidence + risk"
+      internal_logic: "测试 → 性能 → 安全 → 可靠性"
+  # Transition validation (for 15+ slide decks)
+  transitions:
+    - from: "核心方案"
+      to: "验证与风险"
+      expected: "从技术方案自然过渡到验证与风险评估"
+
+# Timing & Pacing Analysis
+timing:
+  total_time: "30min"
+  total_slides: 16
+  avg_time_per_slide: "1.9 min"
+  section_allocation:
+    - section: "开场+结论"
+      slides: [1, 2, 3]
+      allocated_time: "5 min"
+      pacing_status: "OK"
+    - section: "核心方案"
+      slides: [4, 5, 6, 7]
+      allocated_time: "10 min"
+      pacing_status: "OK"
+  warnings: []  # e.g., "Section B: 5 high-complexity slides in 5 min may be too fast"
+
+# KPI Traceability (cross-slide consistency)
+kpi_traceability:
+  tracked_kpis: []  # populated when KPIs appear across multiple slides
+  # Example:
+  # - name: "交互延迟"
+  #   target: "p95 < 100ms"
+  #   referenced_in: [4, 8, 14]
+  #   consistency: "PASS"  # all references use same value
 
 # QA Metadata
 content_qa:
@@ -216,6 +273,8 @@ content_qa:
   speaker_notes_coverage: 94          # percentage
   visual_coverage: 50                 # percentage of slides with diagrams
   scqa_complete: true
+  kpi_consistency: true               # all cross-slide KPIs are consistent
+  timing_feasible: true               # no pacing warnings
 ---
 ```
 
@@ -243,7 +302,7 @@ content_qa:
 
 **VISUAL**:
 ```yaml
-type: "sequence"  # architecture|flowchart|sequence|state_machine|comparison|timeline|gantt|matrix|heatmap|scatter|none
+type: "sequence"  # See VISUAL TYPE TAXONOMY below for full list
 title: "用户交互流程（Browser → WASM → Backend AI）"
 priority: "critical"              # critical|high|medium|low|optional
 data_source: "Slide 5 architecture description + Speaker notes"
@@ -409,25 +468,61 @@ mermaid_code: |
 
 ## KEY DECISIONS EXTRACTION ALGORITHM
 
-### Identification Patterns
-Scan source document for these linguistic patterns:
+> **Design Principle**: This algorithm is **domain-agnostic** — it works for software, hardware, engineering, business, and scientific presentations. Domain-specific keywords are organized as **extension packs** that can be selected based on the source document's domain.
 
-**Decision keywords:**
-- Chinese: "决策" / "选择" / "采用" / "优先" / "trade-off" / "取舍"
-- English: "decision" / "chose" / "instead of" / "vs" / "trade-off" / "prioritize"
+### Universal Identification Patterns
+Scan source document for these **domain-independent** linguistic patterns:
 
-**Scope markers:**
+**Decision verbs (universal):**
+- Chinese: "决策" / "选择" / "采用" / "推荐" / "优先" / "决定" / "放弃" / "排除" / "建议"
+- English: "decision" / "chose" / "instead of" / "vs" / "trade-off" / "prioritize" / "recommend" / "adopt" / "reject"
+
+**Scope & phasing markers (universal):**
 - "必须 (must-have)" vs "可选 (optional/nice-to-have)"
-- "MVP" vs "未来版本 (future release)"
-- "Phase 1" vs "Phase 2"
+- "MVP" / "Phase 1" / "短期" / "中期" / "长期" / "near-term" / "long-term"
+- "示范 (pilot/demo)" vs "量产 (mass production)" vs "规模化 (scale-up)"
 
-**Technical choices:**
-- Architecture patterns: "microservices" / "monolith" / "event-driven"
-- Tech stack: "React" / "Vue" / "Angular"; "PostgreSQL" / "MongoDB"
-- Algorithms: "XGBoost" / "neural network" / "rule-based"
+**Comparison & trade-off markers (universal):**
+- "vs" / "对比" / "权衡" / "取舍" / "trade-off" / "instead of" / "而非"
+- "优点/缺点" / "pros/cons" / "advantages/disadvantages"
+- "成本/收益" / "cost/benefit" / "ROI"
 
-**Risk mitigation:**
+**Risk & mitigation markers (universal):**
 - "为了避免 (to avoid)" / "缓解 (mitigate)" / "降级 (fallback)" / "监控 (monitor)"
+- "风险" / "不确定性" / "假设" / "验证" / "risk" / "uncertainty" / "assumption" / "validate"
+
+### Domain Extension Packs
+
+Select the relevant extension pack based on the source document's domain. Multiple packs can be combined.
+
+**Software & IT:**
+- Architecture: "microservices" / "monolith" / "event-driven" / "serverless"
+- Tech stack: "React" / "Vue" / "Angular"; "PostgreSQL" / "MongoDB" / "Redis"
+- Algorithms: "XGBoost" / "neural network" / "rule-based" / "transformer"
+
+**Power Electronics & Hardware:**
+- Materials: "纳米晶" / "非晶" / "粉末" / "铁氧体" / "SiC" / "GaN" / "Si IGBT"
+- Parameters: "频率" / "频段" / "损耗" / "功率密度" / "温升" / "效率" / "dv/dt"
+- Processes: "平面绕组" / "分层绕组" / "浸漆" / "固化" / "装配"
+- Thermal: "被动冷却" / "风冷" / "液冷" / "嵌入式液冷" / "热管理"
+
+**Manufacturing & Supply Chain:**
+- Processes: "SPC" / "良率" / "Cpk" / "FPY" / "放行" / "返工" / "试产"
+- Supply: "多源采购" / "长期协议" / "备选供应商" / "库存策略"
+
+**Standards & Certification:**
+- Standards: "IEC" / "GB" / "IEEE" / "UL" / "CE" / "行业标准"
+- Compliance: "认证" / "合规" / "准入" / "互比试验" / "第三方实验室"
+
+**Business & Finance:**
+- Models: "SaaS" / "订阅" / "硬件+服务" / "付费模型" / "商业模式"
+- Metrics: "ROI" / "BOM" / "TCO" / "Payback" / "毛利" / "NPV"
+
+**Biotech & Pharma:**
+- Processes: "临床试验" / "GMP" / "FDA" / "IND" / "NDA" / "生物等效性"
+- Materials: "靶标" / "抗体" / "载体" / "制剂" / "辅料"
+
+> **Auto-detection**: Scan the source document's first 500 words to identify domain keywords; automatically activate relevant extension packs. Report activated packs in `content_qa_report.json`.
 
 ### Decision Completeness Validation
 
@@ -460,7 +555,7 @@ Every key decision MUST have:
 
 ## SPEAKER NOTES STANDARDS
 
-### Required Structure (200-300 words per slide)
+### Required Fields (200-300 words per slide)
 
 **1. Summary** (1-2 sentences)
 - What this slide says (main message in plain language)
@@ -477,6 +572,42 @@ Every key decision MUST have:
 - Caveats or limitations of data
 
 **4. Audience Action** (1-2 sentences)
+- What should the audience remember? (key takeaway)
+- What decision should they make? (approval / feedback / next step)
+- What question should they ask? (to deepen understanding)
+
+**5. Risks/Uncertainties** (optional, 1 sentence)
+- Assumptions that may not hold
+- Unknowns requiring validation
+- Edge cases not fully addressed
+
+### Optional Extension Fields (auto-recommended based on slide type)
+
+The following fields are **optional** but **strongly recommended** when applicable. Content Planner should auto-detect slide content patterns and recommend their inclusion.
+
+| Extension Field            | When to Include                                       | Example |
+| -------------------------- | ----------------------------------------------------- | ------- |
+| **KPIs**                   | Slide contains quantitative targets or success metrics | 效率≥98%, MTBF≥100k h |
+| **Budget/Investment**      | Slide discusses funding, cost, or resource allocation  | USD 0.5–1.5M / 站点 |
+| **Acceptance Criteria**    | Slide defines validation gates or go/no-go thresholds  | 样机效率≥95% 后拨付下阶段 |
+| **Milestone Checkpoints**  | Slide is a timeline/roadmap with phased deliverables   | 0-3月:立项, 3-9月:样机 |
+| **Cross-References**       | Slide data is cited or validated in other slides       | 参见 Slide 19 KPI 仪表盘 |
+| **Formulae/Methodology**   | Slide involves engineering calculations or models      | Steinmetz 方程, RMSE≤5% |
+
+**Detection Rules for Auto-Recommendation:**
+```yaml
+auto_recommend:
+  KPIs:
+    triggers: ["≥", "≤", "target", "目标", "KPI", "p95", "MTBF", "MTTR", "效率", "可用率"]
+  Budget:
+    triggers: ["USD", "¥", "预算", "budget", "拨款", "投资", "capex", "opex"]
+  Acceptance_Criteria:
+    triggers: ["验收", "acceptance", "放行", "release", "go/no-go", "门槛"]
+  Milestone:
+    triggers: ["里程碑", "milestone", "阶段", "phase", "月", "Q1", "Q2"]
+  Cross_Refs:
+    triggers: ["参见 Slide", "see Slide", "见附录", "见报告第"]
+```
 - What should the audience remember? (key takeaway)
 - What decision should they make? (approval / feedback / next step)
 - What question should they ask? (to deepen understanding)
@@ -504,23 +635,80 @@ Every key decision MUST have:
 
 ---
 
-## VISUAL ANNOTATION BEST PRACTICES
+## VISUAL TYPE TAXONOMY
+
+> **Shared contract**: This taxonomy is the canonical list of visual types across all PPT agents. `ppt-content-planner` annotates type in VISUAL blocks; `ppt-visual-designer` must support all listed types in design-spec.json; `ppt-specialist` must render all types.
+
+### Level 1 — Basic Types (10)
+
+| Type             | Content Pattern                  | Example                                |
+| ---------------- | -------------------------------- | -------------------------------------- |
+| `architecture`   | System components & interactions | Browser → Backend → Database           |
+| `flowchart`      | Process steps & decisions        | User login flow, manufacturing process |
+| `sequence`       | Time-ordered interactions        | API call sequence, demo data flow      |
+| `state_machine`  | State transitions                | Order FSM, connection lifecycle        |
+| `comparison`     | Categorical metrics comparison   | Before/after, A vs B performance       |
+| `timeline`       | Trends or milestones over time   | Revenue trend, latency over 30 days    |
+| `gantt`          | Project schedule & phases        | Roadmap, sprint timeline               |
+| `matrix`         | 2D categorization / trade-offs   | Risk/impact matrix, Eisenhower matrix  |
+| `scatter`        | Correlation between 2 variables  | Latency vs load, cost vs performance   |
+| `heatmap`        | Data distribution / density      | Geographic data, confusion matrix      |
+
+### Level 2 — Analytical Types (8, NEW)
+
+| Type                | Content Pattern                     | Example                                    |
+| ------------------- | ----------------------------------- | ------------------------------------------ |
+| `waterfall`         | Cumulative breakdown / build-up     | Cost decomposition, loss breakdown by type |
+| `tornado`           | Sensitivity / parameter impact      | ROI sensitivity to material cost, yield    |
+| `radar`             | Multi-dimensional profile comparison| Material candidates (5+ properties)        |
+| `sankey`            | Flow / energy / loss allocation     | Energy flow, supply chain flow             |
+| `bubble`            | 3-variable correlation (x, y, size) | Frequency vs loss vs power density         |
+| `treemap`           | Hierarchical proportions            | Cost structure, market segments            |
+| `pareto`            | Critical-few analysis (80/20)       | Defect types, cost drivers                 |
+| `funnel`            | Stage-based conversion / attrition  | Sales pipeline, manufacturing yield stages |
+
+### Level 3 — Domain-Specific Types (6, NEW)
+
+| Type                    | Content Pattern                       | Example                                |
+| ----------------------- | ------------------------------------- | -------------------------------------- |
+| `engineering_schematic` | Physical system / circuit / mechanism | Transformer winding, cooling circuit   |
+| `kpi_dashboard`         | Multi-KPI overview with thresholds    | Demo KPIs: efficiency, PD, MTBF       |
+| `decision_tree`         | Branching decisions with criteria     | Material selection logic, go/no-go     |
+| `confidence_band`       | Trend with uncertainty range          | Market forecast with min/max bounds    |
+| `process_control`       | SPC / manufacturing quality control   | Cpk chart, control limits              |
+| `none`                  | No visual needed                      | Pure text slides                       |
 
 ### Visual Type Selection Guide
 
-| Content Type                     | Recommended Visual Type         | Example                                |
-| -------------------------------- | ------------------------------- | -------------------------------------- |
-| --------------                   | ------------------------        | ---------                              |
-| System components & interactions | `architecture`                  | Browser → Backend → Database           |
-| User flows & process steps       | `flowchart` or `sequence`       | User login flow, approval workflow     |
-| Time-based events                | `sequence`                      | API call sequence, async task timeline |
-| State transitions                | `state_machine`                 | Order status FSM, connection lifecycle |
-| Metrics comparison               | `comparison` (bar/column chart) | Before/after, A vs B performance       |
-| Trends over time                 | `timeline` (line chart)         | Monthly revenue, latency over 30 days  |
-| Project schedule                 | `gantt`                         | MVP roadmap, sprint timeline           |
-| Multi-dimensional trade-offs     | `matrix` (2x2 matrix)           | Eisenhower matrix, risk/impact         |
-| Correlation analysis             | `scatter`                       | Latency vs load, cost vs performance   |
-| Data distribution                | `heatmap`                       | Geographic data, confusion matrix      |
+| Content Pattern                         | Recommended Visual Type               |
+| --------------------------------------- | ------------------------------------- |
+| System components & interactions        | `architecture`                        |
+| User/process flows & steps              | `flowchart` or `sequence`             |
+| Time-based interactions                 | `sequence`                            |
+| State transitions                       | `state_machine`                       |
+| Categorical comparison (≤6 categories)  | `comparison`                          |
+| Trends over time                        | `timeline`                            |
+| Project schedule & milestones           | `gantt`                               |
+| 2D categorization / priority            | `matrix`                              |
+| 2-variable correlation                  | `scatter`                             |
+| Data distribution / density             | `heatmap`                             |
+| Cumulative cost/loss decomposition      | `waterfall`                           |
+| Parameter sensitivity analysis          | `tornado`                             |
+| Multi-property material/option compare  | `radar`                               |
+| Energy/flow/loss allocation             | `sankey`                              |
+| 3-variable correlation (x, y, size)     | `bubble`                              |
+| Hierarchical proportions                | `treemap`                             |
+| Critical-few (80/20) analysis           | `pareto`                              |
+| Stage-based yield/conversion            | `funnel`                              |
+| Physical system / circuit diagram       | `engineering_schematic`               |
+| Multi-KPI monitoring dashboard          | `kpi_dashboard`                       |
+| Decision logic with thresholds          | `decision_tree`                       |
+| Forecast with uncertainty bounds        | `confidence_band`                     |
+| Manufacturing quality control (SPC)     | `process_control`                     |
+
+---
+
+## VISUAL ANNOTATION BEST PRACTICES
 
 ### Content Scope Guidelines
 
@@ -562,7 +750,26 @@ VISUAL:
     - "Label key components: Browser UI (Canvas2D/WebGL), WASM Worker, Backend API, Model Service (ONNX/Triton)"
     - "Indicate data flow direction and interaction sequence"
   notes: "Emphasize latency tradeoffs: client-side (fast but limited) vs server-side (powerful but slower). Fallback strategy critical for reliability."
+  # Cognitive & Aesthetic Intent (NEW — guides visual-designer's design decisions)
+  cognitive_intent:
+    primary_message: "实时路径 <50ms 是核心体验保障"
+    visual_hierarchy: "实时路径视觉权重最大（粗线/高饱和色），AI 路径次之，Fallback 路径用虚线"
+    emotional_tone: "analytical"   # calm | analytical | urgency | inspirational | comparative
+    attention_flow: "左→右：用户操作 → 系统处理 → 返回结果"
+    key_contrast: "实时路径 (绿色/success) vs AI 路径 (蓝色/primary) vs Fallback (橙色/warning)"
 ```
+
+### Cognitive Intent Field Reference (NEW)
+
+> **Shared contract**: `cognitive_intent` is annotated by `ppt-content-planner` and consumed by `ppt-visual-designer` to guide design decisions. Visual-designer translates intent into Material Design tokens and layout choices.
+
+| Field             | Purpose                                    | Values / Examples                          |
+| ----------------- | ------------------------------------------ | ------------------------------------------ |
+| `primary_message` | The single takeaway the visual must convey  | "P0 风险需要立即投入资源缓解"              |
+| `visual_hierarchy`| Which element should draw the eye first     | "P0 区域视觉权重最大（高饱和+大面积）"     |
+| `emotional_tone`  | Desired cognitive/emotional response        | `calm` / `analytical` / `urgency` / `inspirational` / `comparative` |
+| `attention_flow`  | Expected eye movement path                  | "左上→右下", "中心→四周", "左→右时间线"    |
+| `key_contrast`    | Critical visual distinctions to maintain    | "好 (绿) vs 坏 (红)", "当前 vs 目标"       |
 
 ---
 
@@ -670,30 +877,49 @@ mermaid_code: |
 
 **Story Structure** (Critical):
 - ✅ SCQA structure defined and complete (Situation/Complication/Question/Answer mapped to slides)
+- ✅ **Hierarchical SCQA** (for ≥15 slides): Macro-level + section-level + transition validation present
 - ✅ Pyramid Principle applied: conclusion-first (slides 1-2), key arguments (3-5), evidence (6-N), action (final)
 - ✅ Logical flow: no gaps, MECE organization
 - ✅ Each slide has clear role annotation (situation/complication/question/answer/evidence/action)
+
+**Timing & Pacing** (Major, NEW):
+- ✅ Timing analysis present in front-matter (total_time, total_slides, avg_time_per_slide)
+- ✅ Section allocation with pacing_status (no section allocated <1 min/slide for high-complexity content)
+- ✅ Warnings flagged for pacing issues (e.g., too many slides for allocated time)
 
 **Key Decisions** (Critical):
 - ✅ Key Decisions slide present in slides 2-3
 - ✅ At least 2 key decisions identified
 - ✅ Each decision has: statement + rationale + alternatives + risks (+ optional success criteria)
 - ✅ Decisions are actionable (technical choices, scope, milestones, not vague statements)
+- ✅ **Domain extension packs** activated and reported (domain-specific keywords detected)
 
 **Content Quality** (Major):
 - ✅ Titles are assertion-style (conclusion-first, ≤10 words)
 - ✅ Bullets within limit (executive ≤3, technical ≤5, academic ≤7)
 - ✅ Speaker notes present on ≥90% of slides
-- ✅ Speaker notes follow structure (Summary/Rationale/Evidence/Action/Risks)
+- ✅ Speaker notes follow required structure (Summary/Rationale/Evidence/Action/Risks)
+- ✅ **Speaker notes extension fields** auto-recommended where applicable (KPIs, Budget, Acceptance Criteria)
 - ✅ Each claim supported by evidence with source attribution
+
+**KPI Traceability** (Major, NEW):
+- ✅ All KPIs that appear on ≥2 slides are tracked in `kpi_traceability` front-matter
+- ✅ Cross-slide KPI values are consistent (same target value everywhere)
+- ✅ KPI units are specified and self-consistent
 
 **Visual Annotations** (Major):
 - ✅ All visual opportunities identified (comparisons, flows, architecture)
-- ✅ Visual types specified correctly (architecture/flowchart/sequence/comparison/timeline/etc.)
+- ✅ Visual types from VISUAL TYPE TAXONOMY (Level 1 + 2 + 3, not ad-hoc strings)
 - ✅ Priority marked (critical/high/medium/low/optional)
 - ✅ Data source specified for each visual
 - ✅ Content requirements provided (what to show, not how to design)
-- ✅ **NEW**: Placeholder data generated for charts/diagrams (simple data for immediate rendering, visual-designer can refine later)
+- ✅ **Cognitive intent** annotated for critical/high priority visuals (primary_message, emotional_tone, attention_flow, key_contrast)
+- ✅ Placeholder data generated for charts/diagrams (simple data for immediate rendering)
+
+**Deliverable Completeness** (Critical, NEW):
+- ✅ `slides.md` generated with valid front-matter and all slides
+- ✅ `slides_semantic.json` generated and consistent with `slides.md` (slide count, titles, visual types match)
+- ✅ `content_qa_report.json` generated with all check results
 
 **Metadata Completeness** (Minor):
 - ✅ Each slide has slide_type (title/bullet-list/two-column/full-image/data-heavy)
@@ -707,15 +933,21 @@ Must include:
 - `overall_score` (0-100, weighted average of all checks)
 - `timestamp` (ISO 8601 format)
 - `checks` object with per-check status (PASS/FAIL/WARNING)
+- `domain_packs_activated` (list of activated domain extension packs)
+- `kpi_traceability` (cross-slide KPI consistency results)
+- `timing_analysis` (pacing warnings and section allocation)
 - `warnings` array (non-blocking issues)
 - `fix_suggestions` array (actionable recommendations with priority)
 
 **Scoring weights:**
-- Audience & Philosophy: 20%
-- Story Structure: 25%
-- Key Decisions: 25%
-- Content Quality: 20%
-- Visual Annotations: 10%
+- Audience & Philosophy: 15%
+- Story Structure (incl. hierarchical SCQA): 20%
+- Key Decisions: 20%
+- Content Quality: 15%
+- Visual Annotations (incl. cognitive intent): 10%
+- KPI Traceability: 10%
+- Timing & Pacing: 5%
+- Deliverable Completeness: 5%
 
 **Pass threshold**: overall_score ≥ 70
 
@@ -725,6 +957,8 @@ Must include:
 - Missing Key Decisions slide
 - SCQA structure incomplete
 - Speaker notes coverage < 80%
+- `slides_semantic.json` not generated or inconsistent with `slides.md`
+- Cross-slide KPI inconsistency detected (same KPI with different target values)
 
 ---
 
@@ -838,6 +1072,34 @@ Must include:
 - Key Decisions slide: Methodology choices, dataset selection, evaluation metrics
 - ≤7 bullets per slide, heavy use of data plots, experiment results tables, statistical significance annotations
 - Speaker notes cite related work, explain methodology rationale, discuss limitations
+
+### Industrial / Hardware Technical Review (NEW)
+**Input**:
+```
+"Analyze MFT industry report and produce a technical-review slides.md for engineering management audience (expert knowledge, high decision authority). Cover: materials, thermal, manufacturing, demonstration roadmap, standards. 30 minutes, 25-30 slides."
+```
+
+**Expected Output**:
+- Audience profile: technical_reviewers (engineering management), expert, high authority, 30min
+- Recommended philosophy: McKinsey Pyramid (decision-heavy, data-driven)
+- **Domain extension packs activated**: Power Electronics & Hardware, Manufacturing & Supply Chain, Standards & Certification, Business & Finance
+- **Hierarchical SCQA**: Macro-level (Market → Technical → Engineering → Demo → Business → Risk → Action) + 6 section-level mappings with transition validation
+- Key Decisions: frequency band selection, material candidates, cooling strategy, demo scenarios, commercial model
+- **Visual types used** (Level 1 + 2 + 3):
+  - `radar` (material multi-property comparison: 纳米晶 vs 非晶 vs 粉末)
+  - `waterfall` (loss breakdown: 铁损/铜损/附加损耗 by frequency)
+  - `comparison` (cooling solutions: 被动/风冷/液冷 with cost/reliability)
+  - `gantt` (12-month roadmap with milestones)
+  - `matrix` (risk matrix: probability × impact)
+  - `kpi_dashboard` (demo KPIs: efficiency, PD, MTBF, availability)
+  - `flowchart` (manufacturing SPC control flow)
+  - `engineering_schematic` (transformer winding topology)
+  - `tornado` (ROI sensitivity to material cost, yield, scale)
+  - `confidence_band` (market forecast with uncertainty bounds)
+- **KPI traceability**: efficiency ≥98%, MTBF ≥100kh, temperature rise ≤40°C — tracked across 5+ slides
+- **Timing analysis**: 30 slides / 30 min = 1 min/slide average; Section B (5 technical slides in 5 min) flagged for pacing review
+- **Speaker notes extensions**: KPIs on 8 slides, Budget on 3 slides, Acceptance Criteria on 2 slides, Milestone Checkpoints on 3 slides
+- **Cognitive intent** on critical visuals: risk matrix uses urgency tone; roadmap uses analytical tone with milestone emphasis
 
 ---
 

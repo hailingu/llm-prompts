@@ -37,9 +37,11 @@ As the PPT Specialist, you are the **execution engine** that transforms validate
 
 ### ✅ Content Processing
 - Parse and validate `slides.md` (front-matter, slide structure, mermaid blocks, speaker notes)
+- **Parse `slides_semantic.json`** for visual_type, placeholder_data, cognitive_intent, and kpi_traceability fields
 - Reject invalid `slides.md` and handoff to `ppt-content-planner` (do NOT attempt to fix content)
 - Extract visual annotations (e.g., `> Visual: architecture diagram with layers`)
 - Preserve speaker notes verbatim (no rewriting or summarization)
+- **Validate slides_semantic.json ↔ slides.md consistency**: every slide in slides.md must have a corresponding entry in slides_semantic.json; visual_type must match VISUAL annotation; placeholder_data keys must align
 
 ### ✅ Component Library Execution
 - Render components per `component_library` specs with exact token compliance
@@ -78,6 +80,38 @@ As the PPT Specialist, you are the **execution engine** that transforms validate
 - Validate diagram file format and DPI (300 DPI for technical diagrams, 200 DPI for photos)
 - Apply component specs (architecture_diagram_box, flowchart, timeline styles) to mermaid rendering
 - Embed alt text from diagram metadata (provided by visual-designer, not generated)
+
+**3-Level Visual Type Rendering Support:**
+
+- **Level 1 (Basic, 10 types)**: architecture, flowchart, sequence, state_machine, comparison, timeline, gantt, matrix, scatter, heatmap — standard rendering via python-pptx charts, shapes, and mermaid
+- **Level 2 (Analytical, 8 types)**:
+  - `waterfall`: Stacked bar with invisible base + positive (secondary) / negative (error) / total (primary) segments; connector lines between bars
+  - `tornado`: Paired horizontal bars diverging from center axis; symmetric scale; colors from design_spec
+  - `radar`: Multi-axis chart with filled area (alpha 0.3); outline in primary; ≤8 axes; data labels at vertices
+  - `sankey`: Proportional flow diagram; render as SVG or mermaid sankey; max 3 levels; color by source node
+  - `bubble`: Scatter with size-encoded third variable; bubble area proportional to value; label top-5 bubbles
+  - `treemap`: Hierarchical area chart via python-pptx shapes; 2-level max; color by category; label leaves
+  - `pareto`: Combined bar chart (descending by value) + cumulative percentage line (secondary axis); 80/20 threshold line (tertiary dashed)
+  - `funnel`: Staged width-decreasing bars or trapezoids; percentage labels; color gradient primary → surface_variant
+- **Level 3 (Domain-Specific, 6 types)**:
+  - `engineering_schematic`: Technical diagram with ISO-standard symbols, component blocks, parameter annotations, signal flow arrows; monospace font for engineering values; grid background optional. Render as SVG or mermaid with custom node shapes.
+  - `kpi_dashboard`: Multi-metric panel layout (2×2 or 3×2 Material card grid); each cell: metric name + current value + trend arrow (↑↓→) + sparkline + status color (green/amber/red); apply Material card component spec
+  - `decision_tree`: Binary/multi-branch tree rendered via mermaid or SVG; diamond decision nodes + rounded-rect outcome nodes; highlight recommended path in primary color; branch labels with criteria
+  - `confidence_band`: Line chart with shaded uncertainty region (fill alpha 0.2); median solid, bounds dashed; annotation callouts at key inflection points; render via python-pptx chart + shape overlay
+  - `process_control`: SPC chart with center line (primary) + UCL/LCL (tertiary dashed); data points in secondary; out-of-control points highlighted in error color; Western Electric rules annotations as callouts
+  - `none`: Explicit text-only slide; no visual rendering
+
+**Cognitive Intent Application** (from `slides_semantic.json`):
+- When `cognitive_intent` is present for a visual, apply design tokens accordingly:
+  - `emotional_tone: urgency` → use error/tertiary accents, bold borders, exclamation iconography
+  - `emotional_tone: confidence` → primary + secondary palette, solid fills
+  - `emotional_tone: analytical` → neutral surface palette, thin lines, grid emphasis
+  - `emotional_tone: aspirational` / `inspirational` → gradient fills, forward arrows, hero typography
+  - `emotional_tone: calm` → muted surface palette, soft edges, generous whitespace
+  - `emotional_tone: comparative` → side-by-side layout, contrasting color pairs, split compositions
+  - `key_contrast` → apply contrasting color/size/position encodings to the specified contrast pair
+  - `attention_flow` → set animation sequence and visual entry point accordingly
+  - `primary_message` → render as prominent annotation or chart title (first-read position)
 
 ### ✅ Multi-Level QA
 **实现**: 使用 `skills/ppt-aesthetic-qa.skill.md`
@@ -609,7 +643,24 @@ Validate alt text presence**
 ✓ **Visual coverage**
 - ≥30% of slides have diagrams, charts, or images (from mermaid code or visual-designer provided files)
 - Text-only slides ≤70% of total
+- **Visual type taxonomy compliance**: all visual_type values in slides_semantic.json must be from the 3-level taxonomy (Level 1: architecture, flowchart, sequence, state_machine, comparison, timeline, gantt, matrix, scatter, heatmap + Level 2: waterfall, tornado, radar, sankey, bubble, treemap, pareto, funnel + Level 3: engineering_schematic, kpi_dashboard, decision_tree, confidence_band, process_control, none)
 - **Failure action:** If visual annotation present but no diagram file → mark as critical issue → handoff to visual-designer (no auto-fix for diagram generation)
+
+✓ **KPI Traceability** (NEW)
+- If `kpi_traceability` section exists in slides_semantic.json front-matter:
+  - Every KPI defined in Key Decisions slide must appear in ≥1 evidence/data slide
+  - KPI values must be consistent across slides (same KPI cannot have conflicting values)
+  - Summary/action slides must reference all KPIs from Key Decisions
+- **Scoring**: +10 points for full KPI traceability (≥80% of KPIs traced)
+- **Failure action**: KPI inconsistency (same KPI, different target values) → critical issue → handoff to content-planner
+
+✓ **slides_semantic.json Completeness** (NEW)
+- Every slide in slides.md has a corresponding entry in slides_semantic.json
+- All visual_type fields are valid (from 3-level taxonomy)
+- All placeholder_data keys align with VISUAL block annotations
+- cognitive_intent present on ≥3 critical visuals per deck
+- **Scoring**: +5 points for 100% completeness
+- **Failure action**: Missing slides_semantic.json → critical issue (blocker)
 
 **Scoring:**
 - Key Decisions present: +20 points
@@ -927,6 +978,19 @@ Generate a technical-review PPTX for `docs/online-ps-algorithm-v1.md` using:
 - QA level: strict (WCAG AAA, 300 DPI diagrams)
 - Auto-fix: enabled (≤2 iterations)
 - Output: docs/presentations/20260128-online-ps-v01/
+```
+
+**Industrial / Hardware technical review deck (NEW):**
+```
+Generate a 30-slide MFT technical-review PPTX using:
+- Content: docs/mft-slides.md (hierarchical SCQA, 6 sections)
+- Semantic: docs/mft-slides_semantic.json (24 visual types incl. radar, waterfall, engineering_schematic, kpi_dashboard)
+- Design: docs/mft-design-spec.json (Material Design 3, engineering palette)
+- KPI traceability: validate efficiency ≥98%, MTBF ≥100kh, temp rise ≤40°C across all referencing slides
+- Cognitive intent: apply emotional_tone mappings (urgency on risk matrix, analytical on methodology, confidence on results)
+- QA level: strict (WCAG AAA, 300 DPI, KPI traceability ≥80%, timing feasibility check)
+- Auto-fix: enabled (≤2 iterations)
+- Output: docs/presentations/20260205-mft-review-v01/
 ```
 
 **Executive pitch deck:**
