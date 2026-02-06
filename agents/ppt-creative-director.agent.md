@@ -10,14 +10,26 @@ handoffs:
     agent: ppt-content-planner
     prompt: "Please draft a structured slides.md outline for the given document, annotate required visuals, and emit machine-friendly `slides_semantic.json` (including visual hints & placeholder_data). Include `content_qa_report.json` for programmatic checks."
     send: true
-  - label: stakeholder workshop
-    agent: stakeholder
-    prompt: "Schedule brief development workshop to define audience, goals, key messages, tone, constraints, and creative vision."
-    send: false
-  - label: human review request
-    agent: human-reviewer
-    prompt: "Manual review required: see QA report and slides preview for decision."
-    send: false
+  - label: content revision
+    agent: ppt-content-planner
+    prompt: "Content strategy review identified issues. Please revise slides.md and slides_semantic.json per the feedback below, then resubmit with updated content_qa_report.json."
+    send: true
+  - label: visual design
+    agent: ppt-visual-designer
+    prompt: "Content approved. Please design visuals per slides_semantic.json cognitive_intent annotations. Generate design_spec.json (Material tokens + component library) and visual_report.json. Apply WCAG contrast checks."
+    send: true
+  - label: visual revision
+    agent: ppt-visual-designer
+    prompt: "Visual design review identified issues. Please revise design_spec.json per the feedback below, then resubmit with updated visual_report.json."
+    send: true
+  - label: generate pptx
+    agent: ppt-specialist
+    prompt: "Generate PPTX from approved slides.md + slides_semantic.json + design_spec.json. Run standards/ppt-guidelines checks and produce qa_report.json. If fixable issues found, run auto-fix once."
+    send: true
+  - label: auto-fix
+    agent: ppt-specialist
+    prompt: "QA report shows fixable issues. Please run auto-fix (respect iteration limit ≤2) and resubmit with updated qa_report.json."
+    send: true
 ---
 
 ## MISSION & OVERVIEW
@@ -55,6 +67,12 @@ Creative Director reviews slides.md structure, key decisions, SCQA mapping, cont
 - [ ] **Domain Extension Packs**: Activated packs match source document domain; no missing domain vocabulary; decision extraction covers domain-specific patterns
 - [ ] **Visual Type Coverage**: Visual types span at least 2 taxonomy levels; analytical/domain-specific types used where data warrants (not just basic charts)
 - [ ] **slides_semantic.json Completeness**: All slides have entries; visual_type and placeholder_data align with slides.md annotations
+- [ ] **Content Density**: Every slide has `components: {}` with ≥1 non-empty component array OR `visual` with placeholder_data/mermaid_code; no slide has ≤2 bullets without structured fill
+- [ ] **Component Schema Conformance**: `slides_semantic.json` includes `"schema": "standards/slides-render-schema.json@v1"` reference; all component objects have required fields per schema; component types match slide content (KPI slides use `kpis`, comparison slides use `comparison_items`, etc.)
+- [ ] **Component Coverage**: ≥90% of slides have non-empty `components`; flag any slide with sparse content for content-planner revision
+- [ ] **slide_type / Component Alignment**: Every slide's `slide_type` matches its primary `components` data type. Slides with `comparison_items` use `comparison`, slides with `table_data` use `data-heavy`, slides with `timeline_items` use `timeline`/`gantt`, etc. `bullet-list` count ≤40% of total slides (excluding section_divider). Mismatches ≤2 allowed (edge cases only).
+- [ ] **Section Dividers** (for decks ≥15 slides): Each logical section starts with a `section_divider` slide; dividers include section name, overview, and progress index; `slides_semantic.json` has top-level `sections` array.
+- [ ] **Layout Variety**: `slide_type` distribution covers ≥4 distinct types (excluding section_divider); no single type exceeds 40% of content slides
 
 **2) Design Philosophy Approval**  
 Creative Director approves recommended philosophy (Presentation Zen / McKinsey / Kawasaki / Assertion-Evidence)
@@ -183,40 +201,25 @@ Creative Director reviews machine-readable QA (`qa_report.json`), `slides_semant
 
 ## HANDOFF EXAMPLES
 
-**Content Planner (Software Domain):**
-"Draft a 12–15 slide technical-review `slides.md` for `docs/online-ps-algorithm-v1.md`. Emphasize key decisions, apply hierarchical SCQA, annotate cognitive_intent on critical visuals, emit `slides_semantic.json` with KPI traceability, and produce `content_qa_report.json`."
-
-**Content Planner (Industrial/Hardware Domain):**
-"Analyze `MFT_slides.md` (30-slide MFT industry report) for engineering management audience with high decision authority. Activate Power Electronics, Manufacturing, and Standards domain packs. Apply hierarchical SCQA across 6 sections (Market → Technical → Engineering → Demo → Business → Risk). Include timing analysis for 30-minute slot. Produce `slides.md`, `slides_semantic.json` (with engineering_schematic, radar, waterfall, kpi_dashboard visual types), and `content_qa_report.json`."
-
-**Visual Designer:**
-"Design diagrams for the listed slides using the `cognitive_intent` annotations from `slides_semantic.json`: apply primary_message emphasis, attention_flow, and key_contrast. Support all visual types including Level 2 (waterfall, tornado, radar, sankey) and Level 3 (engineering_schematic, kpi_dashboard). Blue-green palette, WCAG contrast, export 150 DPI PNGs named consistently."
-
-**PPT Specialist:**
-"Generate PPTX from `slides.md` + `slides_semantic.json` + `design_spec.json`; validate KPI traceability across slides; run `standards/ppt-guidelines` checks and produce `qa_report.json` and artifacts. If fixable, run auto-fix once."
+| Target | Example Prompt |
+|---|---|
+| Content Planner (SW) | "Draft 12-15 slide technical-review slides.md for `docs/online-ps-algorithm-v1.md`. Hierarchical SCQA, cognitive_intent on critical visuals, KPI traceability." |
+| Content Planner (HW) | "Analyze MFT report for engineering management. Activate Power Electronics + Manufacturing + Standards packs. 6 sections, 30 min, include engineering_schematic/radar/waterfall/kpi_dashboard." |
+| Visual Designer | "Design diagrams per slides_semantic.json cognitive_intent. Support Level 2+3 types. Blue-green palette, WCAG contrast, 150 DPI PNGs." |
+| PPT Specialist | "Generate PPTX from slides.md + slides_semantic.json + design_spec.json. Run ppt-guidelines checks, produce qa_report.json. Auto-fix once if needed." |
 
 ---
 
 ## DECISION RECORDING
 
-All major decisions must be recorded in `docs/presentations/<session-id>/decisions.md`:
+All major decisions → `docs/presentations/<session-id>/decisions.md` with: **Date / Issue / Decision / Rationale / Alternatives / Outcome**.
 
+Example entry:
 ```markdown
-## Decision Log
-
-### Decision 1: Design Philosophy Selection
-**Date**: 2026-01-28  
-**Issue**: Choose between Presentation Zen (minimal) vs McKinsey Pyramid (data-heavy)  
-**Decision**: McKinsey Pyramid — audience is technical reviewers expecting detailed data  
-**Rationale**: Technical review context requires comprehensive data presentation and traceability  
-**Alternatives Considered**: Presentation Zen (rejected: insufficient detail for technical audience)
-
-### Decision 2: Auto-Fix vs Human Review
-**Date**: 2026-01-28  
-**Issue**: QA score = 68, critical = 0, visual_coverage = 25%  
-**Decision**: Run auto-fix (1st attempt) to boost visual coverage  
-**Rationale**: Issues are deterministic (add missing diagrams), within iteration limit  
-**Outcome**: Post-fix score = 74, visual_coverage = 32% → auto-delivered
+### Decision 1: Design Philosophy
+**Date**: 2026-01-28 | **Decision**: McKinsey Pyramid (data-heavy, decision-oriented)
+**Rationale**: Technical reviewers expect detailed data + traceability
+**Alternatives**: Presentation Zen (rejected: insufficient data density)
 ```
 
 ---

@@ -24,28 +24,32 @@ The PPT creation follows a **specialist-driven collaboration model** where each 
 graph TB
     User[👤 用户请求] --> CD[🎯 ppt-creative-director<br/>流程协调 + 质量门控]
     
-    CD --> CP[📝 ppt-content-planner<br/>内容策略 + 内容质量]
-    CP --> VD[🎨 ppt-visual-designer<br/>视觉设计 + 图表 + 视觉质量]
+    CD -->|content planning| CP[📝 ppt-content-planner<br/>内容策略 + 内容质量]
+    CP -->|submit for approval| CD
+    CD -->|content revision| CP
     
-    VD --> Gen[⚙️ ppt_generator.py<br/>PPTX 生成]
-    Gen --> CD
+    CD -->|visual design| VD[🎨 ppt-visual-designer<br/>视觉设计 + 图表 + 视觉质量]
+    VD -->|submit for design review| CD
+    VD -->|escalate infeasibility| CD
+    CD -->|visual revision| VD
+    
+    CD -->|generate pptx| PS[⚙️ ppt-specialist<br/>PPTX 生成 + QA]
+    PS -->|submit for final review| CD
+    PS -->|escalate invalid inputs| CD
+    CD -->|auto-fix| PS
     
     CD --> Decision{📊 质量门控<br/>Score≥70?<br/>Critical=0?}
     Decision -->|Yes| Deliver[✅ 自动交付<br/>PPTX + 报告]
-    Decision -->|No| AutoFix{🔍 可自动修复?}
-    
-    AutoFix -->|Yes| Fix[🔧 自动修复<br/>iter ≤2]
-    AutoFix -->|No| Human[👤 人工审查<br/>生成预览]
-    
-    Fix --> Gen
+    Decision -->|No, fixable| CD
+    Decision -->|No, critical| Human[👤 人工审查<br/>生成预览]
     
     style CD fill:#FFD700,stroke:#FF8C00,stroke-width:3px
     style CP fill:#87CEEB,stroke:#4682B4,stroke-width:2px
     style VD fill:#98FB98,stroke:#32CD32,stroke-width:2px
+    style PS fill:#FFE0B2,stroke:#F59E0B,stroke-width:2px
     style Decision fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px
     style Deliver fill:#C8E6C9,stroke:#4CAF50,stroke-width:3px
     style Human fill:#FFCDD2,stroke:#F44336,stroke-width:2px
-    style Gen fill:#E0E0E0,stroke:#757575,stroke-width:1px
 ```
 
 **Key Design Decisions**:
@@ -113,7 +117,7 @@ graph TB
 
 **Input**: `ppt-content-planner` output
 
-**Output to**: `ppt_generator.py`
+**Output to**: `skills/ppt-generator/bin/generate_pptx.py` (pre-built renderer, ~1477 lines)
 
 **Core Responsibilities**:
 - **Visual Design**: Theme, colors, typography, layouts
@@ -181,12 +185,14 @@ graph TB
 
 ## Workflow Steps
 
-### 1. Content Planning
+### 1. Content Planning (CD → CP → CD)
 
 ```yaml
+trigger: ppt-creative-director sends "content planning" handoff
 agent: ppt-content-planner
 input: [user_request, source_md, presentation_type]
-output: slides.md (content outline)
+output: slides.md + slides_semantic.json + content_qa_report.json
+return_to: ppt-creative-director via "submit for approval" handoff
 self_check: content_quality
 success_criteria:
   - Key Decisions identified
@@ -194,15 +200,29 @@ success_criteria:
   - Visual needs marked
   - Logical structure (Pyramid Principle)
   - Bullets within limits
+  - slides_semantic.json completeness = 100%
+  - KPI traceability ≥ 80%
 ```
 
-### 2. Visual Design
+### 1.5. Content Strategy Review (CD gate)
 
 ```yaml
+agent: ppt-creative-director
+input: slides.md + slides_semantic.json + content_qa_report.json
+action: Review against Content Strategy Review Checklist
+outcomes:
+  approve: proceed to step 2
+  reject: send "content revision" handoff back to ppt-content-planner
+```
+
+### 2. Visual Design (CD → VD → CD)
+
+```yaml
+trigger: ppt-creative-director sends "visual design" handoff
 agent: ppt-visual-designer
-input: slides.md (from planner)
-output: slides.md (with theme + charts) + *.png
-depends_on: [1_planning]
+input: slides_semantic.json (approved by CD)
+output: design_spec.json + visual_report.json + diagram PNGs
+return_to: ppt-creative-director via "submit for design review" handoff
 self_check: visual_quality
 success_criteria:
   - Theme applied (colors, fonts)
@@ -212,24 +232,36 @@ success_criteria:
   - Visual style consistent
   - Color contrast ≥4.5:1
   - High-resolution output (200 DPI)
+  - Cognitive intent consumed
 ```
 
-### 3. PPTX Generation
-
-```yaml
-tool: ppt_generator.py
-input: slides.md
-output: *.pptx
-depends_on: [2_design]
-```
-
-### 4. Final Review
+### 2.5. Visual Design Review (CD gate)
 
 ```yaml
 agent: ppt-creative-director
-input: [slides.md, *.pptx, all_agent_outputs]
-output: quality_report.json
-depends_on: [3_generation]
+input: design_spec.json + visual_report.json
+action: Review visual direction, brand compliance, WCAG contrast
+outcomes:
+  approve: proceed to step 3
+  reject: send "visual revision" handoff back to ppt-visual-designer
+```
+
+### 3. PPTX Generation & QA (CD → PS → CD)
+
+```yaml
+trigger: ppt-creative-director sends "generate pptx" handoff
+agent: ppt-specialist
+input: slides.md + slides_semantic.json + design_spec.json
+output: *.pptx + qa_report.json
+return_to: ppt-creative-director via "submit for final review" handoff
+depends_on: [2.5_visual_review_approved]
+```
+
+### 4. Final Review & Decision (CD gate)
+
+```yaml
+agent: ppt-creative-director
+input: [*.pptx, qa_report.json, visual_report.json, slides_semantic.json]
 evaluation:
   - content_score: 40 points
   - visual_score: 40 points
@@ -247,14 +279,14 @@ agent: ppt-creative-director
 condition: final_score ≥ 70 AND critical_issues == 0
 actions:
   auto_deliver: 
-    trigger: passed AND key_decisions_present
-    output: [*.pptx, quality_report.json]
+    trigger: passed AND key_decisions_present AND kpi_traceability ≥ 80%
+    output: [*.pptx, qa_report.json, visual_report.json, slides_semantic.json]
   auto_fix:
     trigger: not_passed AND fixable AND iter < 2
-    action: regenerate_from_step_3
+    handoff: "auto-fix" → ppt-specialist (then return to step 4)
   human_review:
     trigger: critical > 0 OR score < 50 OR iter > 2
-    output: [preview.pptx, review_request.md]
+    output: [preview.pptx, qa_report.json, review notes]
 ```
 
 ---
