@@ -1,0 +1,317 @@
+{
+  "metadata": {
+    "project": "MFT (中频变压器) — Visual Design Spec",
+    "version": "1.0",
+    "author": "ppt-visual-designer",
+    "date": "2026-02-09",
+    "design_philosophy": "Material Design 3 / McKinsey Pyramid (conclusion-first)"
+  },
+  "theme_tokens": {
+    "palette": {
+      "primary": "#2563EB",
+      "on_primary": "#FFFFFF",
+      "primary_container": "#E6F0FF",
+      "secondary": "#10B981",
+      "tertiary": "#6D28D9",
+      "surface": "#FFFFFF",
+      "on_surface": "#0F172A",
+      "surface_variant": "#F3F4F6",
+      "surface_dim": "#F8FAFC",
+      "error": "#DC2626",
+      "warning": "#F59E0B",
+      "success": "#10B981",
+      "neutral": "#6B7280"
+    },
+    "accessibility": {
+      "contrast_targets": {
+        "normal_text": 4.5,
+        "large_text": 3.0
+      }
+    }
+  },
+  "color_system": {
+    "primary": "#2563EB",
+    "secondary": "#10B981",
+    "tertiary": "#6D28D9",
+    "surface": "#FFFFFF",
+    "on_surface": "#0F172A"
+  },
+  "typography_system": {
+    "font_family": {
+      "display": "Inter, Noto Sans SC",
+      "body": "Inter, Noto Sans SC",
+      "monospace": "Roboto Mono"
+    },
+    "explicit_sizes": {
+      "display_large": {"size_pt": 40, "leading_pt": 44},
+      "headline_large": {"size_pt": 28, "leading_pt": 32},
+      "title": {"size_pt": 22, "leading_pt": 26},
+      "label_large": {"size_pt": 12, "leading_pt": 16},
+      "body": {"size_pt": 11, "leading_pt": 16},
+      "body_text": 16
+    }
+  },
+  "grid_system": {
+    "columns": 12,
+    "gutter_px": 24,
+    "margin_horizontal_px": 80,
+    "slide_width_px": 1920,
+    "slide_height_px": 1080,
+    "dpi": 144,
+    "slide_width_inches": 13.333,
+    "slide_height_inches": 7.5
+  },
+  "layout_zones": {
+    "title_bar_height_default": 0.55,
+    "title_bar_height_narrow": 0.40,
+    "bottom_bar_height": 0.25,
+    "content_margin_top": 0.12,
+    "content_bottom_margin": 0.20,
+    "progress_bar": true,
+    "bottom_bar_content": {"left": "section_name", "center": "progress_bar", "right": "slide_number", "font": "label_large", "slide_number_format": "{current} / {total}"}
+  },
+  "component_library": {
+    "card": {"elevation": 2, "corner_radius": 8, "padding": 16, "usage": "summary_card, KPI_card"},
+    "callout": {"background": "primary_container", "accent_border": true, "padding": 12, "usage": "decision_callout, warning"},
+    "data_table": {"row_height": 36, "header_font": "label_large", "striped": true, "usage": "decision_table, kpi_table"},
+    "chip": {"height": 28, "radius": 14, "usage": "priority_tag, status"},
+    "timeline": {"lane_height": 40, "marker_size": 10, "usage": "roadmap"},
+    "gantt": {"row_height": 28, "crit_color": "#2563EB", "usage": "detailed_plan"},
+    "flowchart": {"node_radius": 6, "accent_colors": ["#10B981","#F59E0B","#DC2626"], "usage": "process"}
+  },
+  "slide_type_layouts": {
+    "title": {"background": "primary", "title_bar": "none", "title_align": "center", "title_font": "display_large", "content_fill": "center"},
+    "section_divider": {"background": "surface_variant", "title_bar": "none", "title_align": "center", "title_font": "headline_large", "content_fill": "center"},
+    "data-heavy": {"background": "surface", "title_bar": "standard", "content_fill": "expand"},
+    "comparison": {"background": "surface", "title_bar": "standard", "content_fill": "expand"},
+    "bullet-list": {"background": "surface", "title_bar": "standard", "content_fill": "top-align"},
+    "sequence": {"background": "surface", "title_bar": "standard", "content_fill": "expand"},
+    "matrix": {"background": "surface", "title_bar": "standard", "content_fill": "expand"},
+    "chart": {"background": "surface", "title_bar": "standard", "content_fill": "expand"},
+    "flowchart": {"background": "surface", "title_bar": "standard", "content_fill": "expand"},
+    "timeline": {"background": "surface", "title_bar": "narrow", "content_fill": "expand"},
+    "gantt": {"background": "surface", "title_bar": "narrow", "content_fill": "expand"},
+    "default": {"background": "surface", "title_bar": "standard", "title_font": "title", "content_fill": "expand"}
+  },
+  "section_accents": {
+    "S0": "primary",
+    "S1": "secondary",
+    "S2": "primary_container",
+    "S3": "surface_variant",
+    "S4": "warning",
+    "S5": "success",
+    "S6": "neutral",
+    "S7": "primary",
+    "S8": "secondary"
+  },
+  "visual_specs": [
+    {
+      "id": "V02",
+      "slide_id": "2",
+      "visual_type": "data_table",
+      "name": "Decision Table",
+      "inline_data": {
+        "columns": ["Decision Request","Budget Range","Priority","Delivery"],
+        "rows": [
+          ["批准示范场景与首轮预算","USD 0.5–1.5M","P0","立即"],
+          ["批准材料验证與中试计划","USD 0.3–0.8M","P0","Q1"],
+          ["授权参与标准化與行业协作","USD 0.1–0.3M","P1","Q2"]
+        ]
+      },
+      "render_instructions": {
+        "chart_type": "TABLE",
+        "table_style": "striped",
+        "highlight_rows": [0],
+        "priority_tag_style": {"P0": {"background":"#2563EB","color":"#FFFFFF"}, "P1": {"background":"#F59E0B","color":"#000000"}},
+        "accessibility": {"row_header": true}
+      },
+      "pre_render": {"width": 1920, "height": 1080, "format": "png"},
+      "design_rationale": "Provide a clear table for quick in-meeting decisions; prominent first row and P0 tag for urgency."
+    },
+    {
+      "id": "V03",
+      "slide_id": "3",
+      "visual_type": "card_grid",
+      "name": "Three Key Conclusions Cards",
+      "inline_data": {
+        "cards": [
+          {"title":"MFT = 高功率密度路径","subtitle":"50–200 kHz","bullets":["适用: EV/SST/DC","工程要点: 材料/热/绝缘"],"accent":"primary"},
+          {"title":"优先示范→数据验证→规模化","subtitle":"6–12 个月","bullets":["里程碑: 样机与示范","责任: PMO"],"accent":"secondary"},
+          {"title":"材料/热/监测为首要任务","subtitle":"并行验证候选材料","bullets":["KPIs: 效率/温升/PD/MTBF"],"accent":"primary_container"}
+        ]
+      },
+      "render_instructions": {"layout":"3up_cards","card_style":"elevated","title_font":"headline_large","bullets_limit":3,"accent_bar":true},
+      "pre_render": {"width": 1920, "height": 1080, "format": "png"},
+      "design_rationale": "Show conclusion + action pairing; use accent colors to guide focus and prioritize first card."
+    },
+    {
+      "id": "V07",
+      "slide_id": "7",
+      "visual_type": "matrix",
+      "name": "Impact vs Difficulty Matrix",
+      "inline_data": {
+        "quadrants": ["High Impact/Low Difficulty","High Impact/High Difficulty","Low Impact/Low Difficulty","Low Impact/High Difficulty"],
+        "items": [
+          {"label":"示范验证","x":"high","y":"low","color":"#10B981"},
+          {"label":"材料验证","x":"high","y":"low","color":"#10B981"},
+          {"label":"标准化参与","x":"high","y":"high","color":"#F59E0B"},
+          {"label":"量产线建设","x":"high","y":"high","color":"#F59E0B"},
+          {"label":"认证准备","x":"low","y":"low","color":"#6B7280"}
+        ]
+      },
+      "render_instructions": {"chart_type":"SCATTER_QUADRANT","x_axis_label":"Impact","y_axis_label":"Difficulty","quadrant_labels":true,"legend":false,"annotations":true},
+      "pre_render": {"width": 1200, "height": 900, "format": "png"},
+      "design_rationale": "Place short-term actionable items in the high-impact, low-difficulty quadrant to drive prioritization."
+    },
+    {
+      "id": "V09",
+      "slide_id": "9",
+      "visual_type": "sequence_flow",
+      "name": "Device → MFT → System Impact Chain",
+      "inline_data": {
+        "nodes": [
+          {"id":"A","label":"SiC/GaN 器件"},
+          {"id":"B","label":"MFT 频率 ↑ (50–200 kHz)"},
+          {"id":"C","label":"绝缘应力 ↑ / EMC 风险"},
+          {"id":"D","label":"功率密度 ↑ / 热负荷 ↑"}
+        ],
+        "links": [{"from":"A","to":"B"},{"from":"A","to":"C"},{"from":"B","to":"D"}]
+      },
+      "render_instructions": {"type":"left_to_right","node_style":{"fill":"#2563EB","color":"#FFFFFF"},"emphasis_nodes":["C","D"]},
+      "pre_render": {"width": 1600, "height": 720, "format": "png"},
+      "design_rationale": "Highlight causal chain; emphasize engineering note cards for EMC and thermal risk."
+    },
+    {
+      "id": "V11",
+      "slide_id": "11",
+      "visual_type": "comparison_chart",
+      "name": "Materials Comparison (Fe loss / Temp sensitivity)",
+      "inline_data": {
+        "labels": ["NanoCrystal","Amorphous","Powder"],
+        "metrics": [
+          {"name":"Iron loss (sample) @ target freq","values":[0.85,1.0,1.2]},
+          {"name":"Saturation (T)","values":[1.3,1.6,1.4]},
+          {"name":"Cost index","values":[1.5,1.0,1.2]}
+        ]
+      },
+      "render_instructions": {"chart_type":"BAR_GROUPED","normalize":false,"color_mapping":{"NanoCrystal":"#2563EB","Amorphous":"#10B981","Powder":"#F59E0B"},"axis_labels":true},
+      "pre_render": {"width": 1600, "height": 900, "format": "png"},
+      "design_rationale": "Parallel comparison across loss, saturation and cost to support supplier selection; key fields annotated."
+    },
+    {
+      "id": "V13",
+      "slide_id": "13",
+      "visual_type": "line_chart",
+      "name": "Loss Breakdown by Frequency",
+      "inline_data": {
+        "labels": ["50 kHz","100 kHz","150 kHz","200 kHz"],
+        "series": [
+          {"name":"Iron loss (W)","data":[45,65,90,120],"color":"#2563EB"},
+          {"name":"Copper loss (W)","data":[80,85,92,100],"color":"#10B981"},
+          {"name":"Additional loss (W)","data":[15,22,30,40],"color":"#6B7280"}
+        ]
+      },
+      "render_instructions": {"chart_type":"LINE_STACKED_OPTIONAL","y_axis_label":"Loss (W)","x_axis_label":"Frequency","legend_position":"top","annotations":[{"at":"150 kHz","text":"Optimization hotspot"}]},
+      "pre_render": {"width": 1600, "height": 900, "format": "png"},
+      "design_rationale": "Show stacked contributions to identify optimization hotspots at higher frequencies."
+    },
+    {
+      "id": "V15",
+      "slide_id": "15",
+      "visual_type": "comparison_table",
+      "name": "Cooling Strategy Comparison",
+      "inline_data": {
+        "columns": ["Scheme","Max Power (kW)","Relative Cost","Reliability"],
+        "rows": [["Passive",10,1.0,95],["Air-cooled",50,1.5,90],["Liquid",150,2.5,75],["Embedded Liquid",300,4.0,70]]
+      },
+      "render_instructions": {"chart_type":"TABLE","highlight_column":"Reliability","sort_by":"Max Power","accessibility":{"cell_roles":true}},
+      "pre_render": {"width": 1400, "height": 900, "format": "png"},
+      "design_rationale": "Lay out trade-offs across capacity/cost/reliability to justify test plan sequencing."
+    },
+    {
+      "id": "V18",
+      "slide_id": "18",
+      "visual_type": "flowchart",
+      "name": "Manufacturing Control Flow",
+      "inline_data": {
+        "nodes": ["Start","Winding","SPC Check (Dimensions)","Varnish","Cure","SPC Check (Insulation)","Electrical Test","PD Test","Release"],
+        "edges": [["Start","Winding"],["Winding","SPC Check (Dimensions)"],["SPC Check (Dimensions)","Varnish"],["Varnish","Cure"],["Cure","SPC Check (Insulation)"],["SPC Check (Insulation)","Electrical Test"],["Electrical Test","PD Test"],["PD Test","Release"]]
+      },
+      "render_instructions": {"type":"flow","node_style":{"pass":"#10B981","fail":"#DC2626"},"highlight_nodes":["SPC Check (Dimensions)","SPC Check (Insulation)"]},
+      "pre_render": {"width": 1600, "height": 1000, "format": "png"},
+      "design_rationale": "Clarify process control points and where SPC data must be captured for quality gates."
+    },
+    {
+      "id": "V21",
+      "slide_id": "21",
+      "visual_type": "sequence_timeline",
+      "name": "Demonstration Data Flow",
+      "inline_data": {
+        "steps": ["Design/Sim -> Prototype -> Field Demonstration -> Data Platform -> Standards Committee"],
+        "annotations": {"frequency":"1h","data_quality_threshold":">=95%"}
+      },
+      "render_instructions": {"type":"left_to_right_sequence","icons":true,"annotate_frequencies":true},
+      "pre_render": {"width": 1600, "height": 720, "format": "png"},
+      "design_rationale": "Depict the end-to-end data lifecycle and requirements for evidence used in standards submissions."
+    },
+    {
+      "id": "V23",
+      "slide_id": "23",
+      "visual_type": "dashboard",
+      "name": "KPI Dashboard",
+      "inline_data": {
+        "cards": [
+          {"label":"Efficiency (full load)","value":">=98%","trend":"stable"},
+          {"label":"Availability","value":">=99%","trend":"up"},
+          {"label":"PD events","value":"<=1 / month","trend":"down"},
+          {"label":"MTBF","value":">=100,000 h","trend":"stable"}
+        ]
+      },
+      "render_instructions": {"layout":"2x2_cards","kpi_card_style":"large_number","color_coding":{"criteria":"thresholds"}},
+      "pre_render": {"width": 1600, "height": 900, "format": "png"},
+      "design_rationale": "Provide operable KPI snapshot for monthly review and trigger rules for funding gates."
+    },
+    {
+      "id": "V27",
+      "slide_id": "27",
+      "visual_type": "timeline_gantt",
+      "name": "0-12 Month Roadmap",
+      "inline_data": {
+        "lanes": ["Phase 1: Initiation","Phase 2: Prototype","Phase 3: Demonstration"],
+        "milestones": [{"label":"Project approval","date":"2026-02"},{"label":"Prototype acceptance","date":"2026-06"},{"label":"6-month demo data","date":"2027-01"}]
+      },
+      "render_instructions": {"chart_type":"GANTT_SUMMARY","time_scale":"monthly","highlight_milestones":true},
+      "pre_render": {"width": 1920, "height": 540, "format": "png"},
+      "design_rationale": "High-level roadmap with milestones and acceptance gates aligned to funding triggers."
+    },
+    {
+      "id": "V28",
+      "slide_id": "28",
+      "visual_type": "gantt_detailed",
+      "name": "12-18 Month Expansion Gantt",
+      "inline_data": {
+        "tasks": [
+          {"task":"Second batch scenario selection","start":"2027-01","duration_months":2},
+          {"task":"Scale demo (3 scenarios)","start":"2027-03","duration_months":4},
+          {"task":"Manufacturing scale validation","start":"2027-02","duration_months":3},
+          {"task":"Main suppliers negotiation","start":"2027-01","duration_months":3}
+        ]
+      },
+      "render_instructions": {"chart_type":"GANTT_DETAILED","show_critical_path":true,"highlight_color":"#2563EB"},
+      "pre_render": {"width": 1920, "height": 720, "format": "png"},
+      "design_rationale": "Show critical path for mid-term scaling decisions and capital allocation."
+    }
+  ],
+  "pre_render_requirements": {
+    "image_format": "png",
+    "resolution": "1920x1080 (primary)",
+    "mermaid_rendering": {"theme":"material","width":1920,"height":1080}
+  },
+  "validation_checks": {
+    "MV-1_component_library": "present",
+    "MV-2_visual_inline_data": "all visual_specs include inline_data",
+    "MV-3_render_instructions_format": "json_objects",
+    "MV-4_slide_type_layouts_completeness": "done",
+    "MV-8_content_fill": "present for all slide_type_layouts"
+  }
+}
