@@ -79,6 +79,8 @@ git commit
 ## Usage
 
 - Prompts and agents live under `agents/` and `.github/prompts/`. Use them to generate PR descriptions, commit messages, design docs, and more.
+
+- Reveal Builder POC docs and examples: `docs/reveal-builder.md` and `docs/design-spec-reveal.md` (run `node tools/reveal-builder/cli.js build --input docs/example-mermaid.md` to try the demo).
 - Standardization files are in `standards/` and `java-standards/` (Checkstyle config, guidelines, and templates).
 - Follow the commit template `.gitmessage` and the `CONTRIBUTING.md` workflow for consistent contributions.
 

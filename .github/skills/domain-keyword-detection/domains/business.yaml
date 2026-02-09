@@ -1,0 +1,34 @@
+name: business
+description: "Business & Finance (models, metrics, ROI, commercial strategy)"
+version: 1.0.0
+last_updated: 2026-02-06
+
+keywords:
+  decision_verbs:
+    zh: ["决策", "选择", "采用", "推荐", "优先", "决定", "放弃", "排除", "建议"]
+    en: ["decision", "chose", "instead of", "vs", "trade-off", "prioritize", "recommend", "adopt", "reject"]
+  
+  technical_terms:
+    models: ["SaaS", "订阅", "硬件+服务", "付费模型", "商业模式", "盈利模式", "收费模式"]
+    metrics: ["ROI", "BOM", "TCO", "Payback", "毛利", "NPV", "IRR", "收入", "成本", "利润"]
+    strategy: ["定价", "市场", "竞争", "渠道", "销售", "客户", "增长", "份额"]
+    finance: ["投资", "融资", "估值", "现金流", "预算", "拨款", "资本", "财务"]
+  
+  scope_markers:
+    zh: ["必须", "可选", "短期", "中期", "长期", "近期", "远期", "阶段"]
+    en: ["must-have", "optional", "near-term", "mid-term", "long-term", "phase"]
+  
+  comparison_markers:
+    zh: ["vs", "对比", "权衡", "取舍", "优点", "缺点", "成本", "收益", "性价比"]
+    en: ["vs", "trade-off", "instead of", "pros", "cons", "cost-benefit", "ROI"]
+  
+  risk_markers:
+    zh: ["为了避免", "缓解", "降级", "监控", "风险", "不确定性", "假设", "验证", "损失"]
+    en: ["to avoid", "mitigate", "fallback", "monitor", "risk", "uncertainty", "assumption", "validate", "loss"]
+
+scoring_weights:
+  decision_verbs: 1.4
+  technical_terms: 1.3
+  scope_markers: 1.0
+  comparison_markers: 1.1
+  risk_markers: 0.9

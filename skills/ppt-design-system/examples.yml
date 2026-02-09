@@ -1,0 +1,71 @@
+# Structured examples for automated tests and documentation
+
+examples:
+  - name: design_spec_technical_deck
+    description: "Generate design-spec.json for technical review deck"
+    input:
+      slides_md: "output/online_ps_slides.md"
+      slides_count: 16
+      audience_type: "technical_reviewers"
+      visual_complexity: "medium"
+    expected_output:
+      status: success
+      slides_count: 16
+      components_used:
+        - "text_box"
+        - "architecture_diagram"
+        - "comparison_table"
+        - "code_block"
+        - "kpi_dashboard"
+      performance_budget_ok: true
+      qa_checks_passed: 15
+      file_size_estimate_mb: 2.8
+
+  - name: design_spec_accessibility_compliance
+    description: "Ensure accessibility guidelines are followed"
+    input:
+      slides_md: "output/slides_with_charts.md"
+      slides_count: 10
+      has_charts: true
+    expected_output:
+      status: success
+      accessibility_checks:
+        color_contrast_ratio_min: 4.5
+        alt_text_present: true
+        font_size_min_pt: 14
+        chart_legends_readable: true
+      qa_checks_passed: 15
+
+  - name: performance_budget_violation
+    description: "Detect performance budget violations"
+    input:
+      slides_md: "output/data_heavy_slides.md"
+      slides_count: 20
+      total_chart_points: 1500
+      total_diagram_nodes: 80
+    expected_output:
+      status: partial
+      slides_count: 20
+      performance_budget_ok: false
+      warnings:
+        - "Total chart data points (1500) exceeds budget (1000)"
+        - "Slide 15 has 12 shapes, exceeds per-slide limit (10)"
+      performance_violations:
+        - "Chart data points: 1500/1000"
+        - "Slide 15 shape count: 12/10"
+      qa_checks_failed: 2
+
+  - name: material_design_token_usage
+    description: "Verify correct Material Design 3 token usage"
+    input:
+      component: "primary_button"
+      context: "call_to_action_slide"
+    expected_output:
+      tokens_applied:
+        background_color: "#2563EB"
+        text_color: "#FFFFFF"
+        border_radius: "4px"
+        padding: "12px 24px"
+        font_weight: 600
+        font_size: "16pt"
+      compliance_check: "passed"

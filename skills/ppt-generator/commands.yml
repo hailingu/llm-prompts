@@ -1,0 +1,41 @@
+# Machine-friendly command definitions for automation
+
+commands:
+  - name: generate
+    cmd: "python3 skills/ppt-generator/bin/generate_pptx.py --semantic {semantic_json} --design {design_json} --output {output_pptx}"
+    description: "Generate PPTX from semantic and design specification JSON files."
+    working_directory: /Users/guhailin/Git/llm-prompts
+    arguments:
+      - name: semantic_json
+        type: string
+        description: "Path to slides_semantic.json (from ppt-content-planner)"
+        required: true
+      - name: design_json
+        type: string
+        description: "Path to design_spec.json (from ppt-visual-designer)"
+        required: true
+      - name: output_pptx
+        type: string
+        description: "Output path for generated PPTX file"
+        required: true
+    exit_codes:
+      0: "PPTX generated successfully"
+      1: "Input validation failure or rendering error"
+      2: "System error (missing dependencies, file I/O)"
+    outputs_schema:
+      status: string  # success|partial|error
+      output_file: string
+      slides_count: int
+      file_size_mb: float
+      qa_report:
+        stage_1_input_validation: bool
+        stage_2_file_creation: bool
+        stage_3_slide_rendering: bool
+        stage_4_content_verification: bool
+        stage_5_design_compliance: bool
+        stage_6_output_validation: bool
+      warnings: [string]
+      errors: [string]
+    example_invocations:
+      - "python3 skills/ppt-generator/bin/generate_pptx.py --semantic output/slides_semantic.json --design output/design_spec.json --output docs/presentations/demo.pptx"
+      - "python3 skills/ppt-generator/bin/generate_pptx.py --semantic output/MFT_slides_semantic.json --design output/MFT_design_spec.json --output docs/presentations/mft-20260206/MFT.pptx"

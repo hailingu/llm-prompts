@@ -1,0 +1,93 @@
+# Machine-friendly command definitions for automation
+
+commands:
+  - name: detect
+    cmd: "python3 skills/domain-keyword-detection/bin/domain_detector.py detect --input {input} --threshold {threshold} --output {output}"
+    description: "Detect document domain(s) by keyword matching. Returns activated domain packs and confidence scores."
+    arguments:
+      - name: input
+        type: string
+        description: "Path to document file (Markdown, plain text) or string content via stdin"
+        required: true
+      - name: threshold
+        type: float
+        description: "Minimum confidence score (0.0-1.0) to activate a domain pack"
+        required: false
+        default: 0.3
+      - name: output
+        type: string
+        description: "Output format: json (default) or yaml"
+        required: false
+        default: json
+    exit_codes:
+      0: "domains detected successfully (or empty result)"
+      1: "runtime error (file not found, invalid config)"
+      2: "configuration error (missing domain files)"
+    outputs_schema:
+      status: string  # success|empty|error
+      detected_domains: [string]
+      confidence_scores:
+        domain_name: float
+      matched_keywords:
+        domain_name: [string]
+      activated_packs: [string]
+      threshold: float
+      total_keywords_matched: int
+    example_invocations:
+      - "python3 skills/domain-keyword-detection/bin/domain_detector.py detect --input docs/online-ps-algorithm-v1.md"
+      - "python3 skills/domain-keyword-detection/bin/domain_detector.py detect --input docs/MFT.md --threshold 0.4"
+      - "cat docs/design.md | python3 skills/domain-keyword-detection/bin/domain_detector.py detect --input - --output yaml"
+
+  - name: get_keywords
+    cmd: "python3 skills/domain-keyword-detection/bin/domain_detector.py get-keywords --domain {domain}"
+    description: "Retrieve keyword list for a specific domain pack."
+    arguments:
+      - name: domain
+        type: string
+        description: "Domain name: software|hardware|manufacturing|standards|biotech|finance"
+        required: true
+    exit_codes:
+      0: "keywords retrieved"
+      1: "domain not found"
+    outputs_schema:
+      status: string  # success|error
+      domain: string
+      keywords:
+        decision_verbs: [string]
+        technical_terms: [string]
+        scope_markers: [string]
+        comparison_markers: [string]
+        risk_markers: [string]
+    example_invocations:
+      - "python3 skills/domain-keyword-detection/bin/domain_detector.py get-keywords --domain hardware"
+      - "python3 skills/domain-keyword-detection/bin/domain_detector.py get-keywords --domain software"
+
+  - name: list_domains
+    cmd: "python3 skills/domain-keyword-detection/bin/domain_detector.py list-domains"
+    description: "List all available domain packs (categories)."
+    arguments: []
+    exit_codes:
+      0: "success"
+    outputs_schema:
+      status: string  # success
+      available_domains: [string]
+      domain_descriptions:
+        domain_name: string
+    example_invocations:
+      - "python3 skills/domain-keyword-detection/bin/domain_detector.py list-domains"
+
+  - name: validate
+    cmd: "python3 skills/domain-keyword-detection/bin/domain_detector.py validate"
+    description: "Validate all domain YAML files (schema, required fields, keyword uniqueness)."
+    arguments: []
+    exit_codes:
+      0: "all domain files valid"
+      1: "validation errors found"
+    outputs_schema:
+      status: string  # success|error
+      valid_domains: [string]
+      invalid_domains:
+        domain_name:
+          errors: [string]
+    example_invocations:
+      - "python3 skills/domain-keyword-detection/bin/domain_detector.py validate"

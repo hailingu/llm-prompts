@@ -1,0 +1,101 @@
+# Structured examples for automated tests
+
+- name: detect_software_domain
+  input:
+    path: tests/fixtures/software_design.md
+    command: detect
+    args:
+      threshold: 0.3
+  expected_output:
+    status: success
+    detected_domains: ["software"]
+    confidence_scores:
+      software: 0.85
+    matched_keywords:
+      software: ["microservices", "React", "PostgreSQL", "API", "决策"]
+    activated_packs: ["software"]
+    total_keywords_matched: 12
+
+- name: detect_hardware_domain
+  input:
+    path: tests/fixtures/MFT_report.md
+    command: detect
+    args:
+      threshold: 0.3
+  expected_output:
+    status: success
+    detected_domains: ["hardware", "standards"]
+    confidence_scores:
+      hardware: 0.92
+      standards: 0.48
+    matched_keywords:
+      hardware: ["纳米晶", "SiC", "功率密度", "频率", "损耗", "液冷"]
+      standards: ["IEC", "认证", "GB"]
+    activated_packs: ["hardware", "standards"]
+    total_keywords_matched: 28
+
+- name: detect_multi_domain
+  input:
+    path: tests/fixtures/product_roadmap.md
+    command: detect
+    args:
+      threshold: 0.3
+  expected_output:
+    status: success
+    detected_domains: ["software", "business"]
+    confidence_scores:
+      software: 0.65
+      business: 0.55
+    matched_keywords:
+      software: ["架构", "技术栈", "MVP"]
+      business: ["ROI", "商业模式", "订阅"]
+    activated_packs: ["software", "business"]
+    total_keywords_matched: 15
+
+- name: detect_no_domain_below_threshold
+  input:
+    path: tests/fixtures/generic_text.md
+    command: detect
+    args:
+      threshold: 0.5
+  expected_output:
+    status: empty
+    detected_domains: []
+    confidence_scores: {}
+    threshold: 0.5
+    hint: "No domains matched above threshold 0.5. Try lowering threshold or check document content."
+
+- name: get_keywords_software
+  input:
+    command: get_keywords
+    args:
+      domain: software
+  expected_output:
+    status: success
+    domain: software
+    keywords:
+      decision_verbs: ["决策", "选择", "采用", "推荐"]
+      technical_terms: ["microservices", "monolith", "React", "Vue", "PostgreSQL", "MongoDB"]
+      scope_markers: ["MVP", "Phase 1", "必须", "可选"]
+
+- name: list_all_domains
+  input:
+    command: list_domains
+  expected_output:
+    status: success
+    available_domains: ["software", "hardware", "manufacturing", "standards", "business", "biotech"]
+    domain_descriptions:
+      software: "Software & IT domain (architecture, tech stacks, algorithms)"
+      hardware: "Power Electronics & Hardware (materials, parameters, thermal management)"
+      manufacturing: "Manufacturing & Supply Chain (processes, quality control)"
+      standards: "Standards & Certification (IEC, GB, IEEE, compliance)"
+      business: "Business & Finance (models, metrics, ROI)"
+      biotech: "Biotech & Pharma (clinical trials, GMP, FDA)"
+
+- name: validate_domain_files
+  input:
+    command: validate
+  expected_output:
+    status: success
+    valid_domains: ["software", "hardware", "manufacturing", "standards", "business", "biotech"]
+    invalid_domains: {}
