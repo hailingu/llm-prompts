@@ -1,0 +1,51 @@
+name: domain-keyword-detection
+version: 1.0.0
+schema_version: 1
+description: "Detect document domain (software/hardware/manufacturing/standards/biotech/finance) via keyword matching. Supports multi-domain documents and confidence scoring."
+owner: ppt-content-planner
+category: nlp
+tags:
+  - domain-detection
+  - keywords
+  - decision-extraction
+  - nlp
+dependencies:
+  - python3/skills/domain-keyword-detection/bin/domain_detector.py
+integration:
+  agents:
+    - ppt-content-planner
+    - markdown-writer-specialist
+    - data-scientist-research-lead
+  skills: []
+last_updated: 2026-02-06
+
+# Reference to auxiliary files in the directory
+readme: README.md
+commands: commands.yml
+examples: examples.yml
+
+# High-level outputs schema (machine-readable summary)
+outputs:
+  success:
+    description: "Domain(s) detected successfully."
+    fields:
+      detected_domains: [string]
+      confidence_scores:
+        domain_name: float  # 0.0-1.0
+      matched_keywords:
+        domain_name: [string]
+      activated_packs: [string]
+      threshold: float
+      total_keywords_matched: int
+  empty:
+    description: "No domains detected above threshold."
+    fields:
+      detected_domains: []
+      confidence_scores: {}
+      threshold: float
+      hint: string
+  error:
+    description: "Runtime or configuration error."
+    fields:
+      error_message: string
+      hint: string

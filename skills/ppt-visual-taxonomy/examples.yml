@@ -1,0 +1,73 @@
+# Structured examples for automated tests and documentation
+
+examples:
+  - name: visual_type_selection_comparison
+    description: "Select appropriate visual type for option comparison scenario"
+    input:
+      content_intent: "Compare 3 architectural options with 5 criteria each"
+      data_structure:
+        options: 3
+        criteria: 5
+        has_quantitative_scores: true
+    expected_output:
+      visual_type: "comparison_table"
+      taxonomy_level: "core"
+      cognitive_intent: "Side-by-side evaluation"
+      confidence: 0.95
+      validation_passed: true
+
+  - name: visual_type_selection_trend
+    description: "Select appropriate visual type for trend over time"
+    input:
+      content_intent: "Show CPU usage trend across 30 days"
+      data_structure:
+        time_points: 30
+        metrics: 1
+        has_temporal_sequence: true
+    expected_output:
+      visual_type: "line_chart"
+      taxonomy_level: "core"
+      cognitive_intent: "Trend over time/sequence"
+      confidence: 0.98
+      validation_passed: true
+
+  - name: visual_type_selection_domain_specific
+    description: "Select domain-specific visual type for hardware engineering"
+    input:
+      content_intent: "Illustrate power converter circuit topology"
+      data_structure:
+        domain: "hardware_engineering"
+        components: ["MOSFET", "inductor", "capacitor"]
+        relationships: "electrical connections"
+    expected_output:
+      visual_type: "engineering_schematic"
+      taxonomy_level: "domain-specific"
+      cognitive_intent: "Circuit topology representation"
+      confidence: 0.85
+      validation_passed: true
+
+  - name: placeholder_data_bar_chart
+    description: "Generate placeholder data for bar chart"
+    input:
+      visual_type: "bar_chart"
+      categories: ["Q1", "Q2", "Q3", "Q4"]
+      series: ["Revenue", "Cost"]
+    expected_output:
+      placeholder_data:
+        chart_config:
+          labels: ["Q1", "Q2", "Q3", "Q4"]
+          series:
+            - name: "Revenue"
+              values: [120, 145, 160, 180]
+            - name: "Cost"
+              values: [80, 95, 105, 115]
+      validation_passed: true
+
+  - name: content_ceiling_violation
+    description: "Detect content ceiling violation (too many bullet points)"
+    input:
+      visual_type: "bullet-list"
+      bullet_count: 8
+    expected_output:
+      validation_passed: false
+      warning: "Bullet count (8) exceeds ceiling (7). Consider splitting into multiple slides."

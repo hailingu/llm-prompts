@@ -1,0 +1,36 @@
+name: software
+description: "Software & IT domain (architecture, tech stacks, algorithms)"
+version: 1.0.0
+last_updated: 2026-02-06
+
+# Keyword categories (each category contributes to scoring)
+keywords:
+  decision_verbs:
+    zh: ["决策", "选择", "采用", "推荐", "优先", "决定", "放弃", "排除", "建议"]
+    en: ["decision", "chose", "instead of", "vs", "trade-off", "prioritize", "recommend", "adopt", "reject"]
+  
+  technical_terms:
+    architecture: ["microservices", "monolith", "event-driven", "serverless", "分布式", "单体", "事件驱动"]
+    tech_stack: ["React", "Vue", "Angular", "PostgreSQL", "MongoDB", "Redis", "Kafka", "RabbitMQ"]
+    algorithms: ["XGBoost", "neural network", "rule-based", "transformer", "神经网络", "规则引擎"]
+    frameworks: ["Spring", "Django", "Flask", "Express", "Next.js", "Vite"]
+  
+  scope_markers:
+    zh: ["必须", "可选", "MVP", "示范", "量产", "规模化", "短期", "中期", "长期"]
+    en: ["must-have", "optional", "nice-to-have", "MVP", "Phase 1", "pilot", "demo", "near-term", "long-term"]
+  
+  comparison_markers:
+    zh: ["vs", "对比", "权衡", "取舍", "优点", "缺点", "成本", "收益"]
+    en: ["vs", "trade-off", "instead of", "pros", "cons", "advantages", "disadvantages", "cost", "benefit", "ROI"]
+  
+  risk_markers:
+    zh: ["为了避免", "缓解", "降级", "监控", "风险", "不确定性", "假设", "验证"]
+    en: ["to avoid", "mitigate", "fallback", "monitor", "risk", "uncertainty", "assumption", "validate"]
+
+# Scoring weights (optional, default: equal weight per category)
+scoring_weights:
+  decision_verbs: 1.5
+  technical_terms: 1.0
+  scope_markers: 1.0
+  comparison_markers: 1.0
+  risk_markers: 0.8

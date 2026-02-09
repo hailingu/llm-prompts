@@ -1,0 +1,56 @@
+# Structured examples for automated tests and documentation
+
+examples:
+  - name: generate_technical_presentation
+    description: "Generate PPTX for technical review presentation"
+    input:
+      command: generate
+      semantic_json: "output/online_ps_slides_semantic.json"
+      design_json: "output/online_ps_design_spec.json"
+      output_pptx: "docs/presentations/online-ps/online_ps_v1.pptx"
+    expected_output:
+      status: success
+      output_file: "docs/presentations/online-ps/online_ps_v1.pptx"
+      slides_count: 16
+      file_size_mb: 2.8
+      qa_passed: true
+      qa_report:
+        stage_1_input_validation: true
+        stage_2_file_creation: true
+        stage_3_slide_rendering: true
+        stage_4_content_verification: true
+        stage_5_design_compliance: true
+        stage_6_output_validation: true
+      preview_images:
+        - "docs/presentations/online-ps/previews/slide_01.png"
+        - "docs/presentations/online-ps/previews/slide_16.png"
+
+  - name: generate_with_warnings
+    description: "Generate PPTX with some quality warnings"
+    input:
+      command: generate
+      semantic_json: "output/test_slides_semantic.json"
+      design_json: "output/test_design_spec.json"
+      output_pptx: "output/test.pptx"
+    expected_output:
+      status: partial
+      output_file: "output/test.pptx"
+      slides_count: 10
+      warnings:
+        - "Slide 5: Chart rendered with reduced data points (50 → 20) due to performance budget"
+        - "Slide 8: Text overflow detected, font size reduced from 16pt to 14pt"
+      qa_report:
+        stage_5_design_compliance: false
+
+  - name: input_validation_failure
+    description: "Handle invalid input JSON gracefully"
+    input:
+      command: generate
+      semantic_json: "output/invalid_semantic.json"
+      design_json: "output/design_spec.json"
+      output_pptx: "output/test.pptx"
+    expected_output:
+      status: error
+      error_type: "InputValidationError"
+      message: "slides_semantic.json validation failed: missing required field 'slides'"
+      traceback: "..."

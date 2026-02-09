@@ -1,0 +1,34 @@
+name: standards
+description: "Standards & Certification (IEC, GB, IEEE, compliance, testing)"
+version: 1.0.0
+last_updated: 2026-02-06
+
+keywords:
+  decision_verbs:
+    zh: ["决策", "选择", "采用", "推荐", "优先", "决定", "放弃", "排除", "建议"]
+    en: ["decision", "chose", "instead of", "vs", "trade-off", "prioritize", "recommend", "adopt", "reject"]
+  
+  technical_terms:
+    standards: ["IEC", "GB", "IEEE", "UL", "CE", "行业标准", "国标", "国际标准"]
+    compliance: ["认证", "合规", "准入", "互比试验", "第三方实验室", "型式试验", "例行试验"]
+    testing: ["测试", "检测", "验证", "试验", "认可", "评估", "审核"]
+    documentation: ["技术规范", "标准文档", "测试报告", "认证证书", "符合性声明"]
+  
+  scope_markers:
+    zh: ["必须", "可选", "强制", "推荐", "参考", "适用", "豁免"]
+    en: ["mandatory", "optional", "recommended", "reference", "applicable", "exempt"]
+  
+  comparison_markers:
+    zh: ["vs", "对比", "权衡", "取舍", "差异", "等效"]
+    en: ["vs", "trade-off", "instead of", "difference", "equivalent"]
+  
+  risk_markers:
+    zh: ["为了避免", "缓解", "降级", "监控", "风险", "不确定性", "假设", "验证", "不符合", "违规"]
+    en: ["to avoid", "mitigate", "fallback", "monitor", "risk", "uncertainty", "non-compliance", "violation"]
+
+scoring_weights:
+  decision_verbs: 1.3
+  technical_terms: 1.5
+  scope_markers: 1.1
+  comparison_markers: 0.9
+  risk_markers: 1.0

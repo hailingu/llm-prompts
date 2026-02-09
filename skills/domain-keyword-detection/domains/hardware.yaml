@@ -1,0 +1,35 @@
+name: hardware
+description: "Power Electronics & Hardware (materials, parameters, thermal management)"
+version: 1.0.0
+last_updated: 2026-02-06
+
+keywords:
+  decision_verbs:
+    zh: ["决策", "选择", "采用", "推荐", "优先", "决定", "放弃", "排除", "建议"]
+    en: ["decision", "chose", "instead of", "vs", "trade-off", "prioritize", "recommend", "adopt", "reject"]
+  
+  technical_terms:
+    materials: ["纳米晶", "非晶", "粉末", "铁氧体", "SiC", "GaN", "Si IGBT", "碳化硅", "氮化镓"]
+    parameters: ["频率", "频段", "损耗", "功率密度", "温升", "效率", "dv/dt", "铁损", "铜损"]
+    processes: ["平面绕组", "分层绕组", "浸漆", "固化", "装配", "焊接", "封装"]
+    thermal: ["被动冷却", "风冷", "液冷", "嵌入式液冷", "热管理", "散热器", "热阻"]
+    devices: ["MOSFET", "IGBT", "二极管", "电容", "电感", "变压器", "母线"]
+  
+  scope_markers:
+    zh: ["必须", "可选", "MVP", "示范", "量产", "规模化", "试产", "小批量", "中批量", "大批量"]
+    en: ["must-have", "optional", "pilot", "demo", "mass production", "scale-up", "trial", "small-batch"]
+  
+  comparison_markers:
+    zh: ["vs", "对比", "权衡", "取舍", "优点", "缺点", "成本", "收益", "性价比"]
+    en: ["vs", "trade-off", "instead of", "pros", "cons", "advantages", "disadvantages", "cost-benefit"]
+  
+  risk_markers:
+    zh: ["为了避免", "缓解", "降级", "监控", "风险", "不确定性", "假设", "验证", "失效", "可靠性"]
+    en: ["to avoid", "mitigate", "fallback", "monitor", "risk", "uncertainty", "assumption", "validate", "failure", "reliability"]
+
+scoring_weights:
+  decision_verbs: 1.5
+  technical_terms: 1.2
+  scope_markers: 1.0
+  comparison_markers: 1.0
+  risk_markers: 0.9

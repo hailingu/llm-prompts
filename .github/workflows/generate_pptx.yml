@@ -1,0 +1,57 @@
+name: Generate MFT PPTX
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install mermaid-cli & puppeteer
+        run: |
+          npm i -g @mermaid-js/mermaid-cli puppeteer
+          # ensure puppeteer downloads chromium
+          npx puppeteer install --force
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Pre-render mermaid diagrams (mermaid-cli)
+        run: |
+          python3 scripts/pre_render_mermaids.py --spec output/MFT_design_spec.json
+
+      - name: Render fallback charts if needed
+        run: |
+          python3 scripts/render_charts_svg_fallback.py --spec output/MFT_design_spec.json
+
+      - name: Generate PPTX
+        run: |
+          python3 skills/ppt-generator/bin/generate_pptx.py --semantic output/MFT_slides_semantic.json --design output/MFT_design_spec.json --output docs/presentations/mft-20260206/MFT.pptx
+
+      - name: Run QA
+        run: |
+          python3 scripts/run_pptx_qa.py
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mft-presentation
+          path: |
+            docs/presentations/mft-20260206/MFT.pptx
+            docs/presentations/mft-20260206/qa_report.json
+            docs/presentations/mft-20260206/images/
