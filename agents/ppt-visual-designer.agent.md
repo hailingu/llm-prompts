@@ -562,6 +562,25 @@ fill_ratio = content_h / avail_h
 
 6. **Specify chart & diagram designs**: all 3 taxonomy levels with proper encodings
    - **Reference**: `skills/ppt-design-system/README.md` (Chart & Visual Encoding Guidelines) for chart encoding guidelines
+   - **⭐ GANTT CHART SPECIAL HANDLING**: For `gantt`/`gantt_chart`/`timeline` types, generate **structured `gantt_data`** instead of mermaid_code:
+     ```json
+     {
+       "type": "gantt",
+       "title": "项目实施路线图",
+       "placeholder_data": {
+         "gantt_data": {
+           "timeline": {"start": "YYYY-MM", "end": "YYYY-MM", "unit": "month|week|quarter"},
+           "tasks": [
+             {"name": "Task Name", "start_month": 0, "duration_months": 3, "status": "active|planned|completed"}
+           ]
+         }
+       }
+     }
+     ```
+   - **Minimum Requirements**: ≥3 tasks, all with valid `name`/`start_month`/`duration_months`/`status`
+   - **Timeline Calculation**: `start_month` is 0-indexed from `timeline.start`; `end_date = start + duration`
+   - **Status Mapping**: `active` → primary color, `completed`/`done` → secondary, `planned`/`pending` → outline
+   - **Fallback**: If unable to extract structured data, include `mermaid_code` as backup for legacy renderer
 
 6.5. **Apply cognitive_intent**: translate primary_message → chart title; emotional_tone → design tokens; attention_flow → layout order; key_contrast → contrasting encodings
 

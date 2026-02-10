@@ -322,10 +322,20 @@
     {
       "id": 28,
       "title": "0–12 个月实施路线图",
-      "slide_type": "timeline",
+      "slide_type": "gantt",
       "content": [],
-      "components": {"timeline_items": [{"phase": "0–3 个月", "period": "项目立项、示范场地确认"}, {"phase": "3–9 个月", "period": "样机验证与现场小规模示范"}, {"phase": "9–12 个月", "period": "数据分析与标准化提案准备"}]},
-      "visual": {"type": "timeline", "placeholder_data": {"mermaid_code": "gantt\n  title 0-12个月实施计划"}},
+      "components": {},
+      "visual": {"type": "gantt", "placeholder_data": {
+        "gantt_data": {
+          "timeline": {"start": "2026-02", "end": "2027-02", "unit": "month"},
+          "tasks": [
+            {"name": "项目立项、场地确认", "start_month": 0, "duration_months": 3, "status": "active"},
+            {"name": "样机验证与小规模示范", "start_month": 3, "duration_months": 6, "status": "planned"},
+            {"name": "数据分析与标准化提案", "start_month": 9, "duration_months": 3, "status": "planned"}
+          ]
+        },
+        "mermaid_code": "gantt\n  title 0-12个月实施计划"
+      }},
       "speaker_notes": "列出短期里程碑、责任人与验收门槛，确保短期能产出示范数据。"
     },
 
@@ -334,8 +344,18 @@
       "title": "12–18 个月扩展计划",
       "slide_type": "gantt",
       "content": [],
-      "components": {"bullets": ["扩大示范规模、优化工艺、谈判供货协议","准备产线工艺放大验证"]},
-      "visual": {"type": "gantt", "placeholder_data": {"mermaid_code": "gantt\n  title 12-18个月扩展计划"}},
+      "components": {},
+      "visual": {"type": "gantt", "placeholder_data": {
+        "gantt_data": {
+          "timeline": {"start": "2027-02", "end": "2027-08", "unit": "month"},
+          "tasks": [
+            {"name": "扩大示范规模", "start_month": 0, "duration_months": 3, "status": "planned"},
+            {"name": "工艺优化与供货协议", "start_month": 2, "duration_months": 3, "status": "planned"},
+            {"name": "产线工艺放大验证", "start_month": 4, "duration_months": 2, "status": "planned"}
+          ]
+        },
+        "mermaid_code": "gantt\n  title 12-18个月扩展计划"
+      }},
       "speaker_notes": "批准中期扩展方案并预留必要资本支出预算。"
     },
 

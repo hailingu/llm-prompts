@@ -294,11 +294,59 @@ def render_kpis(slide: Any, kpis: List[Dict], spec: Dict, _grid: GridSystem, lef
     return card_h + 0.15
 
 
-# Visual/placeholder renderers (simplified)
+# Visual/placeholder renderers (plugin-based architecture)
 
 def render_visual(slide: Any, visual: Dict, spec: Dict, _grid: GridSystem, left: float, top: float, width: float, height: float) -> None:
+    """Render visual using plugin-based renderer registry.
+    
+    New architecture:
+    1. Try plugin renderers first (native, mermaid, etc.)
+    2. Fall back to legacy placeholder renderers if no plugin available
+    """
     if not visual or visual.get('type') in (None, 'none'):
         return
+    
+    # Import registry (lazy import to avoid circular dependency)
+    try:
+        from .core import get_registry
+        from .protocols import VisualDataProtocol
+        
+        # Attempt to construct VDP from visual dict
+        try:
+            # Try new format (with structured 'data' field)
+            visual_data = VisualDataProtocol(**visual)
+        except Exception:
+            # Legacy format: convert placeholder_data to structured data
+            pd = visual.get('placeholder_data', {})
+            gantt_data = pd.get('gantt_data')
+            
+            if gantt_data:
+                # Has structured gantt data
+                visual_data = VisualDataProtocol(
+                    type=visual.get('type'),
+                    title=visual.get('title'),
+                    data=gantt_data,
+                    placeholder_data=pd
+                )
+            else:
+                # No structured data, use legacy renderers
+                visual_data = None
+        
+        # Try plugin renderers
+        if visual_data:
+            registry = get_registry()
+            if registry.render_with_fallback(slide, visual_data, spec, left, top, width, height):
+                return  # Success!
+            # If plugin failed, fall through to legacy renderers
+    
+    except ImportError:
+        # Registry not available, use legacy renderers
+        pass
+    except Exception as e:
+        import logging
+        logging.warning(f"Plugin renderer failed, falling back to legacy: {e}")
+    
+    # Legacy renderers (backward compatibility)
     pd = visual.get('placeholder_data', {})
     if pd.get('chart_config'):
         render_chart_table(slide, visual, spec, left, top, width, height)

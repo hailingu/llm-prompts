@@ -43,7 +43,7 @@ Agents reference this skill when:
 |---|---|---|
 | `radar_chart` | Multi-dimension capability comparison | ≥3 dimensions with normalized values |
 | `waterfall_chart` | Cumulative change / build-up | ≥3 steps, each with delta |
-| `gantt_chart` | Project schedule, phases | ≥3 tasks with start/end |
+| `gantt_chart` | Project schedule, phases | ≥3 tasks with start/duration/status |
 | `heatmap` | Density / intensity across 2 axes | ≥3×3 grid with values |
 | `sankey_diagram` | Flow volume between stages | ≥2 stages, ≥3 flow paths |
 | `scatter_plot` | Correlation of two variables | ≥5 data points (x, y [, size]) |
@@ -96,6 +96,68 @@ annotation_notes: "数据源: benchmarks/eval_20250115.csv, N=1000 样本"
 | `annotation_notes` | Optional | Data source, methodology, caveats |
 
 ### 2.3 Content Scope Rules
+
+Content-planner annotations MUST be **semantic** (what to show), NOT **visual** (how it looks):
+
+#### Special Case: Gantt Chart Data Structure
+
+For `gantt_chart` type, provide structured data instead of only mermaid code:
+
+```json
+{
+  "type": "gantt_chart",
+  "title": "Project Implementation Roadmap",
+  "placeholder_data": {
+    "gantt_data": {
+      "timeline": {
+        "start": "2026-02",
+        "end": "2027-02",
+        "unit": "month"
+      },
+      "tasks": [
+        {
+          "name": "项目立项",
+          "start_month": 0,
+          "duration_months": 3,
+          "status": "active"
+        },
+        {
+          "name": "样机验证",
+          "start_month": 3,
+          "duration_months": 6,
+          "status": "planned"
+        },
+        {
+          "name": "数据分析",
+          "start_month": 9,
+          "duration_months": 3,
+          "status": "planned"
+        }
+      ]
+    },
+    "mermaid_code": "gantt\n  title Project Implementation\n  ..."
+  }
+}
+```
+
+**Required Fields**:
+- `timeline.start` / `timeline.end`: YYYY-MM format
+- `timeline.unit`: "month", "week", "quarter", or "day"
+- `tasks[].name`: Task name (string)
+- `tasks[].start_month`: 0-indexed from timeline.start (integer)
+- `tasks[].duration_months`: Duration in timeline units (integer > 0)
+- `tasks[].status`: "active", "completed", "planned", "done", "in_progress", or "pending"
+
+**Status Color Mapping**:
+- `active` / `in_progress` → Primary color (blue)
+- `completed` / `done` → Secondary color (green)
+- `planned` / `pending` → Outline/muted color (gray)
+
+**Optional: mermaid_code**: Keep as fallback for legacy renderer compatibility
+
+---
+
+### 2.3 Original Content Scope Rules
 
 Content-planner annotations MUST be **semantic** (what to show), NOT **visual** (how it looks):
 
