@@ -213,6 +213,75 @@ Each preset defines values for **ALL** design_spec top-level keys. VD MUST apply
 - **Why this matters**: The renderer uses adaptive height logic. When `content_fill: "expand"` is set, component cards stretch to fill the zone. Without this, card heights stay at their minimum defaults, leaving 40-60% of the slide empty.
 - **Self-check**: Every `slide_type_layouts[type]` has a `content_fill` key.
 
+### MV-13: Per-Slide Layout Overrides — Content-Aware Sizing (MAJOR)
+
+**Problem**: `slide_type_layouts` provides per-type defaults, but different slides of the same type may have very different content density (e.g., 4 comparison cards vs 2, or 4 KPIs only vs KPIs + bullets + chart). A single `content_fill` per type cannot handle this variance — "expand" over-stretches sparse slides, "center" wastes space on dense slides.
+
+**Solution**: VD MUST compute `slide_overrides` — a per-slide layout map — by estimating each slide's actual content size against the available content zone.
+
+**Content Size Estimation Algorithm** (apply to every non-divider, non-title slide):
+
+```
+Constants (from grid_system + layout_zones):
+  slide_h = 7.5"
+  bar_h_standard = 0.55",  bar_h_narrow = 0.40"
+  content_margin_top = 0.12",  bottom_bar = 0.35"
+  avail_h = slide_h - bar_h - content_margin_top - bottom_bar
+    → standard: 6.48",  narrow: 6.63"
+
+Component height estimates (using typography_system.explicit_sizes):
+  card_h(attrs_count)  = header(0.35) + sep(0.02) + attrs × line_h(0.30) + padding(0.24)
+  kpi_row_h            = 1.2"  (single row of KPI cards)
+  bullet_h(count)      = count × 0.48"
+  decision_card_h      = 0.65" per card + 0.12" gap
+  timeline_h           = 1.0"  (horizontal milestones)
+  callout_h            = 0.8"  per callout
+
+Total content_h = Σ component heights
+fill_ratio = content_h / avail_h
+```
+
+**Decision Rules** (based on `fill_ratio`):
+
+| fill_ratio | content_fill | max_card_h | Rationale |
+|---|---|---|---|
+| < 0.35 | `"center"` | — | Too sparse for expand; center looks balanced |
+| 0.35 – 0.55 | `"expand"` | `content_h × 1.5` | Moderate expansion with cap prevents over-stretch |
+| 0.55 – 0.80 | `"expand"` | `avail_h × 0.9` | Content fills most of zone; gentle expand OK |
+| > 0.80 | `"top-align"` | — | Content already fills zone; no expansion needed |
+
+**Output**: `slide_overrides` top-level key in `design_spec.json`:
+
+```json
+{
+  "slide_overrides": {
+    "5": {
+      "content_fill": "expand",
+      "max_card_h": 3.5,
+      "estimated_fill_ratio": 0.39,
+      "rationale": "4 cards × 3 attrs ≈ 2.5\" content, avail_h=6.48, cap prevents over-stretch"
+    },
+    "27": {
+      "content_fill": "center",
+      "estimated_fill_ratio": 0.19,
+      "rationale": "4 KPIs only ≈ 1.2\", avail_h=6.48, too sparse for expand"
+    }
+  }
+}
+```
+
+**Rules**:
+- `slide_overrides` keys are slide `id` values (as strings) from `slides_semantic.json`
+- Only include overrides for slides where the per-type default would produce a bad result (i.e., where the fill_ratio ÷ default strategy mismatch exists)
+- `max_card_h` is ONLY used when `content_fill` is `"expand"` — it caps card/component height to prevent over-stretching
+- The renderer reads `slide_overrides[slide_id]` FIRST, falls back to `slide_type_layouts[slide_type]` if no override exists
+- `estimated_fill_ratio` and `rationale` are documentation-only — the renderer only reads `content_fill` and `max_card_h`
+
+**Self-check**:
+- Every slide with `fill_ratio < 0.35` where `slide_type_layouts` default is `"expand"` MUST have an override to `"center"`
+- Every slide with `fill_ratio` between 0.35–0.55 and multiple cards MUST have `max_card_h` set
+- `slide_overrides` is present as a top-level key in `design_spec.json`
+
 ### MV-5: section_accents Completeness (BLOCKER for ≥6 slides)
 - Must map every section ID to a distinct accent color token.
 
@@ -240,13 +309,14 @@ Each preset defines values for **ALL** design_spec top-level keys. VD MUST apply
   - `grid_system` — grid dimensions in inches
   - `layout_zones` — title/content/bottom bar heights in inches
   - `slide_type_layouts` — per-type layout specs (may include `background_image` for cover slides)
+  - `slide_overrides` — per-slide layout overrides with `content_fill`, `max_card_h`, etc. (REQUIRED, see MV-13)
   - `section_accents` — section ID → accent color token
   - `component_library` — card/callout/table/chip specs
 - ❌ **FORBIDDEN**: Placing colors under `tokens.colors` — renderer CANNOT find them there.
 - ❌ **FORBIDDEN**: Placing typography under `tokens.typography_system` — renderer CANNOT find them there.
 - ✅ **REQUIRED**: Colors at `design_spec.color_system` (top-level).
 - ✅ **REQUIRED**: Typography at `design_spec.typography_system.explicit_sizes` (top-level).
-- **Self-check**: `design_spec.json` has top-level keys `color_system`, `typography_system`, `grid_system`, `layout_zones`, `slide_type_layouts`, `section_accents`, `component_library`.
+- **Self-check**: `design_spec.json` has top-level keys `color_system`, `typography_system`, `grid_system`, `layout_zones`, `slide_type_layouts`, `slide_overrides`, `section_accents`, `component_library`.
 
 ### MV-10: Cover Slide Background Image (MAJOR)
 - **`slide_type_layouts.title` SHOULD include a `background_image` field** pointing to a downloaded cover image.
@@ -264,7 +334,7 @@ Each preset defines values for **ALL** design_spec top-level keys. VD MUST apply
 
 **You MUST start from this complete template and customize colors/fonts to match the presentation's brand and topic. Do NOT create a new JSON structure from scratch. Do NOT output a subset of keys. Every key shown below is REQUIRED in your final design_spec.json.**
 
-> If your output design_spec.json has fewer top-level keys than this template, or any `slide_type_layouts` entry is missing `content_fill`, your output is INVALID and will be rejected by the specialist's preflight check.
+> If your output design_spec.json has fewer top-level keys than this template, or any `slide_type_layouts` entry is missing `content_fill`, or `slide_overrides` is missing, your output is INVALID and will be rejected by the specialist's preflight check.
 
 ```json
 {
@@ -357,6 +427,11 @@ Each preset defines values for **ALL** design_spec top-level keys. VD MUST apply
     "recommendation":  { "background": "surface_variant",   "title_bar": "standard", "content_fill": "expand" },
     "default":         { "background": "surface",           "title_bar": "standard", "title_bar_height": 0.55, "content_fill": "expand" }
   },
+  "slide_overrides": {
+    "_comment": "Per-slide layout overrides computed from Content Size Estimation (MV-13). Keys are slide id strings.",
+    "EXAMPLE_SPARSE": { "content_fill": "center", "estimated_fill_ratio": 0.19, "rationale": "4 KPIs only ≈ 1.2\", avail_h=6.48" },
+    "EXAMPLE_MODERATE": { "content_fill": "expand", "max_card_h": 3.5, "estimated_fill_ratio": 0.39, "rationale": "4 cards × 3 attrs, cap prevents over-stretch" }
+  },
   "section_accents": {
     "sec-1": "accent_1",
     "sec-2": "accent_2",
@@ -430,6 +505,7 @@ Each preset defines values for **ALL** design_spec top-level keys. VD MUST apply
 [ ] MV-10: slide_type_layouts.title has background_image AND image file exists
 [ ] MV-11: title and section_divider have title_bar=none AND background=primary (dark color)
 [ ] MV-12: style_context present with resolved_style, base_preset, brand_overrides, rationale
+[ ] MV-13: slide_overrides present with per-slide content_fill + max_card_h for sparse/dense slides
 [ ] layout_zones present with inch values
 [ ] explicit_sizes has ALL 17 renderer roles:
     display_large, headline_large, title, slide_title, slide_subtitle,
@@ -474,6 +550,15 @@ Each preset defines values for **ALL** design_spec top-level keys. VD MUST apply
 ### Phase 3: Visual Specifications
 5. **Specify slide layouts**: per slide_type layout template + component composition + visual hierarchy
    - **Reference**: `skills/ppt-design-system/README.md` (Layout Templates) for layout templates
+
+5.5. **Content Size Estimation & slide_overrides** (REQUIRED — see MV-13):
+   For each non-divider, non-title slide in `slides_semantic.json`:
+   - Calculate `avail_h` from `grid_system` + `layout_zones` + `title_bar` mode
+   - Estimate `content_h` by summing component heights (cards, KPIs, bullets, etc.) using `explicit_sizes`
+   - Compute `fill_ratio = content_h / avail_h`
+   - Apply decision rules (see MV-13) to determine per-slide `content_fill` and `max_card_h`
+   - Write overrides for slides where the per-type default would produce visual imbalance
+   - Output to `design_spec.json → slide_overrides`
 
 6. **Specify chart & diagram designs**: all 3 taxonomy levels with proper encodings
    - **Reference**: `skills/ppt-design-system/README.md` (Chart & Visual Encoding Guidelines) for chart encoding guidelines

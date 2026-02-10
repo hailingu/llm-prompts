@@ -1,0 +1,22 @@
+{
+  "overall_score": 96,
+  "timestamp": "2026-02-10T00:00:00Z",
+  "self_check_passed": true,
+  "checks": {
+    "MO-0_schema_compliance": {"status": "PASS", "notes": "Field names follow slides-render-schema conventions; decisions use title/description/status (pending)."},
+    "MO-1_components_coverage": {"status": "PASS", "coverage_percent": 95, "notes": "23 content slides, 22 have components (>=90% required)."},
+    "MO-2_section_dividers_and_sections": {"status": "PASS", "notes": "6 section_divider slides present and top-level sections array has 6 entries; aligned."},
+    "MO-3_bullet_list_ratio": {"status": "PASS", "ratio": "13%", "notes": "3/23 content slides are bullet-list (<=30% required)."},
+    "MO-4_visual_placeholder_completeness": {"status": "PASS", "notes": "All visuals with type != 'none' include placeholder_data (chart_config/mermaid_code/comparison_items)."},
+    "MO-5_slide_type_component_alignment": {"status": "PASS", "notes": "Slide types match the primary component type per alignment rules."},
+    "MO-6_no_data_fabrication": {"status": "PASS", "notes": "All numerical values traceable to source document or marked qualitative."},
+    "MO-7_content_deduplication": {"status": "PASS", "notes": "content[] does not duplicate component labels/titles; components are the single source of truth where applicable."},
+    "MO-8_title_and_section_restrictions": {"status": "PASS", "notes": "Title slide has empty components; section_dividers contain at most one callout component."},
+    "MO-9_no_components_visual_duplication": {"status": "PASS", "notes": "No identical data repeated in both components and visual.placeholder_data."},
+    "MO-10_comparison_items_richness": {"status": "PASS", "notes": "All comparison_items include >=3 attributes when derived from multi-item lists."},
+    "MO-11_slide_completeness": {"status": "PASS", "notes": "30 slides present in semantic file matching source headings."},
+    "MO-12_cover_slide_title": {"status": "PASS", "notes": "Cover title equals frontmatter title (duration suffix stripped)."}
+  },
+  "warnings": [],
+  "fix_suggestions": []
+}

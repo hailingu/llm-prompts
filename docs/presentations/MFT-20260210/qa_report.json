@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "generated_at": "2026-02-10T09:35:27.578228Z",
+    "semantic": "docs/presentations/MFT-20260210/slides_semantic.json",
+    "design_spec": "docs/presentations/MFT-20260210/design_spec.json",
+    "visual_report": "docs/presentations/MFT-20260210/visual_report.json"
+  },
+  "overall_score": 100,
+  "quality_gate_status": "PASS",
+  "issues": [],
+  "notes_coverage": 1.0,
+  "pending_visuals_count": 0,
+  "kpi_traceability_count": 11
+}
