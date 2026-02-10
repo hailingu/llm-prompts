@@ -101,13 +101,19 @@ class NativeGanttRenderer(BaseRenderer):
                 top += title_height + 0.1
                 height -= (title_height + 0.1)
             
-            # Timeline axis
+            # Layout: task names on left (25%), timeline + bars on right (75%)
+            name_ratio = 0.25
+            name_width = width * name_ratio
+            bar_area_left = left + name_width
+            bar_area_width = width - name_width
+
+            # Timeline axis — only over the bar area, not the task name column
             timeline_height = 0.5
             self._render_timeline(
-                slide, gantt_data, spec, left, top, width, timeline_height
+                slide, gantt_data, spec, bar_area_left, top, bar_area_width, timeline_height
             )
             
-            # Task bars
+            # Task bars (with row backgrounds)
             tasks_top = top + timeline_height + 0.15
             tasks_height = height - timeline_height - 0.15
             self._render_tasks(
@@ -240,22 +246,54 @@ class NativeGanttRenderer(BaseRenderer):
         end_date = self._parse_date(timeline.end)
         total_months = (end_date.year - start_date.year) * 12 + (end_date.month - start_date.month) + 1
         
-        # Task layout
+        # Task layout - dynamic height based on available space
         task_count = len(tasks)
-        task_height = min(0.45, (height - 0.2) / max(task_count, 1))
-        bar_height = task_height * 0.5
+        # Expand task bars to fill available vertical space
+        max_task_h = min(1.2, (height - 0.2) / max(task_count, 1))
+        task_height = max(0.60, max_task_h)  # At least 0.60, up to 1.2
+        bar_height = task_height * 0.55
         
+        # 状态到颜色的映射（使用设计规范中的颜色）
         status_colors = {
-            'completed': 'secondary',
-            'done': 'secondary',
-            'active': 'primary',
-            'in_progress': 'primary',
-            'planned': 'outline',
-            'pending': 'outline',
+            'completed': 'primary',        # 深蓝色 - 已完成
+            'done': 'primary',
+            'active': 'accent_2',          # 进行中
+            'in_progress': 'accent_2',
+            'planned': 'accent_3',          # 计划中
+            'pending': 'surface_variant',   # 灰色 - 待定
         }
+        # Per-task color cycling for visual differentiation (when status is same)
+        task_color_cycle = ['primary', 'accent_2', 'accent_3', 'accent_4', 'accent_1']
+        # Text color on each bar background
+        task_text_on = {
+            'primary': 'on_primary',
+            'accent_1': 'on_primary',
+            'accent_2': 'on_primary',
+            'accent_3': 'on_primary',
+            'accent_4': 'on_primary',
+            'surface_variant': 'on_surface',
+            'outline': 'on_surface',
+            'primary_container': 'on_primary_container',
+        }
+        
+        # Check if all tasks have the same status → use color cycling
+        all_same_status = len(set(t.status for t in tasks)) <= 1
+
+        # Alternating row background colors for visual distinction
+        row_bg_tokens = ['surface_variant', 'surface_dim']
         
         for i, task in enumerate(tasks):
             y = top + i * task_height
+            
+            # Row background strip (full width, alternating colors)
+            row_bg = slide.shapes.add_shape(
+                MSO_SHAPE.RECTANGLE,
+                Inches(left), Inches(y),
+                Inches(width), Inches(task_height)
+            )
+            row_bg.fill.solid()
+            row_bg.fill.fore_color.rgb = get_color(spec, row_bg_tokens[i % 2])
+            row_bg.line.fill.background()
             
             # Task name (left side)
             name_width = width * 0.25
@@ -282,8 +320,11 @@ class NativeGanttRenderer(BaseRenderer):
             bar_start_x = bar_area_left + (task.start_month / total_months) * bar_area_width
             bar_width = (task.duration_months / total_months) * bar_area_width
             
-            # Draw bar
-            color_token = status_colors.get(task.status, 'outline')
+            # Draw bar — use per-task cycling when all same status
+            if all_same_status:
+                color_token = task_color_cycle[i % len(task_color_cycle)]
+            else:
+                color_token = status_colors.get(task.status, 'outline')
             bar = slide.shapes.add_shape(
                 MSO_SHAPE.ROUNDED_RECTANGLE,
                 Inches(bar_start_x), Inches(y + 0.05),
@@ -307,9 +348,10 @@ class NativeGanttRenderer(BaseRenderer):
                 
                 run2 = p2.add_run()
                 run2.text = f"{task.duration_months}M"
-                run2.font.size = Pt(9)
+                run2.font.size = Pt(10)
                 run2.font.bold = True
-                run2.font.color.rgb = get_color(spec, 'on_primary' if task.status in ('active', 'completed', 'done') else 'on_surface')
+                text_token = task_text_on.get(color_token, 'on_primary')
+                run2.font.color.rgb = get_color(spec, text_token)
                 apply_font_to_run(run2, spec)
     
     def _parse_date(self, date_str: str) -> datetime:

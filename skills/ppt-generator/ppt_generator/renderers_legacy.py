@@ -129,6 +129,91 @@ def add_shadow(shape, blur_pt: int = 6, offset_pt: int = 2) -> None:
         pass
 
 
+# ── Icon/Symbol System ──
+# Maps keywords in labels/text to decorative Unicode symbols for visual variety
+_ICON_MAP = {
+    # Performance & metrics
+    '效率': '⚡', 'efficiency': '⚡', '性能': '⚡', 'performance': '⚡',
+    '温升': '🌡', '温度': '🌡', 'temperature': '🌡', '热': '🔥', 'thermal': '🔥',
+    '频率': '〜', 'frequency': '〜', '频段': '〜',
+    # Quality & reliability
+    '质量': '✦', 'quality': '✦', '可靠': '✦', 'reliability': '✦',
+    '可用率': '✦', 'availability': '✦', 'cpk': '✦',
+    'pd': '⬡', '局放': '⬡', 'fpy': '✓', '放行率': '✓',
+    # Risk & safety
+    '风险': '⚠', 'risk': '⚠', '安全': '🛡', 'safety': '🛡',
+    '短缺': '⚠', 'shortage': '⚠', '缓解': '↻',
+    # Materials & components
+    '材料': '◆', 'material': '◆', '磁芯': '◇', '纳米晶': '◈', '非晶': '◈', '粉末': '◈',
+    '绕组': '⊕', 'winding': '⊕', '绝缘': '▣', 'insulation': '▣',
+    # Process & manufacturing
+    '制造': '⚙', 'manufacturing': '⚙', '工艺': '⚙', 'process': '⚙',
+    '测试': '✎', 'test': '✎', '验证': '✔', 'validation': '✔',
+    '仿真': '▷', 'simulation': '▷',
+    # Commercial & business
+    '成本': '¥', 'cost': '$', '预算': '¥', 'budget': '$',
+    '收入': '↗', 'revenue': '↗', '商业': '◉', 'business': '◉',
+    '市场': '◎', 'market': '◎', 'roi': '↗',
+    # Infrastructure & systems
+    '冷却': '❄', '风冷': '❄', '液冷': '❄', '被动冷却': '❄', 'cooling': '❄',
+    'emc': '⊘', '电磁': '⊘', '屏蔽': '⊘',
+    '充电': '⚡', 'ev': '⚡', '牵引': '⇌', '数据中心': '▦', 'sst': '⇌',
+    # Organization & governance
+    '组织': '⊞', '治理': '⊞', 'governance': '⊞',
+    '标准': '☰', 'standard': '☰', '合规': '☰',
+    '决策': '◈', 'decision': '◈',
+    # Time & roadmap
+    '里程碑': '◆', 'milestone': '◆', '路线图': '▸', 'roadmap': '▸',
+    '运维': '⟳', 'maintenance': '⟳', '监测': '◉', 'monitoring': '◉',
+    # Default fallback icons by index
+    '_idx_0': '●', '_idx_1': '◆', '_idx_2': '■', '_idx_3': '▲',
+    '_idx_4': '◉', '_idx_5': '⬟',
+}
+
+
+def get_icon_for_text(text: str, index: int = 0) -> str:
+    """Find the best matching icon for given text content."""
+    text_lower = text.lower()
+    for keyword, icon in _ICON_MAP.items():
+        if keyword.startswith('_idx_'):
+            continue
+        if keyword in text_lower:
+            return icon
+    # Fallback: use index-based icon for variety
+    return _ICON_MAP.get(f'_idx_{index % 6}', '●')
+
+
+def render_icon_circle(slide: Any, spec: Dict, icon: str, cx: float, cy: float, size: float = 0.40,
+                       bg_token: str = 'primary', fg_token: str = 'on_primary') -> None:
+    """Render a decorative circle with an icon/symbol inside."""
+    circle = slide.shapes.add_shape(
+        MSO_SHAPE.OVAL,
+        Inches(cx), Inches(cy),
+        Inches(size), Inches(size)
+    )
+    circle.fill.solid()
+    circle.fill.fore_color.rgb = get_color(spec, bg_token)
+    circle.line.fill.background()
+    # Put icon text directly on the oval shape for native centering
+    # Use margin_top offset to compensate for Unicode glyph ascender bias
+    icon_font_size = int(size * 32)  # slightly smaller for better centering
+    glyph_offset = Pt(max(1, int(size * 5)))  # push glyph down ~5% of size
+    circle.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+    circle.text_frame.margin_top = glyph_offset
+    circle.text_frame.margin_bottom = Emu(1)
+    circle.text_frame.margin_left = Emu(1)
+    circle.text_frame.margin_right = Emu(1)
+    p = circle.text_frame.paragraphs[0]
+    p.alignment = PP_ALIGN.CENTER
+    p.space_before = Pt(0)
+    p.space_after = Pt(0)
+    run = p.add_run()
+    run.text = icon
+    run.font.size = Pt(icon_font_size)
+    run.font.bold = True
+    run.font.color.rgb = get_color(spec, fg_token)
+
+
 def render_title_bar(slide: Any, spec: Dict, grid: GridSystem, title: str, slide_num: int, _total_slides: int,
                      section_label: str = '', accent_color_token: str = 'primary', mode: str = 'standard') -> float:
     if mode == 'none':
@@ -257,40 +342,103 @@ def render_speaker_notes(slide: Any, notes_text: Any) -> None:
 
 # Minimal component renderers used by slide renderers
 
-def render_kpis(slide: Any, kpis: List[Dict], spec: Dict, _grid: GridSystem, left: float, top: float, width: float) -> float:
+def render_kpis(slide: Any, kpis: List[Dict], spec: Dict, _grid: GridSystem, left: float, top: float, width: float, avail_h: float = None) -> float:
+    """Render KPI cards with value-first visual hierarchy.
+
+    Layout (per card):
+    ┌───────────────────┐
+    │ ● label           │  ← Row 1: icon badge + label (small, muted — the "what")
+    │                   │
+    │   >= 98%          │  ← Row 2: VALUE as hero (large, bold — the "answer")
+    └───────────────────┘
+    """
     if not kpis:
         return 0
     n = len(kpis)
     card_gap = 0.15
     card_w = (width - card_gap * (n - 1)) / max(n, 1)
-    card_h = 0.85
+
+    # ── Card height: content-driven ──
+    # label_row(~0.22) + gap(0.06) + value_row(~0.40) + padding(0.30) ≈ 0.98
+    base_card_h = 1.00 if n >= 4 else 1.10
+    KPI_H_CAP = 1.30
+    if avail_h and avail_h > base_card_h + 1.5:
+        card_h = min(base_card_h + 0.15, KPI_H_CAP)
+    else:
+        card_h = base_card_h
+
+    # ── Font sizing adaptive to card width ──
+    val_font_pt = get_font_size(spec, 'kpi_value')  # default 20
+    if card_w < 2.5:
+        val_font_pt = min(val_font_pt, 16)
+    elif card_w < 3.5:
+        val_font_pt = min(val_font_pt, 18)
+
     for i, kpi in enumerate(kpis):
         cx = left + i * (card_w + card_gap)
         card = create_card_shape(slide, spec, cx, top, card_w, card_h)
         card.fill.solid()
         card.fill.fore_color.rgb = get_color(spec, 'primary_container')
         card.line.fill.background()
-        # Value
-        tb = slide.shapes.add_textbox(Inches(cx + 0.12), Inches(top + 0.10), Inches(card_w - 0.24), Inches(0.40))
-        tf = tb.text_frame
-        p = tf.paragraphs[0]
-        run = p.add_run()
+
+        kpi_label = kpi.get('label', '')
+        kpi_icon = get_icon_for_text(kpi_label, i)
         val = kpi.get('value', '')
         trend = kpi.get('trend', '')
         trend_arrow = {'up': ' ↑', 'down': ' ↓', 'stable': ' →'}.get(trend, '')
-        run.text = f"{val}{trend_arrow}"
-        run.font.size = Pt(get_font_size(spec, 'kpi_value'))
-        run.font.bold = True
-        run.font.color.rgb = get_color(spec, 'on_primary_container')
-        apply_font_to_run(run, spec)
-        # Label
-        tb2 = slide.shapes.add_textbox(Inches(cx + 0.12), Inches(top + 0.52), Inches(card_w - 0.24), Inches(0.25))
-        tf2 = tb2.text_frame
-        p2 = tf2.paragraphs[0]
-        run2 = p2.add_run()
-        run2.text = kpi.get('label', '')
-        run2.font.size = Pt(get_font_size(spec, 'kpi_label'))
-        run2.font.color.rgb = get_color(spec, 'on_primary_container')
+
+        pad_l = 0.14  # left padding inside card
+        pad_r = 0.12  # right padding
+
+        # ── Row 1: label line with small color bar (the "what") ──
+        label_y = top + 0.12
+        label_h = 0.22
+        # Small color accent bar (left edge indicator)
+        accent_bar = slide.shapes.add_shape(
+            MSO_SHAPE.RECTANGLE,
+            Inches(cx + pad_l), Inches(label_y + 0.02),
+            Inches(0.04), Inches(label_h - 0.04)
+        )
+        accent_bar.fill.solid()
+        accent_bar.fill.fore_color.rgb = get_color(spec, 'accent_2')
+        accent_bar.line.fill.background()
+        # Label text — right of accent bar
+        label_x = cx + pad_l + 0.10
+        label_w = card_w - pad_l - pad_r - 0.10
+        tb_label = slide.shapes.add_textbox(
+            Inches(label_x), Inches(label_y),
+            Inches(max(label_w, 0.5)), Inches(label_h)
+        )
+        tf_label = tb_label.text_frame
+        tf_label.word_wrap = True
+        tf_label.vertical_anchor = MSO_ANCHOR.MIDDLE
+        p_label = tf_label.paragraphs[0]
+        p_label.alignment = PP_ALIGN.LEFT
+        run_label = p_label.add_run()
+        run_label.text = kpi_label
+        run_label.font.size = Pt(get_font_size(spec, 'kpi_label'))
+        run_label.font.color.rgb = get_color(spec, 'on_surface_variant')
+
+        # ── Row 2: VALUE as hero (the "answer") — dominant element ──
+        val_y = label_y + label_h + 0.04
+        val_h = card_h - (val_y - top) - 0.08
+        tb_val = slide.shapes.add_textbox(
+            Inches(cx + pad_l), Inches(val_y),
+            Inches(card_w - pad_l - pad_r), Inches(max(val_h, 0.35))
+        )
+        tf_val = tb_val.text_frame
+        tf_val.word_wrap = True
+        tf_val.vertical_anchor = MSO_ANCHOR.MIDDLE
+        p_val = tf_val.paragraphs[0]
+        p_val.alignment = PP_ALIGN.LEFT
+        run_val = p_val.add_run()
+        run_val.text = f"{val}{trend_arrow}"
+        # Hero value: larger font, bold, strong color
+        hero_font_pt = val_font_pt + 4  # boost over base
+        run_val.font.size = Pt(hero_font_pt)
+        run_val.font.bold = True
+        run_val.font.color.rgb = get_color(spec, 'primary')
+        apply_font_to_run(run_val, spec)
     return card_h + 0.15
 
 
@@ -319,6 +467,7 @@ def render_visual(slide: Any, visual: Dict, spec: Dict, _grid: GridSystem, left:
             # Legacy format: convert placeholder_data to structured data
             pd = visual.get('placeholder_data', {})
             gantt_data = pd.get('gantt_data')
+            mermaid_code = pd.get('mermaid_code')
             
             if gantt_data:
                 # Has structured gantt data
@@ -326,6 +475,14 @@ def render_visual(slide: Any, visual: Dict, spec: Dict, _grid: GridSystem, left:
                     type=visual.get('type'),
                     title=visual.get('title'),
                     data=gantt_data,
+                    placeholder_data=pd
+                )
+            elif mermaid_code:
+                # Has mermaid code — always use mermaid type for renderer lookup
+                visual_data = VisualDataProtocol(
+                    type='mermaid',  # Override type to ensure mermaid renderer picks it up
+                    title=visual.get('title'),
+                    data={},  # Empty dict for mermaid-based visuals
                     placeholder_data=pd
                 )
             else:
@@ -357,17 +514,15 @@ def render_visual(slide: Any, visual: Dict, spec: Dict, _grid: GridSystem, left:
 
 
 def render_chart_table(slide: Any, visual: Dict, spec: Dict, left: float, top: float, width: float, height: float) -> None:
+    """Render data as a proper PowerPoint table with clear grid lines."""
     config = visual.get('placeholder_data', {}).get('chart_config', {})
     labels = config.get('labels', [])
     series = config.get('series', [])
+    rows_data = config.get('rows', [])
     if not labels:
         return
-    n_cols = len(labels)
-    col_w = width / max(n_cols, 1)
-    n_rows = len(series) + 1
-    title_offset = 0.35 if visual.get('title') else 0
-    usable_h = height - title_offset
-    row_h = max(0.42, min(1.2, usable_h / max(n_rows, 1)))
+
+    title_offset = 0.0
     if visual.get('title'):
         tb = slide.shapes.add_textbox(Inches(left), Inches(top - 0.30), Inches(width), Inches(0.28))
         p = tb.text_frame.paragraphs[0]
@@ -376,43 +531,135 @@ def render_chart_table(slide: Any, visual: Dict, spec: Dict, left: float, top: f
         run.font.size = Pt(get_font_size(spec, 'table_header'))
         run.font.bold = True
         run.font.color.rgb = get_color(spec, 'on_surface')
-    for j, label in enumerate(labels):
-        tb = slide.shapes.add_textbox(Inches(left + j * col_w), Inches(top), Inches(col_w), Inches(row_h))
-        tf = tb.text_frame
-        tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+        title_offset = 0.35
+
+    table_top = top + title_offset
+
+    # Determine table structure
+    if rows_data:
+        # Matrix format: labels are column headers, rows_data are data rows
+        n_table_cols = len(labels)
+        n_table_rows = len(rows_data) + 1  # +1 for header
+        header_labels = labels
+        body_rows = rows_data
+    elif series:
+        # Series format: check if series have names
+        has_names = any(s.get('name') for s in series)
+        if has_names:
+            # Detect if first label is a row-header category
+            first_data_len = len(series[0].get('data', []))
+            if first_data_len < len(labels):
+                # First label is row header (e.g. "方案"), rest are data columns
+                header_labels = labels  # keep all labels
+                n_table_cols = len(labels)
+                n_table_rows = len(series) + 1
+                body_rows = []
+                for s in series:
+                    row = [s.get('name', '')] + [str(v) for v in s.get('data', [])]
+                    body_rows.append(row)
+            else:
+                # Series names become first column, labels are data columns
+                header_labels = [''] + labels
+                n_table_cols = len(labels) + 1
+                n_table_rows = len(series) + 1
+                body_rows = []
+                for s in series:
+                    row = [s.get('name', '')] + [str(v) for v in s.get('data', [])]
+                    body_rows.append(row)
+        else:
+            # No names: labels are column headers, data rows below
+            header_labels = labels
+            n_table_cols = len(labels)
+            n_table_rows = len(series) + 1
+            body_rows = [[str(v) for v in s.get('data', [])] for s in series]
+    else:
+        return
+
+    # Create PowerPoint table
+    usable_h = height - title_offset
+    tbl_shape = slide.shapes.add_table(
+        n_table_rows, n_table_cols,
+        Inches(left), Inches(table_top),
+        Inches(width), Inches(min(usable_h, n_table_rows * 0.55))
+    )
+    table = tbl_shape.table
+
+    # Style settings from design spec
+    hdr_bg = get_color(spec, 'primary')
+    hdr_fg = get_color(spec, 'on_primary')
+    alt_bg = get_color(spec, 'surface_dim')
+    border_color = get_color(spec, 'outline')
+    cell_fg = get_color(spec, 'on_surface')
+    hdr_font_pt = get_font_size(spec, 'table_header')
+    cell_font_pt = get_font_size(spec, 'table_cell')
+
+    def _style_cell(cell, text, is_header=False, is_row_label=False):
+        """Apply consistent styling to a table cell."""
+        cell.text = ''
+        tf = cell.text_frame
         tf.word_wrap = True
+        tf.margin_left = Inches(0.08)
+        tf.margin_right = Inches(0.08)
+        tf.margin_top = Inches(0.04)
+        tf.margin_bottom = Inches(0.04)
+        tf.vertical_anchor = MSO_ANCHOR.MIDDLE
         p = tf.paragraphs[0]
+        p.alignment = PP_ALIGN.CENTER
         run = p.add_run()
-        run.text = str(label)
-        run.font.size = Pt(get_font_size(spec, 'table_header'))
-        run.font.bold = True
-        run.font.color.rgb = get_color(spec, 'on_surface')
-    sep = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(left), Inches(top + row_h - 0.02), Inches(width), Pt(2))
-    sep.fill.solid()
-    sep.fill.fore_color.rgb = get_color(spec, 'primary')
-    sep.line.fill.background()
-    for r, s in enumerate(series):
-        ry = top + (r + 1) * row_h
-        if r % 2 == 1:
-            stripe = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(left), Inches(ry), Inches(width), Inches(row_h))
-            stripe.fill.solid()
-            stripe.fill.fore_color.rgb = get_color(spec, 'surface_variant')
-            stripe.line.fill.background()
-        data = s.get('data', [])
-        for j, val in enumerate(data):
-            if j >= n_cols:
-                break
-            tb = slide.shapes.add_textbox(Inches(left + j * col_w), Inches(ry), Inches(col_w), Inches(row_h))
-            tf = tb.text_frame
-            tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-            tf.word_wrap = True
-            p = tf.paragraphs[0]
-            run = p.add_run()
-            run.text = str(val)
-            run.font.size = Pt(get_font_size(spec, 'table_cell'))
-            run.font.color.rgb = get_color(spec, 'on_surface')
-            if isinstance(val, (int, float)):
-                p.alignment = PP_ALIGN.RIGHT
+        run.text = str(text)
+        if is_header:
+            run.font.size = Pt(hdr_font_pt)
+            run.font.bold = True
+            run.font.color.rgb = hdr_fg
+            cell.fill.solid()
+            cell.fill.fore_color.rgb = hdr_bg
+        elif is_row_label:
+            run.font.size = Pt(cell_font_pt)
+            run.font.bold = True
+            run.font.color.rgb = cell_fg
+        else:
+            run.font.size = Pt(cell_font_pt)
+            run.font.color.rgb = cell_fg
+
+    # Header row
+    for j, lbl in enumerate(header_labels):
+        _style_cell(table.cell(0, j), lbl, is_header=True)
+
+    # Data rows
+    for r, row in enumerate(body_rows):
+        # Alternating row background
+        for j in range(n_table_cols):
+            cell = table.cell(r + 1, j)
+            if r % 2 == 1:
+                cell.fill.solid()
+                cell.fill.fore_color.rgb = alt_bg
+            else:
+                cell.fill.background()
+            val = row[j] if j < len(row) else ''
+            is_row_label = (j == 0 and any(s.get('name') for s in series)) if series else False
+            _style_cell(cell, val, is_row_label=is_row_label)
+
+    # Set borders on all cells
+    try:
+        from pptx.oxml.ns import qn
+        for r_idx in range(n_table_rows):
+            for c_idx in range(n_table_cols):
+                cell = table.cell(r_idx, c_idx)
+                tc = cell._tc
+                tcPr = tc.get_or_add_tcPr()
+                for border_name in ['lnL', 'lnR', 'lnT', 'lnB']:
+                    ln = tcPr.find(qn(f'a:{border_name}'))
+                    if ln is not None:
+                        tcPr.remove(ln)
+                    ln = tcPr.makeelement(qn(f'a:{border_name}'), {})
+                    ln.set('w', '19050')  # 1.5pt for clear visibility
+                    solidFill = ln.makeelement(qn('a:solidFill'), {})
+                    srgb = solidFill.makeelement(qn('a:srgbClr'), {'val': str(border_color)})
+                    solidFill.append(srgb)
+                    ln.append(solidFill)
+                    tcPr.append(ln)
+    except Exception:
+        pass  # Borders are nice-to-have; table is readable without them
 
 
 def render_mermaid_placeholder(slide: Any, visual: Dict, spec: Dict, left: float, top: float, width: float, height: float) -> None:
@@ -645,6 +892,59 @@ def render_slide_title(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, **ctx
                 lines_now = max(1, int((total_w / cw) + 0.999))
             adjusted_title_h = lines_now * (adjusted_pt / 72.0 + 0.08)
 
+    # === Actual rendering ===
+    # Title textbox
+    title_tb = slide.shapes.add_textbox(
+        Inches(margin), Inches(content_top),
+        Inches(cw), Inches(adjusted_title_h + 0.15)
+    )
+    title_tf = title_tb.text_frame
+    title_tf.word_wrap = True
+    p = title_tf.paragraphs[0]
+    p.alignment = PP_ALIGN.CENTER
+    run = p.add_run()
+    run.text = title_text
+    run.font.size = Pt(adjusted_pt)
+    run.font.bold = True
+    run.font.color.rgb = get_color(spec, 'on_primary')
+    apply_font_to_run(run, spec)
+    cursor_y = content_top + adjusted_title_h + 0.20
+
+    # Decorative line
+    dec_line_w = 2.5
+    dec_line = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE,
+        Inches((grid.slide_w - dec_line_w) / 2), Inches(cursor_y),
+        Inches(dec_line_w), Inches(0.04)
+    )
+    dec_line.fill.solid()
+    dec_line.fill.fore_color.rgb = get_color(spec, 'primary_container')
+    dec_line.line.fill.background()
+    cursor_y += 0.25
+
+    # Subtitles from content[]
+    for sub in subtitles:
+        sub_tb = slide.shapes.add_textbox(
+            Inches(margin + 0.5), Inches(cursor_y),
+            Inches(cw - 1.0), Inches(subtitle_line_h + 0.10)
+        )
+        sub_tf = sub_tb.text_frame
+        sub_tf.word_wrap = True
+        p2 = sub_tf.paragraphs[0]
+        p2.alignment = PP_ALIGN.CENTER
+        run2 = p2.add_run()
+        run2.text = sub
+        run2.font.size = Pt(get_font_size(spec, 'slide_subtitle'))
+        run2.font.color.rgb = get_color(spec, 'on_primary')
+        apply_font_to_run(run2, spec)
+        cursor_y += subtitle_line_h + 0.12
+
+    # KPIs (if present)
+    if comps.get('kpis'):
+        kpi_top = max(cursor_y + 0.30, grid.slide_h * 0.68)
+        render_kpis(slide, comps['kpis'], spec, grid, margin, kpi_top, cw)
+
+
 def render_callouts(slide: Any, callouts: List[Dict], spec: Dict, grid: GridSystem, left: float, top: float, width: float) -> float:
     """Render callout boxes."""
     if not callouts:
@@ -671,8 +971,12 @@ def render_callouts(slide: Any, callouts: List[Dict], spec: Dict, grid: GridSyst
         tf.word_wrap = True
         p = tf.paragraphs[0]
         run = p.add_run()
-        text = co if isinstance(co, str) else co.get('text', '')
-        run.text = text
+        text = co if isinstance(co, str) else co.get('text', '') or co.get('description', '') or co.get('title', '')
+        title = co.get('title', '') if isinstance(co, dict) else ''
+        if title and text and text != title:
+            run.text = f"{title}: {text}"
+        else:
+            run.text = text or title
         run.font.size = Pt(get_font_size(spec, 'callout_text'))
         run.font.color.rgb = get_color(spec, 'on_primary_container')
         apply_font_to_run(run, spec)
@@ -697,14 +1001,38 @@ def render_slide_comparison(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, 
                   sd['visual'].get('type') not in (None, 'none') and
                   sd['visual'].get('placeholder_data', {}))
 
-    if comps.get('comparison_items'):
+    # Normalize: treat 'risks' as comparison_items if comparison_items is absent
+    comp_items = comps.get('comparison_items') or comps.get('risks')
+    # Also check visual.placeholder_data for misplaced comparison_items
+    comp_items_from_visual = False
+    if not comp_items:
+        pd = sd.get('visual', {}).get('placeholder_data', {})
+        if isinstance(pd, dict) and pd.get('comparison_items'):
+            comp_items = pd['comparison_items']
+            comp_items_from_visual = True  # Mark: data came from visual, skip re-rendering visual
+
+    if comp_items:
+        # Check for duplication: if chart_config labels overlap with card labels, skip visual
+        skip_visual = False
+        if comp_items_from_visual:
+            skip_visual = True  # Visual data already consumed as cards
+        elif has_visual:
+            pd = sd.get('visual', {}).get('placeholder_data', {})
+            chart_cfg = pd.get('chart_config', {}) if isinstance(pd, dict) else {}
+            chart_labels = set(chart_cfg.get('labels', []))
+            card_labels = {item.get('label', '') for item in comp_items}
+            if chart_labels and card_labels:
+                overlap_count = len(chart_labels & card_labels)
+                if overlap_count >= len(card_labels) * 0.8:
+                    skip_visual = True  # Too much label overlap — skip chart
+
         # Determine layout: hybrid (cards + chart) or full-width cards
-        if has_visual:
+        if has_visual and not skip_visual:
             # Hybrid: left 7 cols for cards, right 5 cols for visual
             cards_left, cards_w = grid.col_span(7, 0)
             vis_left, vis_w = grid.col_span(5, 7)
         else:
-            # Full-width cards
+            # Full-width cards (or dedup/consumed visual)
             cards_left = grid.margin_h
             cards_w = grid.usable_w
             vis_left = vis_w = 0
@@ -713,15 +1041,31 @@ def render_slide_comparison(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, 
         n_bullets = min(len(content), 4)
         bullet_h = n_bullets * 0.40 if n_bullets else 0
         callout_h = 0.8 if comps.get('callouts') else 0
+        # Estimate total content height for vertical centering
+        skip_keys = {'comparison_items', 'risks', 'callouts'}
+        if content:
+            skip_keys.add('bullets')
+        extra_comps = {k: v for k, v in comps.items()
+                       if k not in skip_keys and v}
+        est_cards_h = _estimate_components_height({'comparison_items': comp_items}, spec, cards_w)
+        est_extra_h = _estimate_components_height(extra_comps, spec, cards_w) if extra_comps else 0
+        est_total = est_cards_h + bullet_h + est_extra_h + callout_h
+        # Vertical centering: only when NOT expanding (expand uses full space from top)
+        if fill_mode == 'expand':
+            v_offset = 0.0
+        elif est_total < avail_h - 0.5:
+            v_offset = max(0, (avail_h - est_total) / 2 - 0.15)
+        else:
+            v_offset = 0.0
         # Cards fill available space minus bullets and callouts
         if fill_mode == 'expand':
-            cards_avail = avail_h - 0.15 - bullet_h - callout_h
+            cards_avail = avail_h - 0.15 - bullet_h - callout_h - v_offset
         else:
             cards_avail = None  # use default card height
-        h = render_comparison_items(slide, comps['comparison_items'], spec, grid,
-                                    cards_left, top + 0.15, cards_w,
+        h = render_comparison_items(slide, comp_items, spec, grid,
+                                    cards_left, top + 0.15 + v_offset, cards_w,
                                     avail_h=cards_avail, slide_id=slide_id)
-        cursor = top + 0.15 + h
+        cursor = top + 0.15 + v_offset + h
         # Content bullets below cards (complementary context)
         if content:
             bullet_spacing = 0.40
@@ -738,19 +1082,56 @@ def render_slide_comparison(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, 
                 run.font.size = Pt(get_font_size(spec, 'bullet_text'))
                 run.font.color.rgb = get_color(spec, 'on_surface')
             cursor += n_bullets * bullet_spacing
+        # Render kpis/other components
+        if extra_comps:
+            h2 = render_components(slide, extra_comps, spec, grid,
+                                   cards_left, cursor, cards_w,
+                                   avail_h - (cursor - top))
+            cursor += h2
         # Callouts below
         if comps.get('callouts'):
             render_callouts(slide, comps['callouts'], spec, grid,
                             cards_left, cursor, cards_w)
-        # Visual on right (hybrid layout)
-        if has_visual and vis_w > 0:
+        # Visual on right (hybrid layout, only if not skipped)
+        if has_visual and vis_w > 0 and not skip_visual:
             render_visual(slide, sd['visual'], spec, grid,
-                          vis_left, top + 0.15, vis_w, avail_h - 0.3)
+                          vis_left, top + 0.15 + v_offset, vis_w, avail_h - 0.3 - v_offset)
     else:
-        # No comparison_items — check if visual-only or fallback to two-column
-        if has_visual:
+        # No comparison_items — render components + visual
+        non_vis_comps = {k: v for k, v in comps.items() if v}
+        has_comps_data = bool(non_vis_comps)
+        if has_visual and has_comps_data:
+            # Stacked vertical layout: visual on top (full width), components below
+            # This avoids the left-right split that creates visual clutter
+            vis_est_h = 1.8  # estimate for chart table
+            pd_check = sd.get('visual', {}).get('placeholder_data', {})
+            chart_cfg = pd_check.get('chart_config', {}) if isinstance(pd_check, dict) else {}
+            n_series = len(chart_cfg.get('series', []))
+            if chart_cfg.get('labels'):
+                vis_est_h = 0.50 + (n_series + 1) * 0.45  # header row + data rows
+            comp_est_h = _estimate_components_height(non_vis_comps, spec, grid.usable_w)
+            total_h = vis_est_h + 0.25 + comp_est_h
+            # Center the combined block vertically
+            v_off = max(0, (avail_h - total_h) / 2 - 0.10) if total_h < avail_h - 0.3 else 0.0
+            cursor = top + 0.15 + v_off
+            # Render visual (chart/table) at top, full width
+            render_visual(slide, sd['visual'], spec, grid,
+                          grid.margin_h, cursor, grid.usable_w, vis_est_h)
+            cursor += vis_est_h + 0.25
+            # Render components (kpis, bullets) below, full width
+            render_components(slide, non_vis_comps, spec, grid,
+                              grid.margin_h, cursor, grid.usable_w,
+                              avail_h - (cursor - top))
+        elif has_visual:
             render_visual(slide, sd['visual'], spec, grid,
                           grid.margin_h, top + 0.15, grid.usable_w, avail_h - 0.3)
+        elif has_comps_data:
+            # Components only — full width, vertically centered
+            comp_est_h = _estimate_components_height(non_vis_comps, spec, grid.usable_w)
+            v_off = max(0, (avail_h - comp_est_h) / 2 - 0.15) if comp_est_h < avail_h * 0.6 else 0.0
+            cursor = top + 0.15 + v_off
+            render_components(slide, non_vis_comps, spec, grid,
+                              grid.margin_h, cursor, grid.usable_w, avail_h - 0.3)
         else:
             render_slide_two_column(slide, sd, spec, grid, **ctx)
 
@@ -765,7 +1146,7 @@ def render_components(slide: Any, comps: Dict, spec: Dict, grid: GridSystem, lef
 
 def render_decisions(slide: Any, decisions: List[Dict], spec: Dict, grid: GridSystem, left: float, top: float, width: float, avail_h: float = None) -> float:
     """Compatibility wrapper for older API names."""
-    return render_decisions_simple(slide, decisions, spec, grid, left, top, width)
+    return render_decisions_simple(slide, decisions, spec, grid, left, top, width, avail_h=avail_h)
 
 
 def render_slide_decision(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, **ctx) -> None:
@@ -780,13 +1161,22 @@ def render_slide_decision(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, **
     comps = sd.get('components', {})
     fill_mode = get_content_fill(spec, sd.get('slide_type', 'decision'), slide_id=slide_id)
 
-    l_left, l_w = grid.col_span(5, 0)
-    r_left, r_w = grid.col_span(7, 5)
+    has_visual = (sd.get('visual') and sd['visual'].get('type') not in (None, 'none'))
+    non_decision_comps = {k: v for k, v in comps.items() if k != 'decisions' and v}
+    has_right_content = has_visual or bool(non_decision_comps)
 
-    # Left: decisions cards — expand to fill available height
+    if has_right_content:
+        l_left, l_w = grid.col_span(5, 0)
+        r_left, r_w = grid.col_span(7, 5)
+    else:
+        # No visual or other components — full width for decisions
+        l_left = grid.margin_h
+        l_w = grid.usable_w
+        r_left = r_w = 0
+
+    # Decision cards
     cursor = top + 0.15
     if comps.get('decisions'):
-        # Count extra bullets to reserve space for them
         decision_labels = {(d.get('title') or d.get('label') or '').strip()
                            for d in comps['decisions']}
         extra_bullets = [b for b in sd.get('content', [])
@@ -799,12 +1189,7 @@ def render_slide_decision(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, **
         h = render_decisions(slide, comps['decisions'], spec, grid,
                              l_left, cursor, l_w, avail_h=decisions_avail)
         cursor += h
-        # When structured decisions exist, render content bullets only if
-        # they add information beyond what's in the decision cards.
-        decision_labels = {(d.get('title') or d.get('label') or '').strip()
-                           for d in comps['decisions']}
-        extra_bullets = [b for b in sd.get('content', [])
-                         if b.strip() not in decision_labels]
+        # Extra bullets (not duplicating decision titles)
         for i, bullet in enumerate(extra_bullets[:3]):
             tb = slide.shapes.add_textbox(
                 Inches(l_left + 0.1), Inches(cursor + i * 0.48), Inches(l_w - 0.2), Inches(0.45)
@@ -818,12 +1203,12 @@ def render_slide_decision(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, **
             run.font.color.rgb = get_color(spec, 'on_surface')
         cursor += len(extra_bullets[:3]) * 0.48
 
-    # Right: visual or components
-    if sd.get('visual') and sd['visual'].get('type') not in (None, 'none'):
+    # Right column: visual or non-decision components (prevents duplication)
+    if has_visual:
         render_visual(slide, sd['visual'], spec, grid,
                       r_left, top + 0.15, r_w, avail_h - 0.3)
-    elif any(comps.get(k) for k in comps):
-        render_components(slide, comps, spec, grid,
+    elif non_decision_comps and r_w > 0:
+        render_components(slide, non_decision_comps, spec, grid,
                           r_left, top + 0.15, r_w, avail_h - 0.3)
 
 
@@ -877,13 +1262,17 @@ def _estimate_components_height(comps: Dict, spec: Dict, width: float) -> float:
     """Estimate total height of components block (KPIs, bullets, content, etc.) for centering."""
     h = 0.0
     if comps.get('kpis'):
-        h += 0.85 + 0.15  # card_h + gap
+        n_kpis = len(comps['kpis'])
+        per_kpi = 0.95 + 0.15  # card_h + gap (using new compact sizing)
+        h += per_kpi
     if comps.get('comparison_items'):
         h += 1.8 + 0.15  # min_card_h + gap
     if comps.get('decisions'):
         h += len(comps['decisions']) * (0.65 + 0.12)
     if comps.get('bullets'):
         h += min(len(comps['bullets']), 8) * 0.48
+    if comps.get('callouts'):
+        h += len(comps['callouts']) * 0.63  # 0.55 height + 0.08 gap
     if comps.get('table_data'):
         h += 2.0  # rough table estimate
     return h
@@ -951,10 +1340,20 @@ def render_slide_data_heavy(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, 
     has_visual = (sd.get('visual') and
                   sd['visual'].get('type') not in (None, 'none'))
 
-    # If both components AND visual exist, use split layout
-    if has_visual and any(comps.get(k) for k in comps):
+    # If both components AND visual exist, use STACKED layout (KPIs above, visual below)
+    # to prevent overlap. Only use split for heavy text content.
+    has_comps_check = any(comps.get(k) for k in comps)
+    comp_keys = [k for k in comps if comps.get(k)]
+    is_kpi_only = comp_keys == ['kpis'] or set(comp_keys) <= {'kpis', 'bullets'}
+    if has_visual and has_comps_check and not is_kpi_only:
         comp_left, comp_w = grid.col_span(6, 0)
         vis_left, vis_w = grid.col_span(6, 6)
+    elif has_visual and has_comps_check and is_kpi_only:
+        # Stacked: KPIs on top full-width, visual below full-width
+        comp_left = grid.margin_h
+        comp_w = grid.usable_w
+        vis_left = grid.margin_h
+        vis_w = grid.usable_w
     elif has_visual:
         comp_left = comp_w = 0
         vis_left = grid.margin_h
@@ -967,9 +1366,17 @@ def render_slide_data_heavy(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, 
     # Estimate content height for vertical centering
     has_comps = any(comps.get(k) for k in comps)
     content_h = _estimate_components_height(comps, spec, comp_w) if has_comps else 0
-    # In split layout, only center components; visual fills its column independently
-    is_split = has_visual and has_comps
+    # In split layout, always center both columns independently for visual balance
+    is_split = has_visual and has_comps and not is_kpi_only
+    # For stacked layout, include visual height in total content estimate for centering
+    is_stacked = has_visual and has_comps and is_kpi_only
+    if is_stacked:
+        vis_est_for_center = _estimate_visual_height(sd.get('visual'), spec, avail_h, reserved=0.2)
+        content_h += vis_est_for_center + 0.20  # +gap between components and visual
     fill_mode = _effective_fill(fill_mode, has_visual, is_split=is_split, has_text=has_comps)
+    # Force split-center for split layouts to avoid asymmetric alignment
+    if is_split and fill_mode not in ('split-center',):
+        fill_mode = 'split-center'
     # For 'split-center', center components within the left column and center visual independently in right column
     if is_split and fill_mode == 'split-center' and has_comps:
         comp_v_offset = _apply_vertical_offset(content_h, avail_h, 'center')
@@ -985,6 +1392,87 @@ def render_slide_data_heavy(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, 
 
     cursor = top + 0.10 + comp_v_offset
 
+    # Render content bullets (sd.content) if different from components.bullets
+    content_bullets = sd.get('content', [])
+    comp_bullet_texts = set()
+    for b in comps.get('bullets', []):
+        comp_bullet_texts.add(b.get('text', '') if isinstance(b, dict) else str(b))
+    unique_content = [b for b in content_bullets if b not in comp_bullet_texts]
+    if unique_content and comp_w > 0:
+        n_items = min(len(unique_content), 4)
+        is_content_sparse = n_items <= 4 and not has_visual
+        if is_content_sparse and n_items >= 2:
+            # Numbered takeaway cards — horizontal layout for sparse key points
+            card_gap = 0.12
+            card_w = (comp_w - card_gap * (n_items - 1)) / n_items
+            card_h = 0.70
+            for i, bullet in enumerate(unique_content[:n_items]):
+                cx = comp_left + i * (card_w + card_gap)
+                # Card background
+                card_bg = slide.shapes.add_shape(
+                    MSO_SHAPE.ROUNDED_RECTANGLE,
+                    Inches(cx), Inches(cursor),
+                    Inches(card_w), Inches(card_h)
+                )
+                card_bg.fill.solid()
+                card_bg.fill.fore_color.rgb = get_color(spec, 'primary_container')
+                card_bg.line.fill.background()
+                # Accent left bar
+                accent_bar = slide.shapes.add_shape(
+                    MSO_SHAPE.RECTANGLE,
+                    Inches(cx), Inches(cursor),
+                    Inches(0.04), Inches(card_h)
+                )
+                accent_bar.fill.solid()
+                accent_bar.fill.fore_color.rgb = get_color(spec, 'primary')
+                accent_bar.line.fill.background()
+                # Number badge
+                num_tb = slide.shapes.add_textbox(
+                    Inches(cx + 0.10), Inches(cursor + 0.06),
+                    Inches(0.25), Inches(0.25)
+                )
+                num_tf = num_tb.text_frame
+                num_tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+                num_p = num_tf.paragraphs[0]
+                num_run = num_p.add_run()
+                num_run.text = str(i + 1)
+                num_run.font.size = Pt(16)
+                num_run.font.bold = True
+                num_run.font.color.rgb = get_color(spec, 'primary')
+                # Text content
+                txt_tb = slide.shapes.add_textbox(
+                    Inches(cx + 0.10), Inches(cursor + 0.28),
+                    Inches(card_w - 0.20), Inches(card_h - 0.32)
+                )
+                txt_tf = txt_tb.text_frame
+                txt_tf.word_wrap = True
+                txt_tf.vertical_anchor = MSO_ANCHOR.TOP
+                txt_p = txt_tf.paragraphs[0]
+                txt_run = txt_p.add_run()
+                txt_run.text = bullet
+                txt_run.font.size = Pt(get_font_size(spec, 'body'))
+                txt_run.font.color.rgb = get_color(spec, 'on_primary_container')
+                txt_p.line_spacing = 1.3
+            cursor += card_h + 0.15
+        else:
+            # Standard bullet list for many items or non-sparse content
+            c_font = get_font_size(spec, 'bullet_text')
+            c_spacing = 0.48
+            for i, bullet in enumerate(unique_content[:4]):
+                tb = slide.shapes.add_textbox(
+                    Inches(comp_left + 0.1), Inches(cursor + i * c_spacing),
+                    Inches(comp_w - 0.2), Inches(0.38)
+                )
+                tf = tb.text_frame
+                tf.word_wrap = True
+                p = tf.paragraphs[0]
+                run = p.add_run()
+                run.text = f"• {bullet}"
+                run.font.size = Pt(c_font)
+                run.font.color.rgb = get_color(spec, 'on_surface')
+                p.line_spacing = 1.5
+            cursor += min(len(unique_content), 4) * c_spacing + 0.15
+
     # Render all components
     if has_comps and comp_w > 0:
         h = render_components(slide, comps, spec, grid,
@@ -992,13 +1480,20 @@ def render_slide_data_heavy(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, 
                               avail_h - 0.10)
         cursor += h
 
-    # Visual: in split layout, visual fills right column from top;
-    # in visual-only layout, apply centering if requested
+    # Visual: layout depends on split vs stacked vs visual-only
     if has_visual:
-        if is_split:
-            # Split layout: visual fills right column independently (no v_offset)
+        if is_split and not is_kpi_only:
+            # Split layout: visual fills right column independently
+            vis_render_top = top + 0.10 + vis_v_offset
             render_visual(slide, sd['visual'], spec, grid,
-                          vis_left, top + 0.10, vis_w, avail_h - 0.10)
+                          vis_left, vis_render_top, vis_w, avail_h - 0.10 - vis_v_offset)
+        elif is_kpi_only and has_comps:
+            # Stacked layout: visual goes BELOW KPIs with gap
+            vis_gap = 0.20
+            vis_render_top = cursor + vis_gap
+            vis_available = max(1.5, avail_h - (vis_render_top - top) - 0.10)
+            render_visual(slide, sd['visual'], spec, grid,
+                          vis_left, vis_render_top, vis_w, vis_available)
         else:
             # Visual-only: center if requested
             vis_v_offset = _apply_vertical_offset(avail_h * 0.5, avail_h, fill_mode)
@@ -1130,8 +1625,14 @@ def render_slide_timeline(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, **
     timeline_h = 1.2 if comps.get('timeline_items') else len(sd.get('content', [])) * 0.45
     vis_est_h = _estimate_visual_height(sd.get('visual'), spec, avail_h, reserved=0.2) if has_visual else 0
     content_h = timeline_h + vis_est_h + 0.10
-    # if combined block exceeds available height, fall back to top
-    v_offset = _apply_vertical_offset(content_h, avail_h, 'center') if fill_mode in ('combined-center', 'center') and content_h < avail_h - 0.05 else 0.0
+    # Gantt charts should use full available height, skip centering
+    visual_type = (sd.get('visual', {}).get('type', '') or '').lower()
+    if visual_type == 'gantt':
+        v_offset = 0.0  # Full height for gantt charts
+    elif fill_mode in ('combined-center', 'center') and content_h < avail_h - 0.05:
+        v_offset = _apply_vertical_offset(content_h, avail_h, 'center')
+    else:
+        v_offset = 0.0
 
     cursor = top + 0.15 + v_offset
 
@@ -1241,9 +1742,24 @@ def render_slide_flowchart(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, *
 
     # Visual
     if sd.get('visual'):
+        vis_h_available = avail_h - (cursor - top)
+        
+        # Smart height adjustment for horizontal flowcharts
+        # Horizontal layouts (LR) with few nodes should use less height to avoid stretching
+        visual_data = sd.get('visual', {})
+        mermaid_code = visual_data.get('placeholder_data', {}).get('mermaid_code', '')
+        is_horizontal = 'LR' in mermaid_code or 'RL' in mermaid_code
+        node_count = mermaid_code.count('[') if mermaid_code else 0
+        
+        if is_horizontal and node_count <= 5:
+            # Simple horizontal flowchart: limit height to avoid stretching
+            vis_h_to_use = min(3.2, vis_h_available)
+        else:
+            # Use available height for complex diagrams
+            vis_h_to_use = vis_h_available
+        
         render_visual(slide, sd['visual'], spec, grid,
-                      grid.margin_h, cursor, grid.usable_w,
-                      avail_h - (cursor - top))
+                      grid.margin_h, cursor, grid.usable_w, vis_h_to_use)
 
 
 def find_section_for_slide(slide_id: int, sections: List[Dict]) -> Dict:
@@ -1343,10 +1859,11 @@ def render_section_divider(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, *
     run.font.bold = True
     run.font.color.rgb = get_color(spec, 'on_primary')
     apply_font_to_run(run, spec)
-    for bullet in sd.get('content', []):
+    content_list = sd.get('content', [])
+    for b_idx, bullet in enumerate(content_list):
         tb2 = slide.shapes.add_textbox(
-            Inches(grid.margin_h + 1.5), Inches(grid.slide_h * 0.50),
-            Inches(grid.usable_w - 3), Inches(0.50)
+            Inches(grid.margin_h + 1.5), Inches(grid.slide_h * 0.48 + b_idx * 0.35),
+            Inches(grid.usable_w - 3), Inches(0.32)
         )
         tf2 = tb2.text_frame
         tf2.word_wrap = True
@@ -1384,13 +1901,19 @@ def render_slide_bullets(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, **c
     comps = sd.get('components', {})
     has_comps = any(comps.get(k) for k in comps)
 
+    # Detect complex visual types that need vertical layout (full-width)
+    visual_type = sd.get('visual', {}).get('type', '') if has_visual else ''
+    use_vertical_layout = visual_type in ('flowchart', 'flow', 'sequence', 'process')
+
     # layout columns
-    if has_visual:
+    if has_visual and not use_vertical_layout:
+        # Horizontal layout: text left, visual right
         text_left, text_w = grid.col_span(7, 0)
         vis_left, vis_w = grid.col_span(5, 7)
     else:
+        # Vertical layout or no visual: text full-width
         text_left, text_w = grid.col_span(12, 0)
-        vis_left = vis_w = 0
+        vis_left, vis_w = grid.col_span(12, 0) if use_vertical_layout else (0, 0)
 
     content_bullets = sd.get('content', [])
     if not content_bullets and comps.get('bullets'):
@@ -1411,7 +1934,10 @@ def render_slide_bullets(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, **c
     fill_mode = _effective_fill(get_content_fill(spec, sd.get('slide_type', 'bullet-list'), slide_id=slide_id), has_visual, is_split=is_split, has_text=(total_content_h > 0))
 
     # Compute positions based on resolved mode
-    if fill_mode == 'split-center' and is_split:
+    # For vertical layout, force top alignment to avoid complex calculations
+    if use_vertical_layout:
+        bullet_y = top + 0.15
+    elif fill_mode == 'split-center' and is_split:
         # center text block and visual independently (use conservative visual estimate)
         vis_est_h = _estimate_visual_height(sd.get('visual'), spec, avail_h, reserved=0.2)
         bullet_v_offset = _apply_vertical_offset(total_content_h, avail_h, 'center')
@@ -1439,27 +1965,200 @@ def render_slide_bullets(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, **c
         bullet_y = top + 0.15 + v_offset
         vis_top = top + 0.15 + v_offset
 
-    for i, bullet in enumerate(content_bullets[:8]):
-        tb = slide.shapes.add_textbox(
-            Inches(text_left + 0.1), Inches(bullet_y + i * 0.48),
-            Inches(text_w - 0.2), Inches(0.45)
-        )
-        tf = tb.text_frame
-        tf.word_wrap = True
-        p = tf.paragraphs[0]
-        run = p.add_run()
-        run.text = f"• {bullet}"
-        run.font.size = Pt(get_font_size(spec, 'bullet_text'))
-        run.font.color.rgb = get_color(spec, 'on_surface')
-        p.line_spacing = 1.5
+    # Adjust bullet spacing and font based on layout type and density
+    is_sparse = n_bullets <= 3 and not has_visual and not use_vertical_layout
+    # Alternate between two sparse styles for consecutive same-type slides
+    sparse_style = 'B' if (is_sparse and slide_id and slide_id % 2 == 1) else 'A'
+    if use_vertical_layout:
+        bullet_spacing = 0.45
+        bullet_limit = min(len(content_bullets), 5)
+        bullet_font_size = get_font_size(spec, 'bullet_text')
+        bullet_text_h = 0.38
+    elif is_sparse and sparse_style == 'B':
+        # Style B: centered blocks with top accent line, no card background
+        bullet_spacing = 1.5
+        bullet_limit = n_bullets
+        bullet_font_size = 20
+        bullet_text_h = 0.90
+        sparse_h = n_bullets * bullet_spacing + (0.15 + comp_block_h if remaining_comps else 0)
+        bullet_y = top + max(0.15, (avail_h - sparse_h) / 2)
+    elif is_sparse:
+        # Style A: decorative cards with numbered circles + accent bars
+        bullet_spacing = 1.2  # Much wider spacing with decorative cards
+        bullet_limit = n_bullets
+        bullet_font_size = 20  # Larger font for sparse slides
+        bullet_text_h = 0.80
+        # Re-center vertically for sparse content
+        sparse_h = n_bullets * bullet_spacing + (0.15 + comp_block_h if remaining_comps else 0)
+        bullet_y = top + max(0.15, (avail_h - sparse_h) / 2)
+    else:
+        bullet_spacing = 0.48
+        bullet_limit = min(len(content_bullets), 8)
+        bullet_font_size = get_font_size(spec, 'bullet_text')
+        bullet_text_h = 0.45
+    
+    for i, bullet in enumerate(content_bullets[:bullet_limit]):
+        cur_y = bullet_y + i * bullet_spacing
+        if is_sparse and sparse_style == 'B':
+            # Style B: centered text blocks with top accent line — visually distinct from Style A
+            center_x = text_left + text_w / 2
+            accent_w = 0.80
+            # Top accent line
+            accent_line = slide.shapes.add_shape(
+                MSO_SHAPE.RECTANGLE,
+                Inches(center_x - accent_w / 2), Inches(cur_y),
+                Inches(accent_w), Inches(0.04)
+            )
+            accent_line.fill.solid()
+            accent_line.fill.fore_color.rgb = get_color(spec, 'primary_container')
+            accent_line.line.fill.background()
+            # Step label with contextual icon (e.g., "⚡", "◆")
+            step_icon = get_icon_for_text(bullet, i)
+            step_tb = slide.shapes.add_textbox(
+                Inches(text_left + 0.5), Inches(cur_y + 0.10),
+                Inches(text_w - 1.0), Inches(0.30)
+            )
+            step_tf = step_tb.text_frame
+            step_tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+            step_p = step_tf.paragraphs[0]
+            step_p.alignment = PP_ALIGN.CENTER
+            step_run = step_p.add_run()
+            step_run.text = step_icon
+            step_run.font.size = Pt(18)
+            step_run.font.bold = True
+            step_run.font.color.rgb = get_color(spec, 'primary')
+            # Main text — centered, larger
+            tb = slide.shapes.add_textbox(
+                Inches(text_left + 0.5), Inches(cur_y + 0.40),
+                Inches(text_w - 1.0), Inches(bullet_text_h - 0.45)
+            )
+            tf = tb.text_frame
+            tf.word_wrap = True
+            tf.vertical_anchor = MSO_ANCHOR.TOP
+            p = tf.paragraphs[0]
+            p.alignment = PP_ALIGN.CENTER
+            run = p.add_run()
+            run.text = bullet
+            run.font.size = Pt(bullet_font_size)
+            run.font.color.rgb = get_color(spec, 'on_surface')
+            p.line_spacing = 1.4
+        elif is_sparse:
+            # Decorative card background for sparse content
+            card_left = text_left + 0.3
+            card_w = text_w - 0.6
+            card_bg = slide.shapes.add_shape(
+                MSO_SHAPE.ROUNDED_RECTANGLE,
+                Inches(card_left), Inches(cur_y),
+                Inches(card_w), Inches(bullet_text_h)
+            )
+            card_bg.fill.solid()
+            card_bg.fill.fore_color.rgb = get_color(spec, 'surface_variant')
+            card_bg.line.fill.background()
+            # Accent bar on left
+            accent_bar = slide.shapes.add_shape(
+                MSO_SHAPE.RECTANGLE,
+                Inches(card_left), Inches(cur_y),
+                Inches(0.06), Inches(bullet_text_h)
+            )
+            accent_bar.fill.solid()
+            accent_bar.fill.fore_color.rgb = get_color(spec, 'primary')
+            accent_bar.line.fill.background()
+            # Numbered circle with contextual icon
+            circle_size = 0.40
+            bullet_icon = get_icon_for_text(bullet, i)
+            circle = slide.shapes.add_shape(
+                MSO_SHAPE.OVAL,
+                Inches(card_left + 0.25), Inches(cur_y + (bullet_text_h - circle_size) / 2),
+                Inches(circle_size), Inches(circle_size)
+            )
+            circle.fill.solid()
+            circle.fill.fore_color.rgb = get_color(spec, 'primary')
+            circle.line.fill.background()
+            num_tb = slide.shapes.add_textbox(
+                Inches(card_left + 0.25), Inches(cur_y + (bullet_text_h - circle_size) / 2),
+                Inches(circle_size), Inches(circle_size)
+            )
+            num_tf = num_tb.text_frame
+            num_tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+            num_p = num_tf.paragraphs[0]
+            num_p.alignment = PP_ALIGN.CENTER
+            num_run = num_p.add_run()
+            num_run.text = bullet_icon
+            num_run.font.size = Pt(14)
+            num_run.font.bold = True
+            num_run.font.color.rgb = get_color(spec, 'on_primary')
+            # Text (offset past circle)
+            tb = slide.shapes.add_textbox(
+                Inches(card_left + 0.80), Inches(cur_y + 0.10),
+                Inches(card_w - 1.10), Inches(bullet_text_h - 0.20)
+            )
+            tf = tb.text_frame
+            tf.word_wrap = True
+            tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+            p = tf.paragraphs[0]
+            run = p.add_run()
+            run.text = bullet
+            run.font.size = Pt(bullet_font_size)
+            run.font.color.rgb = get_color(spec, 'on_surface')
+            p.line_spacing = 1.5
+        else:
+            tb = slide.shapes.add_textbox(
+                Inches(text_left + 0.1), Inches(cur_y),
+                Inches(text_w - 0.2), Inches(bullet_text_h)
+            )
+            tf = tb.text_frame
+            tf.word_wrap = True
+            p = tf.paragraphs[0]
+            run = p.add_run()
+            run.text = f"• {bullet}"
+            run.font.size = Pt(bullet_font_size)
+            run.font.color.rgb = get_color(spec, 'on_surface')
+            p.line_spacing = 1.5
 
     if remaining_comps:
-        comp_top = bullet_y + n_bullets * 0.48 + 0.15
-        render_components_simple(slide, remaining_comps, spec, grid, text_left + 0.1, comp_top, text_w - 0.2, avail_h - (comp_top - top))
+        comp_spacing = 0.10 if use_vertical_layout else 0.15
+        comp_top = bullet_y + bullet_limit * bullet_spacing + comp_spacing
+        # When visual is below (vertical layout), limit component height to leave room for visual
+        if use_vertical_layout and has_visual:
+            max_comp_h = min(avail_h * 0.35, 2.0)  # Max 35% of available or 2in for components
+        else:
+            max_comp_h = avail_h - (comp_top - top)
+        render_components_simple(slide, remaining_comps, spec, grid, text_left + 0.1, comp_top, text_w - 0.2, max_comp_h)
 
     if has_visual:
-        # Choose visual placement based on resolved fill mode
-        if is_split:
+        # Choose visual placement based on layout mode
+        if use_vertical_layout:
+            # Vertical layout: visual below text (full-width)
+            # Calculate actual bottom position of rendered content
+            content_bottom = bullet_y + bullet_limit * bullet_spacing
+            
+            # Use accurate component height estimate
+            if remaining_comps:
+                comp_h_est = _estimate_components_height(remaining_comps, spec, text_w - 0.2)
+                content_bottom += 0.10 + comp_h_est
+            
+            # Add proper gap before visual (0.20in for clarity)
+            vis_gap = 0.20
+            vis_top = content_bottom + vis_gap
+            vis_h_available = avail_h - (vis_top - top) - 0.15
+            
+            # Smart height adjustment for horizontal flowcharts
+            # Horizontal layouts (LR) with few nodes should use less height to avoid stretching
+            visual_data = sd.get('visual', {})
+            mermaid_code = visual_data.get('placeholder_data', {}).get('mermaid_code', '')
+            is_horizontal = 'LR' in mermaid_code or 'RL' in mermaid_code
+            node_count = mermaid_code.count('[') if mermaid_code else 0
+            
+            if is_horizontal and node_count <= 5:
+                # Simple horizontal flowchart: limit height to avoid stretching
+                vis_h_to_use = min(3.2, vis_h_available)
+            else:
+                # Complex diagrams: ensure minimum height
+                vis_h_to_use = max(2.5, vis_h_available)
+            
+            render_visual(slide, sd['visual'], spec, grid,
+                          vis_left, vis_top, vis_w, vis_h_to_use)
+        elif is_split:
             # Split layout: either center visual independently or place at top
             if fill_mode == 'split-center':
                 vis_h_to_use = min(vis_est_h, max(0.5, avail_h - 0.10 - vis_v_offset))
@@ -1486,12 +2185,21 @@ def render_slide_two_column(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, 
     bar_h = ctx.get('bar_h', 0.55)
 
 
-def render_decisions_simple(slide: Any, decisions: List[Dict], spec: Dict, grid: GridSystem, left: float, top: float, width: float) -> float:
+def render_decisions_simple(slide: Any, decisions: List[Dict], spec: Dict, grid: GridSystem, left: float, top: float, width: float, avail_h: float = None) -> float:
     """Render a simple vertical list of decision cards. Returns used height."""
     if not decisions:
         return 0
-    h = 0.65
+    n = len(decisions)
     gap = 0.12
+    base_h = 0.65
+    # Dynamic expansion: distribute available height among decision cards
+    if avail_h and avail_h > (base_h + gap) * n:
+        h = min(1.6, (avail_h - gap * (n - 1)) / n)  # Expand up to 1.6in per card
+    else:
+        h = base_h
+    # Dynamic positions based on card height
+    title_h = min(0.35, h * 0.40)
+    desc_top_offset = title_h + 0.10
     y = top
     for dec in decisions:
         card = create_card_shape(slide, spec, left, y, width, h)
@@ -1499,7 +2207,7 @@ def render_decisions_simple(slide: Any, decisions: List[Dict], spec: Dict, grid:
         card.fill.fore_color.rgb = get_color(spec, 'primary_container')
         card.line.fill.background()
         # Title
-        tb = slide.shapes.add_textbox(Inches(left + 0.12), Inches(y + 0.08), Inches(width - 0.24), Inches(0.28))
+        tb = slide.shapes.add_textbox(Inches(left + 0.12), Inches(y + 0.08), Inches(width - 0.24), Inches(title_h))
         p = tb.text_frame.paragraphs[0]
         run = p.add_run()
         run.text = dec.get('title', dec.get('label', ''))
@@ -1510,7 +2218,7 @@ def render_decisions_simple(slide: Any, decisions: List[Dict], spec: Dict, grid:
         # Description
         desc = dec.get('description') or dec.get('rationale') or ''
         if desc:
-            tb2 = slide.shapes.add_textbox(Inches(left + 0.12), Inches(y + 0.36), Inches(width - 0.24), Inches(h - 0.44))
+            tb2 = slide.shapes.add_textbox(Inches(left + 0.12), Inches(y + desc_top_offset), Inches(width - 0.24), Inches(h - desc_top_offset - 0.08))
             p2 = tb2.text_frame.paragraphs[0]
             run2 = p2.add_run()
             run2.text = desc
@@ -1578,7 +2286,7 @@ def render_comparison_items_simple(slide: Any, items: List[Dict], spec: Dict, gr
 
     def _estimate_card_height(items: List[Dict], card_w: float, font_pt: float) -> float:
         """Estimate max card height across all items at given font size."""
-        text_area_w = card_w - 0.24
+        text_area_w = card_w - 0.40  # match actual rendering: pad_side*2 + body internal margins
         line_h = font_pt / 72.0 + 0.08
         max_h = min_card_h
         for item in items:
@@ -1631,7 +2339,8 @@ def render_comparison_items_simple(slide: Any, items: List[Dict], spec: Dict, gr
     # Compute final card height
     base_h = _estimate_card_height(items, card_w, body_font_pt)
 
-    # Apply expand/cap logic
+    # Apply expand/cap logic — NEVER expand beyond 2x content height or 3.5in
+    CARD_H_CAP = 2.5  # Absolute max card height to prevent spanning entire slide
     card_h = base_h
     fill_mode = get_content_fill(spec, 'comparison', slide_id=slide_id)
     if not use_grid and fill_mode == 'expand' and avail_h and avail_h > 0:
@@ -1639,24 +2348,63 @@ def render_comparison_items_simple(slide: Any, items: List[Dict], spec: Dict, gr
         max_cap = get_max_card_h(spec, slide_id)
         if max_cap > 0:
             expanded_h = min(expanded_h, max_cap)
+        # Cap at 2x content or absolute max
+        expanded_h = min(expanded_h, base_h * 2.0, CARD_H_CAP)
         card_h = max(base_h, expanded_h)
     elif use_grid and fill_mode == 'expand' and avail_h and avail_h > 0:
         per_row_avail = (avail_h - gap * (rows - 1)) / rows
         card_h = max(base_h, per_row_avail - 0.15)
+        card_h = min(card_h, CARD_H_CAP)  # Cap
         max_cap = get_max_card_h(spec, slide_id)
         if max_cap > 0:
             card_h = min(card_h, max_cap)
 
     # ── Render cards ──
-    def _render_card(item: Dict, cx: float, cy: float, cw: float, ch: float) -> None:
+    def _render_card(item: Dict, cx: float, cy: float, cw: float, ch: float, card_idx: int = 0) -> None:
         card = create_card_shape(slide, spec, cx, cy, cw, ch)
         card.fill.solid()
         card.fill.fore_color.rgb = get_color(spec, 'surface_variant')
         card.line.fill.background()
         add_shadow(card)
-        # Header
-        tb = slide.shapes.add_textbox(Inches(cx + 0.12), Inches(cy + 0.10), Inches(cw - 0.24), Inches(0.35))
-        p = tb.text_frame.paragraphs[0]
+        # Icon circle in header area
+        card_label = item.get('label', item.get('name', item.get('title', '')))
+        card_icon = get_icon_for_text(card_label, card_idx)
+        icon_sz = 0.28
+        icon_circle = slide.shapes.add_shape(
+            MSO_SHAPE.OVAL,
+            Inches(cx + 0.10), Inches(cy + 0.08),
+            Inches(icon_sz), Inches(icon_sz)
+        )
+        icon_circle.fill.solid()
+        icon_circle.fill.fore_color.rgb = get_color(spec, 'primary')
+        icon_circle.line.fill.background()
+        # Put icon text directly on the oval shape for native centering
+        # Smaller font + margin_top offset to compensate for Unicode ascender bias
+        icon_font_pt = int(icon_sz * 32)  # ~9pt for 0.28in circle (was 36)
+        glyph_offset = Pt(max(1, int(icon_sz * 5)))  # push glyph down
+        icon_circle.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+        icon_circle.text_frame.margin_top = glyph_offset
+        icon_circle.text_frame.margin_bottom = Emu(1)
+        icon_circle.text_frame.margin_left = Emu(1)
+        icon_circle.text_frame.margin_right = Emu(1)
+        icon_p = icon_circle.text_frame.paragraphs[0]
+        icon_p.alignment = PP_ALIGN.CENTER
+        icon_p.space_before = Pt(0)
+        icon_p.space_after = Pt(0)
+        icon_run = icon_p.add_run()
+        icon_run.text = card_icon
+        icon_run.font.size = Pt(icon_font_pt)
+        icon_run.font.bold = True
+        icon_run.font.color.rgb = get_color(spec, 'on_primary')
+        # Header (shifted right to accommodate icon)
+        pad_side = 0.16  # side padding for body & separator
+        header_left = cx + 0.10 + icon_sz + 0.06
+        header_w = cw - pad_side * 2 - icon_sz - 0.06 + (pad_side - 0.10)
+        tb = slide.shapes.add_textbox(Inches(header_left), Inches(cy + 0.10), Inches(max(header_w, 0.5)), Inches(0.35))
+        tf_hdr = tb.text_frame
+        tf_hdr.margin_left = Inches(0)
+        tf_hdr.margin_right = Inches(0)
+        p = tf_hdr.paragraphs[0]
         run = p.add_run()
         run.text = item.get('label', item.get('name', item.get('title', '')))
         run.font.size = Pt(get_font_size(spec, 'slide_subtitle'))
@@ -1666,25 +2414,34 @@ def render_comparison_items_simple(slide: Any, items: List[Dict], spec: Dict, gr
         # Separator
         s = slide.shapes.add_shape(
             MSO_SHAPE.RECTANGLE,
-            Inches(cx + 0.12), Inches(cy + 0.48),
-            Inches(cw - 0.24), Inches(sep_h)
+            Inches(cx + pad_side), Inches(cy + 0.48),
+            Inches(cw - pad_side * 2), Inches(sep_h)
         )
         s.fill.solid()
         s.fill.fore_color.rgb = get_color(spec, 'outline')
         s.line.fill.background()
-        # Body
+        # Body — generous margins to prevent text overflow
+        body_top = cy + 0.55
+        body_h = ch - 0.55 - 0.16  # 0.16in bottom margin
         details = _collect_details(item)
         detail_text = '\n'.join(details)
         if detail_text:
-            tb2 = slide.shapes.add_textbox(Inches(cx + 0.12), Inches(cy + 0.55), Inches(cw - 0.24), Inches(ch - 0.65))
+            tb2 = slide.shapes.add_textbox(
+                Inches(cx + pad_side), Inches(body_top),
+                Inches(cw - pad_side * 2), Inches(max(body_h, 0.5))
+            )
             tf2 = tb2.text_frame
             tf2.word_wrap = True
+            tf2.margin_left = Inches(0.04)
+            tf2.margin_right = Inches(0.04)
+            tf2.margin_top = Inches(0.02)
+            tf2.margin_bottom = Inches(0.02)
             p2 = tf2.paragraphs[0]
             run2 = p2.add_run()
             run2.text = detail_text
             run2.font.size = Pt(body_font_pt)
             run2.font.color.rgb = get_color(spec, 'on_surface')
-            p2.line_spacing = 1.5
+            p2.line_spacing = 1.4
 
     if use_grid:
         # 2×2 (or 2×N) grid layout
@@ -1696,14 +2453,14 @@ def render_comparison_items_simple(slide: Any, items: List[Dict], spec: Dict, gr
                     break
                 cx = left + col * (card_w + gap)
                 cy = top + row * (card_h + gap)
-                _render_card(items[idx], cx, cy, card_w, card_h)
+                _render_card(items[idx], cx, cy, card_w, card_h, card_idx=idx)
             total_h = (row + 1) * (card_h + gap)
         return total_h
     else:
         # Single row layout
         for i, item in enumerate(items):
             cx = left + i * (card_w + gap)
-            _render_card(item, cx, top, card_w, card_h)
+            _render_card(item, cx, top, card_w, card_h, card_idx=i)
         return card_h + 0.15
 
 
@@ -1712,7 +2469,7 @@ def render_components_simple(slide: Any, comps: Dict, spec: Dict, grid: GridSyst
     cursor = 0.0
     # KPIs
     if comps.get('kpis'):
-        h = render_kpis(slide, comps['kpis'], spec, grid, left, top + cursor, width)
+        h = render_kpis(slide, comps['kpis'], spec, grid, left, top + cursor, width, avail_h=avail_h - cursor if avail_h else None)
         cursor += h
     # Comparison items
     if comps.get('comparison_items'):
@@ -1720,25 +2477,118 @@ def render_components_simple(slide: Any, comps: Dict, spec: Dict, grid: GridSyst
         cursor += h
     # Decisions
     if comps.get('decisions'):
-        h = render_decisions_simple(slide, comps['decisions'], spec, grid, left, top + cursor, width)
+        h = render_decisions_simple(slide, comps['decisions'], spec, grid, left, top + cursor, width, avail_h=avail_h - cursor if avail_h else None)
         cursor += h
-    # Bullets
+    # Bullets (before callouts — bullets provide main content, callouts emphasize)
     if comps.get('bullets') and cursor < avail_h:
-        # render remaining bullets
-        bullets = [b.get('text', '') if isinstance(b, dict) else str(b) for b in comps['bullets']]
-        for i, b in enumerate(bullets[:8]):
-            if cursor > avail_h - 0.5:
-                break
-            tb = slide.shapes.add_textbox(Inches(left + 0.05), Inches(top + cursor), Inches(width - 0.10), Inches(0.45))
-            tf = tb.text_frame
-            tf.word_wrap = True
-            p = tf.paragraphs[0]
-            run = p.add_run()
-            run.text = f"• {b}"
-            run.font.size = Pt(get_font_size(spec, 'bullet_text'))
-            run.font.color.rgb = get_color(spec, 'on_surface')
-            p.line_spacing = 1.5
-            cursor += 0.48
+        # render remaining bullets — handle dict format with label/value or text
+        def _bullet_text(b):
+            if isinstance(b, dict):
+                t = b.get('text', '')
+                if t:
+                    return t
+                label = b.get('label', '')
+                value = b.get('value', '')
+                return f"{label}: {value}" if value else label
+            return str(b)
+        bullets = [_bullet_text(b) for b in comps['bullets']]
+        n_items = min(len(bullets), 4)
+        remaining_h = avail_h - cursor
+
+        # Use numbered takeaway cards when 2-4 sparse bullets fit horizontally
+        # For 4 items on full-width slides, use 2×2 grid to avoid cramped text
+        use_grid_2x2 = (n_items == 4 and width > 8.0)
+        if n_items >= 2 and n_items <= 4 and remaining_h >= 0.70:
+            card_gap = 0.12
+            if use_grid_2x2:
+                cols = 2
+                card_w = (width - card_gap) / cols
+                card_h = 0.70
+                row_gap = 0.12
+            else:
+                cols = n_items
+                card_w = (width - card_gap * (n_items - 1)) / n_items
+                card_h = 0.55
+                row_gap = 0
+            num_w = 0.32  # width reserved for number column
+            for i, b in enumerate(bullets[:n_items]):
+                col_idx = i % cols
+                row_idx = i // cols
+                cx = left + col_idx * (card_w + card_gap)
+                cy = top + cursor + row_idx * (card_h + row_gap)
+                # Card background
+                card_bg = slide.shapes.add_shape(
+                    MSO_SHAPE.ROUNDED_RECTANGLE,
+                    Inches(cx), Inches(cy),
+                    Inches(card_w), Inches(card_h)
+                )
+                card_bg.fill.solid()
+                card_bg.fill.fore_color.rgb = get_color(spec, 'primary_container')
+                card_bg.line.fill.background()
+                # Accent left bar
+                accent_bar = slide.shapes.add_shape(
+                    MSO_SHAPE.RECTANGLE,
+                    Inches(cx), Inches(cy),
+                    Inches(0.04), Inches(card_h)
+                )
+                accent_bar.fill.solid()
+                accent_bar.fill.fore_color.rgb = get_color(spec, 'primary')
+                accent_bar.line.fill.background()
+                # Number — large, vertically centered on left side
+                num_tb = slide.shapes.add_textbox(
+                    Inches(cx + 0.08), Inches(cy),
+                    Inches(num_w), Inches(card_h)
+                )
+                num_tf = num_tb.text_frame
+                num_tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+                num_tf.margin_left = Emu(1)
+                num_tf.margin_right = Emu(1)
+                num_p = num_tf.paragraphs[0]
+                num_p.alignment = PP_ALIGN.CENTER
+                num_run = num_p.add_run()
+                num_run.text = str(i + 1)
+                num_run.font.size = Pt(22)
+                num_run.font.bold = True
+                num_run.font.color.rgb = get_color(spec, 'primary')
+                # Text — right of number, vertically centered
+                txt_left = cx + 0.08 + num_w
+                txt_w = card_w - 0.08 - num_w - 0.08
+                txt_tb = slide.shapes.add_textbox(
+                    Inches(txt_left), Inches(cy),
+                    Inches(txt_w), Inches(card_h)
+                )
+                txt_tf = txt_tb.text_frame
+                txt_tf.word_wrap = True
+                txt_tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+                txt_tf.margin_left = Inches(0.04)
+                txt_tf.margin_right = Inches(0.04)
+                txt_p = txt_tf.paragraphs[0]
+                txt_run = txt_p.add_run()
+                txt_run.text = b
+                txt_run.font.size = Pt(get_font_size(spec, 'body') - 1)
+                txt_run.font.color.rgb = get_color(spec, 'on_primary_container')
+                txt_p.line_spacing = 1.2
+            n_rows = (n_items + cols - 1) // cols
+            cursor += n_rows * card_h + (n_rows - 1) * row_gap + 0.15
+        else:
+            # Standard bullet list for many items
+            for i, b in enumerate(bullets[:8]):
+                if cursor > avail_h - 0.5:
+                    break
+                tb = slide.shapes.add_textbox(Inches(left + 0.05), Inches(top + cursor), Inches(width - 0.10), Inches(0.45))
+                tf = tb.text_frame
+                tf.word_wrap = True
+                p = tf.paragraphs[0]
+                run = p.add_run()
+                run.text = f"• {b}"
+                run.font.size = Pt(get_font_size(spec, 'bullet_text'))
+                run.font.color.rgb = get_color(spec, 'on_surface')
+                p.line_spacing = 1.5
+                cursor += 0.48
+    # Callouts (after bullets — callouts emphasize key takeaways)
+    if comps.get('callouts') and cursor < avail_h:
+        h = render_callouts(slide, comps['callouts'], spec, grid, left, top + cursor, width)
+        cursor += h
     return cursor
 
 
@@ -1774,9 +2624,20 @@ def render_slide_cta(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, **ctx) 
     card.line.fill.background()
     add_shadow(card)
 
-    # Content
+    # Content — use content[] first, fall back to components.bullets
+    cta_items = sd.get('content', [])
+    if not cta_items and comps.get('bullets'):
+        cta_items = []
+        for b in comps['bullets']:
+            if isinstance(b, dict):
+                label = b.get('label', b.get('text', ''))
+                value = b.get('value', '')
+                cta_items.append(f"{label}: {value}" if value else label)
+            else:
+                cta_items.append(str(b))
+
     cursor = card_top + 0.30
-    for i, bullet in enumerate(sd.get('content', [])[:6]):
+    for i, bullet in enumerate(cta_items[:6]):
         tb = slide.shapes.add_textbox(
             Inches(cl + 0.35), Inches(cursor + i * 0.55),
             Inches(cw - 0.70), Inches(0.50)
@@ -1789,11 +2650,12 @@ def render_slide_cta(slide: Any, sd: Dict, spec: Dict, grid: GridSystem, **ctx) 
         run.font.size = Pt(get_font_size(spec, 'slide_subtitle'))
         run.font.bold = True
         run.font.color.rgb = get_color(spec, 'on_primary_container')
-    cursor += len(sd.get('content', [])[:6]) * 0.55 + 0.15
+    cursor += len(cta_items[:6]) * 0.55 + 0.15
 
-    # Components inside card
-    if any(comps.get(k) for k in comps):
-        render_components(slide, comps, spec, grid,
+    # Components inside card (skip bullets already rendered)
+    remaining_comps = {k: v for k, v in comps.items() if k != 'bullets' and v}
+    if remaining_comps:
+        render_components(slide, remaining_comps, spec, grid,
                           cl + 0.35, cursor, cw - 0.70,
                           card_h - (cursor - card_top) - 0.20)
 
@@ -1909,7 +2771,7 @@ RENDERERS = {
     'decision': render_slide_decision,
     'data-heavy': render_slide_data_heavy,
     'data-summary': render_slide_data_heavy,
-    'data-process': render_slide_data_heavy,
+    'data-process': render_slide_bullets,  # Use bullets layout with vertical visual option
     'matrix': render_slide_matrix,
     'timeline': render_slide_timeline,
     'gantt': render_slide_timeline,

@@ -39,8 +39,11 @@ class RendererRegistry:
             # Import native renderers
             self._import_renderers_from_module('ppt_generator.renderers.native')
             
-            # Future: Import mermaid, matplotlib, etc.
-            # self._import_renderers_from_module('ppt_generator.renderers.mermaid')
+            # Import mermaid renderers
+            self._import_renderers_from_module('ppt_generator.renderers.mermaid')
+            
+            # Future: Import matplotlib, etc.
+            # self._import_renderers_from_module('ppt_generator.renderers.matplotlib')
             
             # Log discovered renderers
             available = [r for r in self._renderers if r.is_available()]

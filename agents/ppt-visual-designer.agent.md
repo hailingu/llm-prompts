@@ -237,9 +237,28 @@ Component height estimates (using typography_system.explicit_sizes):
   timeline_h           = 1.0"  (horizontal milestones)
   callout_h            = 0.8"  per callout
 
-Total content_h = Σ component heights
+Visual height estimates (by visual.type — REQUIRED for stacked layouts):
+  chart_table_h        = 2.0"
+  gantt_h              = 2.8"
+  flowchart_h          = 2.5"
+  mermaid_h            = 2.5"
+  comparison_bar_h     = 2.2"
+  none_h               = 0"
+
+Layout mode detection:
+  is_stacked = (components exist) AND (visual.type != "none") AND (layout is "full-width" / single-column)
+  is_side_by_side = (layout uses split columns: components on left, visual on right)
+
+Total content_h:
+  if is_stacked:     content_h = Σ component heights + visual_h + stacking_gap(0.20")
+  if is_side_by_side: content_h = max(Σ component heights, visual_h)
+  if visual only:     content_h = visual_h
+  if components only: content_h = Σ component heights
+
 fill_ratio = content_h / avail_h
 ```
+
+**WARNING**: Omitting `visual_h` from stacked layouts causes `fill_ratio` to be severely underestimated, resulting in `"center"` mode that leaves visuals pushed below the visible area. Always include visual height for stacked layouts.
 
 **Decision Rules** (based on `fill_ratio`):
 
@@ -281,6 +300,7 @@ fill_ratio = content_h / avail_h
 - Every slide with `fill_ratio < 0.35` where `slide_type_layouts` default is `"expand"` MUST have an override to `"center"`
 - Every slide with `fill_ratio` between 0.35–0.55 and multiple cards MUST have `max_card_h` set
 - `slide_overrides` is present as a top-level key in `design_spec.json`
+- For stacked layouts (components + visual on same column): `content_h` includes BOTH component heights AND `visual_h` + 0.20" gap — verify `fill_ratio` was NOT computed from components alone
 
 ### MV-5: section_accents Completeness (BLOCKER for ≥6 slides)
 - Must map every section ID to a distinct accent color token.

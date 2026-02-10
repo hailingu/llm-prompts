@@ -5,7 +5,7 @@ tools: ['vscode', 'read', 'edit', 'search', 'web', 'todo']
 handoffs:
   - label: visual design
     agent: ppt-visual-designer
-    prompt: "Content planning complete. slides.md, slides_semantic.json, and content_qa_report.json are ready in the session directory. All self-checks (MO-0 through MO-12) passed. Visual style: {visual_style or 'not specified (default md3)'}. Please proceed with visual design using the specified style. Session directory: docs/presentations/<session-id>/"
+    prompt: "Content planning complete. slides.md, slides_semantic.json, and content_qa_report.json are ready in the session directory. All self-checks (MO-0 through MO-16) passed. Visual style: {visual_style or 'not specified (default md3)'}. Please proceed with visual design using the specified style. Session directory: docs/presentations/<session-id>/"
     send: true
   - label: escalate to director
     agent: ppt-creative-director
@@ -65,7 +65,7 @@ As the PPT Content Planner, you are the **content strategist** who transforms so
 - ❌ Do NOT create design specifications (visual-designer's role)
 - ❌ Do NOT generate diagrams or PPTX files (visual-designer / specialist roles)
 - ❌ Do NOT execute auto-fixes without proper escalation
-- ❌ Do NOT skip self-checks (MO-0 through MO-12) before handoff to visual-designer
+- ❌ Do NOT skip self-checks (MO-0 through MO-16) before handoff to visual-designer
 - ❌ Do NOT conduct original research or invent data
 - ❌ Do NOT skip audience analysis
 
@@ -197,6 +197,35 @@ As the PPT Content Planner, you are the **content strategist** who transforms so
   3. All slides within that section
 - **Self-check**: `len(slides_semantic.slides) == count("## Slide" headings in source)` AND `len(sections_array) == count("## Section" headings in source)`
 
+### MO-14: Minimum Information Density — No Ultra-Sparse Slides (MAJOR)
+- **A slide with `visual.type: "none"` and ONLY `components.bullets` MUST have ≥ 3 bullet items.** Slides with 1–2 short bullets and no visual produce large whitespace and look incomplete.
+- If a slide naturally has only 1–2 points:
+  - Option A: **Merge** its content into an adjacent slide as additional bullets or a callout.
+  - Option B: **Enrich** — add a relevant visual (`type: "comparison_bar"`, `"gantt"`, or `"flowchart"`) that complements the text.
+  - Option C: **Expand** — extract more detail from the source document to fill ≥ 3 bullets with meaningful content.
+- ❌ **FORBIDDEN**: `visual.type == "none"` AND `len(components.bullets) <= 2` AND no other components (no KPIs, no comparison_items, no decisions, no callout).
+- ✅ **REQUIRED**: Every non-divider, non-title slide delivers ≥ 3 distinct information elements (via any combination of bullets, components, or visual).
+- **Self-check**: `for each slide: if visual.type == "none": count(all component items) >= 3`
+
+### MO-15: No Qualitative Data in chart_config (MAJOR)
+- **`visual.placeholder_data.chart_config.series[].data` MUST contain ONLY numeric values (`int` or `float`).** Non-numeric strings (e.g., "低", "中", "高", "制造成本优势") MUST NOT appear in chart series data.
+- Qualitative/descriptive comparisons belong in `components.comparison_items` (with `visual.type: "none"` or a complementary numeric chart), NOT in chart_config.
+- ❌ **FORBIDDEN**: `"data": ["低", "中", "高"]` — chart renderers cannot plot text as bar heights.
+- ❌ **FORBIDDEN**: `"data": ["制造成本优势", "设计灵活性"]` — these are qualitative attributes, not plottable values.
+- ✅ **CORRECT**: `"data": [85, 92, 78]` — numeric values suitable for chart rendering.
+- ✅ **CORRECT**: Qualitative data → `comparison_items[].attributes`, numeric data → `chart_config.series[].data`.
+- **Self-check**: `all(isinstance(v, (int, float)) for series in chart_config.series for v in series.data)`
+
+### MO-16: No Redundant Visual for Qualitative Comparison Slides (MAJOR)
+- **When `components.comparison_items` contains ≥ 3 qualitative attributes per item (descriptions, pros/cons, recommendations), do NOT also create a `visual.placeholder_data.chart_config` containing the same dimensions as text.**
+- Redundant chart_config causes the renderer to output both comparison cards AND a chart with identical text — duplicating information and wasting space.
+- Correct behavior:
+  - Qualitative-only comparison → `comparison_items` + `visual.type: "none"`
+  - Qualitative comparison WITH genuinely complementary numeric data → `comparison_items` + numeric-only `chart_config` (data must NOT duplicate attribute keys)
+- ❌ **FORBIDDEN**: `comparison_items` has attributes {"市场规模", "增长驱动", "成熟度"} AND `chart_config` has series named ["市场规模", "增长驱动", "成熟度"] with text data.
+- ✅ **CORRECT**: `comparison_items` has qualitative attrs + `chart_config` has a DIFFERENT numeric dimension (e.g., market size trend over years).
+- **Self-check**: `if comparison_items has ≥ 3 attrs: chart_config.series names ∩ comparison_items attribute keys == ∅`
+
 ### Pre-Handoff Self-Verification Checklist
 ```
 [ ] MO-0: Schema compliance — all component fields follow slides-render-schema.json@v1
@@ -213,6 +242,9 @@ As the PPT Content Planner, you are the **content strategist** who transforms so
 [ ] MO-11: All source slides present in output — no slides dropped
 [ ] MO-11: Top-level sections array present with id, title, start_slide
 [ ] MO-12: Cover slide title == frontmatter title (NOT heading label like "封面与一行结论")
+[ ] MO-14: No ultra-sparse slides — visual=none slides have ≥3 info elements
+[ ] MO-15: chart_config.series[].data contains ONLY numeric values (no text)
+[ ] MO-16: No redundant chart_config duplicating comparison_items attributes
 [ ] Speaker notes coverage ≥ 90%
 [ ] All visuals have type + placeholder_data
 [ ] Sections array present with start_slide and accent
@@ -268,7 +300,7 @@ If ANY blocker fails, DO NOT submit — fix first.
 - **Reference**: `skills/ppt-content-planning/README.md` (Quality Assurance) for full QA checklist
 
 **7) Self-Check & Auto-Handoff**
-- Run all self-checks (MO-0 through MO-12)
+- Run all self-checks (MO-0 through MO-16)
 - If ALL pass → auto-handoff to ppt-visual-designer ("visual design" handoff)
 - If ANY fail → escalate to ppt-creative-director ("escalate to director" handoff)
 
