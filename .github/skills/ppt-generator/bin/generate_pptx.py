@@ -539,37 +539,43 @@ def render_speaker_notes(slide, notes_text):
 # §5  Component Renderers
 # ════════════════════════════════════════════════════════════════
 
+def _parse_kpi_number(value_str):
+    """Extract numeric value from KPI string like '110 USD Bn' → 110."""
+    if not value_str:
+        return None
+    m = re.search(r'[\d,.]+', str(value_str))
+    if m:
+        try:
+            return float(m.group().replace(',', ''))
+        except ValueError:
+            return None
+    return None
+
+
 def render_kpis(slide, kpis, spec, grid, left, top, width):
-    """Render KPI cards in a row with palette-based color rotation."""
+    """Render KPI cards with proportion bars showing relative magnitude."""
     if not kpis:
         return 0
     n = len(kpis)
     card_gap = 0.15
     card_w = (width - card_gap * (n - 1)) / max(n, 1)
-    card_h = 0.85
-    # Use chart palette for KPI card accent stripe at top
-    palette = get_chart_palette(spec)
+    card_h = 1.05  # slightly taller to fit proportion bar
+
+    # Parse all numeric values and find max for scaling
+    values = [_parse_kpi_number(kpi.get('value', '')) for kpi in kpis]
+    max_val = max((v for v in values if v is not None), default=None)
+
     for i, kpi in enumerate(kpis):
         cx = left + i * (card_w + card_gap)
-        # Card background (shape follows component_library.card.border_radius)
         card = create_card_shape(slide, spec, cx, top, card_w, card_h)
         card.fill.solid()
         card.fill.fore_color.rgb = get_color(spec, 'primary_container')
         card.line.fill.background()
         add_shadow(card)
-        # Colored accent stripe at top of each KPI card (palette rotation)
-        accent_color = palette[i % len(palette)]
-        stripe = slide.shapes.add_shape(
-            MSO_SHAPE.RECTANGLE,
-            Inches(cx), Inches(top), Inches(card_w), Inches(0.04)
-        )
-        stripe.fill.solid()
-        stripe.fill.fore_color.rgb = hex_to_rgb(accent_color)
-        stripe.line.fill.background()
         # Value
         tb = slide.shapes.add_textbox(
-            Inches(cx + 0.12), Inches(top + 0.10),
-            Inches(card_w - 0.24), Inches(0.40)
+            Inches(cx + 0.12), Inches(top + 0.08),
+            Inches(card_w - 0.24), Inches(0.38)
         )
         tf = tb.text_frame
         p = tf.paragraphs[0]
@@ -578,21 +584,48 @@ def render_kpis(slide, kpis, spec, grid, left, top, width):
         trend = kpi.get('trend', '')
         trend_arrow = {'up': ' ↑', 'down': ' ↓', 'stable': ' →'}.get(trend, '')
         run.text = f"{val}{trend_arrow}"
-        run.font.size = Pt(28)  # Enlarged KPI value for prominence
+        run.font.size = Pt(28)
         run.font.bold = True
         run.font.color.rgb = get_color(spec, 'primary')
         apply_font_to_run(run, spec)
         # Label
         tb2 = slide.shapes.add_textbox(
-            Inches(cx + 0.12), Inches(top + 0.52),
-            Inches(card_w - 0.24), Inches(0.25)
+            Inches(cx + 0.12), Inches(top + 0.48),
+            Inches(card_w - 0.24), Inches(0.22)
         )
         tf2 = tb2.text_frame
         p2 = tf2.paragraphs[0]
         run2 = p2.add_run()
         run2.text = kpi.get('label', '')
-        run2.font.size = Pt(13)  # P1: enlarged from 11 for better balance with 28pt value
+        run2.font.size = Pt(13)
         run2.font.color.rgb = get_color(spec, 'on_primary_container')
+        apply_font_to_run(run2, spec)
+        # Proportion bar
+        bar_top = top + 0.76
+        bar_max_w = card_w - 0.24
+        bar_h_px = 0.10
+        # Background track
+        track = slide.shapes.add_shape(
+            MSO_SHAPE.ROUNDED_RECTANGLE,
+            Inches(cx + 0.12), Inches(bar_top),
+            Inches(bar_max_w), Inches(bar_h_px)
+        )
+        track.fill.solid()
+        track.fill.fore_color.rgb = get_color(spec, 'surface_variant')
+        track.line.fill.background()
+        # Filled proportion
+        val_num = values[i]
+        if val_num is not None and max_val and max_val > 0:
+            ratio = val_num / max_val
+            fill_w = max(0.1, bar_max_w * ratio)
+            bar_fill = slide.shapes.add_shape(
+                MSO_SHAPE.ROUNDED_RECTANGLE,
+                Inches(cx + 0.12), Inches(bar_top),
+                Inches(fill_w), Inches(bar_h_px)
+            )
+            bar_fill.fill.solid()
+            bar_fill.fill.fore_color.rgb = get_color(spec, 'primary')
+            bar_fill.line.fill.background()
     return card_h + 0.15
 
 
@@ -2497,12 +2530,54 @@ def render_slide_data_heavy(slide, sd, spec, grid, **ctx):
     
     layout_variant=0: stacked (components top, visual bottom) or 6+6 split
     layout_variant=1: mirrored split (visual LEFT, components RIGHT)
+    Patch A: when ≤1 bullet + visual + no heavy components → insight strip
     """
     bar_h = ctx.get('bar_h', 0.55)
     top, avail_h = _content_zone(grid, bar_h)
     comps = sd.get('components', {})
     has_visual = (sd.get('visual') and
                   sd['visual'].get('type') not in (None, 'none'))
+
+    # --- Patch A: Insight strip for sparse data-heavy slides ---
+    bullet_items = comps.get('bullets', [])
+    n_bullets = len(bullet_items) if isinstance(bullet_items, list) else 0
+    non_bullet_comps = {k: v for k, v in comps.items()
+                        if k != 'bullets' and v}
+    if has_visual and n_bullets <= 1 and not non_bullet_comps:
+        cursor = top + 0.10
+        accent_tk = ctx.get('accent_token', 'primary')
+        if n_bullets == 1:
+            strip_h = 0.45
+            strip = slide.shapes.add_shape(
+                MSO_SHAPE.ROUNDED_RECTANGLE,
+                Inches(grid.margin_h), Inches(cursor),
+                Inches(grid.usable_w), Inches(strip_h)
+            )
+            strip.fill.solid()
+            strip.fill.fore_color.rgb = get_color(spec, accent_tk)
+            strip.line.fill.background()
+            tb = slide.shapes.add_textbox(
+                Inches(grid.margin_h + 0.20), Inches(cursor + 0.06),
+                Inches(grid.usable_w - 0.40), Inches(strip_h - 0.12)
+            )
+            tf = tb.text_frame
+            tf.word_wrap = True
+            tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+            p = tf.paragraphs[0]
+            run = p.add_run()
+            run.text = f"💡 {bullet_items[0]}"
+            run.font.size = Pt(get_font_size(spec, 'body_text'))
+            run.font.bold = True
+            run.font.color.rgb = get_color(spec, 'on_primary')
+            apply_font_to_run(run, spec)
+            cursor += strip_h + 0.10
+        vis_h = max(1.5, avail_h - (cursor - top) - 0.10)
+        render_visual(slide, sd['visual'], spec, grid,
+                      grid.margin_h, cursor, grid.usable_w, vis_h,
+                      session_dir=ctx.get('session_dir', ''))
+        return
+    # --- End Patch A ---
+
     variant = ctx.get('layout_variant', 0)
 
     # M4: Count total component items for layout decision
