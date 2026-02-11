@@ -1,0 +1,9 @@
+Year,WorkloadType,Required_IOPS,Required_Bandwidth_GBps,Source,Note
+2023,Training,500000,20,MLPerf/Estimate,Estimate based on MLPerf traces,2026-02-10
+2024,Training,1000000,40,MLPerf/Estimate,Projection,2026-02-10
+2025,Training,2000000,80,MLPerf/Estimate,Projection,2026-02-10
+2026,Training,4000000,160,MLPerf/Estimate,Projection,2026-02-10
+2023,Inference,50000,2,MLPerf/Estimate,Estimate,2026-02-10
+2024,Inference,100000,4,MLPerf/Estimate,Projection,2026-02-10
+2025,Inference,200000,8,MLPerf/Estimate,Projection,2026-02-10
+2026,Inference,400000,16,MLPerf/Estimate,Projection,2026-02-10

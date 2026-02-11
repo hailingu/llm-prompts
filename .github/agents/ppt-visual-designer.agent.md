@@ -338,6 +338,27 @@ fill_ratio = content_h / avail_h
 - ✅ **REQUIRED**: Typography at `design_spec.typography_system.explicit_sizes` (top-level).
 - **Self-check**: `design_spec.json` has top-level keys `color_system`, `typography_system`, `grid_system`, `layout_zones`, `slide_type_layouts`, `slide_overrides`, `section_accents`, `component_library`.
 
+### MV-9b: Chart Color Palette (MAJOR)
+- **The renderer uses `chart_colors` in `color_system` (or falls back to `component_library.chart_palette` / `tokens.accessibility.chart_color_palette`) to colorize matplotlib-generated charts and component accent stripes.**
+- **REQUIRED**: `color_system` MUST include a `chart_colors` array with **≥ 6** hex colors. Colors should be:
+  - Perceptually distinguishable (avoid similar hues next to each other)
+  - Accessible: ≥ 3:1 contrast ratio against white background
+  - Brand-consistent: derived from primary/secondary colors with hue/saturation variations
+- **RECOMMENDED additional palettes**:
+  - `sequential_palette`: 5-7 shades of a single hue (for heatmaps, magnitude scales)
+  - `diverging_palette`: 5-7 colors from cold-to-warm (for above/below comparisons)
+- **Component accent rotation**: `chart_colors` are also used for KPI card top-stripes and comparison card accents — ensure they work well at small sizes (4px stripe).
+- **Example**:
+  ```json
+  "color_system": {
+    "primary": "#00599C",
+    "chart_colors": ["#00599C", "#00B3A4", "#FFD100", "#7F8DA6", "#E85D75", "#6C5CE7"],
+    "sequential_palette": ["#E3F2FD", "#90CAF9", "#42A5F5", "#1E88E5", "#0D47A1"],
+    "diverging_palette": ["#D32F2F", "#FF8A80", "#F5F5F5", "#80CBC4", "#00695C"]
+  }
+  ```
+- **Self-check**: `design_spec.color_system.chart_colors` is an array with ≥ 6 items. No two adjacent colors have ΔE < 20.
+
 ### MV-10: Cover Slide Background Image (MAJOR)
 - **`slide_type_layouts.title` SHOULD include a `background_image` field** pointing to a downloaded cover image.
 - **Sourcing**: Search online for a high-quality, royalty-free image matching the presentation topic/domain.

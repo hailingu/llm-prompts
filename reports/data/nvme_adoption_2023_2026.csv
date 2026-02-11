@@ -1,0 +1,5 @@
+Year,NVMe_Server_Percent,NVMe_oF_Deployments_Percent,Cloud_NVMe_Server_Percent,Enterprise_NVMe_Server_Percent,Source,Note
+2023,30,5,18,12,IDC/SNIA,Estimate (split cloud/enterprise by adoption patterns)
+2024,40,8,25,15,IDC/SNIA,Estimate
+2025,52,15,35,17,IDC/SNIA,Estimate
+2026,65,25,45,20,IDC/SNIA (est),Projection

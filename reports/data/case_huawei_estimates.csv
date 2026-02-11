@@ -1,0 +1,4 @@
+Workload,Config,IOPS_est,BW_GBps_est,Notes,Source,DataDate
+OLTP,PMem + NVMe tier,80000,2.5,"低延迟事务加速","华为公开资料 + 工程估算",2026-02-11
+Large_Model_Training,CXL remote memory + NVMe,150000,5,"试点远内存与 NVMe 组合","研究论文/工程估算",2026-02-11
+Metadata,PMem for metadata/indices,20000,0.5,"低延迟元数据加速", "公开资料 + 估算",2026-02-11

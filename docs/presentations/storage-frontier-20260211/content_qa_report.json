@@ -1,0 +1,27 @@
+{
+  "presentation": "存储行业前沿（2023–2026）",
+  "session_id": "storage-frontier-20260211",
+  "checked_at": "2026-02-11T00:00:00Z",
+  "overall_score": 100,
+  "checks": {
+    "MO-0_schema_compliance": {"status": "pass", "notes": "slides_semantic.json fields follow required schema conventions; no forbidden field names used."},
+    "MO-1_components_coverage": {"status": "pass", "notes": "17 content slides, 17 have components => 100% coverage (>= 90%)."},
+    "MO-2_section_dividers_and_sections": {"status": "pass", "notes": "7 sections with matching section_divider slides; top-level sections array present."},
+    "MO-3_bullet_list_ratio": {"status": "pass", "notes": "Bullet-list slides = 3 (<= 30% of 17 content slides)."},
+    "MO-4_visual_placeholder_data": {"status": "pass", "notes": "All slides with visual.type != 'none' include placeholder_data chart_config or mermaid_code."},
+    "MO-5_slide_type_component_alignment": {"status": "pass", "notes": "Data-heavy slides use chart_config; comparison slides use comparison_items; no alignment violations."},
+    "MO-6_no_data_fabrication": {"status": "pass", "notes": "All numeric values are sourced from CSV files under reports/data; sources annotated."},
+    "MO-7_content_deduplication": {"status": "pass", "notes": "content[] does not repeat structured data already in components."},
+    "MO-8_title_and_section_divider_restrictions": {"status": "pass", "notes": "Title slide has empty components; section_dividers have at most one callout each."},
+    "MO-9_components_vs_visual_duplication": {"status": "pass", "notes": "No identical data duplicated between components and visual.placeholder_data."},
+    "MO-10_comparison_items_completeness": {"status": "pass", "notes": "Each comparison_item includes >=3 descriptive attributes when used."},
+    "MO-11_slide_completeness": {"status": "pass", "notes": "25 slides generated matching requested count; sections and slides mapping OK."},
+    "MO-12_cover_slide_title": {"status": "pass", "notes": "Cover title equals source frontmatter title '存储行业前沿（2023–2026）'."}
+  },
+  "warnings": [],
+  "next_steps": [
+    "Hand off slides_semantic.json, slides.md, design_spec.json to ppt-visual-designer (BCG style).",
+    "Visual designer to produce sample cover + 2 content page mockups and update charts to BCG color tokens.",
+    "After visual mockups, perform one round of content-visual integration QA."
+  ]
+}

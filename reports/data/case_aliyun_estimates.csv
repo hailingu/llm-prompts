@@ -1,0 +1,4 @@
+Workload,Config,IOPS_est,BW_GBps_est,Notes,Source,DataDate
+Archive,OSS + HDD/Tape tier,100,0.05,"低成本归档场景","阿里云白皮书 / 工程估算",2026-02-11
+Analytics,Pangu + parallel FS + cache,50000,3,"中高带宽分析/训练场景","Pangu 公开材料 + 估算",2026-02-11
+Mixed_Workload,Pangu + SSD cache,20000,1,"适配混合 OLTP / OLAP 场景", "公开资料 + 工程估算",2026-02-11

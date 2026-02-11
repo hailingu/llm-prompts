@@ -1,0 +1,27 @@
+{
+  "presentation": "存储行业前沿（2023–2026）",
+  "session_id": "storage-frontier-20260211",
+  "checked_at": "2026-02-11T00:30:00Z",
+  "overall_status": "pass",
+  "checks": {
+    "MV-1_component_library": {"status": "pass", "notes": "component_library contains card, callout, data_table, chip"},
+    "MV-2_visual_specs_inline_data": {"status": "pass", "notes": "All visual.placeholder_data include inline series/mermaid code; no cross-file string references"},
+    "MV-3_render_instructions_structured": {"status": "pass", "notes": "render_instructions are JSON-structured (chart configs/placeholder_data)"},
+    "MV-4_slide_type_layouts_completeness": {"status": "pass", "notes": "slide_type_layouts covers all slide types used + 'default'"},
+    "MV-5_section_accents": {"status": "pass", "notes": "section_accents map provided for all section IDs"},
+    "MV-6_visual_specs_data_completeness": {"status": "pass", "notes": "visual_specs preserve data series counts from CSV sources"},
+    "MV-7_no_data_fabrication": {"status": "pass", "notes": "No invented numeric data; all numeric values copied from reports/data CSV files"},
+    "MV-8_content_fill_presence": {"status": "pass", "notes": "Every slide_type_layouts entry has content_fill"},
+    "MV-9_top_level_colors_and_typography": {"status": "pass", "notes": "color_system and typography_system are top-level keys"},
+    "MV-10_cover_slide_background_image": {"status": "pass", "notes": "slide_type_layouts.title.background_image set to images/cover_bg.jpg and file exists"},
+    "MV-11_title_section_divider_rules": {"status": "pass", "notes": "title and section_divider have title_bar='none' and background='primary'"},
+    "MV-12_style_context": {"status": "pass", "notes": "style_context present with resolved_style, base_preset, brand_overrides, rationale"},
+    "MV-13_slide_overrides": {"status": "pass", "notes": "slide_overrides present for sparse/dense slides with rationale and estimated_fill_ratio"}
+  },
+  "warnings": [],
+  "next_steps": [
+    "ppt-specialist: generate PPTX from slides_semantic.json using design_spec.json tokens and include rendered charts (SVG + PNG >=150 DPI)",
+    "ppt-specialist: ensure exported PPTX masters use the specified fonts or fallbacks and validate contrast on slide exports",
+    "After PPTX rendered: run visual-content integration QA and update slides_semantic.json with rendered asset paths"
+  ]
+}

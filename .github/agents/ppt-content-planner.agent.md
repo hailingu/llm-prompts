@@ -5,7 +5,7 @@ tools: ['vscode', 'read', 'edit', 'search', 'web', 'todo']
 handoffs:
   - label: visual design
     agent: ppt-visual-designer
-    prompt: "Content planning complete. slides.md, slides_semantic.json, and content_qa_report.json are ready in the session directory. All self-checks (MO-0 through MO-16) passed. Visual style: {visual_style or 'not specified (default md3)'}. Please proceed with visual design using the specified style. Session directory: docs/presentations/<session-id>/"
+    prompt: "Content planning complete. slides.md, slides_semantic.json, and content_qa_report.json are ready in the session directory. All self-checks (MO-0 through MO-17) passed. Visual style: {visual_style or 'not specified (default md3)'}. Please proceed with visual design using the specified style. Session directory: docs/presentations/<session-id>/"
     send: true
   - label: escalate to director
     agent: ppt-creative-director
@@ -65,7 +65,7 @@ As the PPT Content Planner, you are the **content strategist** who transforms so
 - ❌ Do NOT create design specifications (visual-designer's role)
 - ❌ Do NOT generate diagrams or PPTX files (visual-designer / specialist roles)
 - ❌ Do NOT execute auto-fixes without proper escalation
-- ❌ Do NOT skip self-checks (MO-0 through MO-16) before handoff to visual-designer
+- ❌ Do NOT skip self-checks (MO-0 through MO-17) before handoff to visual-designer
 - ❌ Do NOT conduct original research or invent data
 - ❌ Do NOT skip audience analysis
 
@@ -226,6 +226,17 @@ As the PPT Content Planner, you are the **content strategist** who transforms so
 - ✅ **CORRECT**: `comparison_items` has qualitative attrs + `chart_config` has a DIFFERENT numeric dimension (e.g., market size trend over years).
 - **Self-check**: `if comparison_items has ≥ 3 attrs: chart_config.series names ∩ comparison_items attribute keys == ∅`
 
+### MO-17: Consecutive Same-Type Slides ≤ 3 (WARNING)
+- **When ≥ 3 consecutive slides share the same `slide_type`, the presentation risks visual monotony.** Audiences disengage when they see identical layouts in sequence.
+- This is a **WARNING** (not a blocker) — the planner SHOULD restructure content to break repetition, but may accept ≥ 3 consecutive same-type slides if content genuinely requires it (with justification in content_qa_report).
+- **Primary offenders**: `comparison` and `bullet-list` slides tend to cluster.
+- **Remediation strategies**:
+  1. Merge redundant slides (combine 3 comparisons into 1 with more attributes)
+  2. Insert a `data-heavy` or `matrix` slide between comparisons to break rhythm
+  3. Convert one comparison to a `decision` slide if the content supports it
+  4. Use a section divider to create a natural break
+- **Self-check**: Scan slide sequence — flag any run of ≥ 3 consecutive identical `slide_type` values.
+
 ### Pre-Handoff Self-Verification Checklist
 ```
 [ ] MO-0: Schema compliance — all component fields follow slides-render-schema.json@v1
@@ -245,6 +256,7 @@ As the PPT Content Planner, you are the **content strategist** who transforms so
 [ ] MO-14: No ultra-sparse slides — visual=none slides have ≥3 info elements
 [ ] MO-15: chart_config.series[].data contains ONLY numeric values (no text)
 [ ] MO-16: No redundant chart_config duplicating comparison_items attributes
+[ ] MO-17: No ≥3 consecutive slides with same slide_type (WARNING)
 [ ] Speaker notes coverage ≥ 90%
 [ ] All visuals have type + placeholder_data
 [ ] Sections array present with start_slide and accent
@@ -300,7 +312,7 @@ If ANY blocker fails, DO NOT submit — fix first.
 - **Reference**: `skills/ppt-content-planning/README.md` (Quality Assurance) for full QA checklist
 
 **7) Self-Check & Auto-Handoff**
-- Run all self-checks (MO-0 through MO-16)
+- Run all self-checks (MO-0 through MO-17)
 - If ALL pass → auto-handoff to ppt-visual-designer ("visual design" handoff)
 - If ANY fail → escalate to ppt-creative-director ("escalate to director" handoff)
 

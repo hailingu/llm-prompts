@@ -101,28 +101,6 @@ def get_font_size(spec: Dict, role: str) -> int:
     return _FONT_SIZE_DEFAULTS.get(role, 14)
 
 
-def apply_font_to_run(run, spec: Dict):
-    """Apply font styling to a text run based on design spec.
-    
-    Args:
-        run: python-pptx text run object
-        spec: Design specification dictionary
-    """
-    # Get font family from spec
-    font_family = None
-    if 'fonts' in spec and spec['fonts']:
-        for font_entry in spec['fonts']:
-            if font_entry.get('role') == 'body':
-                font_family = font_entry.get('family', 'Arial')
-                break
-    
-    if not font_family:
-        font_family = 'Arial'
-    
-    # Apply font
-    run.font.name = font_family
-
-
 def px_to_inches(px: float) -> float:
     """Convert pixels (assumed 96dpi) to inches."""
     return px / 96.0

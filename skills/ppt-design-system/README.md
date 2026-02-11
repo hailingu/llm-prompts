@@ -50,6 +50,22 @@ Agent references this skill when:
 | `outline` | Borders | #74777F |
 | `shadow` | Shadow color | #000000 |
 
+#### Chart & Data Visualization Palettes
+
+The renderer uses these palettes for matplotlib-generated charts and component accent stripes (KPI cards, comparison cards):
+
+| Token | Purpose | Example |
+|---|---|---|
+| `chart_colors` | Categorical palette (≥ 6 colors) | `["#2563EB", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899"]` |
+| `sequential_palette` | Single-hue gradient (5-7 shades) | `["#E3F2FD", "#90CAF9", "#42A5F5", "#1E88E5", "#0D47A1"]` |
+| `diverging_palette` | Cold-to-warm gradient (5-7 shades) | `["#D32F2F", "#FF8A80", "#F5F5F5", "#80CBC4", "#00695C"]` |
+
+**Requirements**:
+- `chart_colors` is **mandatory** (≥ 6 items); `sequential_palette` and `diverging_palette` are recommended.
+- Adjacent colors must be perceptually distinguishable (ΔE ≥ 20).
+- All colors must meet ≥ 3:1 contrast ratio against white background.
+- Fallback: If `chart_colors` is missing, the renderer uses the Okabe-Ito colorblind-safe palette.
+
 ### 1.2 Typography System (Material Type Scale)
 
 | Scale | Size | Weight | Line Height | Use |

@@ -1,0 +1,145 @@
+{
+  "visual_style": "BCG",
+  "color_system": {
+    "primary": "#00599C",
+    "on_primary": "#FFFFFF",
+    "primary_container": "#D0E4F5",
+    "on_primary_container": "#001D35",
+    "secondary": "#00B3A4",
+    "on_secondary": "#FFFFFF",
+    "secondary_container": "#B2F0E8",
+    "on_secondary_container": "#00382F",
+    "tertiary": "#FFD100",
+    "on_tertiary": "#3A2F00",
+    "surface": "#FFFFFF",
+    "on_surface": "#16202A",
+    "surface_variant": "#E8EDF2",
+    "surface_dim": "#D8DDE3",
+    "surface_container_low": "#F0F3F7",
+    "on_surface_variant": "#42505D",
+    "error": "#BA1A1A",
+    "on_error": "#FFFFFF",
+    "warning": "#F59E0B",
+    "success": "#10B981",
+    "outline": "#72808D",
+    "shadow": "#000000",
+    "muted": "#7F8DA6",
+    "accent_1": "#00599C",
+    "accent_2": "#00B3A4",
+    "accent_3": "#FFD100",
+    "accent_4": "#7F8DA6",
+    "chart_colors": ["#00599C", "#00B3A4", "#FFD100", "#7F8DA6", "#E85D75", "#6C5CE7"],
+    "sequential_palette": ["#D0E4F5", "#8FBFE0", "#4D9ACB", "#00599C", "#003D6B"],
+    "diverging_palette": ["#BA1A1A", "#E88080", "#F4F6F8", "#80D4CC", "#00695C"]
+  },
+  "typography_system": {
+    "font_family": "Inter, Arial, sans-serif",
+    "explicit_sizes": {
+      "display_large": 44,
+      "headline_large": 28,
+      "headline_medium": 24,
+      "title_large": 22,
+      "slide_title": 20,
+      "slide_subtitle": 16,
+      "bullet_text": 14,
+      "body_large": 14,
+      "body_medium": 12,
+      "label_large": 12,
+      "label_medium": 10,
+      "caption": 9
+    }
+  },
+  "grid_system": {
+    "columns": 12,
+    "slide_w": 13.333,
+    "slide_h": 7.5,
+    "margin_h": 0.5,
+    "gutter": 0.2
+  },
+  "layout_zones": {
+    "title_bar_h": 0.55,
+    "bottom_bar_h": 0.35,
+    "content_top_offset": 0.12
+  },
+  "slide_type_layouts": {
+    "default": {
+      "background": "surface",
+      "title_bar": "full",
+      "content_fill": "expand"
+    },
+    "title": {
+      "background": "primary",
+      "title_bar": "none",
+      "background_image": "images/cover_bg.jpg"
+    },
+    "section_divider": {
+      "background": "primary",
+      "title_bar": "none"
+    },
+    "bullet-list": {
+      "background": "surface",
+      "title_bar": "full",
+      "content_fill": "expand"
+    },
+    "comparison": {
+      "background": "surface",
+      "title_bar": "full",
+      "content_fill": "expand"
+    },
+    "data-heavy": {
+      "background": "surface",
+      "title_bar": "full",
+      "content_fill": "expand"
+    },
+    "decision": {
+      "background": "surface",
+      "title_bar": "full",
+      "content_fill": "expand"
+    },
+    "flowchart": {
+      "background": "surface",
+      "title_bar": "full"
+    },
+    "call_to_action": {
+      "background": "surface",
+      "title_bar": "full"
+    },
+    "matrix": {
+      "background": "surface",
+      "title_bar": "full",
+      "content_fill": "expand"
+    }
+  },
+  "slide_overrides": {},
+  "section_accents": {
+    "S0": "primary",
+    "S1": "secondary",
+    "S2": "tertiary",
+    "S3": "primary",
+    "S4": "secondary",
+    "S5": "tertiary",
+    "S6": "primary"
+  },
+  "component_library": {
+    "card": {
+      "border_radius": "8px",
+      "elevation": 1,
+      "padding": "16px"
+    },
+    "callout": {
+      "border_left_width": "4px",
+      "border_color_token": "primary",
+      "background_token": "primary_container"
+    },
+    "table": {
+      "header_bg_token": "primary",
+      "header_text_token": "on_primary",
+      "row_alt_bg_token": "surface_container_low",
+      "border_token": "outline"
+    },
+    "chip": {
+      "bg_token": "secondary_container",
+      "text_token": "on_secondary_container"
+    }
+  }
+}

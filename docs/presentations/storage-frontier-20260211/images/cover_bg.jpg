@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0%" stop-color="#00A651"/>
+      <stop offset="100%" stop-color="#00599C"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#g)" />
+  <g fill="#FFFFFF" font-family="Inter, Helvetica, Arial, sans-serif">
+    <text x="140" y="340" font-size="64" font-weight="700">存储行业前沿（2023–2026）</text>
+    <text x="140" y="420" font-size="28" fill-opacity="0.9">关键趋势、厂商案例与可落地建议</text>
+  </g>
+</svg>
