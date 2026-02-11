@@ -1639,15 +1639,40 @@ def render_region_comparison_split(pptx_slide: Any, data: Any, bounds: tuple, sp
     n_groups = len(groups)
     group_h = (height - gap * (n_groups - 1)) / max(n_groups, 1)
 
-    for i, group_items in enumerate(groups):
-        if not group_items:
-            continue
-        # Strip common label suffix within each group so headers are concise.
-        # e.g. ["AWS 架构", "Dell 架构"] → ["AWS", "Dell"]
-        _strip_group_label_suffix(group_items)
-        g_top = top + i * (group_h + gap)
-        g_bounds = (left, g_top, width, group_h)
-        render_region_comparison(pptx_slide, group_items, g_bounds, spec)
+    if n_groups == 2:
+        # Render two groups side-by-side for direct comparison
+        left_w = (width - 0.04) / 2
+        right_left = left + left_w + 0.04
+        # strip suffixes within each group for concise headers
+        _strip_group_label_suffix(groups[0])
+        _strip_group_label_suffix(groups[1])
+        # left group
+        g0_bounds = (left, top, left_w, height)
+        render_region_comparison(pptx_slide, groups[0], g0_bounds, spec)
+        # right group
+        g1_bounds = (right_left, top, left_w, height)
+        render_region_comparison(pptx_slide, groups[1], g1_bounds, spec)
+        # vertical separator
+        try:
+            sep = pptx_slide.shapes.add_shape(
+                MSO_AUTO_SHAPE_TYPE.RECTANGLE,
+                Inches(left + left_w - 0.01), Inches(top), Inches(0.02), Inches(height)
+            )
+            sep.fill.solid()
+            sep.fill.fore_color.rgb = get_color(spec, 'on_surface_variant')
+            sep.line.fill.background()
+        except Exception:
+            pass
+    else:
+        for i, group_items in enumerate(groups):
+            if not group_items:
+                continue
+            # Strip common label suffix within each group so headers are concise.
+            # e.g. ["AWS 架构", "Dell 架构"] → ["AWS", "Dell"]
+            _strip_group_label_suffix(group_items)
+            g_top = top + i * (group_h + gap)
+            g_bounds = (left, g_top, width, group_h)
+            render_region_comparison(pptx_slide, group_items, g_bounds, spec)
 
 
 # Register region renderers

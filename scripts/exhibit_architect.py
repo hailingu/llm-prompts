@@ -157,6 +157,107 @@ def _merge_items_by_base_label(items: List[Dict]) -> List[Dict]:
     return merged
 
 
+def _upgrade_visual_from_placeholder(sd: Dict) -> None:
+    """If a slide's visual contains placeholder chart data, prefer a native chart type.
+
+    Mutates `sd['visual']['type']` when placeholder_data is present with an inferred chart type.
+    """
+    vis = sd.get('visual', {})
+    if not isinstance(vis, dict):
+        return
+    vtype = vis.get('type', 'none')
+    placeholder = vis.get('placeholder_data') or {}
+    chart_cfg = placeholder.get('chart_config') or placeholder.get('chart_config', {})
+
+    # Heuristic: if chart_config exists or there is 'series' data, infer chart type
+    if chart_cfg or placeholder.get('series') or placeholder.get('categories'):
+        # Prefer explicit chart_config.type
+        inferred = chart_cfg.get('type') if isinstance(chart_cfg, dict) else None
+        if not inferred:
+            series = placeholder.get('series', [])
+            if series and len(series) > 1:
+                inferred = 'composite_charts'
+            else:
+                # fallback: if x values present and many points -> line, else bar
+                cats = placeholder.get('categories') or []
+                if cats and len(cats) > 6:
+                    inferred = 'line_chart'
+                else:
+                    inferred = 'bar_chart'
+        # Only upgrade when current type is none/png/image or generic placeholder
+        if vtype in ('none', 'png', 'image', 'placeholder') or vtype.startswith('placeholder'):
+            vis['type'] = inferred
+            # persist chart_config if available
+            if chart_cfg:
+                vis.setdefault('chart_config', chart_cfg)
+            sd['visual'] = vis
+
+
+def _merge_adjacent_single_component_slides(slides: List[Dict]) -> List[Dict]:
+    """Merge adjacent slides when both are single-component and combinable.
+
+    Rules:
+    - KPI only + Chart only -> KPI top, Chart bottom (three-region-top or two-region)
+    - Chart only + Bullets only -> Chart left, Bullets right (two-region-split)
+    - Bullets only + Bullets only -> concatenate bullets
+
+    Preserves order and section labels. Returns a new slide list.
+    """
+    out: List[Dict] = []
+    i = 0
+    n = len(slides)
+    while i < n:
+        cur = slides[i]
+        # skip titles/section dividers
+        if cur.get('slide_type') in ('title', 'section_divider'):
+            out.append(cur)
+            i += 1
+            continue
+        # look ahead one slide
+        if i + 1 < n:
+            nxt = slides[i + 1]
+            # same section required
+            if cur.get('_section_label') == nxt.get('_section_label') and nxt.get('slide_type') not in ('title', 'section_divider'):
+                comps_cur = [k for k, v in cur.get('components', {}).items() if isinstance(v, list) and v]
+                comps_nxt = [k for k, v in nxt.get('components', {}).items() if isinstance(v, list) and v]
+                vis_cur = cur.get('visual', {}).get('type', 'none') != 'none'
+                vis_nxt = nxt.get('visual', {}).get('type', 'none') != 'none'
+
+                # KPI only + chart only
+                if comps_cur == ['kpis'] and vis_nxt and len(comps_nxt) == 0:
+                    merged = dict(cur)
+                    merged_components = merged.setdefault('components', {})
+                    merged_components['kpis'] = cur.get('components', {}).get('kpis', [])
+                    merged['visual'] = nxt.get('visual')
+                    merged['slide_type'] = 'data-heavy'
+                    out.append(merged)
+                    i += 2
+                    continue
+
+                # chart only + bullets only
+                if vis_cur and comps_nxt == ['bullets'] and len(comps_cur) == 0:
+                    merged = dict(cur)
+                    merged_components = merged.setdefault('components', {})
+                    merged_components['bullets'] = nxt.get('components', {}).get('bullets', [])
+                    merged['slide_type'] = 'data-heavy'
+                    out.append(merged)
+                    i += 2
+                    continue
+
+                # bullets + bullets -> concat
+                if comps_cur == ['bullets'] and comps_nxt == ['bullets']:
+                    merged = dict(cur)
+                    merged_components = merged.setdefault('components', {})
+                    merged_components['bullets'] = (cur.get('components', {}).get('bullets', []) or []) + (nxt.get('components', {}).get('bullets', []) or [])
+                    out.append(merged)
+                    i += 2
+                    continue
+        # default: push current
+        out.append(cur)
+        i += 1
+    return out
+
+
 def _split_comparison_by_attrs(items: List[Dict], overlap_threshold: float = 0.30) -> Optional[tuple]:
     """Detect if comparison items naturally split into two groups with low attribute overlap.
 
@@ -649,6 +750,9 @@ def enrich_components(slides: List[Dict]) -> List[Dict]:
         if stype in ('title', 'section_divider'):
             continue
 
+        # Upgrade visuals from placeholder data to native chart types when possible
+        _upgrade_visual_from_placeholder(sd)
+
         comps = sd.get('components', {})
         has_comparison = isinstance(comps.get('comparison_items'), list) and len(comps.get('comparison_items', [])) > 0
         has_chart = sd.get('visual', {}).get('type', 'none') != 'none'
@@ -685,6 +789,9 @@ def enrich_components(slides: List[Dict]) -> List[Dict]:
                 new_callouts = _synthesize_callout_from_notes(sd)
                 if new_callouts:
                     sd.setdefault('components', {})['callouts'] = new_callouts
+
+    # After per-slide enrichment, attempt to merge adjacent single-component slides
+    slides = _merge_adjacent_single_component_slides(slides)
 
     return slides
 

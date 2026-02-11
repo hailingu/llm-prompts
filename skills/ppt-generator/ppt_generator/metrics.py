@@ -60,7 +60,9 @@ def compute_deck_metrics(semantic: Dict[str, Any], rendered_info: Dict[str, Any]
     reasonable inferences from the semantic JSON alone and does not require
     rendered_info to be present. Empty decks return zeros for all metrics.
     """
-    slides: List[Dict] = semantic.get('slides', []) if isinstance(semantic, dict) else []
+    slides_all: List[Dict] = semantic.get('slides', []) if isinstance(semantic, dict) else []
+    # Exclude title / section divider slides from metric denominators so we measure content pages
+    slides = [s for s in slides_all if s.get('slide_type') not in ('title', 'section_divider')]
     total_slides = len(slides)
 
     if total_slides == 0:
