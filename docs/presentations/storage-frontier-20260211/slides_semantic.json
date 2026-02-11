@@ -85,6 +85,8 @@
         "rendered_svg_path": "images/figure_market.svg",
         "rendered_png_path": "images/figure_market.png"
       },
+      "assertion": "全球与中国市场增长显著，需差异化市场策略",
+      "insight": "在高增长区域优先布局 NVMe 与云集成以获取市场优势",
       "speaker_notes": "指出数据来源 (IDC/SNIA) 与估算注记；建议在讲稿中说明不确定性边界。"
     },
     {
@@ -143,6 +145,8 @@
         "rendered_png_path": "images/figure_pmem.png",
         "rendered_png_paths": ["images/figure_pmem.png", "images/figure_media_share.png"]
       },
+      "assertion": "PMem 在低延遲場景將實現快速增長，建議試点验证",
+      "insight": "在日志与元数据场景开展 PMem 试点并记录恢复验证",
       "speaker_notes": "強調 PMem 的工程約束和試點驗證點（斷電恢復、一致性驗證）。"
     },
     {
@@ -226,6 +230,8 @@
         "rendered_svg_path": "images/figure_cns.svg",
         "rendered_png_path": "images/figure_cns.png"
       },
+      "assertion": "云原生存储采纳率快速提高，应制定分阶段迁移计划",
+      "insight": "制定分阶段迁移计划，优先 CSI 兼容用例并测量运维成本",
       "speaker_notes": "說明 CSI 成熟度與運維挑戰，提出分階段遷移建議。"
     },
     {

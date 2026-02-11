@@ -143,6 +143,16 @@ content_qa:
 {"slide_type": "...", "slide_role": "...", "requires_diagram": true, "priority": "critical"}
 ```
 
+### 1.2.1 Assertion & Insight (断言与洞察)
+
+- **assertion** (optional): 一句断言式标题（≤ 10 字/短语），用于传达页面最重要的主张。渲染器将在标题区将其作为断言式标题展示（大号、加粗）。
+- **insight** (optional): 一句面向行动的洞察（≤ 20 字），渲染在页面底部的洞察条（带 “💡” 前缀）。用于强调演讲者希望观众记住的一点行动或结论。
+
+示例（slide 元数据）:
+```json
+{"assertion": "PMem 在低延迟场景将实现快速增长，建议试点验证", "insight": "💡 在日志/元数据场景开展 PMem 试点并记录恢复验证"}
+```
+
 ### 1.3 slides_semantic.json Sections Array
 
 ```json

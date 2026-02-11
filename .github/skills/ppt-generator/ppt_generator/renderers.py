@@ -12,7 +12,7 @@ import logging
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
-from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR_TYPE, MSO_AUTO_SHAPE_TYPE
 from pptx.dml.color import RGBColor
 from pptx.oxml.ns import qn
 
@@ -37,6 +37,108 @@ def get_layout_zones(spec: Dict) -> Dict[str, float]:
         'content_margin_top': lz.get('content_margin_top', 0.12),
         'content_bottom_margin': lz.get('content_bottom_margin', 0.2),
     }
+
+
+def detect_schema_version(slide: Dict) -> int:
+    """Detects whether a slide is v1 or v2 schema.
+
+    Returns 2 if `layout_intent.regions` key exists (even if empty), otherwise 1.
+    """
+    try:
+        if isinstance(slide, dict) and 'layout_intent' in slide and isinstance(slide.get('layout_intent'), dict) and 'regions' in slide['layout_intent']:
+            return 2
+    except Exception:
+        pass
+    return 1
+
+
+def resolve_data_source(slide: Dict, path: str):
+    """Resolve a dot-separated data source path from a slide dict.
+
+    Examples:
+      - 'components.kpis' -> slide['components']['kpis']
+      - 'visual' -> slide['visual']
+      - 'content' -> slide['content']
+
+    Returns None if the path cannot be resolved.
+    """
+    if not path or not isinstance(path, str):
+        return None
+    cur = slide
+    parts = path.split('.')
+    try:
+        for p in parts:
+            if isinstance(cur, dict) and p in cur:
+                cur = cur[p]
+            else:
+                # Not found; return None
+                return None
+        return cur
+    except Exception:
+        return None
+
+
+def compute_region_bounds(position: str, grid: GridSystem, bar_h: float) -> tuple:
+    """Compute (left, top, width, height) in inches for a given position marker.
+
+    Supported markers:
+      - 'full' -> full usable width
+      - 'left-<pct>' / 'right-<pct>' -> left or right region with percentage of usable width
+      - 'center-<pct>' -> centered region with percentage width
+      - 'col-<start>-<span>' -> column-based region using grid.col_span
+      - 'top-<pct>' -> full-width but height is pct of available content height
+
+    Best-effort: if parsing fails, returns full area bounds.
+    """
+    left = grid.margin_h
+    top = bar_h + 0.12
+    usable_w = grid.usable_w
+    slide_h = grid.slide_h
+
+    # Default full area height: reserve 0.5" for bottom bar / margins
+    default_available_h = max(1.0, slide_h - bar_h - 0.5)
+    width = usable_w
+    height = default_available_h
+
+    if not position or not isinstance(position, str):
+        return (left, top, width, height)
+
+    pos = position.strip().lower()
+    if pos == 'full':
+        return (left, top, width, height)
+
+    import re
+    m = re.match(r'^(left|right|center)-(\d{1,3})$', pos)
+    if m:
+        side, val = m.group(1), int(m.group(2))
+        pct = max(1, min(100, val)) / 100.0
+        w = usable_w * pct
+        if side == 'left':
+            return (left, top, w, height)
+        elif side == 'right':
+            l = left + (usable_w - w)
+            return (l, top, w, height)
+        else:  # center
+            l = left + (usable_w - w) / 2
+            return (l, top, w, height)
+
+    m2 = re.match(r'^top-(\d{1,3})$', pos)
+    if m2:
+        pct = max(1, min(100, int(m2.group(1)))) / 100.0
+        h = default_available_h * pct
+        return (left, top, width, h)
+
+    m3 = re.match(r'^col-(\d+)-(\d+)$', pos)
+    if m3:
+        start = int(m3.group(1))
+        span = int(m3.group(2))
+        start = max(0, min(grid.columns - 1, start))
+        span = max(1, min(grid.columns - start, span))
+        l, w = grid.col_span(span, start)
+        return (l, top, w, height)
+
+    # fallback: return full
+    return (left, top, width, height)
 
 
 def get_title_bar_mode(spec: Dict, slide_type: str) -> str:
@@ -80,72 +182,7 @@ def create_card_shape(slide: Any, spec: Dict, left_in: float, top_in: float, wid
     return slide.shapes.add_shape(shape_type, Inches(left_in), Inches(top_in), Inches(width_in), Inches(height_in))
 
 
-def render_title_bar(slide: Any, spec: Dict, grid: GridSystem, title: str, slide_num: int, _total_slides: int,
-                     section_label: str = '', accent_color_token: str = 'primary', mode: str = 'standard') -> float:
-    if mode == 'none':
-        return 0.0
-    lz = get_layout_zones(spec)
-    bar_h = lz['title_bar_h_narrow'] if mode == 'narrow' else lz['title_bar_h']
-    title_font_pt = get_font_size(spec, 'slide_title')
-    title_text_h = title_font_pt / 72.0 + 0.08
-    if section_label:
-        min_bar_h = 0.28 + title_text_h
-    else:
-        min_bar_h = 0.10 + title_text_h
-    bar_h = max(bar_h, min_bar_h)
-
-    bar = slide.shapes.add_shape(
-        MSO_SHAPE.RECTANGLE, Inches(0), Inches(0),
-        Inches(grid.slide_w), Inches(bar_h)
-    )
-    bar.fill.solid()
-    bar.fill.fore_color.rgb = get_color(spec, accent_color_token)
-    bar.line.fill.background()
-
-    if section_label:
-        tb = slide.shapes.add_textbox(
-            Inches(grid.margin_h), Inches(0.06), Inches(4), Inches(0.22)
-        )
-        tf = tb.text_frame
-        tf.word_wrap = False
-        p = tf.paragraphs[0]
-        run = p.add_run()
-        run.text = section_label
-        run.font.size = Pt(get_font_size(spec, 'section_label'))
-        run.font.bold = True
-        run.font.color.rgb = get_color(spec, 'on_primary')
-        apply_font_to_run(run, spec)
-
-    title_top = 0.22 if section_label else 0.10
-    tb = slide.shapes.add_textbox(
-        Inches(grid.margin_h), Inches(title_top),
-        Inches(grid.slide_w - 2 * grid.margin_h - 1.0), Inches(bar_h - title_top - 0.05)
-    )
-    tf = tb.text_frame
-    tf.word_wrap = True
-    p = tf.paragraphs[0]
-    run = p.add_run()
-    run.text = title
-    run.font.size = Pt(get_font_size(spec, 'slide_title'))
-    run.font.bold = True
-    run.font.color.rgb = get_color(spec, 'on_primary')
-    apply_font_to_run(run, spec)
-
-    tb_num = slide.shapes.add_textbox(
-        Inches(grid.slide_w - 1.0), Inches(title_top), Inches(0.7), Inches(0.35)
-    )
-    tf_num = tb_num.text_frame
-    p = tf_num.paragraphs[0]
-    run = p.add_run()
-    run.text = f"{slide_num}"
-    run.font.size = Pt(get_font_size(spec, 'page_number'))
-    run.font.bold = True
-    run.font.color.rgb = get_color(spec, 'on_primary')
-    apply_font_to_run(run, spec)
-    p.alignment = PP_ALIGN.RIGHT
-
-    return bar_h
-
+... (file continues)
 
 def render_bottom_bar(slide: Any, spec: Dict, grid: GridSystem, section_name: str, slide_num: int, total_slides: int,
                       section_index: int = 0, total_sections: int = 6, accent_token: str = 'primary') -> None:
@@ -245,13 +282,132 @@ def render_kpis(slide: Any, kpis: List[Dict], spec: Dict, _grid: GridSystem, lef
     return card_h + 0.15
 
 
-# Visual/placeholder renderers (simplified)
+# Optional: python-pptx native charts
+try:
+    from pptx.chart.data import CategoryChartData, XyChartData
+    from pptx.enum.chart import XL_CHART_TYPE
+    HAS_PPTX_CHARTS = True
+except Exception:
+    HAS_PPTX_CHARTS = False
+    CategoryChartData = None
+    XyChartData = None
+    XL_CHART_TYPE = None
+
+# Map visual types to XL chart types
+NATIVE_CHART_TYPE_MAP = {
+    'bar_chart': XL_CHART_TYPE.COLUMN_CLUSTERED if XL_CHART_TYPE is not None else None,
+    'column_chart': XL_CHART_TYPE.COLUMN_CLUSTERED if XL_CHART_TYPE is not None else None,
+    'horizontal_bar': XL_CHART_TYPE.BAR_CLUSTERED if XL_CHART_TYPE is not None else None,
+    'line_chart': XL_CHART_TYPE.LINE_MARKERS if XL_CHART_TYPE is not None else None,
+    'pie_chart': XL_CHART_TYPE.PIE if XL_CHART_TYPE is not None else None,
+    'doughnut_chart': XL_CHART_TYPE.DOUGHNUT if XL_CHART_TYPE is not None else None,
+    'radar_chart': XL_CHART_TYPE.RADAR if XL_CHART_TYPE is not None else None,
+    'scatter_chart': XL_CHART_TYPE.XY_SCATTER if XL_CHART_TYPE is not None else None,
+}
+try:
+    print(f"DEBUG package: HAS_PPTX_CHARTS={HAS_PPTX_CHARTS}", file=sys.stderr)
+except Exception:
+    pass
+
+
+def apply_chart_theme(chart, spec, accent_token='primary'):
+    """Minimal theme application: rotate series colors using spec['md3_palette'] if present."""
+    try:
+        palette = spec.get('md3_palette') or []
+        if isinstance(palette, str):
+            palette = [palette]
+        if not palette:
+            palette = ['#2563EB', '#10B981', '#F59E0B', '#A78BFA']
+        for i, ser in enumerate(chart.series):
+            color = palette[i % len(palette)]
+            try:
+                ser.format.fill.solid()
+                ser.format.fill.fore_color.rgb = hex_to_rgb(color)
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+
+def render_native_chart(slide: Any, visual: Dict, spec: Dict, left: float, top: float, width: float, height: float, accent_token: str = 'primary') -> bool:
+    """Attempt to render a chart using python-pptx native APIs. Returns True on success."""
+    if not HAS_PPTX_CHARTS:
+        return False
+    pd = visual.get('placeholder_data', {})
+    config = pd.get('chart_config', {})
+    if not config:
+        return False
+    labels = config.get('labels') or config.get('x') or []
+    series = config.get('series', [])
+    if not series:
+        return False
+    chart_type = visual.get('type', 'line_chart')
+    if chart_type != 'scatter_chart' and not labels:
+        return False
+    xl_type = NATIVE_CHART_TYPE_MAP.get(chart_type)
+    if not xl_type:
+        return False
+    try:
+        if xl_type == XL_CHART_TYPE.XY_SCATTER:
+            try:
+                data = XyChartData()
+                all_x = None
+                for s in series:
+                    xy_x = s.get('x', [])
+                    xy_y = s.get('y', [])
+                    if not xy_x or not xy_y:
+                        return False
+                    if all_x is None:
+                        all_x = xy_x
+                    if len(xy_x) != len(all_x):
+                        return False
+                    data.add_series(s.get('name', 'Series'), list(zip(xy_x, xy_y)))
+            except Exception:
+                data = CategoryChartData()
+                first_x = series[0].get('x', [])
+                data.categories = [str(x) for x in first_x]
+                for s in series:
+                    data.add_series(s.get('name', 'Series'), s.get('y', []))
+                xl_type = XL_CHART_TYPE.LINE_MARKERS
+        else:
+            data = CategoryChartData()
+            data.categories = [str(l) for l in labels]
+            for s in series:
+                data.add_series(s.get('name', 'Series'), s.get('data', []))
+
+        shape = slide.shapes.add_chart(xl_type, Inches(left), Inches(top), Inches(width), Inches(height), data)
+        chart = shape.chart
+        apply_chart_theme(chart, spec, accent_token)
+        return True
+    except Exception:
+        return False
+
 
 def render_visual(slide: Any, visual: Dict, spec: Dict, _grid: GridSystem, left: float, top: float, width: float, height: float) -> None:
     if not visual or visual.get('type') in (None, 'none'):
         return
     pd = visual.get('placeholder_data', {})
+    # Prefer native chart rendering when possible
     if pd.get('chart_config'):
+        try:
+            if HAS_PPTX_CHARTS:
+                try:
+                    print(f"DEBUG package: attempting native chart type {visual.get('type')}", file=sys.stderr)
+                except Exception:
+                    pass
+                ok = render_native_chart(slide, visual, spec, left, top, width, height)
+                try:
+                    print(f"DEBUG package: render_native_chart returned {ok} for {visual.get('type')}", file=sys.stderr)
+                except Exception:
+                    pass
+                if ok:
+                    return
+        except Exception as e:
+            try:
+                print(f"DEBUG package: render_native_chart exception {e}", file=sys.stderr)
+            except Exception:
+                pass
+        # Fallback: render as data table
         render_chart_table(slide, visual, spec, left, top, width, height)
     elif pd.get('mermaid_code'):
         render_mermaid_placeholder(slide, visual, spec, left, top, width, height)
@@ -498,6 +654,21 @@ def render_slide(prs: Presentation, sd: Dict, spec: Dict, grid: GridSystem, sect
 
     # Content (fallback)
     _render_bullets_fallback(slide, sd, spec, grid, bar_h)
+
+    # Try to render the main visual if present (useful for data-heavy slides)
+    try:
+        vis = sd.get('visual')
+        if isinstance(vis, dict) and vis.get('type') not in (None, 'none'):
+            lz = get_layout_zones(spec)
+            left = grid.margin_h
+            top = bar_h + lz['content_margin_top']
+            width = grid.usable_w
+            bottom_bar_h = lz['bottom_bar_h']
+            height = max(1.0, grid.slide_h - top - bottom_bar_h - 0.3)
+            render_visual(slide, vis, spec, grid, left, top, width, height)
+    except Exception:
+        # best-effort: don't fail slide rendering if visual rendering errors
+        pass
 
     # Footer & notes
     _render_footer_and_notes(slide, sd, spec, grid, stype, sec_title, sec_accent_token, sec_index, len(sections), slide_num, total_slides)

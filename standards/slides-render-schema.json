@@ -1,11 +1,72 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "slides-render-schema-v1",
+  "$id": "slides-render-schema-v2",
   "title": "Slides Semantic IR (Intermediate Representation) Schema",
   "description": "Shared interface contract between ppt-content-planner (producer), ppt-visual-designer (styler), ppt-creative-director (reviewer), and ppt-specialist (renderer). All agents MUST conform to this schema.",
-  "version": "1.0.0",
+  "version": "2.0.0",
 
   "definitions": {
+
+    "slide": {
+      "type": "object",
+      "description": "A single slide in the presentation deck. Supports both v1 (slide_type dispatch) and v2 (layout_intent region-based) rendering.",
+      "required": ["slide_type"],
+      "properties": {
+        "id":         { "type": "integer", "description": "Slide sequence number" },
+        "title":      { "type": "string", "description": "Slide title (v1: rendered as title bar text)" },
+        "assertion":  { "type": "string", "description": "v2: Assertion-style headline — one sentence capturing the 'So What?' of this slide. Rendered as 16pt bold primary title; original title becomes 10pt subtitle." },
+        "insight":    { "type": "string", "description": "v2: Insight text — rendered as bottom dark bar with white text. Short, action-oriented." },
+        "slide_type": {
+          "type": "string",
+          "enum": ["title", "bullet-list", "two-column", "comparison", "data-heavy", "matrix", "flowchart", "timeline", "gantt", "call_to_action", "decision", "technical", "process", "section_divider"],
+          "description": "Determines layout skeleton for v1 dispatch"
+        },
+        "slide_role": {
+          "type": "string",
+          "enum": ["situation", "complication", "answer", "evidence", "action", "next_steps"],
+          "description": "SCQA role in narrative arc"
+        },
+        "content": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Textual bullets — rendered as body text. 2-5 items."
+        },
+        "components": { "$ref": "#/definitions/components" },
+        "layout_intent": {
+          "type": "object",
+          "description": "v2: Region-based layout intent. When present, renderer uses region composition instead of slide_type dispatch.",
+          "properties": {
+            "template": {
+              "type": "string",
+              "enum": ["full-width", "two-region-split", "two-region-equal", "three-region-top", "grid-2x2", "t-shape"],
+              "description": "Layout template name"
+            },
+            "regions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["id", "renderer", "position"],
+                "properties": {
+                  "id":          { "type": "string", "description": "Region identifier" },
+                  "position":    { "type": "string", "description": "Position marker: 'full', 'left-60', 'right-40', 'top-20', 'bottom-80', 'center-60', 'col-0-6'" },
+                  "renderer":    {
+                    "type": "string",
+                    "enum": ["chart", "comparison_table", "kpi_row", "callout_stack", "progression", "bullet_list", "architecture", "flow"],
+                    "description": "Region renderer type"
+                  },
+                  "data_source": { "type": "string", "description": "Dot-separated path to slide data (e.g. 'components.kpis', 'visual')" }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "visual":        { "type": "object", "description": "Visual / chart configuration" },
+        "speaker_notes": { "type": "string", "description": "Speaker notes text" },
+        "metadata":      { "type": "object", "description": "Optional metadata" }
+      }
+    },
 
     "kpi_item": {
       "type": "object",
@@ -127,17 +188,84 @@
         "callouts":         { "type": "array", "items": { "$ref": "#/definitions/callout_item" } },
         "table_data":       { "$ref": "#/definitions/table_data" },
         "action_items":     { "type": "array", "items": { "$ref": "#/definitions/action_item" } },
-        "risks":            { "type": "array", "items": { "$ref": "#/definitions/risk_item" } }
-      },
-      "additionalProperties": false
-    },
+        "risks":            { "type": "array", "items": { "$ref": "#/definitions/risk_item" } },
 
-    "slide": {
-      "type": "object",
-      "required": ["slide_id", "title", "slide_type", "content"],
-      "properties": {
-        "slide_id":   { "type": "integer", "minimum": 1 },
-        "title":      { "type": "string", "description": "Assertion-style slide title" },
+        "architecture_data": {
+          "type": "object",
+          "description": "Architecture diagram data: nodes and edges.",
+          "properties": {
+            "nodes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["id", "label"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "label": { "type": "string" },
+                  "x": { "type": "number", "description": "Optional x coordinate (inches or logical units)" },
+                  "y": { "type": "number", "description": "Optional y coordinate" },
+                  "w": { "type": "number", "description": "Optional width" },
+                  "h": { "type": "number", "description": "Optional height" },
+                  "style": { "type": "string", "enum": ["primary", "secondary", "tertiary", "outline"] }
+                }
+              }
+            },
+            "edges": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["from", "to"],
+                "properties": {
+                  "from": { "type": "string" },
+                  "to": { "type": "string" },
+                  "label": { "type": "string" },
+                  "style": { "type": "string" }
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+
+        "flow_data": {
+          "type": "object",
+          "description": "Flow/process diagram data: steps and transitions.",
+          "properties": {
+            "steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["id", "label", "type"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "label": { "type": "string" },
+                  "type": { "type": "string", "enum": ["start", "process", "decision", "end"] },
+                  "x": { "type": "number" },
+                  "y": { "type": "number" },
+                  "w": { "type": "number" },
+                  "h": { "type": "number" },
+                  "style": { "type": "string" }
+                }
+              }
+            },
+            "transitions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["from", "to"],
+                "properties": {
+                  "from": { "type": "string" },
+                  "to": { "type": "string" },
+                  "label": { "type": "string" },
+                  "condition": { "type": "string" },
+                  "style": { "type": "string" }
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "insight":     { "type": "string", "description": "Optional insight text displayed as a bottom insight bar (short, action-oriented)" },
         "slide_type": {
           "type": "string",
           "enum": ["title", "bullet-list", "two-column", "comparison", "data-heavy", "matrix", "flowchart", "timeline", "gantt", "call_to_action", "decision", "technical", "process"],
@@ -154,6 +282,36 @@
           "description": "Textual bullets — rendered as body text. Should have 2-5 items."
         },
         "components": { "$ref": "#/definitions/components" },
+        "layout_intent": {
+          "type": "object",
+          "description": "Optional v2 layout intent: template and regions for region-based rendering.",
+          "properties": {
+            "template": {
+              "type": "string",
+              "enum": ["title-full", "two-column", "visual-left-text-right", "visual-top-text-bottom", "three-column", "full-bleed"],
+              "description": "Layout template choice"
+            },
+            "regions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["id", "renderer", "position"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "position": { "type": "string", "description": "Position marker (e.g., 'left-60', 'right-40', 'top-30', 'full')" },
+                  "renderer": {
+                    "type": "string",
+                    "enum": ["chart", "comparison", "kpi", "callout", "progression", "bullets", "architecture", "flow"],
+                    "description": "Region renderer type"
+                  },
+                  "data_source": { "type": "string", "description": "Path to slide data source (e.g., 'components.kpis' or 'visual')" }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        },
         "speaker_notes": { "type": "object" },
         "visual": { "type": "object" },
         "metadata": { "type": "object" }

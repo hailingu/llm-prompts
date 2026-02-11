@@ -1,3 +1,4 @@
+````markdown
 # ppt-visual-taxonomy Skill
 
 ## Purpose
@@ -37,6 +38,81 @@ Agents reference this skill when:
 | `comparison_table` | Side-by-side evaluation | ≥2 options × ≥3 criteria |
 | `kpi_dashboard` | Feature metric overview | ≥2 KPIs with targets |
 
+### Level 2 — Extended Types (Specialized Content)
+
+| Type | Use Case | Data Requirement |
+|---|---|---|
+| `radar_chart` | Multi-dimension capability comparison | ≥3 dimensions with normalized values |
+| `waterfall_chart` | Cumulative change / build-up | ≥3 steps, each with delta |
+| `gantt_chart` | Project schedule, phases | ≥3 tasks with start/duration/status |
+| `heatmap` | Density / intensity across 2 axes | ≥3×3 grid with values |
+| `sankey_diagram` | Flow volume between stages | ≥2 stages, ≥3 flow paths |
+| `scatter_plot` | Correlation of two variables | ≥5 data points (x, y [, size]) |
+| `treemap` | Hierarchical part-of-whole | ≥3 nodes with sizes |
+| `bubble_chart` | Three-dimension comparison | ≥3 items (x, y, size) |
+
+### Level 3 — Domain-Specific Types
+
+| Type | Domain | Use Case |
+|---|---|---|
+| `engineering_schematic` | Hardware / Manufacturing | Circuit topology, mechanical assembly |
+| `simulation_plot` | R&D / Test Lab | FEA/CFD scalar fields, parameter sweeps |
+| `bom_hierarchy` | Manufacturing / Procurement | Bill of Materials breakdown by cost/weight |
+| `compliance_matrix` | Standards / Safety | Requirement-to-test cross-reference |
+| `decision_tree` | Strategy / Risk | Sequential branching decisions |
+| `network_topology` | Software / Infra | Service mesh, cloud architecture |
+
+---
+
+## Visual Annotation Format
+
+### 2.1 Complete Annotation Example
+
+```markdown
+**VISUAL**:
+Type: radar_chart
+Title: "算法性能对比 — 五维评估"
+Axes: [精度, 速度, 可解释性, 可扩展性, 成本效率]
+Series:
+  - name: "方案A: 基于规则"
+    values: [40, 90, 95, 60, 80]
+  - name: "方案B: ML模型"
+    values: [85, 70, 30, 80, 50]
+  - name: "方案C: 混合方案"
+    values: [75, 80, 65, 85, 65]
+Highlight: "方案C 综合得分最高 (74/100)"
+cognitive_intent: "compare"
+annotation_notes: "数据源: benchmarks/eval_20250115.csv, N=1000 样本"
+```
+
+### 2.2 Scope Guidelines
+
+| Annotation Field | Required | Notes |
+|---|---|---|
+| `Type` | ✅ Always | Must be from §1 taxonomy |
+| `Title` | ✅ Always | Descriptive, includes unit or context |
+| `Data fields` | ✅ When data exists | Axes, Series, Categories, Items, etc. |
+| `Highlight` | ✅ When key insight exists | One-sentence takeaway |
+| `cognitive_intent` | ✅ On critical/high priority slides | See §3 |
+| `annotation_notes` | Optional | Data source, methodology, caveats |
+
+### 2.3 Content Scope Rules
+
+Content-planner annotations MUST be **semantic** (what to show), NOT **visual** (how it looks):
+
+#### Special Case: Gantt Chart Data Structure
+
+For `gantt_chart` type, provide structured data instead of only mermaid code:
+
+```json
+{
+  "type": "gantt_chart",
+  "title": "Project Implementation Roadmap",
+  "placeholder_data": {
+    "gantt_data": {
+      "timeline": {
+        "start": "2026-02",
+      ... (file continues)
 ### Level 2 — Extended Types (Specialized Content)
 
 | Type | Use Case | Data Requirement |

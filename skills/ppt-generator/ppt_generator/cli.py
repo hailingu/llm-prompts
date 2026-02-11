@@ -41,6 +41,29 @@ def generate_pptx(semantic_path: str, design_spec_path: str, output_path: str) -
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
     prs.save(output_path)
     print(f"✅ PPTX saved: {output_path} ({total} slides)")
+
+    # Compute and persist metrics (best-effort)
+    try:
+        from .metrics import compute_deck_metrics, write_metrics, audit_metrics
+        metrics = compute_deck_metrics(semantic)
+        # attach some meta
+        metrics['deck_id'] = deck_title or os.path.basename(output_path)
+        # pick schema version heuristically: 2 if any slide is v2
+        schema_version = 1
+        for sd in slides_data:
+            if sd and isinstance(sd, dict) and 'layout_intent' in sd and isinstance(sd.get('layout_intent'), dict) and 'regions' in sd.get('layout_intent'):
+                schema_version = 2
+                break
+        metrics['schema_version'] = schema_version
+        # Run audit and attach warnings
+        warnings = audit_metrics(metrics)
+        if warnings:
+            metrics['warnings'] = warnings
+        metrics_file = write_metrics(metrics, os.path.dirname(os.path.abspath(output_path)), deck_id=metrics['deck_id'])
+        print(f"🔢 Metrics appended to: {metrics_file}")
+    except Exception as e:
+        print(f"⚠️ Metrics persistence failed: {e}")
+
     return output_path
 
 

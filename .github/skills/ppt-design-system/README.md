@@ -1,3 +1,4 @@
+````markdown
 # ppt-design-system Skill
 
 ## Purpose
@@ -50,6 +51,7 @@ Agent references this skill when:
 | `outline` | Borders | #74777F |
 | `shadow` | Shadow color | #000000 |
 
+... (file continues)
 #### Chart & Data Visualization Palettes
 
 The renderer uses these palettes for matplotlib-generated charts and component accent stripes (KPI cards, comparison cards):

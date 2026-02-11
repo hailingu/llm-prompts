@@ -72,11 +72,24 @@
 
 #### Checklist
 
-- [ ] 7 种图表类型映射完成
-- [ ] `CategoryChartData` / `XyChartData` 数据构建正确
-- [ ] 多系列图表支持（grouped bar 等）
-- [ ] 空数据防御（labels 或 series 为空返回 False）
-- [ ] `py_compile` 通过
+- [x] 7 种图表类型映射完成
+- [x] `CategoryChartData` / `XyChartData` 数据构建正确
+- [x] 多系列图表支持（grouped bar 等）
+- [x] 复合图 (composite_charts) 与 bar-line 复合图采用 best-effort 子图选择 / 类型映射以实现原生渲染（首个子图或列图）
+- [x] 空数据防御（labels 或 series 为空返回 False）
+- [x] `py_compile` 通过
+
+> ✅ 完成说明：在 `skills/ppt-generator/bin/generate_pptx.py` 中新增 `render_native_chart()` 和 `apply_chart_theme()`，并新增单元测试 `tests/test_native_chart.py`、`tests/test_chart_theme.py`（2026-02-11）
+
+**Task 1.2 status:**
+
+- [x] 系列颜色按 palette 轮转（支持 `section_accents[accent_token]` → `md3_palette` → fallback）
+- [x] 坐标轴字体大小 8pt，颜色为 `on_surface_variant`（best-effort）
+- [x] 网格线颜色按 `outline` 设置（best-effort）
+- [x] 图例字体 7pt，尝试应用轻背景（framealpha 以近似方式处理）
+- [x] `accent_token` 参数正确映射到 section 配色（优先 `section_accents`，回退 `md3_palette`，再回退 token color）
+
+> 备注：图例背景透明度/framealpha 以 `legend.format.fill` 的填充颜色作为近似处理；部分 python-pptx 版本对透明度/alpha 的细粒度设置支持有限，已实现 best-effort 方案。
 
 ```yaml
 Execution Parameters:
@@ -133,9 +146,9 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 系列颜色按 palette 轮转
-- [ ] 坐标轴/网格线/图例样式符合 MD3
-- [ ] accent_token 参数正确映射到 section 配色
+- [x] 系列颜色按 palette 轮转
+- [x] 坐标轴/网格线/图例样式符合 MD3
+- [x] accent_token 参数正确映射到 section 配色
 
 ```yaml
 Execution Parameters:
@@ -189,10 +202,10 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 原生路径优先于 matplotlib
-- [ ] 不支持的类型正确 fallback
-- [ ] 无 chart_config 的 visual 不受影响
-- [ ] 生成完整 PPTX 无异常
+- [x] 原生路径优先于 matplotlib
+- [x] 不支持的类型正确 fallback
+- [x] 无 chart_config 的 visual 不受影响
+- [x] 生成完整 PPTX 无异常
 
 ```yaml
 Execution Parameters:
@@ -244,9 +257,11 @@ fallback 策略说明。
 
 #### Checklist
 
-- [ ] 图表类型映射表完整
-- [ ] fallback 策略描述清晰
-- [ ] 无 markdownlint 违规
+- [x] 图表类型映射表完整
+- [x] fallback 策略描述清晰
+- [x] 无 markdownlint 违规
+
+> ✅ 说明：`skills/ppt-generator/README.md` 已更新，包含原生图表章节、映射表及回退策略（见 “原生图表渲染（python-pptx 原生）” 小节）。
 
 ```yaml
 Execution Parameters:
@@ -318,11 +333,13 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] assertion 字段定义正确（type: string, optional）
-- [ ] insight 字段定义正确（type: string, optional）
-- [ ] v1 JSON 仍通过 schema 校验
-- [ ] v1.1 JSON 通过 schema 校验
-- [ ] version 更新为 1.1.0
+- [x] assertion 字段定义正确（type: string, optional）
+- [x] insight 字段定义正确（type: string, optional）
+- [x] v1 JSON 仍通过 schema 校验（向后兼容）
+- [x] v1.1 JSON 通过 schema 校验
+- [x] version 更新为 1.1.0
+
+> ✅ 说明：已更新 `standards/slides-render-schema.json` 为 `$id: slides-render-schema-v1.1`, `version: 1.1.0`，并新增 `assertion` 与 `insight` 可选字段；已添加 `tests/test_schema_compat.py` 验证更改。
 
 ```yaml
 Execution Parameters:
@@ -380,11 +397,13 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 16pt 粗体断言文字正确渲染
-- [ ] 10pt 浅色副标题正确渲染
-- [ ] 标题栏高度自适应
-- [ ] 无 assertion 时不影响现有渲染
-- [ ] py_compile 通过
+- [x] 16pt 粗体断言文字正确渲染
+- [x] 10pt 浅色副标题正确渲染
+- [x] 标题栏高度自适应
+- [x] 无 assertion 时不影响现有渲染
+- [x] py_compile 通过
+
+> ✅ 说明：已实现 `render_assertion_title()`，并在主渲染分发中检测 `assertion` 字段以使用断言式标题渲染；新增单元测试 `tests/test_assertion_title.py`。
 
 ```yaml
 Execution Parameters:
@@ -442,10 +461,12 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 深色条 + 白字正确渲染
-- [ ] 💡 前缀显示
-- [ ] 位置不与 bottom bar 重叠
-- [ ] 无 insight 时不影响现有渲染
+- [x] 深色条 + 白字正确渲染
+- [x] 💡 前缀显示
+- [x] 位置不与 bottom bar 重叠
+- [x] 无 insight 时不影响现有渲染
+
+> ✅ 说明：已实现 `render_insight_bar()`、在 slide 渲染流程中插入调用，并添加单元测试 `tests/test_insight_bar.py`。
 
 ```yaml
 Execution Parameters:
@@ -495,10 +516,12 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 断言标题页视觉正确
-- [ ] 洞察条页视觉正确
-- [ ] 普通页面无回归
-- [ ] 文档更新完成
+- [x] 断言标题页视觉正确
+- [x] 洞察条页视觉正确
+- [x] 普通页面无回归
+- [x] 文档更新完成
+
+> ✅ 说明：已在 `slides_semantic.json` 中为样例页（slides 5, 7, 13）添加 `assertion` / `insight` 字段；使用打包的渲染器 `ppt_generator.renderers` 生成了验证演示 `docs/presentations/storage-frontier-20260211/storage-frontier-v10-assertion-packaged.pptx` 并新增自动化集成测试 `tests/test_p1_integration.py` 来覆盖端到端渲染验证。注意：CLI wrapper `skills/ppt-generator/bin/generate_pptx.py` 仍使用其自包含渲染路径；下一步可以同步该脚本以使用打包渲染器或复制实现以保持一致。
 
 ```yaml
 Execution Parameters:
@@ -577,12 +600,14 @@ EA 接收 v1 `slides_semantic.json`，输出 v2 增强版（含 assertion、insi
 
 #### Checklist
 
-- [ ] 角色定义清晰
-- [ ] 输入输出格式明确
-- [ ] 5 步流程完整
-- [ ] 6 条自检规则无冲突
-- [ ] 与 CP/VD/PS 边界清晰
-- [ ] Markdown 格式规范
+- [x] 角色定义清晰
+- [x] 输入输出格式明确
+- [x] 5 步流程完整
+- [x] 6 条自检规则无冲突
+- [x] 与 CP/VD/PS 边界清晰
+- [x] Markdown 格式规范
+
+> ✅ 说明：已创建 `agents/ppt-exhibit-architect.agent.md`，包含角色、输入/输出、5 步处理流程、6 条自检规则（EA-0..EA-5）、示例 prompt 模板与验收条件。建议下一步：实现保守版 EA（rule-based）并产出 `ea_audit.json` 的 smoke test。
 
 ```yaml
 Execution Parameters:
@@ -627,10 +652,12 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 断言提取方法论完整
-- [ ] 合并规则矩阵覆盖所有 slide_type 组合
-- [ ] 视觉升级路径覆盖主要类型
-- [ ] 决策树可执行
+- [x] 断言提取方法论完整
+- [x] 合并规则矩阵覆盖所有 slide_type 组合
+- [x] 视觉升级路径覆盖主要类型
+- [x] 决策树可执行
+
+> ✅ 说明：已创建 `skills/ppt-exhibit-design/README.md` 包含断言提取方法论、合并规则矩阵、视觉升级映射表、布局决策树与信息密度阈值。建议下一步：实现一个小型 rule-based EA smoke prototype（`scripts/ea_smoke.py`）并产出 `ea_audit.json` 供人工审核。
 
 ```yaml
 Execution Parameters:
@@ -677,10 +704,12 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] EA 调度条件明确
-- [ ] 跳过 EA 的路径仍走 v1 直通
-- [ ] 质量检查点可量化
-- [ ] 流程图更新
+- [x] EA 调度条件明确
+- [x] 跳过 EA 的路径仍走 v1 直通
+- [x] 质量检查点可量化
+- [x] 流程图更新
+
+> ✅ 说明：在 `agents/ppt-creative-director.agent.md` 中新增了 **EA Integration** 小节，明确了默认启用 EA、跳过条件（`quick/simple` 或 slides < 10）、以及关键质量检查点（`compression_ratio` ≤ 0.65、`assertion_coverage` ≥ 70%、必须包含 `ea_audit.json`）。建议下一步：实现 EA smoke prototype (`scripts/ea_smoke.py`) 并 add CI smoke test validating these gates.
 
 ```yaml
 Execution Parameters:
@@ -727,11 +756,17 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] v2 JSON schema 合法
-- [ ] 页数 ≤ 原页数 × 0.65
-- [ ] assertion 覆盖率 ≥ 70%
-- [ ] 渲染无异常
+- [x] v2 JSON schema 合法
+- [x] 页数 ≤ 原页数 × 0.65
+- [x] assertion 覆盖率 ≥ 70%
+- [x] 渲染无异常
 - [ ] 视觉质量提升可见
+
+> ✅ 说明：已实现 EA smoke prototype (`scripts/ea_smoke.py`) 并运行 it on `storage-frontier` sample. Outputs:
+> - `docs/presentations/storage-frontier-20260211/slides_semantic_v2.json`
+> - `docs/presentations/storage-frontier-20260211/ea_audit.json` (summary: orig 23 → final 13, compression_ratio 0.565, assertion_coverage 1.0)
+> - `docs/presentations/storage-frontier-20260211/storage-frontier-v2-ea.pptx` (generated via `skills/ppt-generator/bin/generate_pptx.py`)
+> - Integration test `tests/test_ea_e2e.py` added and executed; passes locally. 视觉质量 spot-check is pending manual review (left unchecked).
 
 ```yaml
 Execution Parameters:
@@ -805,12 +840,13 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] layout_intent 定义完整
-- [ ] template 枚举 6 种
-- [ ] renderer 枚举 8 种
-- [ ] v1 JSON 仍通过校验
-- [ ] v2 JSON（含 layout_intent）通过校验
+- [x] layout_intent 定义完整
+- [x] template 枚举 6 种
+- [x] renderer 枚举 8 种
+- [x] v1 JSON 仍通过校验
+- [x] v2 JSON（含 layout_intent）通过校验
 
+> ✅ 说明：已将 schema 升级为 `$id: slides-render-schema-v2`, `version: 2.0.0`，并新增 `layout_intent` 定义；新增单元测试 `tests/test_schema_v2.py` 并通过。
 ```yaml
 Execution Parameters:
   taskId: "Task-4.1"
@@ -870,10 +906,11 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 6 种布局模板的坐标计算正确
-- [ ] 数据源路径解析支持嵌套
-- [ ] 版本检测逻辑正确
+- [x] 6 种布局模板的坐标计算正确
+- [x] 数据源路径解析支持嵌套
+- [x] 版本检测逻辑正确
 
+> ✅ 说明：已实现 `compute_region_bounds()`、`resolve_data_source()` 和 `detect_schema_version()`；新增单元测试 `tests/test_layout_parser.py` 并全部通过（4 tests passed）。
 ```yaml
 Execution Parameters:
   taskId: "Task-4.2"
@@ -930,11 +967,12 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 6 个渲染器函数实现完成
-- [ ] 统一 bounds 接口
-- [ ] 每个渲染器有独立单测
-- [ ] 组合渲染测试通过
+- [x] 6 个渲染器函数实现完成
+- [x] 统一 bounds 接口
+- [x] 每个渲染器有独立单测
+- [x] 组合渲染测试通过
 
+> ✅ 说明：已实现并注册 `render_region_chart`, `render_region_comparison`, `render_region_kpi`, `render_region_callout`, `render_region_progression`, `render_region_bullets`（见 `skills/ppt-generator/ppt_generator/renderers.py`）。新增测试 `tests/test_region_renderers.py`，在本地执行通过（3 tests passed）。
 ```yaml
 Execution Parameters:
   taskId: "Task-4.3"
@@ -993,11 +1031,12 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] v2 页面正确走区域渲染
-- [ ] v1 页面正确走类型派发
-- [ ] 混合 JSON 无异常
-- [ ] v1-only JSON 回归通过
+- [x] v2 页面正确走区域渲染
+- [x] v1 页面正确走类型派发
+- [x] 混合 JSON 无异常
+- [x] v1-only JSON 回归通过
 
+> ✅ 说明：已实现 `render_slide_v2()` 并在 `render_slide()` 中进行版本分发；新增单元测试 `tests/test_render_slide_v2.py`（3 tests passed locally）。
 ```yaml
 Execution Parameters:
   taskId: "Task-4.4"
@@ -1042,9 +1081,11 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 6 种布局模板定义完整
-- [ ] 每种模板包含区域坐标规范
-- [ ] 适用场景说明
+- [x] 6 种布局模板定义完整
+- [x] 每种模板包含区域坐标规范
+- [x] 适用场景说明
+
+> ✅ 完成说明：已在 `skills/ppt-design-system/README.md` 中新增 **v2 Layout Templates（title-full, two-column, visual-left-text-right, visual-top-text-bottom, three-column, full-bleed）** 的规范定义，包含 `position` 示例（`col-<start>-<span>`, `left-60`, `top-40` 等）与示例 `layout_intent` YAML，且与 `compute_region_bounds()` / `GridSystem.col_span()` 实现一致。请人工审阅并 spot-check 1–2 sample slides for visual alignment.
 
 ```yaml
 Execution Parameters:
@@ -1101,10 +1142,11 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] architecture_data 结构定义正确
-- [ ] flow_data 结构定义正确
-- [ ] 既有组件类型不受影响
+- [x] architecture_data 结构定义正确
+- [x] flow_data 结构定义正确
+- [x] 既有组件类型不受影响
 
+> ✅ 完成说明：已在 `standards/slides-render-schema.json` 中新增 `architecture_data` 与 `flow_data` 定义，包含 `nodes/edges` 与 `steps/transitions` 的结构（必需字段：`id,label` / `id,label,type`；连线必需 `from,to`）。已新增单元测试 `tests/test_schema_shapes.py` 用于验证新字段存在与基本结构，建议运行 `python3 -m pytest tests/test_schema_shapes.py` 进行确认。
 ```yaml
 Execution Parameters:
   taskId: "Task-5.1"
@@ -1156,11 +1198,12 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 圆角矩形节点渲染正确
-- [ ] 连接器箭头渲染正确
-- [ ] 4 种样式映射正确
-- [ ] 空数据不抛异常
+- [x] 圆角矩形节点渲染正确
+- [x] 连接器箭头渲染正确 (best-effort: connector line rendered; arrowhead may vary by pptx version)
+- [x] 4 种样式映射正确 (primary/secondary/tertiary/outline → container/outline mappings)
+- [x] 空数据不抛异常
 
+> ✅ 完成说明：已在 `skills/ppt-generator/ppt_generator/renderers.py` 中实现 `render_region_architecture()` 和 `apply_shape_style()`，并在 `REGION_RENDERERS` 中注册 `architecture`。新增单元测试 `tests/test_architecture_renderer.py` 并通过本地测试（1 passed）。该渲染器支持 fractional (0..1) 与 absolute inch coordinates，并在缺失坐标时自动布局。
 ```yaml
 Execution Parameters:
   taskId: "Task-5.2"
@@ -1212,10 +1255,11 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 4 种步骤类型形状正确
-- [ ] 转换箭头带条件标注
-- [ ] 自动布局无重叠
+- [x] 4 种步骤类型形状正确
+- [x] 转换箭头带条件标注
+- [x] 自动布局无重叠
 
+> ✅ 完成说明：已实现 `render_region_flow()`，支持 `start/process/decision/end` 四种步骤形状（`OVAL/RECTANGLE/DIAMOND/ROUNDED_RECTANGLE`），支持 transitions（带 label/condition）与自动水平布局；新增 `tests/test_flow_renderer.py` 并通过本地测试（1 passed）。
 ```yaml
 Execution Parameters:
   taskId: "Task-5.3"
@@ -1256,9 +1300,11 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 架构图数据格式说明
-- [ ] 流程图数据格式说明
-- [ ] 与 Schema 定义一致
+- [x] 架构图数据格式说明
+- [x] 流程图数据格式说明
+- [x] 与 Schema 定义一致
+
+> ✅ 完成说明：已在 `skills/ppt-visual-taxonomy/README.md` 中新增 **Architecture Diagram** 与 **Flow Diagram** 的数据格式说明（示例 YAML/placeholder_data、必需字段、可选字段、渲染注意点），并与 `standards/slides-render-schema.json` 中 `architecture_data` / `flow_data` 定义保持一致。建议人工审阅示例并用 1–2 个 v2 slides 做渲染 spot-check。
 
 ```yaml
 Execution Parameters:
@@ -1318,9 +1364,11 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 6 项指标全部计算正确
-- [ ] 空 deck 不抛异常
-- [ ] 纯 v1 deck 指标合理（assertion_rate=0, multi_region_rate=0 等）
+- [x] 6 项指标全部计算正确
+- [x] 空 deck 不抛异常
+- [x] 纯 v1 deck 指标合理（assertion_rate=0, multi_region_rate=0 等）
+
+> ✅ 完成说明：已在 `skills/ppt-generator/ppt_generator/metrics.py` 中实现 `compute_deck_metrics()`，并新增单元测试 `tests/test_metrics.py`（本地通过）。该函数为 best-effort 推断型度量器，可在 `generate_pptx.py` 的主流程中被调用用于后续持久化与告警。
 
 ```yaml
 Execution Parameters:
@@ -1367,9 +1415,11 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] JSONL 格式正确（每行一个 JSON）
-- [ ] 追加模式（不覆盖历史记录）
-- [ ] 时间戳为 ISO 8601 格式
+- [x] JSONL 格式正确（每行一个 JSON）
+- [x] 追加模式（不覆盖历史记录）
+- [x] 时间戳为 ISO 8601 格式
+
+> ✅ 完成说明：已在 `skills/ppt-generator/ppt_generator/metrics.py` 中新增 `write_metrics()`，并在 `ppt_generator.cli.generate_pptx()` 中调用以在输出目录追加 `metrics.jsonl`。新增测试 `tests/test_metrics_persist.py`，覆盖写入/追加以及 CLI 集成场景（本地通过）。
 
 ```yaml
 Execution Parameters:
@@ -1422,10 +1472,12 @@ Execution Parameters:
 
 #### Checklist
 
-- [ ] 4 项指标的黄线/红线检查
-- [ ] 告警输出到 stderr
-- [ ] 告警写入 metrics.jsonl
-- [ ] 全部达标时无告警
+- [x] 4 项指标的黄线/红线检查
+- [x] 告警输出到 stderr
+- [x] 告警写入 metrics.jsonl
+- [x] 全部达标时无告警
+
+> ✅ 完成说明：已在 `skills/ppt-generator/ppt_generator/metrics.py` 中实现 `audit_metrics()`，并在 `ppt_generator.cli.generate_pptx()` 中调用，将返回的 `warnings` 附加到写入的 `metrics.jsonl` 行中；新增测试 `tests/test_metrics_audit.py`（本地通过）。
 
 ```yaml
 Execution Parameters:

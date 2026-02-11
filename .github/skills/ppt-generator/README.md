@@ -379,6 +379,20 @@ def get_layout(slide_type: str, has_visual: bool) -> dict:
 
 ### 5.2 渲染函数 — 标题栏
 
+> 新：支持原生 python-pptx 图表渲染（优先）以替代 matplotlib→PNG 路径，图表变为可编辑矢量并减小文件体积。
+
+#### 原生图表映射（简要）
+
+| visual.type | python-pptx XL_CHART_TYPE |
+|-------------|---------------------------|
+| `bar_chart` / `column_chart` | `COLUMN_CLUSTERED` |
+| `horizontal_bar` | `BAR_CLUSTERED` |
+| `line_chart` | `LINE_MARKERS` |
+| `pie_chart` | `PIE` |
+| `doughnut_chart` | `DOUGHNUT` |
+| `radar_chart` | `RADAR` |
+| `scatter_chart` | `XY_SCATTER` |
+
 ```python
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu

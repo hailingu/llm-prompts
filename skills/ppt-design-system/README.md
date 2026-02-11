@@ -245,6 +245,93 @@ The renderer uses these palettes for matplotlib-generated charts and component a
 
 ---
 
+## v2 Layout Templates (region specs) ⚙️
+
+These templates are the canonical v2 templates supported by `layout_intent.template` in the schema. Each template lists recommended `position` markers (used by `compute_region_bounds()`), region responsibilities, and typical use-cases.
+
+> Note: Supported `position` markers include `full`, `left-<pct>`, `right-<pct>`, `center-<pct>`, `top-<pct>`, and column markers `col-<start>-<span>` (zero-based start index). `compute_region_bounds()` computes inches using `GridSystem` (see `grid.col_span`).
+
+### title-full
+- **Purpose**: Hero / section header slides with large visual or centered title
+- **Regions**:
+  - `header` (title bar) — rendered via title/assertion bar
+  - `content` — `position: full`
+- **When to use**: Section dividers, executive summary, hero messaging
+
+### two-column
+- **Purpose**: Balanced content and visual pairing
+- **Regions**:
+  - `left` — `position: col-0-6` (text / bullets)
+  - `right` — `position: col-6-6` (visual / chart)
+- **Alternatives**: Use `left-60` / `right-40` for percentage-based width
+- **When to use**: Explanatory slides with supporting visual
+
+### visual-left-text-right
+- **Purpose**: Visual-first narrative with compact supporting text
+- **Regions**:
+  - `visual` — `position: col-0-7` (≈ 58–60% width) or `left-60`
+  - `text` — `position: col-7-5` or `right-40`
+- **When to use**: Chart-heavy insight slides, annotated figures
+
+### visual-top-text-bottom
+- **Purpose**: Tall visual (chart/diagram) on top with explanatory text below
+- **Regions**:
+  - `visual` — `position: top-40` (top 40% of available content height) or `position: full` with `height` constraint
+  - `text` — `position: full` (renders below visual)
+- **When to use**: Time series/heatmap where vertical space improves readability
+
+### three-column
+- **Purpose**: Side-by-side comparisons, multi-metric dashboards
+- **Regions**:
+  - `col1` — `position: col-0-4`
+  - `col2` — `position: col-4-4`
+  - `col3` — `position: col-8-4`
+- **When to use**: KPI grids, multi-way comparison
+
+### full-bleed
+- **Purpose**: Emotional/visual storytelling with imagery
+- **Regions**:
+  - `background` — fills the slide (treat as `full`, use slide background)
+  - optional `overlay_card` — `position: right-40` or `col-8-4` for captions
+- **When to use**: Cover art, event slides, testimonials
+
+---
+
+### Quick Examples
+
+```yaml
+layout_intent:
+  template: two-column
+  regions:
+    - id: main_chart
+      renderer: chart
+      position: col-6-6
+      data_source: visual
+    - id: bullets
+      renderer: bullets
+      position: col-0-6
+      data_source: content
+```
+
+```yaml
+layout_intent:
+  template: visual-top-text-bottom
+  regions:
+    - id: big_chart
+      renderer: chart
+      position: top-40
+      data_source: visual
+    - id: notes
+      renderer: callout
+      position: full
+      data_source: components.callouts
+```
+
+> Implementation note: `col-<start>-<span>` is zero-based (e.g., `col-0-6` occupies the first 6 of 12 grid columns). Use percentage markers (`left-60`, `top-30`) for quick authoring; `compute_region_bounds()` will translate them to inches at render time.
+
+## Chart & Visual Encoding Guidelines
+---
+
 ## Chart & Visual Encoding Guidelines
 
 ### 4.1 Cleveland & McGill Hierarchy

@@ -56,6 +56,17 @@ Creative Director facilitates stakeholder workshop → define audience, goals, k
 CD (launch) → CP (self-check ✔️) → VD (self-check ✔️) → PS (generate + QA ✔️) → AUTO-DELIVER
 ```
 
+### EA Integration (optional step between CP and VD)
+- The Exhibit Architect (EA) is an optional, default-enabled enhancement stage that can be inserted between Content Planning (CP) and Visual Design (VD):
+  - Default behavior: **EA enabled** — run EA after CP to produce `slides_semantic_v2.json` (with `assertion`/`insight`/`layout_intent`) and `ea_audit.json` before handing off to VD.
+  - Skip conditions (do NOT run EA): user requests "quick/simple" pipeline; explicit `ea_enabled: false` in session config; or source deck has < 10 slides (small decks are faster to review manually).
+  - EA quality gates (automated checks applied to EA output):
+    - `compression_ratio` (post-EA) MUST be ≤ 0.65 to accept aggressive merges automatically; if >0.65, flag for CD review.
+    - `assertion_coverage` (fraction of slides with `assertion`) SHOULD be ≥ 70% for data-heavy decks; if below threshold, EA outputs `ea_confidence` flags and CD review is recommended.
+    - EA must emit `ea_audit.json` listing all changes, confidence scores, and a `merged_from` mapping for any merges (reversible mapping required).
+  - If EA output fails any mandatory check (missing `ea_audit.json` or `compression_ratio` > 0.85 or critical `ea_confidence` flags), DO NOT auto-advance to VD — escalate to CD for decision.
+  - Rationale: EA accelerates and standardizes editorial improvements while preserving auditability and safe failure modes.
+
 **Exception Handling (CD re-enters only on escalation):**
 ```
 CP self-check ❌ → escalate to CD → CD sends "content revision" → CP → VD → PS

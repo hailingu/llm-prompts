@@ -242,6 +242,82 @@ Steps:
 Connections: [[1,2], [2,3], [3,4]]
 ```
 
+### 5.2.1 Architecture Diagram Placeholder (shapes)
+
+Architecture diagrams are represented as `architecture_data` with `nodes[]` and `edges[]`.
+Nodes may include absolute coordinates (inches) or fractional coordinates relative to the region bounds (0..1).
+
+```yaml
+Type: architecture_diagram
+Title: "系统组件拓扑"
+placeholder_data:
+  architecture_data:
+    nodes:
+      - id: "n-api", label: "API Gateway", x: 0.05, y: 0.1, w: 1.8, h: 0.7, style: primary
+      - id: "n-auth", label: "Auth Service", x: 0.5, y: 0.1, w: 1.8, h: 0.7, style: secondary
+    edges:
+      - from: "n-api", to: "n-auth", label: "auth calls", style: solid
+```
+
+Required Node Fields:
+- `id` (string)
+- `label` (string)
+Optional Node Fields:
+- `x`, `y` (number; fractional 0..1 or absolute inches)
+- `w`, `h` (number; fractional or inches)
+- `style` (enum: primary|secondary|tertiary|outline)
+
+Required Edge Fields:
+- `from` (node id)
+- `to` (node id)
+Optional Edge Fields:
+- `label` (string)
+- `style` (string)
+
+Rendering Notes:
+- Renderer supports both fractional and absolute coordinates; when coords are omitted nodes are auto-laid out horizontally within the region.
+- Styles map to MD3 tokens via `apply_shape_style()` (best-effort).
+
+### 5.2.2 Flow Diagram Placeholder (shapes)
+
+Flow/process diagrams are represented as `flow_data` with `steps[]` and `transitions[]`.
+
+```yaml
+Type: flow_diagram
+Title: "用户注册流程"
+placeholder_data:
+  flow_data:
+    steps:
+      - id: s1, label: "Start", type: start
+      - id: s2, label: "Validate Input", type: process
+      - id: s3, label: "Send Email", type: process
+      - id: s4, label: "Decision: Verified?", type: decision
+    transitions:
+      - from: s1, to: s2
+      - from: s2, to: s3
+      - from: s3, to: s4, label: "email sent"
+```
+
+Required Step Fields:
+- `id` (string)
+- `label` (string)
+- `type` (enum: start|process|decision|end)
+Optional Step Fields:
+- `x`,`y`,`w`,`h` (positions/sizes; fractional or absolute)
+- `style` (string)
+
+Required Transition Fields:
+- `from` (step id)
+- `to` (step id)
+Optional Transition Fields:
+- `label` / `condition` (string)
+- `style` (string)
+
+Rendering Notes:
+- Steps map to AutoShapes: `start`→OVAL, `process`→RECTANGLE, `decision`→DIAMOND, `end`→ROUNDED_RECTANGLE.
+- Transitions render as straight connectors; labels are placed at midpoints (best-effort).
+- If positions missing, renderer performs a horizontal auto-layout.
+
 ### 5.3 Timeline Placeholder
 
 ```yaml

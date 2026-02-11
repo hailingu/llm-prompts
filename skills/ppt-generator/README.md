@@ -878,6 +878,36 @@ def render_visual(slide, visual: dict, spec: dict, grid: GridSystem,
 
 ```python
 def render_chart_table(slide, visual: dict, spec: dict,
+```
+
+### 7.3 原生图表渲染（python-pptx 原生） 🔧
+
+为了生成可编辑的矢量图表并减小文件体积，渲染器会优先尝试使用 `python-pptx` 的原生 `add_chart()` API（若本地 `python-pptx` 版本支持）。
+
+- 优先级（从高到低）：预渲染图片（`rendered_png_path` / `rendered_svg_path`）→ **原生图表（`add_chart()`）** → matplotlib 生成的 PNG（回退）→ 数据表格 → 占位符。
+- 函数签名：`render_native_chart(slide, visual, spec, left, top, width, height, accent_token='primary') -> bool`
+- 说明：函数返回 `True` 表示成功以原生 Chart 插入（Chart shape 可在 PowerPoint 中双击、编辑）；返回 `False` 则说明数据/类型不受支持，应当走回退逻辑。
+
+支持的 visual.type → `XL_CHART_TYPE` 映射（best-effort）：
+
+| visual.type | python-pptx XL_CHART_TYPE |
+|-------------|---------------------------|
+| `bar_chart` / `column_chart` | `COLUMN_CLUSTERED` |
+| `horizontal_bar` | `BAR_CLUSTERED` |
+| `line_chart` | `LINE_MARKERS` |
+| `pie_chart` | `PIE` |
+| `doughnut_chart` | `DOUGHNUT` |
+| `radar_chart` | `RADAR` |
+| `scatter_chart` | `XY_SCATTER` |
+
+实现注意事项（best-effort）：
+- 对于复合图（`composite_charts`），渲染器会尝试选取第一个子图作为原生 Chart 的目标；对于 `bar_line_chart`，目前会以 `column_chart`（分组柱）方式渲染以保证原生图表可生成。
+- 散点图使用 `XyChartData()`；其他序列使用 `CategoryChartData()`。
+- 主题/配色由 `apply_chart_theme(chart, spec, accent_token)` 做 best-effort 应用，优先使用 `spec` 中的 `section_accents` → `md3_palette` → token color。
+- 若要强制在集成测试中走原生路径，可以从 `slides_semantic.json` 中移除所有 `rendered_*` 字段（或使用 `scripts/generate_native_storage_frontier.py` 来临时生成一个“无图像”语义 JSON）。
+
+参考：代码实现详见 `skills/ppt-generator/bin/generate_pptx.py` 中的 `render_native_chart()` 与 `apply_chart_theme()`。
+
                        left: float, top: float, width: float, height: float):
     """将 chart_config 渲染为 Material 风格数据表"""
     config = visual['placeholder_data']['chart_config']
