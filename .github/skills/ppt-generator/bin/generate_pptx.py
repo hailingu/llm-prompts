@@ -1668,7 +1668,40 @@ def render_visual(slide, visual, spec, grid, left, top, width, height,
 
     # 3. Fallback: chart_config as data table
     if pd.get('chart_config'):
-        render_chart_table(slide, visual, spec, left, top, width, height)
+        config = pd.get('chart_config', {})
+        labels = config.get('labels', config.get('x', []))
+        series = config.get('series', [])
+        # Empty-chart guard: if no labels or no series, render an informative insight + placeholder
+        if not labels or not series:
+            cursor = top
+            if visual.get('title'):
+                strip_h = 0.45
+                strip = slide.shapes.add_shape(
+                    MSO_SHAPE.ROUNDED_RECTANGLE,
+                    Inches(left), Inches(cursor), Inches(width), Inches(strip_h)
+                )
+                strip.fill.solid()
+                strip.fill.fore_color.rgb = get_color(spec, 'primary')
+                strip.line.fill.background()
+                tb = slide.shapes.add_textbox(
+                    Inches(left + 0.12), Inches(cursor + 0.06),
+                    Inches(width - 0.24), Inches(strip_h - 0.12)
+                )
+                tf = tb.text_frame
+                tf.word_wrap = True
+                tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+                p = tf.paragraphs[0]
+                run = p.add_run()
+                run.text = f"💡 暂无数据：{visual.get('title')}"
+                run.font.size = Pt(get_font_size(spec, 'body_text'))
+                run.font.bold = True
+                run.font.color.rgb = get_color(spec, 'on_primary')
+                apply_font_to_run(run, spec)
+                cursor += strip_h + 0.10
+            # Render placeholder card below the strip (or as sole placeholder)
+            render_visual_placeholder(slide, visual, spec, left, cursor, width, max(1.0, height - (cursor - top)))
+        else:
+            render_chart_table(slide, visual, spec, left, top, width, height)
     elif pd.get('mermaid_code'):
         render_mermaid_placeholder(slide, visual, spec, left, top, width, height)
     else:
@@ -2368,7 +2401,13 @@ def render_slide_bullets(slide, sd, spec, grid, **ctx):
     # Bullets
     accent_tk = ctx.get('accent_token', 'primary')
     dot_indent = 0.20
-    bullet_y = top + 0.15
+    n_bullets = len(content_bullets[:8])
+    # Vertically center small bullet lists when a visual is present for better harmony
+    if has_visual and n_bullets <= 2:
+        bullet_total_h = n_bullets * 0.48
+        bullet_y = top + max(0, (avail_h - bullet_total_h) / 2)
+    else:
+        bullet_y = top + 0.15
     for i, bullet in enumerate(content_bullets[:8]):
         by = bullet_y + i * 0.48
         _add_bullet_dot(slide, spec, text_left + 0.1, by + 0.225,
@@ -2419,7 +2458,12 @@ def render_slide_two_column(slide, sd, spec, grid, **ctx):
     # Left: bullets
     accent_tk = ctx.get('accent_token', 'primary')
     dot_indent = 0.20
-    bullet_y = top + 0.15
+    n_bullets = len(content_bullets[:6])
+    if sd.get('visual') and sd['visual'].get('type') not in (None, 'none') and n_bullets <= 2:
+        bullet_total_h = n_bullets * 0.48
+        bullet_y = top + max(0, (avail_h - bullet_total_h) / 2)
+    else:
+        bullet_y = top + 0.15
     for i, bullet in enumerate(content_bullets[:6]):
         by = bullet_y + i * 0.48
         _add_bullet_dot(slide, spec, l_left + 0.1, by + 0.225,
