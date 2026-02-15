@@ -1,4 +1,0 @@
-Workload,Config,IOPS_est,BW_GBps_est,Notes,Source,DataDate
-Database,io2 Block Express + NVMe instances,100000,2,"估算示例：高并发 OLTP","AWS 公共文档 & 工程估算",2026-02-11
-AI_Training,NVMe-backed instances + NVMe-oF cluster,200000,6,"高并行 I/O，依赖网络与并行度","MLPerf / 工程估算",2026-02-11
-Checkpointing,S3 + EBS gp3 offload,5000,0.5,"Checkpoint 写入带宽/耐久性权衡","公开文档+估算",2026-02-11

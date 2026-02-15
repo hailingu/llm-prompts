@@ -1,0 +1,238 @@
+# ============================================================
+# PPT Brand System — Single Source of Truth
+# ============================================================
+# All brand colors, fonts, layout traits, semantic colors,
+# and border tokens are defined HERE and only here.
+#
+# CHANGELOG (P1):
+#   - C1 fix: BCG primary changed from #00A3A0 → #009A44
+#     to differentiate from McKinsey (#00A3A0).
+#   - C2 fix: consolidated 3 scattered definitions (narrative /
+#     CSS / JS) into this single file.
+# ============================================================
+
+# ----------------------------------------------------------
+# 1. Brand Definitions
+# ----------------------------------------------------------
+brands:
+  kpmg:
+    name: KPMG
+    default: true
+    colors:
+      primary: "#00338D"          # KPMG Blue
+      secondary: "#0091DA"        # Light Blue
+      accent: "#483698"           # Purple
+      supplementary:
+        - "#00A3A1"               # Teal
+        - "#E31C79"               # Pink
+    fonts:
+      heading_en: Georgia
+      body_en: Arial
+      zh: Noto Sans SC
+      stack: 'Georgia, Arial, "Noto Sans SC", sans-serif'
+    font_sizes:
+      h1: "text-6xl"             # 3.75rem
+      h2: "text-3xl"             # 1.875rem
+      body: "text-base"          # 1rem
+      small: "text-xs"           # 0.75rem
+    design:
+      style: "简洁专业、数据驱动、强调洞察"
+      primary_tone: "蓝色为主色调"
+    layout:
+      sidebar: left              # 左侧品牌栏
+      full_width: false
+      features: []
+
+  mckinsey:
+    name: McKinsey（麦肯锡）
+    colors:
+      primary: "#00A3A0"          # McKinsey Teal
+      secondary: "#1A1A1A"        # Dark Gray
+      accent: "#FF6B35"           # Orange
+      supplementary:
+        - "#5D5FEF"               # Purple
+        - "#00B4A6"               # Light Teal
+    fonts:
+      heading_en: Helvetica Neue
+      body_en: Helvetica Neue
+      zh: PingFang SC
+      stack: '"Helvetica Neue", "PingFang SC", sans-serif'
+    font_sizes:
+      h1: "text-6xl"
+      h2: "text-3xl"
+      body: "text-base"
+      small: "text-xs"
+    design:
+      style: "极简主义、权威感、黑白灰为主"
+    layout:
+      sidebar: none              # 无侧边栏，全宽设计
+      full_width: true
+      features:
+        - "大量留白"
+        - "图表与文字严格对齐"
+
+  bcg:
+    name: BCG（波士顿咨询）
+    # ⚠ C1 fix: primary was #00A3A0 (identical to McKinsey).
+    #   Changed to #009A44 (BCG official deep green).
+    colors:
+      primary: "#009A44"          # BCG Green (FIXED: was #00A3A0)
+      secondary: "#1D428A"        # Navy Blue
+      accent: "#FF671F"           # Orange
+      supplementary:
+        - "#6CC24A"               # Light Green
+        - "#0072CE"               # Blue
+    fonts:
+      heading_en: Arial
+      body_en: Arial
+      zh: Microsoft YaHei
+      stack: 'Arial, "Microsoft YaHei", sans-serif'
+    font_sizes:
+      h1: "text-6xl"
+      h2: "text-3xl"
+      body: "text-base"
+      small: "text-xs"
+    design:
+      style: "专业严谨、绿色为主色调"
+    layout:
+      sidebar: none
+      navbar: top                # 顶部导航栏
+      full_width: false
+      features:
+        - "模块化设计"
+        - "强调数据可视化"
+
+  bain:
+    name: Bain（贝恩）
+    colors:
+      primary: "#DC291E"          # Bain Red
+      secondary: "#1A1A1A"        # Dark Gray
+      accent: "#F5A623"           # Yellow
+      supplementary:
+        - "#7ED321"               # Green
+        - "#4A90E2"               # Blue
+    fonts:
+      heading_en: Gotham
+      body_en: Arial
+      zh: Source Han Sans SC
+      stack: '"Gotham", Arial, "Source Han Sans SC", sans-serif'
+    font_sizes:
+      h1: "text-6xl"
+      h2: "text-3xl"
+      body: "text-base"
+      small: "text-xs"
+    design:
+      style: "红色为主、简洁有力、强调结果"
+    layout:
+      sidebar: right             # 右侧洞察栏
+      full_width: false
+      features:
+        - "强调关键数字"
+        - "结果导向设计"
+
+  deloitte:
+    name: Deloitte（德勤）
+    colors:
+      primary: "#86BC25"          # Deloitte Green
+      secondary: "#0033A0"        # Blue
+      accent: "#FF671F"           # Orange
+      supplementary:
+        - "#00A3A0"               # Teal
+        - "#E31C79"               # Pink
+    fonts:
+      heading_en: Arial
+      body_en: Arial
+      zh: Noto Sans SC
+      stack: 'Arial, "Noto Sans SC", sans-serif'
+    font_sizes:
+      h1: "text-6xl"
+      h2: "text-3xl"
+      body: "text-base"
+      small: "text-xs"
+    design:
+      style: "绿色为主、现代感强、科技感"
+    layout:
+      sidebar: none
+      full_width: false
+      features:
+        - "圆角设计元素"
+        - "渐变背景"
+        - "科技感图表"
+
+# ----------------------------------------------------------
+# 2. Brand Switching Mechanism
+# ----------------------------------------------------------
+switching:
+  method: "CSS class on <body>"
+  pattern: "brand-{brand_id}"
+  css_variables:
+    - "--brand-primary"
+    - "--brand-secondary"
+    - "--brand-accent"
+  rules:
+    - "成片 slide-*.html 不应出现品牌切换控件"
+    - "调试控件仅在 presentation.html 中保留"
+    - "切换品牌后必须延迟 50ms 调用 chart.resize()"
+
+# ----------------------------------------------------------
+# 3. Common Design Tokens
+# ----------------------------------------------------------
+design_tokens:
+  spacing:
+    base: "1rem"               # 16px
+    content_padding: "px-16 py-8"
+    card_padding: "p-4 或 p-6"
+  responsive:
+    breakpoints:
+      sm: 640
+      md: 768
+      lg: 1024
+      xl: 1280
+  accessibility:
+    - "颜色对比度符合 WCAG 2.1 AA 标准"
+    - "支持键盘导航"
+    - "屏幕阅读器友好"
+
+# ----------------------------------------------------------
+# 4. Semantic Color System
+# ----------------------------------------------------------
+semantic_colors:
+  red:
+    meaning: "风险/阻塞/负向偏差"
+    examples: "延迟、缺口、失败项"
+    tailwind: "red"
+  amber:
+    meaning: "预警/过渡/待确认"
+    examples: "波动、临界区间、观察项"
+    tailwind: "amber"
+  sky:
+    meaning: "信息/进展/中性状态"
+    examples: "进度、事实描述、状态同步"
+    tailwind: "sky"
+  emerald:
+    meaning: "达成/正向结果"
+    examples: "完成、收益、改善项"
+    tailwind: "emerald"
+  indigo:
+    meaning: "阶段/架构/里程碑"
+    examples: "结构分层与阶段锚点"
+    tailwind: "indigo"
+
+semantic_rules:
+  - "卡片标题、结论关键词、数值方向与颜色语义必须一致"
+  - "禁止「负向内容用 emerald」或「达成内容用 red」等错配"
+  - "低饱和优先：白底 + 细语义边框 + 关键词着色"
+  - "整卡高饱和底色仅在需要强对比分组时使用，且不超过同页卡片的 30%"
+
+# ----------------------------------------------------------
+# 5. Border System
+# ----------------------------------------------------------
+border:
+  semantic_default: "border-l-2"
+  structural_default: "border border-slate-200"
+  rules:
+    - deck_uniform: "同一 deck 的分析页语义左边框必须使用单一宽度 token，默认锁定 border-l-2，禁止跨页混用 border-l-2 与 border-l-4"
+    - structural_uniform: "基础卡片与容器边框统一使用 border border-slate-200（或同等中性浅灰），不得按页面随意漂移到更重描边"
+    - exception_protocol: "若确需使用非默认宽度（如 border-l-3），必须满足「单页唯一高危告警卡 + 文案含明确风险词 + 在页注释声明例外原因」"
+    - max_strength: "border-l-4 及以上仅限封面视觉装饰或单页唯一高危告警卡，常规分析页禁止批量使用"
+    - group_consistency: "流程、路线图、KPI 组卡等同组组件必须使用同一边框宽度，不允许同组卡片出现 2px/3px/4px 混排"

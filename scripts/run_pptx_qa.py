@@ -9,7 +9,7 @@ from datetime import datetime
 parser = argparse.ArgumentParser(description='Run PPT QA (accepts session folder or explicit file paths)')
 parser.add_argument('--semantic', help='Path to slides_semantic.json', default=None)
 parser.add_argument('--design', help='Path to design_spec.json', default=None)
-parser.add_argument('--visual', help='Path to visual_report.json', default=None)
+parser.add_argument('--visual', help='Path to visual_report.json (or visual_qa_report.json)', default=None)
 parser.add_argument('--out-dir', help='Session output directory (docs/presentations/...)', default=None)
 args = parser.parse_args()
 
@@ -25,6 +25,11 @@ os.makedirs(OUT_DIR, exist_ok=True)
 SEMANTIC = args.semantic or os.path.join(OUT_DIR, 'slides_semantic.json')
 DESIGN = args.design or os.path.join(OUT_DIR, 'design_spec.json')
 VISUAL = args.visual or os.path.join(OUT_DIR, 'visual_report.json')
+# Back-compat: some sessions store visual QA as visual_qa_report.json
+if not os.path.exists(VISUAL):
+    alt_visual = os.path.join(OUT_DIR, 'visual_qa_report.json')
+    if os.path.exists(alt_visual):
+        VISUAL = alt_visual
 QA_PATH = os.path.join(OUT_DIR, 'qa_report.json')
 
 
@@ -35,7 +40,12 @@ def load_json(p):
 
 semantic = load_json(SEMANTIC)
 spec = load_json(DESIGN)
-visual = load_json(VISUAL)
+try:
+    visual = load_json(VISUAL)
+except Exception:
+    visual = {}
+    issues.append({'severity': 'minor', 'issue': f'Visual report missing or unreadable: {VISUAL}', 'auto_fixable': False})
+    score -= 2
 
 issues = []
 score = 100
@@ -66,6 +76,48 @@ for s in slides:
         score -= 2
 
 notes_coverage = notes_covered / max(len(slides), 1)
+
+# Stage 2.5: Information density / composite layout checks (per optimization plan)
+def _has_list(slide_dict, key):
+    items = (slide_dict.get('components') or {}).get(key)
+    return isinstance(items, list) and len(items) > 0
+
+multi_region = 0
+chart_only = 0
+divider_low_density = 0
+for s in slides:
+    st = s.get('slide_type')
+    li = s.get('layout_intent') or {}
+    regions = li.get('regions') or []
+    if isinstance(regions, list) and len(regions) >= 2:
+        multi_region += 1
+
+    has_chart = (s.get('visual') or {}).get('type') not in (None, 'none')
+    has_any_side = _has_list(s, 'bullets') or _has_list(s, 'callouts') or _has_list(s, 'comparison_items') or _has_list(s, 'kpis')
+
+    # Chart-only pages are a strong signal of low information density.
+    if st not in ('title', 'section_divider') and has_chart and (not has_any_side) and len(regions) <= 1:
+        chart_only += 1
+        issues.append({'slide_id': s.get('slide_id'), 'severity': 'major', 'issue': 'Chart-only single-region slide (low information density)', 'auto_fixable': True})
+        score -= 5
+
+    # Section divider should not be an empty transition page.
+    if st == 'section_divider':
+        density = 0
+        if isinstance(s.get('content'), list) and len(s.get('content')) > 0:
+            density += 1
+        if _has_list(s, 'bullets'):
+            density += 1
+        if _has_list(s, 'callouts'):
+            density += 1
+        if _has_list(s, 'kpis'):
+            density += 1
+        if density < 2:
+            divider_low_density += 1
+            issues.append({'slide_id': s.get('slide_id'), 'severity': 'major', 'issue': 'Section divider low density (<2 content blocks)', 'auto_fixable': True})
+            score -= 5
+
+multi_region_rate = multi_region / max(len(slides), 1)
 
 # Stage 3: Design compliance (basic)
 color_tokens = spec.get('color_system', {}) or spec.get('tokens', {}).get('colors', {})
@@ -125,7 +177,10 @@ qa = {
     'issues': issues,
     'notes_coverage': notes_coverage,
     'pending_visuals_count': len(pending_assets),
-    'kpi_traceability_count': len(kpis)
+    'kpi_traceability_count': len(kpis),
+    'multi_region_rate': multi_region_rate,
+    'chart_only_slide_count': chart_only,
+    'section_divider_low_density_count': divider_low_density,
 }
 
 # Auto-fix pass (one attempt):

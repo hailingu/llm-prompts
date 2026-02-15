@@ -7,7 +7,7 @@ import traceback
 log_path = '/tmp/render_debug.log'
 with open(log_path, 'w', encoding='utf-8') as log:
     try:
-        spec = importlib.util.spec_from_file_location('gen', os.path.abspath('.github/skills/ppt-generator/bin/generate_pptx.py'))
+        spec = importlib.util.spec_from_file_location('gen', os.path.abspath('skills/ppt-generator/bin/generate_pptx.py'))
         gen = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(gen)
         log.write(f"HAS_PPTX_CHARTS={getattr(gen,'HAS_PPTX_CHARTS',None)}\n")

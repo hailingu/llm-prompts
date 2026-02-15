@@ -21,7 +21,7 @@ def make_prs_and_spec():
 
 
 def test_detect_schema_version_v2():
-    sd = {'layout_intent': {'regions': []}}
+    sd = {'layout_intent': {'regions': [{'id': 'r1'}]}}
     assert detect_schema_version(sd) == 2
 
 
@@ -60,3 +60,37 @@ def test_render_slide_v2_mixed_ok():
     render_slide_v2(prs, sd, spec, grid, sections, slide_num=2, total_slides=2)
     s = prs.slides[-1]
     assert len(s.shapes) > 0
+
+
+def test_render_slide_v2_bullets_fallback_to_action_items():
+    prs, spec, grid, sections = make_prs_and_spec()
+    sd = {
+        'slide_id': 16,
+        'title': 'CTA',
+        'slide_type': 'call_to_action',
+        'content': [],
+        'layout_intent': {
+            'template': 'full',
+            'regions': [
+                {'id': 'content', 'position': 'full', 'renderer': 'bullet_list', 'data_source': 'content'},
+            ]
+        },
+        'components': {
+            'action_items': [
+                {'text': '建立基准评测', 'owner': '平台架构', 'deadline': '2026Q4'},
+                {'text': '建设多源化体系', 'owner': '供应链', 'deadline': '2028'},
+            ]
+        },
+        'visual': {'type': 'none'},
+    }
+
+    render_slide_v2(prs, sd, spec, grid, sections, slide_num=16, total_slides=16)
+    slide = prs.slides[-1]
+    texts = []
+    for shape in slide.shapes:
+        if getattr(shape, 'has_text_frame', False):
+            text = (shape.text_frame.text or '').strip()
+            if text:
+                texts.append(text)
+
+    assert any('建立基准评测' in text for text in texts)

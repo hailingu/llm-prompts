@@ -17,7 +17,8 @@ from ppt_generator.renderers import compute_region_bounds, resolve_data_source, 
 def test_detect_schema_version():
     assert detect_schema_version({}) == 1
     assert detect_schema_version({'layout_intent': {}}) == 1
-    assert detect_schema_version({'layout_intent': {'regions': []}}) == 2
+    assert detect_schema_version({'layout_intent': {'regions': []}}) == 1
+    assert detect_schema_version({'layout_intent': {'regions': [{'id': 'r1'}]}}) == 2
 
 
 def test_compute_region_bounds_full_and_left_right():

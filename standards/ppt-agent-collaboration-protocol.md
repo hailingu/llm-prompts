@@ -72,7 +72,7 @@ graph TB
 
 **Role**: Content Strategist (aligned to McKinsey, Barbara Minto)
 
-**Deliverables**: `.slides.md` + `slides_semantic.json` + `content_qa_report.json`
+**Deliverables**: `.slides.md` + `slides_semantic_v2.json` + `content_qa_report.json`
 
 **Input**: User request, design documents
 
@@ -115,7 +115,7 @@ graph TB
 
 **Input**: `ppt-content-planner` output
 
-**Output to**: `skills/ppt-generator/bin/generate_pptx.py` (pre-built renderer, ~1477 lines)
+**Output to**: `scripts/generate_v2_pptx.py` (v2-only generation entry)
 
 **Core Responsibilities**:
 - **Visual Design**: Theme, colors, typography, layouts
@@ -271,7 +271,7 @@ Use both when slide needs **structured data rendering AND supplementary visualiz
 - Consume `components` data structure → design layout strategy (cards, tables, columns)
 - Consume `visual` annotations → specify chart rendering instructions in design_spec.json
 - Do NOT re-specify data already in `components` (reference slide_id instead)
-- Do NOT invent new data not in slides_semantic.json
+- Do NOT invent new data not in slides_semantic_v2.json
 
 #### Rule 7: Specialist Responsibility
 - Render `components` using Material Design component library (defined in design_spec.json)
@@ -302,7 +302,7 @@ docs/presentations/<session-id>/
 │
 │  ── Content Planner outputs ──
 ├── slides.md                    # Human-readable slide outline
-├── slides_semantic.json         # Machine-readable semantic structure
+├── slides_semantic_v2.json      # Machine-readable semantic structure (v2-only)
 ├── content_qa_report.json       # Content planner self-QA report
 │
 │  ── Visual Designer outputs ──
@@ -326,7 +326,7 @@ docs/presentations/<session-id>/
 | File | Name | Naming Rule |
 |------|------|-------------|
 | Slide outline | `slides.md` | Fixed name, no prefix |
-| Semantic JSON | `slides_semantic.json` | Fixed name, no prefix |
+| Semantic JSON | `slides_semantic_v2.json` | Fixed name, no prefix |
 | Content QA | `content_qa_report.json` | Fixed name |
 | Design spec | `design_spec.json` | Fixed name |
 | Visual report | `visual_report.json` | Fixed name |
@@ -336,23 +336,22 @@ docs/presentations/<session-id>/
 | Cover image | `images/cover_bg.jpg` | Fixed name, `.jpg` or `.png` |
 | Diagram image | `images/slide_{N}_diagram.png` | `{N}` = slide number |
 
-> ⚠️ **FORBIDDEN**: Adding topic prefixes to fixed-name files (e.g., ~~`MFT_slides_semantic.json`~~, ~~`MFT_design_spec.json`~~). All files use their canonical names — the session directory already provides namespace isolation.
+> ⚠️ **FORBIDDEN**: Adding topic prefixes to fixed-name files (e.g., ~~`MFT_slides_semantic_v2.json`~~, ~~`MFT_design_spec.json`~~). All files use their canonical names — the session directory already provides namespace isolation.
 
 ### Agent I/O Path Contract
 
 | Agent | Reads From (input) | Writes To (output) |
 |-------|--------------------|--------------------|
-| content-planner | Source document (user-provided, any location) | `<session-dir>/slides.md`, `slides_semantic.json`, `content_qa_report.json` |
-| visual-designer | `<session-dir>/slides_semantic.json` | `<session-dir>/design_spec.json`, `visual_report.json`, `images/*` |
-| specialist | `<session-dir>/slides_semantic.json`, `design_spec.json` | `<session-dir>/<project>.pptx`, `qa_report.json` |
+| content-planner | Source document (user-provided, any location) | `<session-dir>/slides.md`, `slides_semantic_v2.json`, `content_qa_report.json` |
+| visual-designer | `<session-dir>/slides_semantic_v2.json` | `<session-dir>/design_spec.json`, `visual_report.json`, `images/*` |
+| specialist | `<session-dir>/slides_semantic_v2.json`, `design_spec.json` | `<session-dir>/<project>.pptx`, `qa_report.json` |
 | creative-director | All files in `<session-dir>/` | `<session-dir>/decisions.json`, `README.md` |
 
 ### Renderer CLI Convention
 
 ```bash
-python3 skills/ppt-generator/bin/generate_pptx.py \
-  --semantic docs/presentations/<session-id>/slides_semantic.json \
-  --design   docs/presentations/<session-id>/design_spec.json \
+python3 scripts/generate_v2_pptx.py \
+  --base-dir docs/presentations/<session-id> \
   --output   docs/presentations/<session-id>/<project>.pptx
 ```
 
@@ -387,7 +386,7 @@ note: This is the ONLY step where CD actively initiates. After this, the pipelin
 ```yaml
 agent: ppt-content-planner
 input: [user_request, source_md, presentation_type, session-id]
-output: slides.md + slides_semantic.json + content_qa_report.json
+output: slides.md + slides_semantic_v2.json + content_qa_report.json
 self_check: content_quality (MO-0 through MO-12)
 on_pass: auto-handoff → ppt-visual-designer ("visual design" handoff)
 on_fail: escalate → ppt-creative-director with failure details
@@ -397,7 +396,7 @@ success_criteria:
   - Visual needs marked
   - Logical structure (Pyramid Principle)
   - Bullets within limits
-  - slides_semantic.json completeness = 100%
+  - slides_semantic_v2.json completeness = 100%
   - KPI traceability ≥ 80%
   - MO-6: No fabricated data (all values traceable to source)
   - MO-7: content[] does not duplicate component labels
@@ -410,7 +409,7 @@ success_criteria:
 
 ```yaml
 agent: ppt-visual-designer
-input: slides_semantic.json (from content-planner, self-check passed)
+input: slides_semantic_v2.json (from content-planner, self-check passed)
 output: design_spec.json + visual_report.json + diagram PNGs
 self_check: visual_quality (MV-1 through MV-11)
 on_pass: auto-handoff → ppt-specialist ("generate pptx" handoff)
@@ -431,7 +430,7 @@ success_criteria:
 
 #### design_spec.json Schema Contract (BINDING)
 
-The renderer (`generate_pptx.py`) reads design tokens from **specific top-level keys**. Both the visual-designer (producer) and specialist (consumer) MUST adhere to this contract:
+The v2 renderer pipeline (`scripts/generate_v2_pptx.py` + `ppt_generator.renderers`) reads design tokens from **specific top-level keys**. Both the visual-designer (producer) and specialist (consumer) MUST adhere to this contract:
 
 | Token Type | REQUIRED Key Path | FORBIDDEN Key Path | Consequence if Wrong |
 |---|---|---|---|
@@ -451,7 +450,7 @@ The renderer (`generate_pptx.py`) reads design tokens from **specific top-level 
 
 ```yaml
 agent: ppt-specialist
-input: slides_semantic.json + design_spec.json
+input: slides_semantic_v2.json + design_spec.json
 steps:
   1. Run preflight_check(design_spec) → classify issues
   2. If CRITICAL design issues → rollback to visual-designer
@@ -566,7 +565,7 @@ Every feedback message MUST include the iteration count:
 - ✅ Logical structure (Hierarchical SCQA + Pyramid Principle)
 - ✅ KPI traceability ≥ 80% (all defined KPIs traced through evidence slides)
 - ✅ Timing feasibility (avg ≤1.5 min/slide; no section >2× average)
-- ✅ slides_semantic.json completeness (100% slide coverage)
+- ✅ slides_semantic_v2.json completeness (100% slide coverage)
 - ✅ Cognitive intent on ≥3 critical visuals
 - ✅ Domain extension packs activated appropriately
 
@@ -586,7 +585,7 @@ Every feedback message MUST include the iteration count:
 - ❌ Final Score < 70
 - ❌ Critical issues > 0
 - ❌ Key Decisions missing
-- ❌ slides_semantic.json missing or empty
+- ❌ slides_semantic_v2.json missing or empty
 - ❌ KPI defined in Key Decisions but never referenced in evidence slides
 
 **Warning Conditions** (deliver with notes):
@@ -609,7 +608,7 @@ content_score = 40 * (
     0.10 * text_density_compliance +   # 文本密度 4分
     0.15 * kpi_traceability +          # KPI 可追溯性 6分 (NEW)
     0.10 * timing_feasibility +        # 时间/节奏 4分 (NEW)
-    0.10 * semantic_json_completeness  # slides_semantic.json 完整性 4分 (NEW)
+    0.10 * semantic_json_completeness  # slides_semantic_v2.json 完整性 4分 (NEW)
 )
 
 # Visual Quality (40分)
@@ -797,5 +796,5 @@ Fix critical issues manually or adjust design requirements
 | -------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | -------- | ------     | ---------                                                                                                                                                                                                                                                                              |
 | 3.0      | 2026-02-09 | Pipeline mode workflow optimization<br/>- Removed 3 manual CD approval gates (content review, visual review, final review)<br/>- Content-planner auto-handoffs to visual-designer after self-check<br/>- Visual-designer auto-handoffs to specialist after self-check<br/>- Specialist auto-delivers on score≥70 AND critical==0<br/>- CD reduced to launcher + exception handler role<br/>- Added rollback classification rules (design→VD, content→CP, ambiguous→CD)<br/>- Added auto-delivery decision tree in specialist |
-| 2.0      | 2026-02-05 | Domain-agnostic upgrade<br/>- Added slides_semantic.json to content-planner deliverables<br/>- Added hierarchical SCQA, KPI traceability, timing/pacing, cognitive intent<br/>- Expanded visual type taxonomy (10→24 types across 3 levels)<br/>- Updated evaluation formula with new dimensions (KPI traceability, timing, cognitive intent, visual diversity, domain pack)<br/>- Added blocking conditions: slides_semantic.json missing, KPI inconsistency<br/>- Updated visual-designer to consume cognitive_intent<br/>- Updated quality gates with KPI and timing checks |
+| 2.0      | 2026-02-05 | Domain-agnostic upgrade<br/>- Added slides_semantic_v2.json to content-planner deliverables<br/>- Added hierarchical SCQA, KPI traceability, timing/pacing, cognitive intent<br/>- Expanded visual type taxonomy (10→24 types across 3 levels)<br/>- Updated evaluation formula with new dimensions (KPI traceability, timing, cognitive intent, visual diversity, domain pack)<br/>- Added blocking conditions: slides_semantic_v2.json missing, KPI inconsistency<br/>- Updated visual-designer to consume cognitive_intent<br/>- Updated quality gates with KPI and timing checks |
 | 1.0      | 2026-01-28 | Initial release (3-agent architecture)<br/>- Established content-planner, visual-designer, creative-director roles<br/>- Defined quality gates and evaluation formula<br/>- Set iteration limits (2) and escalation rules<br/>- Separated from general agent-collaboration-protocol.md |

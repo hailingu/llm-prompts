@@ -1,0 +1,353 @@
+# ============================================================
+# ppt-chart-engine / charts.yml
+# 图表引擎 — 类型、选择算法、语义映射、数据契约、渲染约束、代码示例
+# ============================================================
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║  1. 图表类型                                            ║
+# ╚══════════════════════════════════════════════════════════╝
+
+chart_types:
+  basic:
+    - { data_type: 多维比较, chart: 雷达图, use_case: "技术成熟度、能力评估" }
+    - { data_type: 时间趋势, chart: 折线图, use_case: "性能指标变化、市场份额" }
+    - { data_type: 分类对比, chart: 柱状图, use_case: "细分市场表现、产品对比" }
+    - { data_type: 比例关系, chart: "饼图/环形图", use_case: "市场份额、成本结构" }
+    - { data_type: 地理分布, chart: 地图, use_case: "区域市场分析" }
+
+  extended:
+    - { data_type: 多变量关系, chart: 气泡图, use_case: "R&D人才分布、技术投资分析", engine: Chart.js, readiness: 原生, cdn: null }
+    - { data_type: 双轴趋势, chart: 双轴组合图, use_case: "收入与利润率、销量与市场份额", engine: Chart.js, readiness: 原生, cdn: null }
+    - { data_type: 时间排程, chart: 甘特图, use_case: "路线图、里程碑、项目计划", engine: ECharts, readiness: 原生, cdn: "echarts@5" }
+    - { data_type: 矩阵数据, chart: 热力图, use_case: "架构对比、相关性分析", engine: ECharts, readiness: 原生, cdn: "echarts@5" }
+    - { data_type: 分布分析, chart: 箱线图, use_case: "性能指标分布、异常值检测", engine: Chart.js, readiness: 需插件, cdn: "@sgratzl/chartjs-chart-boxplot" }
+    - { data_type: 层级结构, chart: 树状图, use_case: "组织架构、产品分类", engine: Chart.js, readiness: 需插件, cdn: "chartjs-chart-treemap" }
+    - { data_type: 关系网络, chart: 桑基图, use_case: "供应链流程、资金流向", engine: ECharts, readiness: 原生, cdn: "echarts@5" }
+    - { data_type: 地理热力, chart: 地理热力图, use_case: "区域市场热度、用户分布", engine: ECharts, readiness: 原生, cdn: "echarts@5" }
+    - { data_type: 架构/包含, chart: 架构图(Stack), use_case: "系统架构、技术栈、模块分层", engine: HTML+CSS, readiness: 原生, cdn: null }
+
+  engine_constraint: |
+    标记为「需插件」的图表类型，<head> 中必须引入对应 CDN，否则禁止使用。
+    标记为 ECharts 的类型，必须用 <div> 容器 + echarts.init()，禁止用 <canvas> + Chart.js API。
+    标记为 HTML+CSS 的类型，使用 Flex/Grid 布局手动构建 DOM 结构，不依赖图表库。
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║  2. 图表选择算法                                        ║
+# ╚══════════════════════════════════════════════════════════╝
+
+selection_algorithm:
+  by_data_dimension:
+    - { dims: "1维", charts: ["饼图", "柱状图"] }
+    - { dims: "2维", charts: ["折线图", "散点图"] }
+    - { dims: "3维", charts: ["气泡图", "热力图"] }
+    - { dims: "4+维", charts: ["雷达图", "组合图"] }
+
+  by_data_type:
+    - { type: 分类数据, charts: ["柱状图", "饼图"] }
+    - { type: 时序数据, charts: ["折线图", "面积图"] }
+    - { type: 地理数据, charts: ["地图", "热力图"] }
+    - { type: 关系数据, charts: ["桑基图", "网络图"] }
+
+  by_insight_type:
+    - { insight: 比较洞察, charts: ["柱状图", "雷达图"] }
+    - { insight: 趋势洞察, charts: ["折线图", "面积图"] }
+    - { insight: 分布洞察, charts: ["箱线图", "直方图"] }
+    - { insight: 关系洞察, charts: ["散点图", "气泡图"] }
+    - { insight: 构成洞察, charts: ["饼图", "环形图"] }
+    - { insight: 地理洞察, charts: ["地图", "地理热力图"] }
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║  2.5 智能数据集映射 (Auto-Mapping)                       ║
+# ╚══════════════════════════════════════════════════════════╝
+
+dataset_mapping:
+  # 行业报告标准数据集映射
+  - { file_pattern: "bottleneck_index", chart: "堆叠面积图", insight: "趋势洞察", description: "瓶颈指数随时间变化" }
+  - { file_pattern: "tech_maturity", chart: "雷达图", insight: "比较洞察", description: "多维度技术成熟度评估" }
+  - { file_pattern: "segment_index", chart: "多系列折线图", insight: "趋势洞察", description: "细分市场份额变化" }
+  - { file_pattern: "timeline_events", chart: "甘特图", insight: "时间排程", description: "关键事件时间线" }
+  - { file_pattern: "cpu_comparison", chart: "分组柱状图", insight: "比较洞察", description: "架构性能直接对比" }
+  - { file_pattern: "ai_impact", chart: "热力图", insight: "关系洞察", description: "AI负载对各场景的影响强度" }
+  - { file_pattern: "rd_talent", chart: "组合图(Bar+Line)", insight: "趋势洞察", description: "研发投入与人才增长" }
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║  2.6 数据装载协议 (Data Loading Protocol)                ║
+# ╚══════════════════════════════════════════════════════════╝
+
+data_loading_protocol:
+  principles:
+    - "Hardcoding Forbidden": 禁止直接在 chart 配置中写死 [10, 20, 30] 等数据数组。
+    - "Source Embedding": 必须将 CSV 内容转为 JSON 对象存入变量 `const sourceData = [...]`。
+    - "Mapping Logic": 使用 map/filter 函数从 sourceData 提取 labels 和 datasets。
+  
+  code_snippet_template: |
+    // 1. Embed Source Data (Converted from CSV)
+    const sourceData = [
+      { year: 2021, value: 10, category: 'A' },
+      { year: 2022, value: 20, category: 'A' }
+    ];
+    
+    // 2. Map to Chart Format
+    const labels = sourceData.map(d => d.year);
+    const dataValues = sourceData.map(d => d.value);
+    
+    // 3. Init Chart
+    new Chart(ctx, {
+      data: { labels, datasets: [{ data: dataValues }] }
+    });
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║  3. 图表语义强制映射                                    ║
+# ╚══════════════════════════════════════════════════════════╝
+
+semantic_mapping:
+  - condition: "目标风格≈Notion + 行列矩阵数据（场景×年份/指标）"
+    default_chart: "热力图（ECharts）"
+    avoid: 多折线
+
+  - condition: "主题=行动路线/阶段计划"
+    rules:
+      - if: "年度事件流 (year+event_type+impact) 且事件点≥6"
+        then: "里程碑时间线布局（milestone-timeline）"
+      - if: "含起止时间/持续时长/里程碑 (start/end/duration/milestone)"
+        then: "甘特图(ECharts) + 关键行动卡 + 底部KPI条"
+      - if: "缺精确日期，但有可解析阶段区间（如 6-12个月 / 1-3年 / 3-5年）"
+        then: "示意甘特图(相对时间轴) + 关键行动卡 + 底部KPI条；页脚标注"示意，不含精确起止时间""
+      - if: "缺排程字段且事件点不足时间线门槛"
+        then: "流程布局 + 阶段卡 + 底部KPI条；页脚标注"非排程视图""
+
+  - condition: "页面含'关键维度快照'"
+    rule: "必须提供结构化表格或指标面板，不得仅用段落列表替代"
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║  4. 数据契约                                            ║
+# ╚══════════════════════════════════════════════════════════╝
+
+data_contracts:
+  milestone_timeline:
+    required_fields:
+      - { field: "time 或 year", desc: "时间点（如 2021、2026E）" }
+      - { field: event_type, desc: "事件类型（技术/政策/生态/能效等）" }
+      - { field: description, desc: "事件描述（建议 16–40 中文字符）" }
+    optional_fields:
+      - { field: impact_direction, values: ["positive", "negative", "both"], desc: "用于语义色映射" }
+      - { field: proxy_metrics, desc: "卡片下方指标条（如 Supply Impact: 86）" }
+
+  gantt:
+    required_fields:
+      - { field: task, desc: "任务名称" }
+      - { field: start, desc: "开始时间（ISO 日期或时间点）" }
+      - { field: "end 或 duration", desc: "结束时间或持续时长" }
+      - { field: phase, desc: "阶段归属（用于颜色映射）" }
+    optional_fields:
+      - { field: progress, range: "0-100", desc: "完成度" }
+      - { field: owner, desc: "责任人/团队" }
+    relative_timeline_fields:
+      - { field: phase_label, desc: "阶段名称（短期/中期/长期）" }
+      - { field: range_text, desc: "区间文案（如 6-12个月、1-3年）" }
+      - { field: "duration_min / duration_max", desc: "统一换算到月的区间边界" }
+      - { field: task, desc: "阶段任务文本（用于 tooltip 与行动条）" }
+    fallback_rules:
+      - "不得伪造精确排程"
+      - "若可从区间文案解析出阶段时长，优先使用示意甘特（相对时间轴）"
+      - "仅当既无精确排程字段也无可解析区间文案时，才降级为阶段卡流程图，并标注'示意，不含精确起止时间（非排程视图）'"
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║  5. 图表专项约束                                        ║
+# ╚══════════════════════════════════════════════════════════╝
+
+chart_constraints:
+
+  # ---- 5.1 Bubble + Narrative ----
+  bubble_narrative:
+    - id: BN-1
+      rule: "语义映射固定：x=growth_rate, y=index_0_100, r=confidence_level，不得手工写死半径序列"
+    - id: BN-2
+      rule: |
+        半径归一化公式：
+        r = clamp(8, 24, 8 + ((c - c_min) / max(1, c_max - c_min)) * 16)
+        当 c_max == c_min 时回退到 r = 14
+    - id: BN-3
+      rule: "最小可辨差：半径去重后唯一值≥3；不足3时按排序做±2px保序拉开（仍需clamp到[8,24]）"
+    - id: BN-4
+      rule: "Narrative 右栏必须三段卡片，每段至少2条要点，其中至少1条为'对象+数值+时间/阶段'的可验证陈述"
+    - id: BN-5
+      rule: "Bubble图必须提供对象语义映射可视化图例（图内legend或图下legend strip），禁止仅依赖hover tooltip"
+    - id: BN-6
+      rule: "图例至少包含 对象名+(x,y)含义提示；对象数>4时额外提供分组或缩写映射表"
+    - id: BN-7
+      rule: "不同对象使用不同颜色（设计系统语义色盘），跨页一致，不得随机换色"
+    - id: BN-8
+      rule: "Legend 默认不超过2行；单项≤18字符，超限改短名+缩写映射"
+    - id: BN-9
+      rule: |
+        版式预算公式：chart_h + legend_h + footnote_h + inner_padding <= card_inner_h
+        不满足时回退：①简化legend → ②下调chart_h → ③压缩注释文案
+    - id: BN-10
+      rule: "Legend 默认无边框无底色（仅色点+文本），仅对比不足时可用浅边框"
+
+  # ---- 5.2 Bubble 坐标轴与裁切保护 ----
+  bubble_axis:
+    - id: BA-1
+      rule: |
+        Y轴 headroom：y_suggested_max = y_data_max + max(2, ceil(r_max / 8))
+        若业务必须固定上界（如指数上限100），须同步降低r_max或下移数据映射
+    - id: BA-2
+      rule: "必须显式设置 ticks.stepSize（禁止自动nice ticks）；指数型Y轴默认stepSize:10，区间<40时可降为5"
+    - id: BA-3
+      rule: "裁切门禁：若任一点 y + y_radius_equiv >= y.max，判定'触顶风险'，不可交付"
+    - id: BA-4
+      rule: "触发裁切时回退：①提高y_suggested_max → ②降低r_max(如24→20) → ③调整图高或点位映射"
+
+  # ---- 5.3 Line/Trend 纵轴范围与可读性 ----
+  line_trend:
+    - id: LT-1
+      rule: "禁止机械 beginAtZero:true,max:100（除非指标为'绝对占比展示'）"
+    - id: LT-2
+      rule: |
+        数据包络留白：
+        pad = max(3, ceil((y_data_max - y_data_min) * 0.15))
+        y_min = floor((y_data_min - pad)/step)*step
+        y_max = ceil((y_data_max + pad)/step)*step
+    - id: LT-3
+      rule: "必须显式设置 ticks.stepSize；指数/评分型默认5，跨度>40可用10"
+    - id: LT-4
+      rule: "视觉利用率：数据带宽占绘图区高度 55%–85%"
+    - id: LT-5
+      rule: "0基线豁免：仅'从零比较绝对规模'场景允许beginAtZero:true，需注释说明口径"
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║  6. 渲染约束                                            ║
+# ╚══════════════════════════════════════════════════════════╝
+
+rendering:
+
+  # ---- 6.1 容器高度契约（强制） ----
+  container_height_contract:
+    - id: CH-1
+      rule: "禁止纯 h-full 链式继承：chart-wrap 必须带显式像素高度（如 h-[460px]）"
+    - id: CH-2
+      rule: "grid/flex 子元素防塌陷：图表所在子元素加 min-h-0"
+    - id: CH-3
+      rule: "Chart.js 必须 maintainAspectRatio: false（options 中同时设 responsive: true）"
+    - id: CH-4
+      rule: "ECharts 容器必须显式宽高（style 或 Tailwind 类）"
+    - id: CH-5
+      rule: "canvas 最小高度：chart-wrap 内 canvas min-height: 200px（CSS 兜底）"
+
+  # ---- 6.2 图元预算规则 ----
+  chart_element_budget:
+    - id: EB-1
+      rule: "热力图最小高度：启用 xAxis 标签 + visualMap 时，图容器 ≥ 220px"
+    - id: EB-2
+      rule: "底部组件保留区：水平 visualMap 时 grid.bottom >= 44, visualMap.bottom <= 6"
+    - id: EB-3
+      rule: "标签占位补偿：axisLabel.fontSize <= 10 且类目 ≥ 8 时，额外增加 grid.bottom(+8~+14)"
+    - id: EB-4
+      rule: "图卡高度联动：chart_height + title_block + padding <= card_inner_height"
+
+  # ---- 6.3 Heatmap 左侧填充率 ----
+  heatmap_fill_rate:
+    - id: HF-1
+      rule: "左侧主卡填充率 82%–94%，禁止大面积底部留白"
+    - id: HF-2
+      rule: "chart-wrap 占可用高度 62%–74%，快照/注释区 18%–28%，间隙 ≤ 24px"
+    - id: HF-3
+      rule: "固定高度容器时必须联动调整，禁止默认 300px 导致底部空白"
+
+  # ---- 6.4 卡片内预算与组件冲突 ----
+  card_inner_budget:
+    - id: CB-1
+      rule: "卡片内预算：title_h + subtitle_h + chart_h + legend_or_visualmap_h + top_bottom_padding <= card_inner_h"
+    - id: CB-2
+      rule: "组件冲突：xAxis 标签与 visualMap、图例、数据区任意重叠 → chart_component_collision → 不可交付"
+    - id: CB-3
+      rule: "冲突回退：①增大 grid.bottom 或上移 visualMap → ②提高图容器高度(+16/+24) → ③减少类目或缩短轴标签"
+    - id: CB-4
+      rule: "右栏热力图卡推荐高度 >= 260px，图容器 >= 220px（1280×720 双栏布局）"
+
+  # ---- 6.5 数据守卫规则（强制） ----
+  data_guards:
+    - id: DG-1
+      rule: "NaN/null 检查：遍历 datasets[].data，将 NaN/null/undefined 替换为 0 或移除"
+    - id: DG-2
+      rule: "长度一致性：labels.length == datasets[].data.length，不一致截断至最短"
+    - id: DG-3
+      rule: "空数据降级：全 0/缺失时渲染 '暂无数据' 提示卡"
+    - id: DG-4
+      rule: "品牌切换后重绘：switchBrand() 后延迟 50ms 调用 chart.resize()"
+    - id: DG-5
+      rule: "首帧保护：图表初始化在 DOMContentLoaded 事件后执行"
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║  7. 代码示例                                            ║
+# ╚══════════════════════════════════════════════════════════╝
+
+examples:
+
+  bubble_chart: |
+    <!-- 气泡图示例 -->
+    <canvas id="bubbleChart"></canvas>
+    <script>
+      const rawPoints = [
+        { x: 20, y: 30, confidence: 78 },
+        { x: 40, y: 10, confidence: 88 },
+        { x: 60, y: 50, confidence: 94 }
+      ];
+      const confs = rawPoints.map(p => p.confidence);
+      const cMin = Math.min(...confs);
+      const cMax = Math.max(...confs);
+      const toRadius = (c) => {
+        if (cMax === cMin) return 14;
+        const v = 8 + ((c - cMin) / Math.max(1, cMax - cMin)) * 16;
+        return Math.max(8, Math.min(24, v));
+      };
+      const points = rawPoints.map(p => ({ x: p.x, y: p.y, r: toRadius(p.confidence) }));
+      const yDataMax = Math.max(...points.map(p => p.y));
+      const rMax = Math.max(...points.map(p => p.r));
+      const ySuggestedMax = yDataMax + Math.max(2, Math.ceil(rMax / 8));
+
+      new Chart(document.getElementById('bubbleChart'), {
+        type: 'bubble',
+        data: {
+          datasets: [{
+            label: 'R&D人才分布',
+            data: points,
+            backgroundColor: '#00338D'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              suggestedMax: ySuggestedMax,
+              ticks: { stepSize: 10 }
+            }
+          }
+        }
+      });
+  architecture_layers: |
+    <!-- 架构图示例（使用HTML/CSS Grid） -->
+    <div class="arch-container flex flex-col gap-2 p-4 bg-gray-50 border border-gray-200 rounded text-xs">
+      <!-- Top Layer -->
+      <div class="layer bg-blue-100 p-2 text-center font-bold text-blue-900 border border-blue-200 rounded">User Space (Applications)</div>
+      
+      <!-- Arrow separator -->
+      <div class="text-center text-gray-400 text-[10px]">▼ System Calls</div>
+      
+      <!-- Middle Layer (Grouped) -->
+      <div class="layer-group bg-gray-200 p-2 border border-gray-300 rounded grid grid-cols-4 gap-2">
+         <div class="col-span-4 text-center font-bold mb-1 text-gray-700">Kernel Space</div>
+         <!-- Sub-modules -->
+         <div class="module bg-white p-2 text-center shadow-sm border border-gray-300 rounded">Process Mgmt</div>
+         <div class="module bg-white p-2 text-center shadow-sm border border-gray-300 rounded">Memory Mgmt</div>
+         <div class="module bg-white p-2 text-center shadow-sm border border-gray-300 rounded">File System</div>
+         <div class="module bg-white p-2 text-center shadow-sm border border-gray-300 rounded">Device Drivers</div>
+      </div>
+      
+      <!-- Bottom Layer -->
+      <div class="layer bg-green-100 p-2 text-center font-bold text-green-900 border border-green-200 rounded mt-2">Hardware (CPU, RAM, Disk)</div>
+    </div
+      });
+    </script>

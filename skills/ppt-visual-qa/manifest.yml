@@ -1,0 +1,37 @@
+name: ppt-visual-qa
+version: 1.0.0
+schema_version: 1
+description: "Unified quality assurance gate system for PPT HTML slides — merges delivery gates and quality checklist into a single check matrix with draft-mode degradation support."
+owner: ppt-html-generator
+category: quality-assurance
+tags:
+  - qa
+  - delivery-gates
+  - quality-checklist
+  - visual-qa
+  - ppt
+dependencies: []
+integration:
+  agents:
+    - ppt-html-generator
+  skills:
+    - ppt-brand-system
+last_updated: 2026-02-15
+
+readme: README.md
+gates: gates.yml
+
+outputs:
+  success:
+    description: "All applicable gates passed for the given output mode."
+    fields:
+      - mode            # draft | production
+      - passed_count
+      - total_applicable
+      - skipped_count
+  error:
+    description: "One or more blocking gates failed after max retries."
+    fields:
+      - failed_gates
+      - retry_count
+      - suggested_manual_action

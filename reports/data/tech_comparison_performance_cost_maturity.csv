@@ -1,7 +1,0 @@
-Technology,Performance,Cost,Maturity,TypicalUseCases,Notes
-NVMe,High,High,Mature,DB/VMs,Well-supported
-NVMe-oF,VeryHigh,High,Emerging,Distributed Storage,Requires Network Infrastructure
-PMem,UltraLowLatency,VeryHigh,EarlyAdoption,Low-latency Caching,Limited Capacity
-CXL,High,High,EarlyAdoption,Memory Pooling/Coherent Acceleration,Interop evolving
-ComputationalStorage,Variable,Medium,Research/Early,Near-data Processing,Limited Ecosystem
-Tape,Low,Low,Mature,Cold Archive,Very low cost/TB but high latency

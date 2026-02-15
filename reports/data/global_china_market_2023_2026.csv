@@ -1,9 +1,0 @@
-Year,Region,MarketSize_USD_Bn,CloudSharePercent,EnterpriseSharePercent,Source,DataCollectionDate
-2023,Global,85,45,55,IDC/SNIA Public Estimates,2026-02-10
-2024,Global,92,48,52,IDC/SNIA Public Estimates,2026-02-10
-2025,Global,100,50,50,IDC/SNIA Public Estimates,2026-02-10
-2026,Global,110,53,47,IDC/SNIA Public Estimates (est),2026-02-10
-2023,China,28,40,60,IDC/SNIA Public Estimates,2026-02-10
-2024,China,32,44,56,IDC/SNIA Public Estimates,2026-02-10
-2025,China,36,46,54,IDC/SNIA Public Estimates,2026-02-10
-2026,China,40,50,50,IDC/SNIA Public Estimates (est),2026-02-10

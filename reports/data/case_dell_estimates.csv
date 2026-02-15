@@ -1,5 +1,0 @@
-Workload,Config,IOPS_min,IOPS_max,BW_GBps_est,CostLevel,Notes,Source,DataDate
-OLTP,PowerMax NVMe array + SR-IOV/RDMA,50000,250000,1,High,"企业级低延迟阵列，适合关键 DB/事务型负载","Dell 公共资料 + 工程估算",2026-02-11
-Scaleout_File,PowerScale scale-out NAS + SSD tier,5000,60000,0.5,Medium,"并行文件访问与数据管理集成","Dell 公共资料 + 工程估算",2026-02-11
-Object_Archive,ECS + HDD下沉,100,5000,0.05,Low,"企业对象存储，合规与数据管理","Dell 公共资料 + 工程估算",2026-02-11
-AI_Training,PowerMax + NVMe-oF front-end,80000,200000,4,High,"高并行 NVMe 训练/推理路径","工程估算",2026-02-11
