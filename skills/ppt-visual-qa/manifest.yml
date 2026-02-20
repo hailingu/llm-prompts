@@ -20,18 +20,35 @@ last_updated: 2026-02-15
 
 readme: README.md
 gates: gates.yml
+executable:
+  script: run_visual_qa.py
+  report: qa/layout-runtime-report.json
+  report_contract:
+    fixed_filename: layout-runtime-report.json
+    fixed_relative_dir: qa
+    fixed_relative_path: qa/layout-runtime-report.json
+    fixed_path_required: true
+    notes: "Canonical output must be <presentation-dir>/qa/layout-runtime-report.json; non-canonical report paths are invalid."
+  additional_scripts:
+    - run_pptx_qa.py
+    - run_auto_fix_qa.py
+    - validate_pptx_and_write_report.py
 
 outputs:
   success:
-    description: "All applicable gates passed for the given output mode."
+    description: "All applicable gates passed for the given output mode; runtime/static report generated."
     fields:
       - mode            # draft | production
+      - backend         # playwright-runtime | static-fallback
       - passed_count
       - total_applicable
       - skipped_count
+      - report_path
   error:
     description: "One or more blocking gates failed after max retries."
     fields:
+      - backend
       - failed_gates
       - retry_count
+      - report_path
       - suggested_manual_action

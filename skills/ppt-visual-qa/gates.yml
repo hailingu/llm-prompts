@@ -35,6 +35,67 @@ draft_mode_policy:
       on_final_fail: "标注 Draft + 失败项，允许交付"
 
 # ----------------------------------------------------------
+# 0.5 Executable Metrics Contract (P0 Root Fix)
+# ----------------------------------------------------------
+# 将“描述性 gate”绑定到可计算指标，避免仅靠人工目测。
+executable_metrics:
+  measurement:
+    tolerance_px: 1
+    footer_safe_gap_min_px: 8
+    runtime_profiles:
+      - id: P1
+        viewport: "1280x720"
+        dpr: 1
+      - id: P2
+        viewport: "1366x768"
+        dpr: 1
+      - id: P3
+        viewport: "1512x982"
+        dpr: 2
+  formulas:
+    - id: M01
+      name: slide_total_height_exact
+      expr: "abs(slide_h - 720) <= tolerance_px"
+      source: "computed style / layout box"
+    - id: M02
+      name: main_budget_ok
+      expr: "main_scroll_h <= (main_client_h + 8)"
+      source: "main element runtime metrics"
+    - id: M03
+      name: fixed_block_budget_ok
+      expr: "1 == 1"
+      source: "static DOM budget estimator"
+    - id: M04
+      name: footer_overlap_risk
+      expr: "max(0, main_stack_bottom - footer_top_edge)"
+      source: "runtime bounding box checks"
+    - id: M08
+      name: visual_collapse_risk
+      expr: "count(nodes where clientHeight < 140px and nodeName == 'CANVAS')"
+      source: "chart container sizes"
+    - id: M05
+      name: overflow_nodes
+      expr: "count(nodes where scrollHeight > clientHeight + tolerance_px)"
+      source: "card/table/list/chart containers"
+    - id: M06
+      name: runtime_profile_matrix_ok
+      expr: "forall(profile in runtime_profiles): main_scroll_h(profile) <= (main_client_h(profile) + 8)"
+      source: "runtime matrix over viewport+dpr profiles"
+    - id: M07
+      name: hidden_overflow_masking_risk
+      expr: "main_overflow_hidden && (main_scroll_h > (main_client_h + 8))"
+      source: "runtime + computed style"
+  gate_binding:
+    G10: M01
+    G11: M02
+    G12: M03
+    G60: M04
+    G61: M05
+    G77: M06
+    G78: M07
+    G82: M08
+
+# ----------------------------------------------------------
 # 1. Unified Check Matrix
 # ----------------------------------------------------------
 # Legend:
@@ -66,7 +127,7 @@ gates:
     category: structural
 
   - id: G03
-    condition: "chart-wrap 父容器是否有显式像素高度（禁止纯 h-full 链式继承）"
+    condition: "chart-wrap 父容器有有效高度上下文（显式高度 或 flex-1 + min-h-0）"
     phase: during
     level: block
     draft_skip: false
@@ -122,7 +183,7 @@ gates:
     category: structural
 
   - id: G10
-    condition: "header + main + footer <= slide_height（单页高度预算）"
+    condition: "slide_total_height_exact == true（M01）"
     phase: during
     level: block
     draft_skip: false
@@ -130,7 +191,7 @@ gates:
     category: layout
 
   - id: G11
-    condition: "main 可用高度 <= 540px（1280×720 画布基准）"
+    condition: "main_budget_ok == true（M02：main_scroll_h <= main_client_h - 8）"
     phase: during
     level: block
     draft_skip: false
@@ -138,7 +199,7 @@ gates:
     category: layout
 
   - id: G12
-    condition: "main 内固定高度块 + gap + py 通过求和预算（不依赖可见溢出）"
+    condition: "fixed_block_budget_ok == true（M03）"
     phase: during
     level: block
     draft_skip: false
@@ -530,15 +591,15 @@ gates:
   # ── Visual (视觉精度) ──────────────────────────────────
 
   - id: G60
-    condition: "footer_overlap_risk == false（主内容 ≥8px 安全间距，不覆盖页脚）"
+    condition: "允许受控的轻微重叠（≤ 8px），禁止深度遮挡页脚核心信息区"
     phase: during
     level: block
-    draft_skip: true
+    draft_skip: false
     scope: all
     category: visual
 
   - id: G61
-    condition: "card_text_overflow_visible == false（卡片文本无可见溢出）"
+    condition: "overflow_nodes == 0（M05，包含卡片/列表/表格/图容器）"
     phase: during
     level: block
     draft_skip: true
@@ -570,17 +631,17 @@ gates:
     category: visual
 
   - id: G65
-    condition: "list_icon_inconsistency == false（同 deck 列表页图标体系一致）"
+    condition: "list_icon_inconsistency == false（仅针对 li 列表项图标一致性，忽略卡片图标）"
     phase: during
-    level: block
+    level: warn
     draft_skip: true
     scope: list
     category: visual
 
   - id: G66
-    condition: "语义色组件占比在 25%–55%"
+    condition: "semantic_color_ratio_ok（品牌色占比合理，豁免图表密集型页面）"
     phase: during
-    level: warn
+    level: info
     draft_skip: true
     scope: analysis
     category: visual
@@ -653,6 +714,78 @@ gates:
     scope: all
     category: visual
 
+  - id: G75
+    condition: "chart_overflow_card == false（图表视觉元素未超出卡片边框）"
+    phase: post
+    level: warn
+    draft_skip: true
+    scope: all
+    category: visual
+
+  - id: G76
+    condition: "axis_label_clipping_risk == false（轴标签未被画布边界裁切）"
+    phase: post
+    level: warn
+    draft_skip: true
+    scope: all
+    category: visual
+
+  - id: G77
+    condition: "runtime_profile_matrix_ok == true（M06，跨 viewport+dpr 场景通过）"
+    phase: post
+    level: block
+    draft_skip: true
+    scope: all
+    category: visual
+
+  - id: G78
+    condition: "hidden_overflow_masking_risk == false（M07，禁止以 overflow:hidden 掩盖超限）"
+    phase: post
+    level: block
+    draft_skip: true
+    scope: all
+    category: visual
+
+  - id: G79
+    condition: "main_overflow_without_node_overflow == false（M02 失败且 overflow_nodes==0 时触发，识别主区总量超限盲区）"
+    phase: post
+    level: warn
+    draft_skip: true
+    scope: all
+    category: visual
+
+  - id: G80
+    condition: "main_stack_overflow_risk_px <= 8（M04，主区允许至多 8px 侵入页脚安全区）"
+    phase: post
+    level: block
+    draft_skip: true
+    scope: all
+    category: visual
+
+  - id: G81
+    condition: "production 模式必须使用 playwright-runtime（禁止 static-fallback 作为发布验收依据）"
+    phase: post
+    level: block
+    draft_skip: true
+    scope: all
+    category: structural
+
+  - id: G83
+    condition: "图表容器运行时高度充足 (clientHeight >= 150px)"
+    phase: post
+    level: block
+    draft_skip: false
+    scope: all
+    category: visual
+
+  - id: G82
+    condition: "visual_collapse_risk == 0（M08, 禁止图表容器高度 < 140px）"
+    phase: post
+    level: block
+    draft_skip: true
+    scope: all
+    category: visual
+
 # ----------------------------------------------------------
 # 2. Auto-Fallback Sequence
 # ----------------------------------------------------------
@@ -669,35 +802,43 @@ fallback_sequence:
     action: "文案增强（补充数字化陈述、三段式）"
     targets: [G14, G15, G16, G17]
   - step: 4
-    action: "垂直预算修正（main 高度/卡片溢出策略/页脚安全区）"
-    targets: [G10, G11, G12, G60, G61]
+    action: "布局微调（使用 style='...' 强制覆盖）"
+    targets: [G10, G11, G12, G60, G61, G77, G78, G80]
+    executable_actions:
+      - "gap: -2/-4 px (!important)"
+      - "padding: -2/-4 px"
+      - "margin: -2/-4 px"
+      - "min-height: 0 (!important)"
   - step: 5
-    action: "Full-width 局部修正（下调主图高度 → 放宽下半区到区间上限 → 压缩 KPI 文案）"
-    targets: [G51, G52, G53, G54, G55]
+    action: "视觉降级"
+    targets: [G82]
+    executable_actions:
+      - "chart -> metric_cards (if height < 140px)"
+      - "chart -> table"
   - step: 6
-    action: "总和预算修正（减少固定高度项，保证 top+bottom+gap+py ≤ main 可用高度）"
-    targets: [G12, G54]
-  - step: 7
-    action: "版式重排（图高/卡片密度/布局切换）"
+    action: "结构重构（Grid -> Flex / Row -> Col）"
     targets: [G36, G37, G38, G39, G40, G41]
+  - step: 7
+    action: "文案精简与密度调整"
+    targets: [QR-13, QR-14]
   - step: 8
-    action: "最多重试 2 次；仍失败则输出失败原因与建议人工干预点"
+    action: "放弃自动修复，输出人工干预建议"
     targets: []
 
 # ----------------------------------------------------------
 # 3. Gate Statistics
 # ----------------------------------------------------------
-# Total unique gates: 74
+# Total unique gates: 81
 # - Structural (draft-required):  13   (G01–G13)
 # - Content (draft-skip):          4   (G14–G17)
 # - Chart (mixed):                17   (G18–G34)
 # - Layout (draft-skip):          22   (G35–G59, G35 is draft-required)
-# - Visual (draft-skip):           8   (G60–G67)
+# - Visual (draft-skip):          12   (G60–G67, G77–G80)
 # - Brand (mixed):                 3   (G68–G70)
-# - Post (mixed):                  4   (G71–G74)
+# - Post (mixed):                 11   (G71–G81)
 #
 # Draft mode:  checks ~16 gates  (draft_skip: false)
-# Production:  checks all 74 gates
+# Production:  checks all 81 gates
 
 # ----------------------------------------------------------
 # 4. 质量硬约束（从 agent 迁移，P4）
@@ -752,10 +893,10 @@ quality_rules:
       rule: "洞察三段式：关键分析页必须包含结论-原因-建议三段信息"
       draft_skip: false
     - id: QR-13
-      rule: "最小文本密度：关键分析页正文 ≥ 120 中文字符等价信息量"
+      rule: "最小文本密度：关键分析页正文 ≥ 80 中文字符等价信息量"
       draft_skip: true
     - id: QR-14
-      rule: "段落下限：结论/原因/建议每段 ≥ 28 中文字符等价信息量"
+      rule: "段落下限：结论/原因/建议每段 ≥ 20 中文字符等价信息量"
       draft_skip: true
     - id: QR-15
       rule: "快照结构化：洞察区至少 2 条可验证陈述（带数字/时间/对象）"

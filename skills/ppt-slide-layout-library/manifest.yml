@@ -1,7 +1,7 @@
 name: ppt-slide-layout-library
 version: 1.0.0
 schema_version: 1
-description: "Slide layout library for PPT HTML slides — 8 layout types with HTML templates, per-layout constraints, selection guide, dedup rules, Notion skeleton, and page-level budget/overflow constraints."
+description: "Slide layout library for PPT HTML slides — 12 layout types with HTML templates, per-layout constraints, selection guide, dedup rules, Notion skeleton, and page-level budget/overflow constraints."
 owner: ppt-html-generator
 category: layout-library
 tags:
@@ -9,10 +9,18 @@ tags:
   - slide-template
   - html-template
   - cover
+  - data-chart
+  - dashboard-grid
   - side-by-side
+  - full-width
+  - hybrid
   - dashboard
   - process
   - timeline
+  - milestone-timeline
+  - pillar
+  - comparison
+  - process-steps
   - ppt
 dependencies:
   - ppt-brand-system

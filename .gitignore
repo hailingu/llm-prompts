@@ -45,3 +45,9 @@ pkg/
 vendor/
 *.exe
 coverage.out
+
+docs/
+.agents/
+.clinerules/
+.github/
+.venv/

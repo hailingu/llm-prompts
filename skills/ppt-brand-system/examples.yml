@@ -75,14 +75,15 @@ css_brand_styles: |
 # 2. JS Brand Color Lookup
 # ----------------------------------------------------------
 # Derived from brands.yml → brands.{id}.colors
+# Updated to return full palette including supplementary colors
 js_get_brand_colors: |
   function getBrandColors(brand) {
     const colors = {
-      kpmg:     { primary: '#00338D', secondary: '#0091DA', accent: '#483698' },
-      mckinsey: { primary: '#00A3A0', secondary: '#1A1A1A', accent: '#FF6B35' },
-      bcg:      { primary: '#009A44', secondary: '#1D428A', accent: '#FF671F' },
-      bain:     { primary: '#DC291E', secondary: '#1A1A1A', accent: '#F5A623' },
-      deloitte: { primary: '#86BC25', secondary: '#0033A0', accent: '#FF671F' }
+      kpmg:     { primary: '#00338D', secondary: '#0091DA', accent: '#483698', supplementary: ['#00A3A1', '#E31C79'] },
+      mckinsey: { primary: '#00A3A0', secondary: '#1A1A1A', accent: '#FF6B35', supplementary: ['#5D5FEF', '#00B4A6'] },
+      bcg:      { primary: '#009A44', secondary: '#1D428A', accent: '#FF671F', supplementary: ['#6CC24A', '#0072CE'] },
+      bain:     { primary: '#DC291E', secondary: '#1A1A1A', accent: '#F5A623', supplementary: ['#7ED321', '#4A90E2'] },
+      deloitte: { primary: '#86BC25', secondary: '#0033A0', accent: '#FF671F', supplementary: ['#00A3A0', '#E31C79'] }
     };
     return colors[brand] || colors.kpmg;
   }

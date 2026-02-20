@@ -108,13 +108,13 @@ semantic_mapping:
   - condition: "主题=行动路线/阶段计划"
     rules:
       - if: "年度事件流 (year+event_type+impact) 且事件点≥6"
-        then: "里程碑时间线布局（milestone-timeline）"
-      - if: "含起止时间/持续时长/里程碑 (start/end/duration/milestone)"
-        then: "甘特图(ECharts) + 关键行动卡 + 底部KPI条"
+        then: "布局直接渲染：里程碑时间线 (milestone-timeline) [无需 Chart Engine]"
+      - if: "项目排程/任务管理 (start/end/duration) 且需精确甘特条"
+        then: "图表渲染：甘特图(ECharts) + 关键行动卡"
       - if: "缺精确日期，但有可解析阶段区间（如 6-12个月 / 1-3年 / 3-5年）"
-        then: "示意甘特图(相对时间轴) + 关键行动卡 + 底部KPI条；页脚标注"示意，不含精确起止时间""
+        then: "图表渲染：示意甘特图(相对时间轴) + 关键行动卡；页脚标注"示意，不含精确起止时间""
       - if: "缺排程字段且事件点不足时间线门槛"
-        then: "流程布局 + 阶段卡 + 底部KPI条；页脚标注"非排程视图""
+        then: "布局降级：流程布局 (process) + 阶段卡；页脚标注"非排程视图""
 
   - condition: "页面含'关键维度快照'"
     rule: "必须提供结构化表格或指标面板，不得仅用段落列表替代"
@@ -225,9 +225,9 @@ rendering:
   # ---- 6.1 容器高度契约（强制） ----
   container_height_contract:
     - id: CH-1
-      rule: "禁止纯 h-full 链式继承：chart-wrap 必须带显式像素高度（如 h-[460px]）"
+      rule: "必须具有确定性高度：chart-wrap 若为 flex-1，其父级必须有显式高度（px/vh）或非弹性高度约束；禁止无底洞塌陷"
     - id: CH-2
-      rule: "grid/flex 子元素防塌陷：图表所在子元素加 min-h-0"
+      rule: "grid/flex 子元素防塌陷：图表所在子元素加 min-h-0；dashboard_grid 布局尤须注意 row-span 高度传递"
     - id: CH-3
       rule: "Chart.js 必须 maintainAspectRatio: false（options 中同时设 responsive: true）"
     - id: CH-4
@@ -244,7 +244,7 @@ rendering:
     - id: EB-3
       rule: "标签占位补偿：axisLabel.fontSize <= 10 且类目 ≥ 8 时，额外增加 grid.bottom(+8~+14)"
     - id: EB-4
-      rule: "图卡高度联动：chart_height + title_block + padding <= card_inner_height"
+      rule: "图卡高度联动：适用于 data-chart/dashboard-grid，chart_height + title_ui + padding <= card_container_h"
 
   # ---- 6.3 Heatmap 左侧填充率 ----
   heatmap_fill_rate:
@@ -279,6 +279,25 @@ rendering:
     - id: DG-5
       rule: "首帧保护：图表初始化在 DOMContentLoaded 事件后执行"
 
+  # ---- 6.6 页面级垂直预算联动（P0 Root Fix） ----
+  page_vertical_integration:
+    - id: PV-1
+      rule: "图表页总预算：header_h + main_h + footer_h == 720（±1px）"
+    - id: PV-2
+      rule: "主区安全线：main_scroll_h <= main_client_h - 8，不得依赖 overflow:hidden 掩盖超限"
+    - id: PV-3
+      rule: "图表联动预算：title_h + chart_h + legend_h + note_h + card_padding <= card_inner_h"
+    - id: PV-4
+      rule: "布局总高校验：hybrid/side_by_side/dashboard_grid -> max(col_content, grid_content_sum) + gaps <= main_available_h"
+    - id: PV-5
+      rule: "超限回退顺序固定：gap/padding -> chart_h(-24/-40) -> secondary_copy_compress -> layout_switch"
+    - id: PV-6
+      rule: "折线/趋势图默认图高区间 180–240px；双栏页若含底部结论卡，推荐 180–210px"
+    - id: PV-7
+      rule: "运行时矩阵校验：至少在 1280x720@1x、1366x768@1x、1512x982@2x 三个 profile 下同时满足 main_scroll_h <= main_client_h - 8"
+    - id: PV-8
+      rule: "交付前必须输出 machine-readable QA 报告（含每页 footer_safe_gap / overflow_nodes / pass-fail），缺失即不可交付"
+
 # ╔══════════════════════════════════════════════════════════╗
 # ║  7. 代码示例                                            ║
 # ╚══════════════════════════════════════════════════════════╝
@@ -286,8 +305,10 @@ rendering:
 examples:
 
   bubble_chart: |
-    <!-- 气泡图示例 -->
-    <canvas id="bubbleChart"></canvas>
+    <!-- 气泡图示例 (G03: Explicit Height Wrapper) -->
+    <div class="chart-container relative w-full" style="height: 300px;">
+        <canvas id="bubbleChart"></canvas>
+    </div>
     <script>
       const rawPoints = [
         { x: 20, y: 30, confidence: 78 },
@@ -297,12 +318,16 @@ examples:
       const confs = rawPoints.map(p => p.confidence);
       const cMin = Math.min(...confs);
       const cMax = Math.max(...confs);
-      const toRadius = (c) => {
-        if (cMax === cMin) return 14;
-        const v = 8 + ((c - cMin) / Math.max(1, cMax - cMin)) * 16;
-        return Math.max(8, Math.min(24, v));
+      const getRadius = (val, min, max) => {
+        if (max === min) return 14; // Default fallback per rule BN-2
+        const rawR = 8 + ((val - min) / (max - min)) * 16;
+        return Math.max(8, Math.min(24, rawR)); // Clamp [8, 24]
       };
-      const points = rawPoints.map(p => ({ x: p.x, y: p.y, r: toRadius(p.confidence) }));
+      const points = rawPoints.map(p => ({ 
+        x: p.growth, 
+        y: p.share, 
+        r: getRadius(p.confidence, cMin, cMax) 
+      }));
       const yDataMax = Math.max(...points.map(p => p.y));
       const rMax = Math.max(...points.map(p => p.r));
       const ySuggestedMax = yDataMax + Math.max(2, Math.ceil(rMax / 8));
