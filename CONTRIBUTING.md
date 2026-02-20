@@ -20,6 +20,13 @@ Thank you for wanting to contribute! This project follows an open, collaborative
 - Run linters / formatters as appropriate. For Markdown, run `markdownlint` locally if available.
 - Add or update documentation when behavior changes.
 
+## Source of Truth Rule (`skills/` vs `.github/skills/`)
+
+- Runtime logic must live in `skills/` as the canonical implementation.
+- `.github/skills/` is mirror-only: keep proxy wrappers and metadata, do not add business logic there.
+- If you change renderer/helper/metrics behavior, edit `skills/` first and keep `.github/skills/` aligned as thin forwarding modules only.
+- PRs that introduce duplicated executable logic under `.github/skills/` should be rejected.
+
 ## Commit Guidelines
 
 - Use Conventional Commit-style messages. Summary line <= 50 chars; wrap body at 72 chars.
