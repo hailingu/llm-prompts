@@ -1,38 +1,27 @@
 # llm-prompts
 
-![banner](docs/banner.svg)
+<p>
+
+![License](https://img.shields.io/github/license/hailingu/llm-prompts)
+![Contributors](https://img.shields.io/github/contributors/hailingu/llm-prompts)
+![Issues](https://img.shields.io/github/issues/hailingu/llm-prompts)
+![Pull Requests](https://img.shields.io/github/issues-pr/hailingu/llm-prompts)
+![Last Commit](https://img.shields.io/github/last-commit/hailingu/llm-prompts)
+
+</p>
 
 A curated collection of LLM prompts, agent roles, and templates to standardize agent-based workflows, documentation, and contributor experience across projects.
 
 ---
 
-<!-- Badges -->
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/hailingu/llm-prompts/actions)
-[![Version](https://img.shields.io/badge/version-v0.1.0--beta.1-blue)](https://github.com/hailingu/llm-prompts/releases)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Test Coverage](https://img.shields.io/badge/coverage-unknown-yellow)](https://github.com/hailingu/llm-prompts)
-[![Community](https://img.shields.io/badge/community-discussions-lightgrey)](https://github.com/hailingu/llm-prompts/discussions)
+## About
 
-> Quick link: [CHANGELOG](./CHANGELOG.md) • [Contributing guide](./CONTRIBUTING.md) • [Security](./SECURITY.md) • [Code of Conduct](./CODE_OF_CONDUCT.md)
+This repository contains reusable prompts, agent definitions, and documentation templates designed for:
 
-## Badges
-
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/hailingu/llm-prompts/actions)
-[![Version](https://img.shields.io/badge/version-v0.0.1--beta.0-blue)](https://github.com/hailingu/llm-prompts/releases)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Contributors](https://img.shields.io/github/contributors/hailingu/llm-prompts)](https://github.com/hailingu/llm-prompts/graphs/contributors)
-
-## Table of Contents
-
-- [Features](#features)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Quick Start](#quick-start)
-- [Usage](#usage)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License & Support](#license--support)
+- 🤖 **LLM Agents** - Reusable prompts and role definitions for common workflows
+- 📚 **Documentation Standards** - Templates and guidelines for Java, Python, Go, and more
+- 🔧 **Developer Tools** - Commit helpers, PR templates, and CI-friendly documentation
+- 📖 **Best Practices** - Industry-standard coding guidelines and design patterns
 
 ## Features
 
@@ -41,65 +30,73 @@ A curated collection of LLM prompts, agent roles, and templates to standardize a
 - 🧪 Guidance for static analysis and CI-friendly documentation (Checkstyle, PMD, SpotBugs notes).
 - 📝 Commit & PR helpers (`.gitmessage`, `.github/prompts`) for consistent contribution workflow.
 
-## Getting Started
-
-### Prerequisites
-
-- Git >= 2.30
-- Java >= 17 (for Checkstyle/Java guides)
-- Maven >= 3.6 (if you run Java static-analysis locally)
-- Node.js >= 22 (recommended for modern JS tooling)
-- Python >= 3.12 (optional; for automation scripts)
-
-### Installation
+## Quick Start
 
 ```bash
-# clone
+# Clone the repository
 git clone https://github.com/hailingu/llm-prompts.git
 cd llm-prompts
 
-# (optional) enable the repo's commit template locally
+# (Optional) Enable the commit template locally
 git config --local commit.template .gitmessage
 ```
 
-### Quick Start
+### Explore the Repository
 
 ```bash
-# see available prompts
-ls .github/prompts
+# View available prompts and agents
+ls agents/
 
-# open the Alibaba Java guidelines (example)
-less java-standards/alibaba-java-guidelines.md
+# Check out the documentation standards
+ls standards/
 
-# create a conventional commit (template provided)
-git add -A
-git commit
+# Open the Java guidelines (example)
+cat java-standards/alibaba-java-guidelines.md
 ```
 
-## Usage
+## Repository Structure
 
-- Prompts and agents live under `agents/` and `.github/prompts/`. Use them to generate PR descriptions, commit messages, design docs, and more.
-
-- Reveal Builder POC docs and examples: `docs/reveal-builder.md` and `docs/design-spec-reveal.md` (run `node tools/reveal-builder/cli.js build --input docs/example-mermaid.md` to try the demo).
-- Standardization files are in `standards/` and `java-standards/` (Checkstyle config, guidelines, and templates).
-- Follow the commit template `.gitmessage` and the `CONTRIBUTING.md` workflow for consistent contributions.
-
-## Roadmap
-
-- [ ] Add automated markdownlint and CI checks to run on push.
-- [ ] Provide a CLI for applying prompts and generating PR descriptions.
-- [ ] Expand example prompts and templates with runnable demos.
+```
+llm-prompts/
+├── agents/              # LLM agent role definitions and prompts
+├── .github/
+│   ├── ISSUE_TEMPLATE/ # Issue templates (Bug, Feature, etc.)
+│   └── prompts/        # GitHub-specific prompts
+├── docs/               # Additional documentation
+├── prompts/            # General prompts organized by category
+├── skills/             # Reusable skill definitions
+├── standards/          # Cross-language standards
+├── java-standards/     # Java-specific guidelines
+├── go-standards/      # Go-specific guidelines
+├── python-standards/  # Python-specific guidelines
+└── templates/          # Reusable document templates
+```
 
 ## Contributing
 
-Please read `CONTRIBUTING.md` for contribution guidelines, commit message conventions, and PR process. We welcome issues and PRs — thanks for improving this project!
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for:
 
-## License & Support
+- Code of conduct
+- Pull request process
+- Commit message conventions
+- Development setup
 
-- License: [MIT](LICENSE)
-- Bugs & feature requests: open an issue in this repository
-- Security: see `SECURITY.md` for reporting vulnerabilities
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Security
+
+For security vulnerabilities, please refer to our [Security Policy](SECURITY.md).
+
+## Related Links
+
+- [CHANGELOG](CHANGELOG.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Discussions](https://github.com/hailingu/llm-prompts/discussions)
 
 ---
 
-> This README follows the project's documentation standards. See `CHANGELOG.md` for recent changes.
+<p align="center">
+  Built with ❤️ for the developer community
+</p>
