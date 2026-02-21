@@ -470,19 +470,19 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
 
 ## 10. 布局类型库
 
-> **8 种布局模板**（cover / data-chart / side-by-side / full-width / hybrid / process / dashboard / milestone-timeline）及其 HTML 模板、版式约束、选择指南、去重规则、Notion 骨架均见 `skills/ppt-slide-layout-library/layouts.yml`。
+> **8 种布局模板**（cover / data-chart / side-by-side / full-width / hybrid / process / dashboard / milestone-timeline）及其 HTML 模板、版式约束、选择指南、去重规则、Notion 骨架均见 `skills/ppt-slide-layout-library/assets/layouts.yml`。
 > 选择布局 → `selection_guide`；HTML 模板 → `layouts.{type}.template`；版式约束 → `layouts.{type}.constraints`；去重 → `dedup_rules`。
 
 ## 11. 图表选择规则
 
-> **图表类型**（基础5 + 扩展8）、**选择算法**（按维度/数据类型/洞察类型）、**语义映射**、**数据契约**（时间线 + 甘特）均见 `skills/ppt-chart-engine/charts.yml`。
+> **图表类型**（基础5 + 扩展8）、**选择算法**（按维度/数据类型/洞察类型）、**语义映射**、**数据契约**（时间线 + 甘特）均见 `skills/ppt-chart-engine/assets/charts.yml`。
 > 选图 → `chart_types` + `selection_algorithm`；语义映射 → `semantic_mapping`；数据契约 → `data_contracts`。
 
 ## 12. 品牌规范系统
 
-> **单一数据源**：5 品牌（KPMG / McKinsey / BCG / Bain / Deloitte）的色彩、字体、布局特征、通用设计 token 均定义在 `skills/ppt-brand-system/brands.yml`。
+> **单一数据源**：5 品牌（KPMG / McKinsey / BCG / Bain / Deloitte）的色彩、字体、布局特征、通用设计 token 均定义在 `skills/ppt-brand-system/assets/brands.yml`。
 > 生成 HTML 时，从 `brands.yml → brands.{brand_id}` 读取颜色与字体，通过 `<body class="brand-{brand_id}">` 切换品牌。
-> CSS / JS 实现示例与 HTML 模板见 `skills/ppt-brand-system/examples.yml`。
+> CSS / JS 实现示例与 HTML 模板见 `skills/ppt-brand-system/examples/examples.md`。
 > 语义配色（red=风险 / amber=预警 / sky=信息 / emerald=达成 / indigo=阶段）与边框规则见 `brands.yml → semantic_colors / border`。
 
 ## 13. 质量约束与渲染规则

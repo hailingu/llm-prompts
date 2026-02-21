@@ -1,0 +1,68 @@
+# ============================================================
+# PPT Visual QA — Auto-Fallback Sequence
+# ============================================================
+# When blocking gates fail, fixes are attempted in this order.
+# Each step checks if the gate now passes before proceeding.
+# Maximum 2 retries before reporting failure.
+# ============================================================
+
+description: |
+  Auto-fallback sequence for automated repair attempts.
+  Executed when blocking gates fail in production mode.
+
+modes:
+  production:
+    max_retries: 2
+    on_final_fail: "Output failure reason and suggested manual intervention points"
+  draft:
+    max_retries: 1
+    on_final_fail: "Mark as Draft + failed items, allow delivery"
+
+sequence:
+  - step: 1
+    action: "Data mapping correction (radius recalculation + distinguishability spread)"
+    targets: [G21, G22, G23]
+    description: "Fix bubble chart data mapping issues"
+
+  - step: 2
+    action: "Axis correction (suggestedMax / stepSize / clipping check)"
+    targets: [G20, G29, G30]
+    description: "Fix chart axis configuration"
+
+  - step: 3
+    action: "Copy enhancement (add quantified statements, three-part structure)"
+    targets: [G14, G15, G16, G17]
+    description: "Enhance content with structured claims and insights"
+
+  - step: 4
+    action: "Layout fine-tuning (use style='...' to force override)"
+    targets: [G10, G11, G12, G60, G61, G77, G78, G80]
+    executable_actions:
+      - "gap: -2/-4 px (!important)"
+      - "padding: -2/-4 px"
+      - "margin: -2/-4 px"
+      - "min-height: 0 (!important)"
+    description: "Fine-tune layout with inline style overrides"
+
+  - step: 5
+    action: "Visual downgrade"
+    targets: [G82]
+    executable_actions:
+      - "chart -> metric_cards (if height < 140px)"
+      - "chart -> table"
+    description: "Downgrade visual elements if size constraints can't be met"
+
+  - step: 6
+    action: "Structure reorganization (Grid -> Flex / Row -> Col)"
+    targets: [G36, G37, G38, G39, G40, G41]
+    description: "Restructure layout for better fit"
+
+  - step: 7
+    action: "Copy trimming and density adjustment"
+    targets: [QR-13, QR-14]
+    description: "Trim content to meet density requirements"
+
+  - step: 8
+    action: "Abandon auto-repair, output manual intervention suggestions"
+    targets: []
+    description: "Cease auto-repair and suggest manual intervention"
