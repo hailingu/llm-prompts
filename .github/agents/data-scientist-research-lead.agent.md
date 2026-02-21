@@ -1,7 +1,7 @@
 ---
 name: data-scientist-research-lead
 description: Data Science Research Lead — responsible for problem definition, algorithm research, feasibility assessment, and defining success metrics to provide clear research direction for the team.
-tools: ['read', 'edit', 'search', 'execute', 'web_search']
+tools: ['read', 'edit', 'search', 'execute', 'web']
 handoffs:
   - label: data-engineer handoff
     agent: data-engineer
