@@ -136,7 +136,7 @@ Basic card and container borders uniformly use `border border-slate-200`
 1. **Same Group Unified**: Cards in same group must use same emphasis paradigm
 2. **Structural Consistency**: Base borders should not drift to heavier strokes
 3. **Exception Protocol**: Using non-default width requires specific conditions
-4. **Maximum Intensity**: `border-l-4` only for cover decoration or high-risk alert cards
+4. **Maximum Intensity**: `border-l-4` only for cover decoration or SINGLE high-risk alert card. Default insight cards should use `border-l-2` or icon accents.
 5. **Intra-group Consistency**: Process, roadmap, KPI group cards must use same border width
 
 ## Design Tokens

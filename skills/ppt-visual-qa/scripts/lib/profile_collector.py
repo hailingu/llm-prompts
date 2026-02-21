@@ -14,7 +14,7 @@ RUNTIME_METRICS_JS = """
   const header = document.querySelector('.slide-header');
   const main = document.querySelector('.slide-main');
   const footer = document.querySelector('.slide-footer');
-  const nodes = document.querySelectorAll('.card, .card-float, .insight-card, table, ul, ol, .timeline, .kpi-card, canvas');
+  const nodes = document.querySelectorAll('.slide-main div, .slide-main ul, .slide-main ol, .slide-main table, .slide-main canvas, .card, .card-float, .insight-card, .kpi-card');
   const canvases = document.querySelectorAll('canvas');
 
   // --- Contrast Check Logic ---
@@ -83,6 +83,7 @@ RUNTIME_METRICS_JS = """
     if (!node) return;
     const scrollH = node.scrollHeight || 0;
     const clientH = node.clientHeight || 0;
+    if (clientH === 0) return; // Ignore hidden or zero-height elements
     if (scrollH > clientH + 1) {
       overflowNodes += 1;
       if (overflowNodeDetails.length < 20) {
@@ -111,6 +112,27 @@ RUNTIME_METRICS_JS = """
       collapsedCanvasCount += 1;
     }
   });
+
+  let timelineDisconnected = false;
+  const timelineCards = document.querySelectorAll('.event-card, .timeline-card');
+  const connectionLines = document.querySelectorAll('.connection-line, .timeline-line');
+  if (timelineCards.length > 0 && connectionLines.length > 0) {
+    timelineCards.forEach(card => {
+      const cardRect = card.getBoundingClientRect();
+      let connected = false;
+      connectionLines.forEach(line => {
+        const lineRect = line.getBoundingClientRect();
+        const verticalTouch = (Math.abs(lineRect.bottom - cardRect.top) < 10 || Math.abs(lineRect.top - cardRect.bottom) < 10 || (lineRect.top >= cardRect.top && lineRect.bottom <= cardRect.bottom));
+        const horizontalAlign = (lineRect.left >= cardRect.left - 20 && lineRect.right <= cardRect.right + 20);
+        if (verticalTouch && horizontalAlign) {
+          connected = true;
+        }
+      });
+      if (!connected) {
+        timelineDisconnected = true;
+      }
+    });
+  }
 
   return {
     slideH: slide ? slide.clientHeight : 0,
@@ -143,6 +165,7 @@ RUNTIME_METRICS_JS = """
     renderedCanvasCount,
     collapsedCanvasCount,
     contrastIssues,
+    timelineDisconnected,
   };
 }
 """
@@ -231,6 +254,7 @@ class ProfileCollector:
                             m08_main_stack_overflow_risk_px=float(m08),
                             m09_chart_collapse_risk=int(metrics.get("collapsedCanvasCount", 0)),
                             contrast_issues=int(metrics.get("contrastIssues", 0)),
+                            timeline_disconnected=bool(metrics.get("timelineDisconnected", False)),
                             passed=bool(passed),
                             backend="playwright-runtime",
                         )

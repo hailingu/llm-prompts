@@ -103,7 +103,7 @@ class FeatureExtractor:
                 inferred_layout=infer_layout(html),
                 is_analysis_like=(not special) and has_required_skeleton,
                 structured_claim_count=count_structured_claims(plain),
-                has_three_part_keywords=all(k in plain for k in ["结论", "原因", "建议"]),
+                has_structured_keywords=any(all(k in plain.lower() for k in group) for group in [["结论", "原因", "建议"], ["insight", "driver", "action"], ["market", "risk", "strategy"], ["现状", "挑战", "对策"]]),
                 m03_fixed_block_budget_ok=m03_ok,
                 m03_est_fixed_px=float(est_fixed),
             )

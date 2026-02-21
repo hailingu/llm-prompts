@@ -1,0 +1,166 @@
+/* slide-theme.css */
+:root {
+  --slide-width: 1280px;
+  --slide-height: 720px;
+}
+
+/* KPMG (Default) */
+.brand-kpmg {
+  --brand-primary: #00338D;
+  --brand-secondary: #0091DA;
+  --brand-accent: #483698;
+  font-family: Georgia, Arial, "Noto Sans SC", sans-serif;
+}
+
+/* McKinsey */
+.brand-mckinsey {
+  --brand-primary: #00A3A0;
+  --brand-secondary: #1A1A1A;
+  --brand-accent: #FF6B35;
+  font-family: "Helvetica Neue", "PingFang SC", sans-serif;
+}
+
+/* BCG */
+.brand-bcg {
+  --brand-primary: #009A44;
+  --brand-secondary: #1D428A;
+  --brand-accent: #FF671F;
+  font-family: Arial, "Microsoft YaHei", sans-serif;
+}
+
+/* Bain */
+.brand-bain {
+  --brand-primary: #DC291E;
+  --brand-secondary: #1A1A1A;
+  --brand-accent: #F5A623;
+  font-family: "Gotham", Arial, "Source Han Sans SC", sans-serif;
+}
+
+/* Deloitte */
+.brand-deloitte {
+  --brand-primary: #86BC25;
+  --brand-secondary: #0033A0;
+  --brand-accent: #FF671F;
+  font-family: Arial, "Noto Sans SC", sans-serif;
+}
+
+/* Component Styles */
+.card-float {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  transition: transform 0.2s ease-in-out;
+  border: 1px solid rgba(0,0,0,0.02);
+  padding: 1.5rem;
+}
+.card-float:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.step-process-container {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+.step-process-container::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #e5e7eb;
+  z-index: 0;
+}
+.step-item {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  text-align: center;
+  padding: 0 10px;
+}
+.step-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--brand-primary);
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: var(--brand-primary);
+  font-size: 1.2rem;
+}
+
+.connection-line {
+  position: absolute;
+  width: 2px;
+  background-color: var(--brand-primary);
+  z-index: 0;
+}
+
+/* Base Slide Layout */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f3f4f6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.slide-container {
+  width: var(--slide-width);
+  height: var(--slide-height);
+  background-color: white;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.slide-header {
+  padding: 2rem 3rem 1rem 3rem;
+  flex-shrink: 0;
+}
+
+.slide-main {
+  flex: 1;
+  min-height: 0;
+  padding: 0 3rem 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.slide-footer {
+  padding: 1rem 3rem 1.5rem 3rem;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: #6b7280;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Brand specific layout adjustments */
+.brand-kpmg .slide-container {
+  border-left: 16px solid var(--brand-primary);
+}
+
+.brand-bain .slide-container {
+  border-right: 16px solid var(--brand-primary);
+}
+
+.brand-bcg .slide-header {
+  border-top: 8px solid var(--brand-primary);
+}
+
+.brand-deloitte .slide-container {
+  border-radius: 16px;
+}

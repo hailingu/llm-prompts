@@ -1,0 +1,15 @@
+{
+  "generated_at": "2026-02-21T10:43:42.616584+00:00",
+  "mode": "production",
+  "backend": "playwright-runtime",
+  "summary": {
+    "total_slides": 1,
+    "passed_slides": 1,
+    "failed_slides": 0,
+    "gate_status_counts": {
+      "pass": 47,
+      "not_applicable": 36
+    }
+  },
+  "slides": []
+}

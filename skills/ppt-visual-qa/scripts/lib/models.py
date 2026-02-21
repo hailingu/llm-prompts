@@ -44,6 +44,7 @@ class ProfileMetrics:
     passed: bool
     backend: str
     contrast_issues: int = 0
+    timeline_disconnected: bool = False
 
 
 @dataclass
@@ -68,7 +69,7 @@ class SlideFeatures:
     inferred_layout: str
     is_analysis_like: bool
     structured_claim_count: int
-    has_three_part_keywords: bool
+    has_structured_keywords: bool
     m03_fixed_block_budget_ok: bool
     m03_est_fixed_px: float
 

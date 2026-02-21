@@ -185,7 +185,7 @@ class GateEvaluator:
             key_page = (features.inferred_layout in {"dual-column", "process", "milestone-timeline"} or features.structured_claim_count >= 2 or features.text_len >= 180)
             if not key_page:
                 return self._pass_result(gate, "non-key page")
-            return self._pass_result(gate, "three-part keywords found") if (features.has_three_part_keywords or features.structured_claim_count >= 1 or features.text_len >= 100) else self._fail_result(gate, "missing 结论/原因/建议 keywords")
+            return self._pass_result(gate, "structured keywords found") if (features.has_structured_keywords or features.structured_claim_count >= 1 or features.text_len >= 100) else self._fail_result(gate, "missing structured claims or sufficient text length")
 
         if gate.id == "G16":
             return self._pass_result(gate, "structured claims >= baseline") if (features.structured_claim_count >= 0 and features.text_len >= 60) else self._fail_result(gate, "structured claims < baseline")
@@ -278,12 +278,17 @@ class GateEvaluator:
             return self._pass_result(gate, "layout differs from previous slide") if features.inferred_layout != prev_layout else self._fail_result(gate, "adjacent slides share same inferred layout")
 
         if gate.id == "G36":
+            if "flex-1" not in html_low or "h-full" not in html_low:
+                return self._fail_result(gate, "dual-column missing flex-1 or h-full for height balancing")
             return self._pass_result(gate, "dual-column whitespace delta acceptable") if features.m03_fixed_block_budget_ok else self._fail_result(gate, "dual-column whitespace delta risk")
 
         if gate.id == "G37":
             return self._pass_result(gate, "dual-column occupancy acceptable") if (features.text_len >= 120 or card_count >= 2) else self._fail_result(gate, "dual-column occupancy appears low")
 
         if gate.id == "G38":
+            if "flex-col" in html_low and "card" in html_low:
+                if "justify-between" not in html_low and "h-full" not in html_low:
+                    return self._fail_result(gate, "side-by-side right column missing justify-between or h-full")
             if len(chart_area_heights) < 2:
                 return self._pass_result(gate, "no side-by-side dual chart pair")
             return self._pass_result(gate, "side-by-side chart heights aligned") if abs(chart_area_heights[0] - chart_area_heights[1]) <= 8 else self._fail_result(gate, "side-by-side chart height mismatch > 8px")
@@ -364,8 +369,13 @@ class GateEvaluator:
             return self._pass_result(gate, "heatmap fill/whitespace acceptable") if (features.m03_fixed_block_budget_ok and max_chart_h >= 220) else self._fail_result(gate, "heatmap fill/whitespace not acceptable")
 
         if gate.id == "G57":
-            has_anchor = all(k in html_low for k in ["dot", "year", "card", "connection"])
-            return self._pass_result(gate, "timeline anchor elements present") if (has_anchor or ("timeline" in html_low and "card" in html_low)) else self._fail_result(gate, "timeline anchor elements missing")
+            has_connection = "connection-line" in html_low or ("absolute" in html_low and ("border-l" in html_low or "w-px" in html_low or "border-t" in html_low or "h-px" in html_low))
+            has_anchor = "dot" in html_low or "year" in html_low or "phase" in html_low
+            if not has_connection:
+                return self._fail_result(gate, "timeline connection line missing (no absolute border or connection-line class)")
+            if any(p.timeline_disconnected for p in profiles):
+                return self._fail_result(gate, "timeline connection line is physically disconnected from cards")
+            return self._pass_result(gate, "timeline anchor elements present and connected") if has_anchor else self._fail_result(gate, "timeline anchor elements missing")
 
         if gate.id == "G58":
             return self._pass_result(gate, "timeline overlap acceptable") if all(p.m05_overflow_nodes_ok for p in profiles) else self._fail_result(gate, "timeline card overlap risk")
@@ -466,7 +476,7 @@ class GateEvaluator:
             key_page = (features.inferred_layout in {"dual-column", "process", "milestone-timeline"} or features.structured_claim_count >= 2 or features.text_len >= 180)
             if not key_page:
                 return self._pass_result(gate, "non-key page")
-            report_ready = features.has_three_part_keywords or (features.structured_claim_count >= 1 and features.text_len >= 80)
+            report_ready = features.has_structured_keywords or (features.structured_claim_count >= 1 and features.text_len >= 80)
             return self._pass_result(gate, "key page is report-ready") if report_ready else self._fail_result(gate, "key page below report-ready threshold")
 
         if gate.id == "G74":

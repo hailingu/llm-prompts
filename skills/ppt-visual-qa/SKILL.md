@@ -48,30 +48,30 @@ Run the QA script from the project root:
 
 ```bash
 # Production mode (full validation - required for release)
-python skills/ppt-visual-qa/scripts/run_visual_qa.py \
+python3 skills/ppt-visual-qa/scripts/run_visual_qa.py \
     --presentation-dir <path-to-presentation> \
     --mode production \
     --strict
 
 # Draft mode (fast validation, ~16 structural gates only)
-python skills/ppt-visual-qa/scripts/run_visual_qa.py \
+python3 skills/ppt-visual-qa/scripts/run_visual_qa.py \
     --presentation-dir <path-to-presentation> \
     --mode draft
 
 # Check specific slides only (incremental update)
-python skills/ppt-visual-qa/scripts/run_visual_qa.py \
+python3 skills/ppt-visual-qa/scripts/run_visual_qa.py \
     --presentation-dir <path-to-presentation> \
     --mode production \
     --slides 4 5 6
 
 # Check specific gates only
-python skills/ppt-visual-qa/scripts/run_visual_qa.py \
+python3 skills/ppt-visual-qa/scripts/run_visual_qa.py \
     --presentation-dir <path-to-presentation> \
     --mode production \
     --gates G06 G07 G08 G09
 
 # Combine slide and gate filters for targeted testing
-python skills/ppt-visual-qa/scripts/run_visual_qa.py \
+python3 skills/ppt-visual-qa/scripts/run_visual_qa.py \
     --presentation-dir <path-to-presentation> \
     --mode production \
     --slides 4 \

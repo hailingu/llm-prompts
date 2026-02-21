@@ -269,13 +269,13 @@ semantic_rules:
 # 5. Border System
 # ----------------------------------------------------------
 border:
-  semantic_options: ["border-l-2", "border-t-4", "bg-tint", "icon-accent", "gradient-bg", "badge-accent"]
+  semantic_options: ["bg-tint", "icon-accent", "gradient-bg", "badge-accent", "border-l-2", "border-t-2"]
   structural_default: "border border-slate-200"
   rules:
     - group_uniform: "同组卡片（如同一页的3个对比卡片）必须使用相同的强调范式（同为左边框，或同为顶边框，或同为浅色背景），但不同页或不同布局类型之间允许采用不同的强调范式。"
     - structural_uniform: "基础卡片与容器边框统一使用 border border-slate-200（或同等中性浅灰），不得按页面随意漂移到更重描边"
     - exception_protocol: "若确需使用非默认宽度（如 border-l-3），必须满足「单页唯一高危告警卡 + 文案含明确风险词 + 在页注释声明例外原因」"
-    - max_strength: "border-l-4 及以上仅限封面视觉装饰或单页唯一高危告警卡，常规分析页禁止批量使用"
+    - max_strength: "border-l-4仅限封面或单页中唯一高危告警卡点，普通洞察卡禁止使用；推荐使用 border-l-2 或 Icon+Bg 组合"
     - group_consistency: "流程、路线图、KPI 组卡等同组组件必须使用同一边框宽度，不允许同组卡片出现 2px/3px/4px 混排"
 
 # ----------------------------------------------------------

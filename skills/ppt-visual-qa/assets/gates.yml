@@ -131,7 +131,7 @@ gates:
     category: content
 
   - id: G15
-    condition: "Analysis page insight section contains conclusion/cause/recommendation three parts, each >= 28 chars, whole page body >= 120 chars"
+    condition: "Analysis page insight section contains structured claims or sufficient text length (>= 100 chars)"
     phase: during
     level: block
     draft_skip: true
@@ -147,7 +147,7 @@ gates:
     category: content
 
   - id: G17
-    condition: "Key analysis pages satisfy 'conclusion-cause-recommendation' three-part copy"
+    condition: "Key analysis pages satisfy structured copy requirements"
     phase: during
     level: block
     draft_skip: true

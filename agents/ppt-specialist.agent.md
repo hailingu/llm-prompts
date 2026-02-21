@@ -180,7 +180,7 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
 - 原 自检预演 -> 整合进 §1 的推理过程中
 
 #### 4.2.3 内容编写
-- 基于 Thinking 阶段的策略，为每个分析页编写结构化文案（结论/原因/建议三段式）
+- 基于 Thinking 阶段的策略，为每个分析页编写结构化文案。**严禁机械套用固定的“结论/原因/建议”或“Insight/Driver/Action”标签**，必须根据实际业务语境使用自然、有意义的短语（如“Market Shift”、“Key Risk”、“Strategic Move”等）。
 - 确保每段 ≥ 42 中文字符，整页正文 ≥ 180 中文字符
 - CSV 指数类数据（0-100）必须转化为业务解读（趋势含义、风险信号、行动建议），不得仅呈现原始数值
 - 文案密度达标后再进入 HTML 生成
@@ -198,7 +198,7 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
 - 直接将完整代码写入目标HTML文件（不经过Python脚本）
 - **图表配色**：必须通过 CSS 变量（`var(--brand-primary)` 等）或 `brands.yml` 定义的色值获取，禁止硬编码十六进制色值；`slide-theme.css` 必须包含所有 5 个品牌的 CSS 变量块
 - **CSS 逃生舱约束**：允许使用 inline style 调整布局（如 `padding`），但**严禁在 inline style 中硬编码颜色（Hex/RGB）**。所有颜色设置必须使用 Tailwind 类（如 `text-red-600`）或 CSS 变量（`style="color: var(--brand-primary)"`），以确保品牌切换功能正常工作。
-- **强调与语义区分**：必须根据内容类型灵活选择强调方式（如：流程步骤用顶边框、风险告警用浅红背景、特征罗列用彩色图标）。**严禁在所有页面机械地重复使用“左侧/顶部单一边框加粗”这一种样式。**
+- **强调与语义区分**：必须根据内容类型灵活选择强调方式（如：流程步骤用顶边框、风险告警用浅红背景、特征罗列用彩色图标）。**严禁在所有页面机械地重复使用“左侧/顶部单一边框加粗”这一种样式。** 常规卡片推荐使用 `border-l-2` 或无边框阴影风格，把 `border-l-4` 留给真正的危机告警。
 - **留白自检**：生成每页后检查图表容器+洞察卡+KPI 区域总高度 ≥ 主内容区可用高度 85%；不足时补充结构化要点或扩大图表高度
 - **CSS 优先级自检**：生成每页后，检查 `.slide-main` 内是否存在依赖 Tailwind 类覆盖 `slide-theme.css` 属性的情况（常见陷阱：`py-*` 被 `slide-theme.css` 的 `padding` 覆盖、`h-full` 在嵌套容器中因父级高度被覆盖而失效导致子元素撑出 `overflow:hidden` 边界）。若存在则改用 inline style 或调整 `slide-theme.css`。优先使用 `flex-1 min-h-0` 替代 `h-full` 实现自适应填充，避免固定高度 + 额外内容的溢出组合。
 
@@ -284,7 +284,15 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
      4. **数量不平衡处理**：当左右列表数量不一致（如左3右4）时，**禁止**简单留白。必须采取以下之一：
         - **方案 A（合并对齐）**：将少的一侧最后一个空槽位利用起来（例如左侧第3个卡片设为 `row-span-2` 或增加 `flex-grow` 填充剩余空间）。
         - **方案 B（尾部对齐）**：多出的一项（如右侧第4项 Key Insight）做成**跨栏（col-span-2）**底栏，置于左右两栏下方，从而保证上方左右两栏数量一致（3vs3）。
-     5. **单图对多卡高度适配**：当左侧为单一大图（Pie/Map），右侧为多卡片（List）时：
+     5. **特定布局硬约束 (Layout Constraints)**：
+        - **data_chart 布局**：左侧图表容器宽度必须 `>= 58%`（如使用 `col-span-7` 或 `w-7/12`），右侧卡片数量必须 `<= 3`。若有 4 个以上指标，必须合并或改用 `dashboard_grid` 布局。
+     6. **语义色滥用 (Semantic Color Abuse)**：
+        - **禁止**：为了“视觉丰富”而机械地遍历分配不同的颜色（彩虹色排版）。
+        - **强制**：颜色必须与数值方向/语义严格对齐。正面提升/达成必须统一使用 `emerald` 或品牌主色；负面/风险使用 `red`；预警使用 `amber`。严禁在包含“提升”、“增长”、“100%”等正面词汇的卡片上使用 `amber` 或 `red`。
+     7. **边框滥用与单一 (Border Abuse)**：
+        - **禁止**：在常规分析页（Analysis Slide）批量使用 heavy border（如 `border-t-4`, `border-l-4`）来强调所有卡片。这会造成视觉噪音。
+        - **强制**：`border-l-4` 仅限用于单页中唯一的【最高危机/最核心结论】卡片。常规卡片应使用 `border-l-2` 或 `border-t-2`，或使用柔和背景色块/Icon区分。
+     8. **单图对多卡高度适配**：当左侧为单一大图（Pie/Map），右侧为多卡片（List）时：
         - **强制**：左侧卡片容器必须设为 `h-full`。
         - **强制**：右侧列表容器必须设为 `flex flex-col h-full justify-between`，使右侧卡片垂直分布均匀撑满高度，严禁卡片堆叠在顶部导致下方留白过大。
 6. **时间线-卡片割裂 (Timeline-Card Disconnect)**：
@@ -339,7 +347,7 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
   ```
 - **禁止绕过**：发布流程禁止使用 `--allow-unimplemented`；如存在 `failed_slides > 0`、任一 `block` gate=`fail` 或 `not_implemented > 0`，一律判定不可发布。
 - **强制检查项**：
-  1. **三段式检查**：随机抽取 2 个分析页（非封面/目录），读取文件内容，验证是否存在“结论/原因/建议”或其对应的 CSS 类/DOM 结构。如缺失，立即重写该页。
+  1. **结构化文案检查**：随机抽取 2 个分析页（非封面/目录），读取文件内容，验证是否存在清晰的结构化文案（如带有小标题的要点说明）或其对应的 CSS 类/DOM 结构。如缺失，立即重写该页。
   2. **时间线检查**：读取时间线页（slide-3），验证是否存在 `.connection-line` 类且样式为绝对定位。如缺失，立即重写该页。
   3. **品牌变量检查**：读取 `slide-theme.css`，验证是否包含 5 个 `.brand-*` 作用域。
   4. **底部裁切检查（新增）**：逐页验证 `visual_safe_gap >= 8` 且 `overflow_nodes == 0`；任何内容触碰页脚安全区或出现滚动条，均视为失败立即修复。
@@ -421,7 +429,7 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
 
 ### 3. 垂直对比专栏 (Vertical Columns) - 用于竞品分析
 - **结构特征**：`grid grid-cols-3 gap-2`
-- **样式特征**：每列使用 `border-t-4` 区分颜色（如 `border-gray-800`, `border-emerald-600`），内部使用 `bg-gray-50` 底色，列表项使用白色卡片 `bg-white p-2 shadow-sm`。
+- **样式特征**：每列顶部使用柔和的背景色块或图标区分（避免生硬的 `border-t-4`），内部使用 `bg-gray-50` 底色，列表项使用白色卡片 `bg-white p-2 shadow-sm`。
 
 ### 4. 浅色背景强调卡片 (Tinted Card) - 用于状态预警 / 结果达成
 - **样式特征**：移除彩色边框，使用极浅的语义背景色（如 `bg-red-50`, `bg-emerald-50`），配合对应颜色的图标和加粗标题。
@@ -459,7 +467,7 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
 
 - **FontAwesome**：每个 `slide-*.html` 的 `<head>` 必须引入 FontAwesome CDN；流程/行动/路线图页必须使用图标增强阶段语义
 - **Tailwind CSS**：每个 `slide-*.html` 的 `<head>` 必须引入 Tailwind CSS CDN（`https://cdn.tailwindcss.com`），确保样式正确渲染
-- **Notion 骨架**：页面整体结构以 `layouts.yml → notion_skeleton` 为基础骨架（header/main/footer 三区 + border 分隔）
+- **Notion 骨架**：页面整体结构以 `layouts.yml → notion_skeleton` 为基础骨架（header/main/footer 三区 + border 分隔）。**注意：生成 `slide-theme.css` 时，`.slide-main` 必须包含底部 padding（如 `padding: 0 3rem 1.5rem 3rem;`），以防止内容与 footer 重叠。**
 - **品牌 CSS**：`slide-theme.css` 必须包含全部 5 个品牌的 CSS 变量定义（来自 `brands.yml`），不得只实现单品牌
 - **索引页必须为播放器模式**：`presentation.html` 必须实现**单页播放器**（非缩略图画廊），包含以下全部功能：
   1. **单 iframe 查看器**：通过一个 `<iframe>` 加载当前页 `slide-{N}.html`，居中展示，自动缩放适配视口（保持 1280×720 比例）。

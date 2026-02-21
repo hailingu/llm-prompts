@@ -25,12 +25,12 @@ def infer_layout(html: str) -> str:
         return "cover"
     if "title slide" in low or "title section" in low:
         return "cover"
-    if "timeline" in low and "connection-line" in low:
+    if "timeline" in low or "milestone" in low or "year" in low and ("dot" in low or "phase" in low):
         return "milestone-timeline"
-    if "process-step" in low or "step-process-container" in low:
+    if "process" in low or "step" in low:
         return "process"
-    if "grid-2" in low:
+    if "grid-cols-2" in low or "w-1/2" in low or "w-7/12" in low or "w-5/12" in low or "w-8/12" in low or "w-4/12" in low or "w-2/3" in low or "w-1/3" in low:
         return "dual-column"
-    if "grid-3" in low:
+    if "grid-cols-3" in low or "w-1/3" in low:
         return "three-column"
     return "unknown"
