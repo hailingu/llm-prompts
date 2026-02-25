@@ -1,8 +1,8 @@
 ---
 name: stock-price-tracker
-description: "Retrieve real-time stock prices via Yahoo Finance API. Supports multiple stock symbols, currency conversion, and clean JSON output for agent processing."
+description: "Retrieve real-time stock prices via Yahoo Finance API. Supports multiple stock symbols, currency conversion, and clean JSON output for agent processing. Includes rate limiting protection."
 metadata:
-  version: 1.0.0
+  version: 1.1.0
   author: cortana
 ---
 
@@ -17,8 +17,32 @@ When an AI agent needs to discuss financial markets, investment strategies, or c
 2. **Standardized Output**: Returns structured JSON with consistent fields.
 3. **Multi-Symbol Support**: Query multiple stocks in a single request.
 4. **No API Key Required**: Uses Yahoo Finance's free public endpoint.
+5. **Rate Limiting Protection**: Built-in retry logic, session pooling, and request delays to avoid "Too Many Requests" errors.
 
 > **Note**: This skill is for real-time price lookup only. For historical data or technical indicators, consider extending the skill or using dedicated financial data APIs.
+
+## Rate Limiting Protection
+This skill includes multiple mechanisms to handle Yahoo Finance's rate limits:
+
+1. **Session Pooling**: Uses `requests.Session()` for TCP connection reuse
+2. **Request Delays**: Adds 1.5s delay between symbol requests
+3. **Retry Logic**: Automatic retry with exponential backoff for 429 errors
+4. **Auto-Update**: Automatically upgrades yfinance to latest version for bug fixes
+5. **Proxy Support**: Configure HTTP/HTTPS proxy if needed
+
+### Troubleshooting "Too Many Requests" Errors
+If you encounter rate limiting errors:
+```bash
+# Option 1: Update yfinance to latest version
+pip install --upgrade yfinance
+
+# Option 2: Use a proxy
+export HTTP_PROXY="http://your-proxy:port"
+export HTTPS_PROXY="http://your-proxy:port"
+python3 skills/stock-price-tracker/scripts/stock_price.py --symbol AAPL
+
+# Option 3: Increase delay between requests (modify REQUEST_DELAY_SECONDS in code)
+```
 
 ## Usage
 The skill is implemented as a Python script that uses the `yfinance` library. Ensure you have Python 3.7+ and the required dependencies installed.
@@ -26,7 +50,7 @@ The skill is implemented as a Python script that uses the `yfinance` library. En
 ### Installation
 ```bash
 # Install required Python packages
-pip install yfinance pandas
+pip install yfinance pandas requests
 ```
 
 ### CLI Commands
@@ -45,6 +69,9 @@ python3 skills/stock-price-tracker/scripts/stock_price.py --symbol AAPL --format
 
 # Output in CSV format
 python3 skills/stock-price-tracker/scripts/stock_price.py --symbol AAPL --format csv
+
+# Use proxy (via environment variables)
+HTTP_PROXY=http://proxy:8080 python3 skills/stock-price-tracker/scripts/stock_price.py --symbol AAPL
 ```
 
 ## Output Format

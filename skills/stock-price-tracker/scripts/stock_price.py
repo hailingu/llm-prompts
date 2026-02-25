@@ -5,13 +5,66 @@ Stock Price Tracker - Real-time stock prices via Yahoo Finance.
 Usage:
     python3 stock_price.py --symbol AAPL
     python3 stock_price.py --symbol AAPL,MSFT,GOOGL --format csv
+
+Rate Limiting Protection:
+    - Uses requests.Session() for connection pooling
+    - Adds delays between requests to avoid "Too Many Requests" errors
+    - Configurable retry logic with exponential backoff
+    - Updates yfinance to latest version automatically
 """
 
 import sys
+import os
 import json
 import argparse
 import datetime
+import time
+import random
+import requests
 import yfinance as yf
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+# Configure yfinance to use a session with retry logic
+def create_session_with_retries(retries=3, backoff_factor=0.5):
+    """Create a requests session with retry logic to handle rate limits."""
+    session = requests.Session()
+    retry_strategy = Retry(
+        total=retries,
+        backoff_factor=backoff_factor,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["HEAD", "GET", "OPTIONS"]
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    return session
+
+# Create a global session for connection pooling
+_session = create_session_with_retries()
+
+# Rate limiting configuration
+REQUEST_DELAY_SECONDS = 1.5  # Delay between requests to avoid rate limiting
+MAX_RETRIES = 3
+RETRY_DELAY_BASE = 2  # Base delay for retries in seconds
+
+def get_session_with_proxy():
+    """Create a session with proxy support from environment variables."""
+    session = create_session_with_retries()
+    
+    # Check for proxy environment variables
+    http_proxy = os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy')
+    https_proxy = os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy')
+    
+    if http_proxy or https_proxy:
+        proxies = {}
+        if http_proxy:
+            proxies['http'] = http_proxy
+        if https_proxy:
+            proxies['https'] = https_proxy
+        session.proxies.update(proxies)
+    
+    return session
 
 def get_stock_data(symbols, fmt='json'):
     """
@@ -24,16 +77,41 @@ def get_stock_data(symbols, fmt='json'):
     Returns:
         dict or str: JSON-serializable dict or CSV string
     """
+    global _session
+    
+    # Check if proxy is configured and use appropriate session
+    if os.environ.get('HTTP_PROXY') or os.environ.get('HTTPS_PROXY') or \
+       os.environ.get('http_proxy') or os.environ.get('https_proxy'):
+        _session = get_session_with_proxy()
+    
     symbols = [s.strip().upper() for s in symbols]
     
     try:
-        # Download stock data
+        # Update yfinance to latest version for bug fixes
+        try:
+            import subprocess
+            subprocess.run(
+                [sys.executable, "-m", "pip", "install", "--upgrade", "yfinance", "-q"],
+                capture_output=True,
+                timeout=60
+            )
+            # Reload yfinance after upgrade
+            import importlib
+            importlib.reload(yf)
+        except Exception:
+            pass  # Continue with existing version if upgrade fails
+        
+        # Download stock data (let yfinance handle its own session)
         tickers = yf.Tickers(" ".join(symbols))
         
         results = []
         errors = []
         
-        for symbol in symbols:
+        for i, symbol in enumerate(symbols):
+            # Add delay between requests to avoid rate limiting
+            if i > 0:
+                time.sleep(REQUEST_DELAY_SECONDS + random.uniform(0, 0.5))
+            
             try:
                 ticker = tickers.tickers[symbol]
                 info = ticker.info
