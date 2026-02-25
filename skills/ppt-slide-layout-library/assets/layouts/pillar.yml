@@ -1,0 +1,91 @@
+# 支柱型布局 (pillar) - Executive Summary 专用
+# 文件: layouts/pillar.yml
+
+layout:
+  id: pillar
+  name: 支柱型布局
+  version: 2.0
+  category: fullwidth
+
+selection_criteria:
+  when_to_use:
+    - "Executive Summary"
+    - "3-5个核心支柱/维度"
+    - "战略框架展示"
+  when_not_to_use:
+    - "有大量数据 → 改用 dashboard_grid"
+
+spec:
+  regions:
+    pillars:
+      cols_per_pillar: { min: 3, max: 5 }
+      total_width_pct: 100
+
+content_spec:
+  pillars:
+    count: { min: 3, max: 5, optimal: 4 }
+    per_pillar:
+      title_max_chars: 15
+      body_min_chars: 50
+      body_max_chars: 150
+      bullets_max: 4
+
+constraints:
+  - "支柱数量 3-5 个"
+  - "每个支柱内容平衡"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white">
+    <header class="h-[80px] border-b border-slate-200 px-12 pt-6 pb-4 shrink-0">
+      <h1 class="text-3xl font-bold text-slate-800">Executive Summary</h1>
+    </header>
+    
+    <main class="flex-1 w-full px-12 py-6 min-h-0">
+      <div class="grid grid-cols-4 gap-6 h-full">
+        <div class="card p-5 bg-slate-50 flex flex-col">
+          <div class="w-10 h-10 bg-brand-primary/10 rounded-lg flex items-center justify-center mb-4">
+            <i class="fas fa-chart-line text-brand-primary text-xl"></i>
+          </div>
+          <h3 class="font-bold text-lg text-slate-800 mb-3">支柱 1</h3>
+          <ul class="text-sm text-slate-600 space-y-2 flex-1">
+            <li class="flex items-start"><span class="mr-2">•</span>关键要点 A</li>
+            <li class="flex items-start"><span class="mr-2">•</span>关键要点 B</li>
+            <li class="flex items-start"><span class="mr-2">•</span>关键要点 C</li>
+          </ul>
+        </div>
+        <div class="card p-5 bg-slate-50 flex flex-col">
+          <div class="w-10 h-10 bg-brand-secondary/10 rounded-lg flex items-center justify-center mb-4">
+            <i class="fas fa-users text-brand-secondary text-xl"></i>
+          </div>
+          <h3 class="font-bold text-lg text-slate-800 mb-3">支柱 2</h3>
+          <ul class="text-sm text-slate-600 space-y-2 flex-1">
+            <li class="flex items-start"><span class="mr-2">•</span>关键要点 A</li>
+            <li class="flex items-start"><span class="mr-2">•</span>关键要点 B</li>
+          </ul>
+        </div>
+        <div class="card p-5 bg-slate-50 flex flex-col">
+          <div class="w-10 h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center mb-4">
+            <i class="fas fa-cog text-emerald-600 text-xl"></i>
+          </div>
+          <h3 class="font-bold text-lg text-slate-800 mb-3">支柱 3</h3>
+          <ul class="text-sm text-slate-600 space-y-2 flex-1">
+            <li class="flex items-start"><span class="mr-2">•</span>关键要点 A</li>
+            <li class="flex items-start"><span class="mr-2">•</span>关键要点 B</li>
+          </ul>
+        </div>
+        <div class="card p-5 bg-slate-50 flex flex-col">
+          <div class="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center mb-4">
+            <i class="fas fa-rocket text-amber-600 text-xl"></i>
+          </div>
+          <h3 class="font-bold text-lg text-slate-800 mb-3">支柱 4</h3>
+          <ul class="text-sm text-slate-600 space-y-2 flex-1">
+            <li class="flex items-start"><span class="mr-2">•</span>关键要点 A</li>
+            <li class="flex items-start"><span class="mr-2">•</span>关键要点 B</li>
+          </ul>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0"></footer>
+  </div>

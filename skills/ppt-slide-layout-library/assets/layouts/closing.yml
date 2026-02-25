@@ -1,0 +1,59 @@
+# 尾页布局 (closing)
+# 文件: layouts/closing.yml
+
+layout:
+  id: closing
+  name: 尾页布局
+  version: 2.0
+  category: special
+
+selection_criteria:
+  when_to_use:
+    - "PPT 结束页"
+    - "Q&A 页面"
+    - "致谢页"
+  priority: 1
+  unique: true
+
+spec:
+  structure_type: "free"
+
+content_spec:
+  main_text:
+    max_chars: 50
+  contact_info:
+    max_items: 4
+    per_item_chars: 40
+
+constraints:
+  - "必须作为最后一页"
+  - "禁止图表"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-brand-primary">
+    <header class="h-[80px] shrink-0"></header>
+    
+    <main class="flex-1 flex flex-col items-center justify-center min-h-0">
+      <div class="text-center text-white">
+        <!-- 主标题 -->
+        <h1 class="text-5xl font-bold mb-6">感谢聆听</h1>
+        
+        <!-- 副标题 / Q&A -->
+        <p class="text-2xl opacity-90 mb-12">Q&A</p>
+        
+        <!-- 分隔线 -->
+        <div class="w-24 h-1 bg-white/30 mx-auto mb-12"></div>
+        
+        <!-- 联系信息 -->
+        <div class="space-y-3">
+          <p class="text-lg opacity-80">联系我们</p>
+          <p class="text-base opacity-70">contact@example.com</p>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="h-[40px] shrink-0 flex items-center justify-center">
+      <span class="text-white/50 text-sm">© 2024 Company Name</span>
+    </footer>
+  </div>

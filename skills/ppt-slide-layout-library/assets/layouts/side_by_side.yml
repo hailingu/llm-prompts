@@ -1,0 +1,87 @@
+# 并排比较布局 (side_by_side)
+# 文件: layouts/side_by_side.yml
+
+layout:
+  id: side_by_side
+  name: 并排比较布局
+  version: 2.0
+  category: chart
+
+# ── 选择条件 ─────────────────────────────────────────
+selection_criteria:
+  when_to_use:
+    - "两个方案/选项的对比分析"
+    - "A/B测试结果展示"
+    - "前后对比/同期对比"
+  when_not_to_use:
+    - "3+方案对比 → 改用 comparison"
+    - "单主题深度分析 → 改用 data_chart"
+  data_requirements:
+    columns: 2
+    items_per_column: { min: 3, max: 5, optimal: 4 }
+
+# ── 布局规格 ─────────────────────────────────────────
+spec:
+  structure_type: "header-main-footer"
+  canvas: { width: 1280, height: 720 }
+  header: { height_px: 80 }
+  footer: { height_px: 40 }
+  main:
+    available_h_px: 600
+    inner_h_px: 552
+  regions:
+    left_column:
+      cols: 6
+      width_pct: 50
+    right_column:
+      cols: 6
+      width_pct: 50
+
+# ── 内容规格 ─────────────────────────────────────────
+content_spec:
+  column:
+    title_max_chars: 25
+    items_per_side: { min: 3, max: 5, optimal: 4 }
+    per_item:
+      label_max_chars: 20
+      value_max_chars: 30
+      desc_max_chars: 60
+  balance:
+    max_item_diff: 1
+    max_char_diff: 80
+  chart:
+    allowed_types: ["bar", "radar"]
+    data_points_per_chart: { min: 3, max: 6 }
+
+# ── 约束 ─────────────────────────────────────────────
+constraints:
+  - "左右严格等宽 (50%-50%)"
+  - "卡片数量差 ≤ 1"
+  - "两侧高度必须一致 (h-full + flex-1)"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white">
+    <header class="h-[80px] border-b border-slate-200 px-12 pt-6 pb-4 shrink-0">
+      <h1 class="text-3xl font-bold text-slate-800">对比标题</h1>
+    </header>
+    
+    <main class="flex-1 w-full px-12 py-6 min-h-0">
+      <div class="grid grid-cols-2 gap-8 h-full">
+        <section class="card p-6 h-full flex flex-col">
+          <h3 class="text-xl font-bold text-brand-primary mb-4">方案 A</h3>
+          <div class="flex-1 min-h-0">
+            <!-- 内容区 -->
+          </div>
+        </section>
+        <section class="card p-6 h-full flex flex-col">
+          <h3 class="text-xl font-bold text-brand-secondary mb-4">方案 B</h3>
+          <div class="flex-1 min-h-0">
+            <!-- 内容区 -->
+          </div>
+        </section>
+      </div>
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0"></footer>
+  </div>
