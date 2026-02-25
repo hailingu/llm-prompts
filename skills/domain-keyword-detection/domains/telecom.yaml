@@ -1,0 +1,34 @@
+name: telecom
+description: "Telecommunications (5G, network, wireless, infrastructure)"
+version: 1.0.0
+last_updated: 2026-02-25
+
+keywords:
+  decision_verbs:
+    zh: ["决策", "选择", "采用", "推荐", "优先", "决定", "放弃", "排除", "建议"]
+    en: ["decision", "chose", "instead of", "vs", "trade-off", "prioritize", "recommend", "adopt", "reject"]
+  
+  technical_terms:
+    wireless: ["5G", "4G", "LTE", "3G", "6G", "WiFi", "Wi-Fi", "毫米波", "Sub-6G", "频段", "载波聚合"]
+    network: ["基站", "NodeB", "eNodeB", "gNodeB", "核心网", "AMF", "SMF", "UPF", "MEC", "承载网"]
+    infrastructure: ["机房", "基站站点", "铁塔", "小基站", "室分", "基站建设", "网络规划", "网络优化"]
+    services: ["移动网络", "物联网卡", "eSIM", "SIM卡", "通信服务", "运营商", "MVNO"]
+  
+  scope_markers:
+    zh: ["必须", "可选", "试点", "商用", "部署", "扩容", "升级", "覆盖", "阶段"]
+    en: ["must-have", "optional", "pilot", "commercial", "deploy", "scale", "upgrade", "coverage", "phase"]
+  
+  comparison_markers:
+    zh: ["vs", "对比", "权衡", "取舍", "优点", "缺点", "成本", "性能", "覆盖", "容量"]
+    en: ["vs", "trade-off", "instead of", "pros", "cons", "cost", "performance", "coverage", "capacity"]
+  
+  risk_markers:
+    zh: ["为了避免", "缓解", "降级", "监控", "风险", "不确定性", "假设", "验证", "干扰", "断网"]
+    en: ["to avoid", "mitigate", "fallback", "monitor", "risk", "uncertainty", "assumption", "validate", "interference", "outage"]
+
+scoring_weights:
+  decision_verbs: 1.3
+  technical_terms: 1.4
+  scope_markers: 1.1
+  comparison_markers: 1.0
+  risk_markers: 1.1
