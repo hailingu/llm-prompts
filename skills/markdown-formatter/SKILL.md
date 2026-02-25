@@ -25,7 +25,7 @@ This skill provides automated validation, reporting, and fixing for Markdown doc
 |------|---------|---------|
 | `markdownlint-cli` | Lint and auto-fix Markdown | `npx markdownlint-cli` |
 | `prettier` | Reflow paragraphs and format | `npx prettier --write` |
-| `md_table_tool.py` | Fix table alignment | `python3 skills/md-table-fixer/bin/md_table_tool.py` |
+| `md_table_tool.py` | Fix table alignment | `python3 skills/md-table-fixer/scripts/md_table_tool.py` |
 
 ## Usage
 
@@ -42,10 +42,10 @@ npx markdownlint-cli --fix <file_or_directory>
 npx prettier --write --prose-wrap always <file>
 
 # Detect table issues
-python3 skills/md-table-fixer/bin/md_table_tool.py detect <file_or_directory>
+python3 skills/md-table-fixer/scripts/md_table_tool.py detect <file_or_directory>
 
 # Fix table alignment
-python3 skills/md-table-fixer/bin/md_table_tool.py fix <file_or_directory>
+python3 skills/md-table-fixer/scripts/md_table_tool.py fix <file_or_directory>
 ```
 
 ### Agent Workflow
@@ -122,7 +122,7 @@ npx prettier --write --prose-wrap always <file>
 
 Use md_table_tool.py:
 ```bash
-python3 skills/md-table-fixer/bin/md_table_tool.py fix <file>
+python3 skills/md-table-fixer/scripts/md_table_tool.py fix <file>
 ```
 
 ## Return Payloads
@@ -172,7 +172,7 @@ This skill is primarily used by `markdown-writer-specialist` to validate and fix
 
 - Node.js and `markdownlint-cli` (npm package)
 - `prettier` (optional but recommended)
-- Python 3.8+ and `skills/md-table-fixer/bin/md_table_tool.py`
+- Python 3.8+ and `skills/md-table-fixer/scripts/md_table_tool.py`
 
 ## Configuration
 
