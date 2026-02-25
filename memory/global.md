@@ -1,32 +1,68 @@
-# Global Memory
+# Global Context
 
-## System Context
-- **Workspace**: llm-prompts project
-- **Agent System**: Multi-agent framework with specialized agents for different domains
-- **Last Updated**: 2026-02-25
-
-## User Preferences & Patterns
-*No user preferences recorded yet.*
-
-## Key Decisions & Learnings
-*No key decisions recorded yet.*
-
-## Project Milestones
-*No project milestones recorded yet.*
-
-## Agent Usage Patterns
-*No agent usage patterns recorded yet.*
-
-## Skill Inventory
-*Record skills created and their purposes here.*
+> AI Agent 持久化上下文 - 跨会话保持的核心信息库
 
 ---
 
-## Update Log
+## User Profile
 
-### 2026-02-25
-- **Memory system initialized**: Created MEMORY.md and memory-manager skill
-- **Stock price tracker skill**: Created skills/stock-price-tracker/ for real-time stock price retrieval via Yahoo Finance
-  - Purpose: Enable AI agents to access current stock prices without manual web browsing
-  - Features: Multi-symbol support, JSON/CSV output, real-time data
-  - Dependencies: yfinance, pandas
+| 字段 | 内容 |
+|------|------|
+| Name | *待填写* |
+| Role | *待填写* |
+| Expertise | *待填写* |
+| Communication | *中文 / English* |
+
+---
+
+## Known Facts
+
+> Agent 已确认的客观事实，会话间持久有效
+
+- *暂无已知事实*
+
+---
+
+## Preferences
+
+> 用户偏好和沟通风格
+
+- **Response Style**: *待填写*
+- **Code Style**: *待填写*
+- **Documentation**: *待填写*
+- **Other**: *待填写*
+
+---
+
+## Constraints
+
+> 显式约束和边界
+
+- *暂无约束*
+
+---
+
+## Project Context
+
+> 当前项目的关键上下文
+
+- **Project**: llm-prompts
+- **Tech Stack**: *待填写*
+- **Architecture**: *待填写*
+- **Key Files**: *待填写*
+
+---
+
+## Knowledge Base
+
+> 可复用的领域知识（由 Agent 沉淀）
+
+- *暂无知识沉淀*
+
+---
+
+## Recent Context
+
+> 最近会话的上下文摘要（自动更新）
+
+- *暂无最近上下文*
