@@ -1,8 +1,8 @@
 ---
 name: domain-keyword-detection
-description: Detect document domain (software/hardware/manufacturing/standards/biotech/business) via keyword matching. Supports multi-domain documents and confidence scoring.
+description: Detect document domain (14 domains: software/hardware/manufacturing/standards/biotech/business/energy/data_science/automotive/cloud_infrastructure/telecom/iot/medical_devices/security) via keyword matching. Supports multi-domain documents and confidence scoring.
 metadata:
-  version: 1.0.0
+  version: 1.1.0
   author: ppt-content-planner
 ---
 
@@ -29,6 +29,14 @@ Automatically detect document domain via lightweight keyword matching. Designed 
 | `standards` | Standards & Certification (IEC, IEEE, GB) | IEC, 认证, 合规, 互比试验 |
 | `business` | Business & Finance (models, metrics, ROI) | ROI, 商业模式, 订阅, TCO |
 | `biotech` | Biotech & Pharma (clinical trials, GMP, FDA) | 临床试验, GMP, 靶标, 制剂 |
+| `energy` | Energy & Power Systems (renewable, grid, storage) | 光伏, 风电, 储能, 电网 |
+| `data_science` | Data Science & AI/ML (algorithms, models, training) | 机器学习, 深度学习, XGBoost, 训练 |
+| `automotive` | Automotive & EV (powertrain, ADAS, vehicle) | 电机, 电驱, BMS, ADAS, 自动驾驶 |
+| `cloud_infrastructure` | Cloud & Infrastructure (AWS/GCP/Azure, DevOps) | AWS, Azure, Kubernetes, CI/CD, Terraform |
+| `telecom` | Telecommunications (5G, network, wireless) | 5G, 基站, 核心网, LTE, WiFi |
+| `iot` | IoT & Embedded Systems (sensors, protocols, edge) | 传感器, MQTT, MCU, 嵌入式, RTOS |
+| `medical_devices` | Medical Devices & Healthcare (FDA 510(k), CE) | FDA, 510(k), ISO13485, 临床试验 |
+| `security` | Cybersecurity & Information Security (penetration testing) | 防火墙, WAF, 渗透测试, 等保, ISO27001 |
 
 ## Supported Commands
 
@@ -244,4 +252,5 @@ hint: "Check the domain name or create the domain configuration file."
 
 ## Changelog
 
+- **2026-02-25** — v1.1.0 — Added 8 new domain packs (energy, data_science, automotive, cloud_infrastructure, telecom, iot, medical_devices, security). Total 14 domains now supported.
 - **2026-02-06** — v1.0.0 — Initial release with 6 domain packs (software, hardware, manufacturing, standards, business, biotech)
