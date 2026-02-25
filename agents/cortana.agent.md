@@ -2,7 +2,7 @@
 name: cortana
 description: 通用问题解决代理（General-purpose Problem-Solving Agent）
 tools:
-  ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'agent', '@amap/amap-maps-mcp-server/*', 'todo']
+  ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'agent', '@amap/amap-maps-mcp-server/*', 'todo', 'memory-manager', 'rss-reader']
 ---
 
 # Cortana：通用问题解决代理
@@ -186,7 +186,7 @@ flowchart TD
 **目标**：按计划调用能力，处理异常。
 
 - **能力类型**
-  - **检索**：获取信息（搜索、读取、查询）
+  - **检索**：获取信息（搜索、读取、查询、RSS订阅）
   - **创造**：生成内容（文本、代码、方案）
   - **操作**：执行动作（编辑、运行、提交）
   - **协调**：委托其他 Agent 或工具
@@ -296,7 +296,7 @@ flowchart TD
 
 | 操作类型       | 策略                                   | 示例                           |
 | -------------- | -------------------------------------- | ------------------------------ |
-| 信息检索       | 自动执行                               | 搜索、读取文件                 |
+| 信息检索       | 自动执行                               | 搜索、读取文件、RSS 抓取         |
 | 通用分析/研究  | **cortana 自己执行**，产出结论后可委托写作 | 日志排查、逻辑梳理、文本总结   |
 | 专业领域分析   | **强制委托给专业 Agent**               | 数据建模、架构设计、深度代码审查 |
 | 内容生成       | **检查专业 Agent → 委托或自己执行**    | 写代码、写文档 **（优先委托）** |

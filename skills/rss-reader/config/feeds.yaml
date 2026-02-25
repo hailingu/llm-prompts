@@ -41,6 +41,12 @@ news:
     url: "http://www.cankaoxiaoxi.com/feed"
   - name: "财新网"
     url: "http://www.caixin.com/rss"
+  - name: "日经中文网"
+    url: "https://feedx.net/rss/nikkei.xml"
+  - name: "台湾 CNA"
+    url: "https://feedx.net/rss/cna.xml"
+  - name: "澎湃新闻"
+    url: "https://feedx.net/rss/thepaper.xml"
 
 # AI/大模型
 ai:
@@ -52,6 +58,12 @@ ai:
     url: "https://deepmind.com/blog/feed/rss"
   - name: "Hugging Face Blog"
     url: "https://huggingface.co/blog/feed.xml"
+  - name: "ArXiv ML (cs.LG)"
+    url: "http://arxiv.org/rss/cs.LG?mirror=cn"
+  - name: "ArXiv AI (cs.AI)"
+    url: "http://arxiv.org/rss/cs.AI?mirror=cn"
+  - name: "Microsoft AI Blog"
+    url: "https://blogs.microsoft.com/ai/feed"
 
 # 开发者/技术
 dev:

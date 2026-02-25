@@ -263,9 +263,14 @@ def filter_by_date(articles: List[Dict], since: Optional[str] = None,
         pub_date = parse_date(article.get('published'))
         
         if pub_date:
-            if since_dt and pub_date < since_dt:
+            # Normalize to naive for comparison
+            p_date = pub_date.replace(tzinfo=None) if pub_date.tzinfo else pub_date
+            s_date = since_dt.replace(tzinfo=None) if since_dt and since_dt.tzinfo else since_dt
+            u_date = until_dt.replace(tzinfo=None) if until_dt and until_dt.tzinfo else until_dt
+
+            if s_date and p_date < s_date:
                 continue
-            if until_dt and pub_date > until_dt:
+            if u_date and p_date > u_date:
                 continue
         
         filtered.append(article)
@@ -310,7 +315,13 @@ def output_markdown(articles: List[Dict], include_content: bool = False) -> str:
 
 
 def get_feeds_to_fetch(manager: SubscriptionManager, args) -> List[Dict[str, str]]:
-    """Determine which feeds to fetch based on arguments."""
+    """Determine which feeds to fetch based on arguments.
+    
+    Priority: --use-defaults > --feed > --category > user subscriptions
+    
+    If user has no subscriptions or specified category has no feeds,
+    automatically fallback to default feeds.
+    """
     # Priority: --use-defaults > --feed > --category > user subscriptions
     if getattr(args, 'use_defaults', False):
         # Use default feeds by category or all
@@ -326,8 +337,26 @@ def get_feeds_to_fetch(manager: SubscriptionManager, args) -> List[Dict[str, str
         return [f for f in manager.subscriptions.get("feeds", []) 
                 if args.feed.lower() in f["name"].lower() or args.feed in f["url"]]
     
-    if getattr(args, 'category', None):
-        cat_urls = manager.subscriptions.get("categories", {}).get(args.category, [])
-        return [f for f in manager.subscriptions.get("feeds", []) if f["url"] in cat_urls]
+    # Get user subscription feeds
+    user_feeds = manager.subscriptions.get("feeds", [])
+    user_categories = manager.subscriptions.get("categories", {})
     
-    return manager.subscriptions.get("feeds", [])
+    if getattr(args, 'category', None):
+        # First try user's category subscriptions
+        cat_urls = user_categories.get(args.category, [])
+        category_feeds = [f for f in user_feeds if f["url"] in cat_urls]
+        
+        # If no user feeds in this category, fallback to default feeds
+        if not category_feeds and args.category in DEFAULT_FEEDS:
+            return DEFAULT_FEEDS[args.category][:]
+        
+        return category_feeds
+    
+    # If no user subscriptions, fallback to all default feeds
+    if not user_feeds:
+        feeds = []
+        for cat, cat_feeds in DEFAULT_FEEDS.items():
+            feeds.extend(cat_feeds)
+        return feeds
+    
+    return user_feeds
