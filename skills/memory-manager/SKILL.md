@@ -8,150 +8,121 @@ metadata:
 
 # Memory Manager Skill
 
-## 描述
-记忆与持久化管理技能，用于在多轮会话和跨会话中保持上下文、沉淀知识、记录决策以及避免重复犯错。
+> **Language**: All memory content must be written in **English only**.
 
-## 核心原则
-好记性不如烂笔头（Text > Brain）。每次会话都是全新的，必须依赖文件系统进行上下文的持久化。
+## Overview
+Skill for memory and persistence management, enabling context preservation across multi-turn sessions, knowledge accumulation, decision recording, and error avoidance.
 
-## 记忆分级与存储规范
+## Core Principle
+"Text > Brain" - Every session is fresh. Context must be persisted to the filesystem.
 
-### 1. 主题工作记忆（Theme-based Working Memory）
-- **组织原则**：按"内容主题-时间"的二维结构组织，避免所有信息混杂在单一的日常日志中。
-- **位置**：`memory/<theme>/YYYY-MM-DD_HH.md`（`<theme>` 为当前任务、项目或话题的简写，如 `memory/agent-optimization/2026-02-25_14.md`，按小时粒度记录）。
-- **触发时机**：
-  - 开启新任务或新主题的会话时。
-  - 发生需要跨会话保持的临时上下文。
-  - 记录特定主题下的重要操作日志、临时决策、进行中的任务状态。
-- **内容规范**：按时间戳或任务块记录，保持与该主题高度相关。
-- **检索策略**：Agent 可通过 `list_dir` 扫描 `memory/` 目录识别主题，再通过文件名中的时间戳（`YYYY-MM-DD_HH`）快速定位特定时间段的记忆。
+## Memory Hierarchy
 
-### 2. 全局长期记忆（Global Long-Term Memory）
-- **位置**：`memory/global.md`
-- **触发时机**：
-  - 在主会话中自由读取与更新。
-  - 定期回顾主题工作记忆，将具有跨主题、全局长期价值的内容提炼并转移至此。
-- **内容规范**：提炼后的精华（重大决策、全局用户偏好、核心上下文、个人观点）。
-- **安全红线**：除非用户明确要求，否则主动过滤并跳过密码/密钥等敏感信息。仅在主会话中加载和更新，严禁在共享上下文中读取。
+### 1. Theme-based Working Memory
+- **Organization**: Organized by "theme-time" 2D structure, avoiding information clutter.
+- **Location**: `memory/<theme>/YYYY-MM-DD_HH.md` (e.g., `memory/agent-optimization/2026-02-25_14.md`)
+- **Triggers**:
+  - Starting a new task or theme session
+  - Context that needs to persist across sessions
+  - Important logs, temporary decisions, task states for a specific theme
+- **Retrieval**: Use `list_dir` to scan `memory/` for themes, then use filename timestamps (`YYYY-MM-DD_HH`) to locate specific time periods.
 
-### 3. 知识沉淀与纠错（Knowledge Accumulation & Correction）
-- **经验内化**：当学到新教训时，除了更新记忆，还应主动更新对应的 `AGENTS.md`、`TOOLS.md` 或相关 Skill 文件。
-- **错误免疫**：犯错后必须记录（Document it），确保不再重复相同的错误。
+### 2. Global Long-Term Memory
+- **Location**: `memory/global.md`
+- **Triggers**:
+  - Read/update freely in main sessions
+  - Periodically review theme memories and distill cross-theme, long-term value
+- **Content**: Distilled essence (major decisions, user preferences, core context, personal insights)
+- **Security**: Filter sensitive info (passwords, keys) unless explicitly requested. Only load/update in main sessions.
 
-## 记忆模板规范
+### 3. Knowledge Accumulation & Correction
+- **Experience Internalization**: When learning new lessons, update relevant Agent/Skill docs
+- **Error Immunity**: Document mistakes to prevent repetition
 
-为了保持记忆的结构化和可检索性，建议在写入 `content` 时采用以下 Markdown 模板之一：
+## Memory Templates
 
-### 1. 决策记录 (Decision Record)
-适用于记录关键架构选择、技术选型或方案变更。
+Use these Markdown templates for structured, searchable content:
+
+### 1. Decision Record
+For recording key architecture choices, tech stack decisions, or plan changes.
 ```markdown
-### 决策：[决策标题]
-- **背景**：[简述面临的问题或场景]
-- **选项**：
-  1. [选项A] - [利弊分析]
-  2. [选项B] - [利弊分析]
-- **决定**：[最终选择]
-- **理由**：[核心驱动因素]
+### Decision: [Title]
+- **Context**: [Problem or scenario]
+- **Options**:
+  1. [Option A] - [Pros/Cons]
+  2. [Option B] - [Pros/Cons]
+- **Decision**: [Final choice]
+- **Rationale**: [Key driver]
 ```
 
-### 2. 错误/复盘记录 (Error/Post-mortem)
-适用于记录遇到的坑、报错及解决方案，防止重蹈覆辙。
+### 2. Error / Post-mortem
+For recording pitfalls, errors, and solutions.
 ```markdown
-### 复盘：[错误现象/报错摘要]
-- **现象**：[错误日志/表现]
-- **根因**：[分析出的根本原因]
-- **解决**：[最终修复方案]
-- **教训**：[如何避免再次发生]
+### Post-mortem: [Error summary]
+- **Symptom**: [Error log or behavior]
+- **Root Cause**: [Underlying cause]
+- **Fix**: [Solution applied]
+- **Lesson**: [How to avoid recurrence]
 ```
 
-### 3. 任务状态快照 (Task Snapshot)
-适用于跨会话保持长任务的进度。
+### 3. Task Snapshot
+For persisting long-running task progress across sessions.
 ```markdown
-### 进度：[任务名称]
-- **已完成**：
-  - [x] [子任务1]
-- **进行中**：[当前卡点/正在做的事]
-- **待办**：
-  - [ ] [下一步计划]
+### Progress: [Task name]
+- **Done**:
+  - [x] [Subtask 1]
+- **In Progress**: [Current blocker or work]
+- **Todo**:
+  - [ ] [Next step]
 ```
 
-## 使用工作流
-1. **会话初始化**：读取 `memory/global.md` 获取全局上下文和用户偏好。根据当前任务，通过 `list_dir` 扫描 `memory/` 目录识别相关主题，读取对应的 `memory/<theme>/*.md` 获取主题上下文。
-2. **构建内容**：根据当前场景选择合适的**记忆模板**，填充内容。
-3. **任务结束/复盘**：提取有全局长期价值的信息，追加或更新到 `memory/global.md`，并清理或归档已完结的主题记忆。
+## Usage Workflow
 
-## CLI 使用示例
+1. **Session Init**: Read `memory/global.md` for global context and user preferences. Scan `memory/` for relevant themes using `list_dir`, read theme-specific files.
+2. **Build Content**: Choose appropriate template, fill in content.
+3. **Session End/Review**: Distill long-term value, update `memory/global.md`, archive completed themes.
 
-### 基础命令
+## CLI Examples
+
 ```bash
-# 读取全局记忆
+# Read global memory
 python3 skills/memory-manager/scripts/memory_manager.py read-global
 
-# 写入全局记忆（追加模式）
+# Write to global memory (append mode)
 python3 skills/memory-manager/scripts/memory_manager.py write-global \
   --content "User prefers Python over Java for new projects" \
   --append
 
-# 读取主题记忆
+# Read theme memory
 python3 skills/memory-manager/scripts/memory_manager.py read-theme \
   --theme agent-optimization \
   --hours-back 48
 
-# 写入主题记忆
+# Write theme memory
 python3 skills/memory-manager/scripts/memory_manager.py write-theme \
   --theme stock-tracker \
   --content "Created stock price tracker skill with Yahoo Finance API"
 
-# 列出所有主题
+# List all themes
 python3 skills/memory-manager/scripts/memory_manager.py list-themes
 
-# 搜索记忆
+# Search memory
 python3 skills/memory-manager/scripts/memory_manager.py search \
   --query "stock" \
   --max-results 5
 ```
 
-### Agent 集成示例
-```python
-import subprocess
-import json
+## Output Formats
 
-def read_global_memory():
-    """读取全局记忆"""
-    result = subprocess.run(
-        ["python3", "skills/memory-manager/scripts/memory_manager.py", "read-global"],
-        capture_output=True,
-        text=True
-    )
-    return json.loads(result.stdout)
-
-def write_theme_memory(theme, content):
-    """写入主题记忆"""
-    result = subprocess.run(
-        ["python3", "skills/memory-manager/scripts/memory_manager.py", "write-theme",
-         "--theme", theme, "--content", content],
-        capture_output=True,
-        text=True
-    )
-    return json.loads(result.stdout)
-
-# 使用示例
-memory = read_global_memory()
-if memory["status"] == "success":
-    print(f"Global memory: {memory['content'][:100]}...")
-```
-
-## 输出格式
-
-### read-global 输出
+### read-global
 ```json
 {
   "status": "success",
-  "content": "# Global Memory\n\n## System Context..."
+  "content": "# Global Context\n\n## User Profile..."
 }
 ```
 
-### read-theme 输出
+### read-theme
 ```json
 {
   "status": "success",
@@ -166,7 +137,7 @@ if memory["status"] == "success":
 }
 ```
 
-### search 输出
+### search
 ```json
 {
   "status": "success",
@@ -174,17 +145,17 @@ if memory["status"] == "success":
   "results": [
     {
       "type": "global",
-      "match": "MEMORY.md",
+      "match": "global.md",
       "content": "Stock price tracker skill created..."
     }
   ]
 }
 ```
 
-## 文件结构
+## File Structure
 ```
 memory/
-├── global.md           # 全局长期记忆
+├── global.md           # Global long-term memory
 ├── agent-optimization/
 │   ├── 2026-02-25_14.md
 │   └── 2026-02-25_15.md
@@ -194,7 +165,7 @@ memory/
     └── 2026-02-25_13.md
 ```
 
-## 错误处理
-所有命令返回JSON格式，包含 `status` 字段：
-- `"success"`: 操作成功
-- `"error"`: 操作失败，`message` 字段包含错误信息
+## Error Handling
+All commands return JSON with `status`:
+- `"success"`: Operation successful
+- `"error"`: Operation failed, `message` contains error details
