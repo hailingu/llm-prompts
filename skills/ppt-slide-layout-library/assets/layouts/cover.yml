@@ -1,0 +1,76 @@
+# 封面布局 (cover)
+# 文件: layouts/cover.yml
+
+layout:
+  id: cover
+  name: 封面布局
+  version: 2.0
+  category: special  # 特殊页
+
+# ── 选择条件 ─────────────────────────────────────────
+selection_criteria:
+  when_to_use:
+    - "PPT 首页/封面页"
+    - "品牌展示页"
+    - "章节分隔页"
+  when_not_to_use:
+    - "需要展示数据分析内容 → 改用 data_chart"
+    - "需要目录/摘要 → 改用 pillar"
+  priority: 1
+  unique: true
+
+# ── 布局规格 ─────────────────────────────────────────
+spec:
+  structure_type: "free"
+  regions:
+    brand_area:
+      position: "left"
+      width_pct: 33
+    content_area:
+      position: "right"
+      width_pct: 67
+
+# ── 内容规格 ─────────────────────────────────────────
+content_spec:
+  eyebrow:
+    max_chars: 30
+    required: true
+  main_title:
+    min_chars: 4
+    max_chars: 30
+    recommended_chars: "12-20"
+    required: true
+  subtitle:
+    max_chars: 60
+    recommended_chars: "15-30"
+  meta_info:
+    max_items: 4
+    per_item_max_chars: 40
+  body_text:
+    max_total_chars: 80
+    max_sentences: 2
+
+# ── 约束 ─────────────────────────────────────────────
+constraints:
+  - "首页必须使用 cover 布局"
+  - "正文抑制：≤80中文字符，≤2条短句"
+  - "必须包含 eyebrow + 主标题 + 副标题 + 元信息"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container w-full h-full flex flex-col relative overflow-hidden">
+    <div class="sidebar bg-kpmg-blue absolute top-0 bottom-0 left-0 w-1/3">
+      <div class="h-full flex flex-col items-center justify-center p-8">
+        <div class="brand-logo w-24 h-24 bg-white/10 rounded-lg"></div>
+      </div>
+    </div>
+    <div class="content-area absolute top-0 bottom-0 right-0 w-2/3 p-12 flex flex-col justify-center">
+      <p class="eyebrow text-sm font-bold text-brand-primary uppercase tracking-widest mb-4">SECTION NAME</p>
+      <h1 class="main-title text-5xl font-bold text-slate-800 mb-4">主标题</h1>
+      <p class="subtitle text-xl text-slate-500 mb-8">English Title / 副标题</p>
+      <div class="meta-info text-sm text-slate-400">
+        <p>Author Name</p>
+        <p>Date | Version</p>
+      </div>
+    </div>
+  </div>

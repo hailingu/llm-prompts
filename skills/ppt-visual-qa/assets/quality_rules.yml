@@ -1,0 +1,93 @@
+# ============================================================
+# PPT Visual QA — Quality Rules
+# ============================================================
+# Additional quality constraints for PPT HTML slides.
+# These rules were migrated from the agent and are now
+# unified under the gate matrix.
+# ============================================================
+
+# ── 4.1 Production Visual Hard Constraints ──
+visual_polish:
+  - id: QR-01
+    rule: "Title hierarchy: Each page must have 3 text levels (Eyebrow/Main title/Subtitle or annotation), not just a single large title"
+    draft_skip: true
+    category: visual
+
+  - id: QR-02
+    rule: "Information density: Main chart area, snapshot area, insight area - at least two of three must be present, not entire page of only charts or only text (except cover and end pages)"
+    draft_skip: false
+    category: visual
+
+  - id: QR-03
+    rule: "Component consistency: Card border radius, borders, shadows, font sizes must remain consistent within the same deck, no page-by-page drift"
+    draft_skip: true
+    category: visual
+
+  - id: QR-04
+    rule: "Brand elements embedded: Brand switching capability preserved via class name mechanism, but production pages do not display switching controls"
+    draft_skip: false
+    category: brand
+
+  - id: QR-05
+    rule: "Icon semantics: Process/action pages must use icons to enhance stage semantics (FontAwesome or equivalent icons)"
+    draft_skip: true
+    category: visual
+
+  - id: QR-06
+    rule: "Footer specification: Each page must include page number and one of data source/methodology explanation"
+    draft_skip: false
+    category: content
+
+# ── 4.2 Cross-page Color Richness Constraints ──
+color_richness:
+  - id: QR-07
+    rule: "Non-cover page color tier minimum: Each page needs at least 2 semantic color tiers (any two of risk/warn/progress/positive)"
+    draft_skip: true
+    category: visual
+
+  - id: QR-08
+    rule: "Semantic color placement: Each page needs at least 1 semantic color landing on insight/status/KPI components, not just chart curves"
+    draft_skip: true
+    category: visual
+
+  - id: QR-09
+    rule: "Emphasis ratio control: Semantic color components should account for 25%-55% of info card total"
+    draft_skip: true
+    category: visual
+
+  - id: QR-10
+    rule: "Layout inheritance rule: dashboard/full-width/side-by-side/process pages must explicitly include status color labels or semantic color cards"
+    draft_skip: true
+    category: visual
+
+  - id: QR-11
+    rule: "Brand consistency: Semantic colors within brand color system or use preset Tailwind status colors, forbid random color changes across pages"
+    draft_skip: true
+    category: brand
+
+# ── 4.3 Copy Density Hard Constraints ──
+content_density:
+  - id: QR-12
+    rule: "Insight three-part structure: Key analysis pages must contain conclusion-cause-recommendation three parts of information"
+    draft_skip: false
+    category: content
+
+  - id: QR-13
+    rule: "Minimum text density: Key analysis page body >= 80 Chinese character equivalent information"
+    draft_skip: true
+    category: content
+
+  - id: QR-14
+    rule: "Paragraph minimum: Each of conclusion/cause/recommendation >= 20 Chinese character equivalent information"
+    draft_skip: true
+    category: content
+
+  - id: QR-15
+    rule: "Snapshot structure: Insight area needs at least 2 verifiable statements (with numbers/time/objects)"
+    draft_skip: true
+    category: content
+
+  - id: QR-16
+    rule: "Action executability: Roadmap pages need at least 3 action items, each containing at least 2 of object/action/expected result"
+    draft_skip: true
+    category: content

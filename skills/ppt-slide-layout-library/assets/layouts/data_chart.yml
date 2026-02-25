@@ -1,0 +1,108 @@
+# 数据图表布局 (data_chart) — 最常用布局
+# 文件: layouts/data_chart.yml
+
+layout:
+  id: data_chart
+  name: 数据图表布局
+  version: 2.0
+  category: chart  # 图表分析类
+
+# ── 选择条件 ─────────────────────────────────────────
+selection_criteria:
+  when_to_use:
+    - "单一主题的深度数据分析"
+    - "需要图表 + 文字解读配合展示"
+    - "数据维度 2-3 个"
+    - "洞察点 2-3 个"
+  when_not_to_use:
+    - "需要多图表对比 → 改用 side_by_side"
+    - "需要 4+ 个独立指标 → 改用 dashboard_grid"
+    - "纯文字叙事 → 改用 full_width"
+  data_requirements:
+    chart_data_points: { min: 3, max: 15, optimal: "6-10" }
+    insight_cards: { min: 2, max: 3, optimal: 3 }
+
+# ── 布局规格 ─────────────────────────────────────────
+spec:
+  structure_type: "header-main-footer"
+  canvas: { width: 1280, height: 720 }
+  header: { height_px: 80 }
+  footer: { height_px: 40 }
+  main:
+    available_h_px: 600
+    inner_h_px: 552
+    padding: "px-12 py-6"
+  regions:
+    left_chart:
+      cols: 7
+      width_pct: 58
+      height_range_px: { min: 180, max: 280, recommended: 220 }
+    right_cards:
+      cols: 5
+      width_pct: 42
+      count: { min: 2, max: 3, default: 3 }
+      height_distribution: "flex-1 均分"
+
+# ── 内容规格 ─────────────────────────────────────────
+content_spec:
+  chart:
+    types: ["line", "bar", "pie", "radar", "area"]
+    data_points:
+      line_chart: { min: 5, max: 12, optimal: 8 }
+      bar_chart: { min: 3, max: 8, optimal: 5 }
+      pie_chart: { min: 3, max: 6, optimal: 5 }
+    title_max_chars: 25
+    legend_max_items: 6
+  cards:
+    per_card:
+      title_max_chars: 20
+      body_min_chars: 42
+      body_max_chars: 120
+      bullet_points_max: 4
+    balance:
+      max_char_diff: 50
+    total_content_min_chars: 180
+
+# ── 约束 ─────────────────────────────────────────────
+constraints:
+  - "容器规范：必须使用 Flex Column + Space-Between"
+  - "Main区域：必须设置 flex-1，内部使用 h-full"
+  - "图表优先：左侧图表区宽度必须 ≥ 58%"
+  - "右侧对齐：2-3 张洞察卡，flex-1 均分高度"
+  - "页脚安全：main_scroll_h <= main_client_h - 8"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white">
+    <header class="h-[80px] border-b border-slate-200 px-12 pt-6 pb-4 flex items-end justify-between shrink-0">
+      <h1 class="text-3xl font-bold text-slate-800">Slide Title</h1>
+      <div class="text-sm text-slate-500">Subtitle</div>
+    </header>
+    
+    <main class="flex-1 w-full px-12 py-6 min-h-0 overflow-hidden">
+      <div class="grid grid-cols-12 gap-6 h-full w-full">
+        <section class="col-span-7 card h-full flex flex-col min-h-0">
+          <h3 class="text-lg font-semibold mb-4 shrink-0">Chart Title</h3>
+          <div class="flex-1 w-full relative min-h-0">
+            <canvas id="mainChart"></canvas>
+          </div>
+        </section>
+        
+        <aside class="col-span-5 flex flex-col gap-4 h-full min-h-0">
+          <div class="card p-4 flex-1 bg-slate-50 border-l-4 border-brand-primary">
+            <h4 class="font-bold text-brand-primary mb-2">Key Insight A</h4>
+            <p class="text-sm text-slate-600">Detailed analysis text...</p>
+          </div>
+          <div class="card p-4 flex-1 bg-slate-50 border-l-4 border-brand-secondary">
+            <h4 class="font-bold text-brand-secondary mb-2">Key Insight B</h4>
+            <p class="text-sm text-slate-600">Secondary observation...</p>
+          </div>
+        </aside>
+      </div>
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 flex items-center justify-between text-xs text-slate-400 shrink-0">
+      <span>Footer Info</span>
+      <span>Page #</span>
+    </footer>
+  </div>

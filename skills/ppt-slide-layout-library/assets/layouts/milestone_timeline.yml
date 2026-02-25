@@ -1,0 +1,109 @@
+# 里程碑时间线布局 (milestone_timeline)
+# 文件: layouts/milestone_timeline.yml
+
+layout:
+  id: milestone_timeline
+  name: 里程碑时间线
+  version: 2.0
+  category: timeline
+
+selection_criteria:
+  when_to_use:
+    - "5-8 个年度事件/里程碑"
+    - "历史演进展示"
+    - "项目进度追踪"
+  when_not_to_use:
+    - "纯逻辑步骤 → 改用 process_steps"
+    - ">8 事件 → 改用 timeline_vertical"
+
+spec:
+  regions:
+    timeline:
+      layout: "horizontal"
+      position: "top"
+    cards:
+      layout: "below_timeline"
+
+content_spec:
+  events:
+    count: { min: 5, max: 8, optimal: 6 }
+    per_event:
+      year_required: true
+      title_max_chars: 20
+      desc_max_chars: 60
+
+constraints:
+  - "事件数 5-8 个"
+  - "必须有年份标注"
+  - "节点必须绝对居中 (top-1/2)"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white">
+    <header class="h-[80px] border-b border-slate-200 px-12 pt-6 pb-4 shrink-0">
+      <h1 class="text-3xl font-bold text-slate-800">里程碑时间线</h1>
+    </header>
+    
+    <main class="flex-1 w-full px-12 py-6 min-h-0 flex flex-col">
+      <!-- Timeline Section -->
+      <div class="timeline-container relative h-24 mb-6">
+        <div class="connection-line absolute top-1/2 left-0 right-0 h-1 bg-brand-primary/30 -translate-y-1/2"></div>
+        <div class="flex justify-between items-center absolute top-0 left-0 right-0 h-full">
+          <div class="timeline-node flex flex-col items-center">
+            <div class="w-4 h-4 bg-brand-primary rounded-full mb-2"></div>
+            <span class="text-sm font-bold text-brand-primary">2020</span>
+          </div>
+          <div class="timeline-node flex flex-col items-center">
+            <div class="w-4 h-4 bg-brand-secondary rounded-full mb-2"></div>
+            <span class="text-sm font-bold text-brand-secondary">2021</span>
+          </div>
+          <div class="timeline-node flex flex-col items-center">
+            <div class="w-4 h-4 bg-emerald-500 rounded-full mb-2"></div>
+            <span class="text-sm font-bold text-emerald-600">2022</span>
+          </div>
+          <div class="timeline-node flex flex-col items-center">
+            <div class="w-4 h-4 bg-amber-500 rounded-full mb-2"></div>
+            <span class="text-sm font-bold text-amber-600">2023</span>
+          </div>
+          <div class="timeline-node flex flex-col items-center">
+            <div class="w-4 h-4 bg-sky-500 rounded-full mb-2"></div>
+            <span class="text-sm font-bold text-sky-600">2024</span>
+          </div>
+          <div class="timeline-node flex flex-col items-center">
+            <div class="w-4 h-4 bg-indigo-500 rounded-full mb-2"></div>
+            <span class="text-sm font-bold text-indigo-600">2025</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Event Cards -->
+      <div class="grid grid-cols-3 gap-4 flex-1 min-h-0">
+        <div class="card p-4 border-l-4 border-brand-primary bg-slate-50">
+          <h4 class="font-bold text-brand-primary mb-2">事件 1</h4>
+          <p class="text-sm text-slate-600">事件描述文字，建议不超过60字符</p>
+        </div>
+        <div class="card p-4 border-l-4 border-brand-secondary bg-slate-50">
+          <h4 class="font-bold text-brand-secondary mb-2">事件 2</h4>
+          <p class="text-sm text-slate-600">事件描述文字</p>
+        </div>
+        <div class="card p-4 border-l-4 border-emerald-500 bg-slate-50">
+          <h4 class="font-bold text-emerald-600 mb-2">事件 3</h4>
+          <p class="text-sm text-slate-600">事件描述文字</p>
+        </div>
+        <div class="card p-4 border-l-4 border-amber-500 bg-slate-50">
+          <h4 class="font-bold text-amber-600 mb-2">事件 4</h4>
+          <p class="text-sm text-slate-600">事件描述文字</p>
+        </div>
+        <div class="card p-4 border-l-4 border-sky-500 bg-slate-50">
+          <h4 class="font-bold text-sky-600 mb-2">事件 5</h4>
+          <p class="text-sm text-slate-600">事件描述文字</p>
+        </div>
+        <div class="card p-4 border-l-4 border-indigo-500 bg-slate-50">
+          <h4 class="font-bold text-indigo-600 mb-2">事件 6</h4>
+          <p class="text-sm text-slate-600">事件描述文字</p>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0"></footer>
+  </div>

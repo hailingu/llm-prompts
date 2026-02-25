@@ -1,0 +1,79 @@
+# 混合型布局 (hybrid)
+# 文件: layouts/hybrid.yml
+
+layout:
+  id: hybrid
+  name: 混合型布局
+  version: 2.0
+  category: hybrid
+
+selection_criteria:
+  when_to_use:
+    - "图表+多维度指标混合"
+    - "复杂内容组合"
+    - "需要灵活布局"
+  when_not_to_use:
+    - "单一图表 → 改用 data_chart"
+
+spec:
+  regions:
+    top:
+      layout: "full_width"
+      height_pct: 50
+    bottom:
+      layout: "grid_2x"
+      height_pct: 50
+
+content_spec:
+  chart:
+    type: "any"
+    max_data_points: 20
+  cards:
+    count: { min: 2, max: 4 }
+    per_card:
+      title_max_chars: 20
+      body_max_chars: 80
+
+constraints:
+  - "图表区域高度 40-60%"
+  - "底部卡片 2-4 个"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white">
+    <header class="h-[80px] border-b border-slate-200 px-12 pt-6 pb-4 shrink-0">
+      <h1 class="text-3xl font-bold text-slate-800">混合型布局</h1>
+    </header>
+    
+    <main class="flex-1 w-full px-12 py-6 min-h-0 flex flex-col">
+      <!-- 顶部图表区 -->
+      <div class="chart-region h-[55%] min-h-0 mb-4">
+        <div class="card p-4 bg-slate-50 h-full">
+          <h3 class="font-semibold text-slate-700 mb-3">趋势图表</h3>
+          <div class="h-[calc(100%-2rem)]">
+            <canvas id="mainChart"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 底部卡片区 -->
+      <div class="cards-region flex-1 min-h-0">
+        <div class="grid grid-cols-3 gap-4 h-full">
+          <div class="card p-4 border-l-4 border-brand-primary bg-slate-50">
+            <h4 class="font-bold text-brand-primary mb-2">关键洞察 1</h4>
+            <p class="text-sm text-slate-600">洞察描述文字，建议不超过80字符。说明核心发现。</p>
+          </div>
+          <div class="card p-4 border-l-4 border-emerald-500 bg-slate-50">
+            <h4 class="font-bold text-emerald-600 mb-2">关键洞察 2</h4>
+            <p class="text-sm text-slate-600">洞察描述文字，说明次要发现。</p>
+          </div>
+          <div class="card p-4 border-l-4 border-amber-500 bg-slate-50">
+            <h4 class="font-bold text-amber-600 mb-2">关键洞察 3</h4>
+            <p class="text-sm text-slate-600">洞察描述文字，说明行动建议。</p>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0"></footer>
+  </div>

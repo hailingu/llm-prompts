@@ -1,0 +1,173 @@
+# ╔══════════════════════════════════════════════════════════╗
+# ║  布局索引 (Layout Index)                                ║
+# ║  版本: 2.0                                              ║
+# ╚══════════════════════════════════════════════════════════╝
+
+# ═════════════════════════════════════════════════════════════
+# 1. 按类别索引
+# ═════════════════════════════════════════════════════════════
+
+categories:
+  
+  # ── 特殊页 (special) ─────────────────────────────────────
+  special:
+    description: "封面/尾页等非标准布局"
+    layouts:
+      - id: cover
+        file: cover.yml
+        name: 封面布局
+        trigger: "PPT首页/章节分隔"
+      - id: closing
+        file: closing.yml
+        name: 尾页布局
+        trigger: "PPT结束/Q&A"
+      - id: conclusion
+        file: conclusion.yml
+        name: 结论页布局
+        trigger: "最终结论/战略收尾"
+
+  # ── 图表分析类 (chart) ───────────────────────────────────
+  chart:
+    description: "数据可视化为主的分析页"
+    layouts:
+      - id: data_chart
+        file: data_chart.yml
+        name: 数据图表布局
+        trigger: "单主题+图表+2-3洞察"
+      - id: side_by_side
+        file: side_by_side.yml
+        name: 并排比较布局
+        trigger: "两方案对比"
+      - id: hybrid
+        file: hybrid.yml
+        name: 混合布局
+        trigger: "图表+多维度指标混合"
+      - id: comparison
+        file: comparison.yml
+        name: 多方案对比布局
+        trigger: "3+方案/竞品对比"
+
+  # ── 仪表盘类 (dashboard) ─────────────────────────────────
+  dashboard:
+    description: "KPI概览与监控"
+    layouts:
+      - id: dashboard_grid
+        file: dashboard_grid.yml
+        name: 仪表盘网格布局
+        trigger: "多维度KPI+趋势图"
+      - id: dashboard
+        file: dashboard.yml
+        name: 仪表板布局
+        trigger: "实时监控"
+
+  # ── 全宽/文字类 (fullwidth) ──────────────────────────────
+  fullwidth:
+    description: "大量文字或全宽展示"
+    layouts:
+      - id: full_width
+        file: full_width.yml
+        name: 全宽重点布局
+        trigger: "战略愿景/大量文字"
+      - id: pillar
+        file: pillar.yml
+        name: 支柱型布局
+        trigger: "Executive Summary"
+
+  # ── 流程/时间线类 (timeline) ─────────────────────────────
+  timeline:
+    description: "流程步骤与时间线"
+    layouts:
+      - id: process_steps
+        file: process_steps.yml
+        name: 流程步骤布局
+        trigger: "3-5步骤流程"
+      - id: milestone_timeline
+        file: milestone_timeline.yml
+        name: 里程碑时间线
+        trigger: "5-8事件演进"
+      - id: timeline_evolution
+        file: timeline_evolution.yml
+        name: 演进型时间轴
+        trigger: "Era 1/2/3代际更迭"
+      - id: timeline_vertical
+        file: timeline_vertical.yml
+        name: 垂直时间轴
+        trigger: ">6密集事件"
+      - id: timeline_standard
+        file: timeline_standard.yml
+        name: 高精度时间线
+        trigger: "精确日期事件"
+
+# ═════════════════════════════════════════════════════════════
+# 2. 快速选择决策表
+# ═════════════════════════════════════════════════════════════
+
+quick_selection:
+  
+  # 按数据特征
+  by_data:
+    - condition: "单图表 + 2-3 洞察"
+      layout: data_chart
+      file: data_chart.yml
+    - condition: "两方案对比"
+      layout: side_by_side
+      file: side_by_side.yml
+    - condition: "3+ 方案对比"
+      layout: comparison
+      file: comparison.yml
+    - condition: "KPI概览 + 多图表"
+      layout: dashboard_grid
+      file: dashboard_grid.yml
+    - condition: "大量文字叙事"
+      layout: full_width
+      file: full_width.yml
+
+  # 按内容类型
+  by_content:
+    - condition: "流程步骤 (3-5步)"
+      layout: process_steps
+      file: process_steps.yml
+    - condition: "年度事件 (5-8个)"
+      layout: milestone_timeline
+      file: milestone_timeline.yml
+    - condition: "战略演进 (Era)"
+      layout: timeline_evolution
+      file: timeline_evolution.yml
+    - condition: "密集事件 (>6个)"
+      layout: timeline_vertical
+      file: timeline_vertical.yml
+    - condition: "Executive Summary"
+      layout: pillar
+      file: pillar.yml
+
+  # 排除规则
+  exclusion_rules:
+    - "封面页 → 必须用 cover"
+    - "尾页 → 必须用 closing"
+    - "2对比 → 禁止用 comparison（用 side_by_side）"
+    - "单图表 → 禁止用 dashboard_grid"
+
+# ═════════════════════════════════════════════════════════════
+# 3. 全局配置
+# ═════════════════════════════════════════════════════════════
+
+global_config:
+  canvas: { width: 1280, height: 720 }
+  header_height_px: 80
+  footer_height_px: 40
+  main_available_h_px: 600
+  main_inner_h_px: 552
+  footer_safe_gap_px: 8
+
+# ═════════════════════════════════════════════════════════════
+# 4. 去重规则
+# ═════════════════════════════════════════════════════════════
+
+dedup_rules:
+  - "连续页禁止同构"
+  - "封面/尾页例外"
+  alternatives:
+    data_chart: [hybrid, dashboard_grid, side_by_side]
+    side_by_side: [comparison, data_chart]
+    full_width: [pillar, hybrid]
+    process_steps: [timeline_evolution, milestone_timeline]

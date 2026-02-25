@@ -1,0 +1,72 @@
+# 全宽重点布局 (full_width)
+# 文件: layouts/full_width.yml
+
+layout:
+  id: full_width
+  name: 全宽重点布局
+  version: 2.0
+  category: fullwidth
+
+selection_criteria:
+  when_to_use:
+    - "战略愿景/使命陈述"
+    - "大量文字叙事"
+    - "核心结论强调"
+  when_not_to_use:
+    - "有数据图表 → 改用 data_chart"
+
+spec:
+  structure_type: "header-main-footer"
+  regions:
+    content:
+      cols: 12
+      width_pct: 100
+
+content_spec:
+  headline:
+    max_chars: 40
+  body:
+    min_chars: 100
+    max_chars: 400
+    max_paragraphs: 3
+  highlights:
+    max_items: 5
+    per_item_max_chars: 50
+
+constraints:
+  - "正文 ≥ 100 中文字符"
+  - "禁止图表"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white">
+    <header class="h-[80px] border-b border-slate-200 px-12 pt-6 pb-4 shrink-0">
+      <h1 class="text-3xl font-bold text-slate-800">战略重点标题</h1>
+    </header>
+    
+    <main class="flex-1 w-full px-12 py-8 min-h-0 flex flex-col justify-center">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-4xl font-bold text-brand-primary mb-6">核心观点 Headline</h2>
+        <p class="text-xl text-slate-600 mb-8 leading-relaxed">
+          这里是正文内容区域，支持较长的叙事性文字。正文应≥100中文字符，最多3段落。
+          这是第二句话，用于补充说明核心观点。确保文字具有说服力和逻辑性。
+        </p>
+        <div class="grid grid-cols-3 gap-6 mt-8">
+          <div class="p-4 bg-slate-50 rounded-lg">
+            <span class="text-2xl font-bold text-brand-primary">要点1</span>
+            <p class="text-sm text-slate-500 mt-2">补充说明</p>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-lg">
+            <span class="text-2xl font-bold text-brand-secondary">要点2</span>
+            <p class="text-sm text-slate-500 mt-2">补充说明</p>
+          </div>
+          <div class="p-4 bg-slate-50 rounded-lg">
+            <span class="text-2xl font-bold text-emerald-600">要点3</span>
+            <p class="text-sm text-slate-500 mt-2">补充说明</p>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0"></footer>
+  </div>

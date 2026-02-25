@@ -1,0 +1,103 @@
+# 垂直时间线布局 (timeline_vertical)
+# 文件: layouts/timeline_vertical.yml
+
+layout:
+  id: timeline_vertical
+  name: 垂直时间线布局
+  version: 2.0
+  category: timeline
+
+selection_criteria:
+  when_to_use:
+    - "高密度叙事 (>6 事件)"
+    - "每个事件描述文字较多 (>2行)"
+    - "避免横向挤压"
+  when_not_to_use:
+    - "≤5 个事件 → 改用 milestone_timeline"
+
+spec:
+  regions:
+    timeline:
+      layout: "vertical_left"
+    cards:
+      layout: "vertical_right"
+
+content_spec:
+  events:
+    count: { min: 6, max: 10, optimal: 8 }
+    per_event:
+      date_max_chars: 15
+      title_max_chars: 25
+      desc_max_chars: 100
+
+constraints:
+  - "事件数 ≥6"
+  - "必须有左侧垂直时间线"
+  - "每个事件需配卡片"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white">
+    <header class="h-[80px] border-b border-slate-200 px-12 pt-6 pb-4 shrink-0">
+      <h1 class="text-3xl font-bold text-slate-800">垂直时间线</h1>
+    </header>
+    
+    <main class="flex-1 w-full px-12 py-6 min-h-0 overflow-y-auto">
+      <div class="relative pl-8">
+        <!-- 垂直连接线 -->
+        <div class="connection-line absolute left-3 top-0 bottom-0 w-0.5 bg-slate-200"></div>
+        
+        <!-- Event 1 -->
+        <div class="event-item flex items-start mb-6 relative">
+          <div class="absolute left-[-1.375rem] w-3 h-3 bg-brand-primary rounded-full"></div>
+          <div class="flex-1 ml-4">
+            <span class="text-xs text-brand-primary font-semibold">2024.01</span>
+            <h4 class="font-bold text-slate-800 mt-1">事件标题 1</h4>
+            <p class="text-sm text-slate-600 mt-1">事件描述文字，支持较长内容，建议不超过100字符。这是第一事件的详细说明。</p>
+          </div>
+        </div>
+        
+        <!-- Event 2 -->
+        <div class="event-item flex items-start mb-6 relative">
+          <div class="absolute left-[-1.375rem] w-3 h-3 bg-brand-secondary rounded-full"></div>
+          <div class="flex-1 ml-4">
+            <span class="text-xs text-brand-secondary font-semibold">2024.03</span>
+            <h4 class="font-bold text-slate-800 mt-1">事件标题 2</h4>
+            <p class="text-sm text-slate-600 mt-1">事件描述文字，这是第二事件的详细说明。</p>
+          </div>
+        </div>
+        
+        <!-- Event 3 -->
+        <div class="event-item flex items-start mb-6 relative">
+          <div class="absolute left-[-1.375rem] w-3 h-3 bg-emerald-500 rounded-full"></div>
+          <div class="flex-1 ml-4">
+            <span class="text-xs text-emerald-600 font-semibold">2024.06</span>
+            <h4 class="font-bold text-slate-800 mt-1">事件标题 3</h4>
+            <p class="text-sm text-slate-600 mt-1">事件描述文字，这是第三事件的详细说明。</p>
+          </div>
+        </div>
+        
+        <!-- Event 4 -->
+        <div class="event-item flex items-start mb-6 relative">
+          <div class="absolute left-[-1.375rem] w-3 h-3 bg-amber-500 rounded-full"></div>
+          <div class="flex-1 ml-4">
+            <span class="text-xs text-amber-600 font-semibold">2024.09</span>
+            <h4 class="font-bold text-slate-800 mt-1">事件标题 4</h4>
+            <p class="text-sm text-slate-600 mt-1">事件描述文字，这是第四事件的详细说明。</p>
+          </div>
+        </div>
+        
+        <!-- Event 5 -->
+        <div class="event-item flex items-start relative">
+          <div class="absolute left-[-1.375rem] w-3 h-3 bg-indigo-500 rounded-full"></div>
+          <div class="flex-1 ml-4">
+            <span class="text-xs text-indigo-600 font-semibold">2024.12</span>
+            <h4 class="font-bold text-slate-800 mt-1">事件标题 5</h4>
+            <p class="text-sm text-slate-600 mt-1">事件描述文字，这是第五事件的详细说明。</p>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0"></footer>
+  </div>

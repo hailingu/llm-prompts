@@ -1,0 +1,94 @@
+# 仪表盘网格布局 (dashboard_grid)
+# 文件: layouts/dashboard_grid.yml
+
+layout:
+  id: dashboard_grid
+  name: 仪表盘网格布局
+  version: 2.0
+  category: dashboard
+
+selection_criteria:
+  when_to_use:
+    - "多维度KPI概览"
+    - "需要同时展示4+个指标"
+    - "实时监控数据"
+  when_not_to_use:
+    - "深度分析单一主题 → 改用 data_chart"
+    - "只需2-3个指标 → 改用 data_chart"
+
+spec:
+  structure_type: "header-main-footer"
+  canvas: { width: 1280, height: 720 }
+  header: { height_px: 80 }
+  footer: { height_px: 40 }
+  main:
+    available_h_px: 600
+  regions:
+    kpi_row:
+      rows: 1
+      height_pct: 20
+      items: { min: 3, max: 4 }
+    chart_grid:
+      rows: 2
+      height_pct: 80
+      cols: { min: 2, max: 3 }
+
+content_spec:
+  kpi_cards:
+    count: { min: 3, max: 4 }
+    per_card:
+      value_max_chars: 15
+      label_max_chars: 20
+      trend_max_chars: 10
+  charts:
+    count: { min: 2, max: 4 }
+    per_chart:
+      title_max_chars: 20
+      data_points: { min: 3, max: 8 }
+
+constraints:
+  - "KPI区高度 ≤ 20%"
+  - "图表必须使用 mini sparkline"
+  - "Grid gap ≤ 16px"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white">
+    <header class="h-[80px] border-b border-slate-200 px-12 pt-6 pb-4 shrink-0">
+      <h1 class="text-3xl font-bold text-slate-800">Dashboard Title</h1>
+    </header>
+    
+    <main class="flex-1 w-full px-12 py-6 min-h-0">
+      <div class="grid grid-cols-12 gap-4 h-full">
+        <!-- KPI Row -->
+        <div class="col-span-3 card p-4 bg-slate-50 flex flex-col items-center justify-center">
+          <span class="text-sm text-slate-500 mb-1">KPI 1</span>
+          <span class="text-4xl font-bold text-brand-primary">123</span>
+          <span class="text-xs text-emerald-600 mt-1">↑ 12%</span>
+        </div>
+        <div class="col-span-3 card p-4 bg-slate-50 flex flex-col items-center justify-center">
+          <span class="text-sm text-slate-500 mb-1">KPI 2</span>
+          <span class="text-4xl font-bold text-brand-secondary">456</span>
+        </div>
+        <div class="col-span-3 card p-4 bg-slate-50 flex flex-col items-center justify-center">
+          <span class="text-sm text-slate-500 mb-1">KPI 3</span>
+          <span class="text-4xl font-bold text-emerald-600">78%</span>
+        </div>
+        <div class="col-span-3 card p-4 bg-slate-50 flex flex-col items-center justify-center">
+          <span class="text-sm text-slate-500 mb-1">KPI 4</span>
+          <span class="text-4xl font-bold text-amber-500">890</span>
+        </div>
+        <!-- Chart Row -->
+        <div class="col-span-8 card p-4 row-span-2 flex flex-col min-h-0">
+          <h3 class="font-semibold mb-2 shrink-0">Main Chart</h3>
+          <div class="flex-1 min-h-0"><canvas id="mainChart"></canvas></div>
+        </div>
+        <div class="col-span-4 card p-4 row-span-2 flex flex-col min-h-0">
+          <h3 class="font-semibold mb-2 shrink-0">Secondary</h3>
+          <div class="flex-1 min-h-0"><canvas id="subChart"></canvas></div>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0"></footer>
+  </div>

@@ -1,0 +1,89 @@
+# 战略演进时间线布局 (timeline_evolution)
+# 文件: layouts/timeline_evolution.yml
+
+layout:
+  id: timeline_evolution
+  name: 战略演进时间线
+  version: 2.0
+  category: timeline
+
+selection_criteria:
+  when_to_use:
+    - "Era 1/2/3 代际更迭"
+    - "Stage Transition / Maturity Model"
+    - "Copilot → Agent → Swarm 演进"
+  when_not_to_use:
+    - "无明确时间跨度 → 改用 process_steps"
+
+spec:
+  regions:
+    eras:
+      layout: "horizontal_blocks"
+      count: 3
+
+content_spec:
+  eras:
+    count: { min: 2, max: 4, optimal: 3 }
+    per_era:
+      title_max_chars: 20
+      period_max_chars: 20
+      items_max: 4
+      per_item_max_chars: 40
+
+constraints:
+  - "代际数 2-4 个"
+  - "必须有时间段标注"
+  - "区块必须用色块区分"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white">
+    <header class="h-[80px] border-b border-slate-200 px-12 pt-6 pb-4 shrink-0">
+      <h1 class="text-3xl font-bold text-slate-800">战略演进</h1>
+    </header>
+    
+    <main class="flex-1 w-full px-12 py-6 min-h-0">
+      <div class="grid grid-cols-3 gap-6 h-full">
+        <!-- Era 1 -->
+        <div class="card p-5 bg-brand-primary/5 border-t-4 border-brand-primary flex flex-col">
+          <div class="mb-4">
+            <span class="text-xs text-brand-primary font-semibold uppercase">2019-2021</span>
+            <h3 class="text-xl font-bold text-slate-800 mt-1">Era 1: 起步期</h3>
+          </div>
+          <ul class="text-sm text-slate-600 space-y-3 flex-1">
+            <li class="flex items-start"><i class="fas fa-check text-brand-primary mr-2 mt-1"></i>特征 A 描述</li>
+            <li class="flex items-start"><i class="fas fa-check text-brand-primary mr-2 mt-1"></i>特征 B 描述</li>
+            <li class="flex items-start"><i class="fas fa-check text-brand-primary mr-2 mt-1"></i>特征 C 描述</li>
+          </ul>
+        </div>
+        
+        <!-- Era 2 -->
+        <div class="card p-5 bg-brand-secondary/5 border-t-4 border-brand-secondary flex flex-col">
+          <div class="mb-4">
+            <span class="text-xs text-brand-secondary font-semibold uppercase">2022-2024</span>
+            <h3 class="text-xl font-bold text-slate-800 mt-1">Era 2: 发展期</h3>
+          </div>
+          <ul class="text-sm text-slate-600 space-y-3 flex-1">
+            <li class="flex items-start"><i class="fas fa-check text-brand-secondary mr-2 mt-1"></i>特征 A 描述</li>
+            <li class="flex items-start"><i class="fas fa-check text-brand-secondary mr-2 mt-1"></i>特征 B 描述</li>
+            <li class="flex items-start"><i class="fas fa-check text-brand-secondary mr-2 mt-1"></i>特征 C 描述</li>
+          </ul>
+        </div>
+        
+        <!-- Era 3 -->
+        <div class="card p-5 bg-emerald-500/5 border-t-4 border-emerald-500 flex flex-col">
+          <div class="mb-4">
+            <span class="text-xs text-emerald-600 font-semibold uppercase">2025+</span>
+            <h3 class="text-xl font-bold text-slate-800 mt-1">Era 3: 成熟期</h3>
+          </div>
+          <ul class="text-sm text-slate-600 space-y-3 flex-1">
+            <li class="flex items-start"><i class="fas fa-check text-emerald-500 mr-2 mt-1"></i>特征 A 描述</li>
+            <li class="flex items-start"><i class="fas fa-check text-emerald-500 mr-2 mt-1"></i>特征 B 描述</li>
+            <li class="flex items-start"><i class="fas fa-check text-emerald-500 mr-2 mt-1"></i>特征 C 描述</li>
+          </ul>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0"></footer>
+  </div>
