@@ -53,19 +53,19 @@ Automatically detect document domain via lightweight keyword matching. Designed 
 
 ```bash
 # Detect domain(s) from a document
-python3 skills/domain-keyword-detection/bin/domain_detector.py detect \
+python3 skills/domain-keyword-detection/scripts/domain_detector.py detect \
   --input docs/design.md \
   --threshold 0.3 \
   --output json
 
 # Get keywords for a specific domain
-python3 skills/domain-keyword-detection/bin/domain_detector.py get-keywords --domain hardware
+python3 skills/domain-keyword-detection/scripts/domain_detector.py get-keywords --domain hardware
 
 # List all available domains
-python3 skills/domain-keyword-detection/bin/domain_detector.py list-domains
+python3 skills/domain-keyword-detection/scripts/domain_detector.py list-domains
 
 # Validate domain configuration files
-python3 skills/domain-keyword-detection/bin/domain_detector.py validate
+python3 skills/domain-keyword-detection/scripts/domain_detector.py validate
 ```
 
 ### Agent Workflow
@@ -75,7 +75,7 @@ python3 skills/domain-keyword-detection/bin/domain_detector.py validate
 ```python
 # Step 1: Detect domains from source document
 result = run_command(
-    "python3 skills/domain-keyword-detection/bin/domain_detector.py detect",
+    "python3 skills/domain-keyword-detection/scripts/domain_detector.py detect",
     args={"input": "docs/design.md", "threshold": 0.3}
 )
 
@@ -84,7 +84,7 @@ activated_packs = result["activated_packs"]  # ["software", "business"]
 keywords = {}
 for domain in activated_packs:
     keywords[domain] = run_command(
-        "python3 skills/domain-keyword-detection/bin/domain_detector.py get-keywords",
+        "python3 skills/domain-keyword-detection/scripts/domain_detector.py get-keywords",
         args={"domain": domain}
     )["keywords"]
 

@@ -25,10 +25,29 @@ This repository contains reusable prompts, agent definitions, and documentation 
 
 ## Features
 
-- 🔧 Collection of reusable LLM prompts and agent roles (in `agents/`) for common workflows.
-- 📚 Standards and templates for documentation (`standards/`, `templates/`, `java-standards/`).
-- 🧪 Guidance for static analysis and CI-friendly documentation (Checkstyle, PMD, SpotBugs notes).
-- 📝 Commit & PR helpers (`.gitmessage`, `.github/prompts`) for consistent contribution workflow.
+- 🤖 **Agent System** - 33+ specialized LLM agents for different workflows (in `agents/`)
+  - **Language Agents**: Python, Java, Go coder/reviewer/architect/doc-writer
+  - **Data Science Agents**: Algorithm designer, engineer, researcher, evaluator
+  - **Utility Agents**: Git specialist, markdown writer, README/Changelog specialist
+  - **PPT Specialist**: HTML slide generation with multi-brand support (KPMG/McKinsey/BCG/Bain/Deloitte)
+- 🛠️ **Skills** - 10 reusable skill modules for specialized tasks
+  - `memory-manager`: Context persistence across sessions
+  - `stock-price-tracker`: Real-time stock data via Yahoo Finance
+  - `news-search`: Web news search with DuckDuckGo
+  - `domain-keyword-detection`: 14-domain keyword detection (software, biotech, automotive, etc.)
+  - `markdown-formatter` / `md-table-fixer`: Markdown utilities
+  - `ppt-brand-system`: Multi-brand design tokens
+  - `ppt-chart-engine`: Chart selection and rendering
+  - `ppt-slide-layout-library`: 14 layout types
+  - `ppt-visual-qa`: Automated slide quality assurance (80+ gates)
+- 📚 **Standards** - Cross-language and language-specific coding guidelines
+  - `standards/`: API patterns, design review, collaboration protocols
+  - `java-standards/`: Alibaba Java guidelines + Checkstyle
+  - `python-standards/`: Pythonic conventions
+  - `go-standards/`: Effective Go guidelines
+  - `data-science-standards/`: ML/DS best practices
+- 📝 **Templates** - Design doc and module templates (Google-style)
+- 🔧 **Developer Tools** - Commit helpers, PR templates, CI-friendly documentation
 
 ## Quick Start
 

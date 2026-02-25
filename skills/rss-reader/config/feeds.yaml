@@ -1,0 +1,81 @@
+# RSS Feed Subscription Configuration
+# 可以在此文件中添加/修改订阅源，支持动态扩展
+
+# 科技类
+tech:
+  - name: "36Kr"
+    url: "https://www.36kr.com/feed"
+  - name: "IT之家"
+    url: "https://www.ithome.com/rss"
+  - name: "虎嗅"
+    url: "https://www.huxiu.com/rss"
+  - name: "极客公园"
+    url: "https://www.geekpark.com/feed"
+  - name: "爱范儿"
+    url: "https://www.ifanr.com/feed"
+  - name: "少数派"
+    url: "https://sspai.com/feed"
+  - name: "美团技术团队"
+    url: "https://tech.meituan.com/feed"
+
+# 财经类
+finance:
+  - name: "新浪财经"
+    url: "https://finance.sina.com.cn/rss/index.xml"
+  - name: "华尔街见闻"
+    url: "https://api.wallstreetcn.com/apiv1/feed/groundwater"
+  - name: "第一财经"
+    url: "https://www.yicai.com/news/rss"
+  - name: "经济观察报"
+    url: "https://www.eeo.com.cn/feed/"
+
+# 主流新闻
+news:
+  - name: "环球网"
+    url: "https://www.huanqiu.com/rss"
+  - name: "央视新闻"
+    url: "https://news.cctv.com/rss"
+  - name: "新浪新闻"
+    url: "https://news.sina.com.cn/rss"
+  - name: "参考消息"
+    url: "http://www.cankaoxiaoxi.com/feed"
+  - name: "财新网"
+    url: "http://www.caixin.com/rss"
+
+# AI/大模型
+ai:
+  - name: "MIT Tech Review"
+    url: "https://www.technologyreview.com/feed/"
+  - name: "OpenAI Blog"
+    url: "https://openai.com/blog/rss.xml"
+  - name: "DeepMind Blog"
+    url: "https://deepmind.com/blog/feed/rss"
+  - name: "Hugging Face Blog"
+    url: "https://huggingface.co/blog/feed.xml"
+
+# 开发者/技术
+dev:
+  - name: "Hacker News"
+    url: "https://hnrss.org/frontpage"
+  - name: "Dev.to"
+    url: "https://dev.to/feed"
+  - name: "掘金"
+    url: "https://juejin.cn/rss/posts"
+  - name: "开源中国"
+    url: "https://www.oschina.net/news/rss"
+  - name: "GitHub Blog"
+    url: "https://github.blog/feed/"
+
+# 产品/设计
+product:
+  - name: "Product Hunt"
+    url: "https://www.producthunt.com/feed"
+  - name: "Smashing Magazine"
+    url: "https://www.smashingmagazine.com/feed/"
+
+# 商业/创业
+business:
+  - name: "YC Blog"
+    url: "https://www.ycombinator.com/blog/rss"
+  - name: "36Kr 创投"
+    url: "https://www.36kr.com/feed/information"

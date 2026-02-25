@@ -32,10 +32,10 @@ This skill provides an automated, display-width-aware toolset for detecting and 
 
 ```bash
 # Detect misaligned tables in a file or directory
-python3 skills/md-table-fixer/bin/md_table_tool.py detect <path>
+python3 skills/md-table-fixer/scripts/md_table_tool.py detect <path>
 
 # Fix misaligned tables (creates .bak backups)
-python3 skills/md-table-fixer/bin/md_table_tool.py fix <path>
+python3 skills/md-table-fixer/scripts/md_table_tool.py fix <path>
 ```
 
 ### Agent Workflow
@@ -48,10 +48,10 @@ python3 skills/md-table-fixer/bin/md_table_tool.py fix <path>
 
 ```bash
 # Step 1: Detect issues
-python3 skills/md-table-fixer/bin/md_table_tool.py detect templates/
+python3 skills/md-table-fixer/scripts/md_table_tool.py detect templates/
 
 # Step 2: Fix if issues found
-python3 skills/md-table-fixer/bin/md_table_tool.py fix templates/
+python3 skills/md-table-fixer/scripts/md_table_tool.py fix templates/
 
 # Step 3: Validate with markdownlint
 npx markdownlint-cli templates/

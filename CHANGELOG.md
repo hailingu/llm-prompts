@@ -6,7 +6,24 @@
 
 ### Added
 
-- feat(ppt): 生成AI发展报告2024-2028麦肯锡风格PPT（8页），包含封面、执行摘要、大语言模型演进、关键技术突破、企业应用成效、2026-2028预测、行业影响分析、战略建议与总结
+- feat(skills): add news-search skill for web search capability
+- feat(skills): expand domain-keyword-detection from 6 to 14 domains (energy, data_science, automotive, cloud_infrastructure, telecom, iot, medical_devices, security)
+- feat(skills): add memory-manager skill for persistent context across sessions
+- feat(skills): add stock-price-tracker skill for real-time stock data via Yahoo Finance
+- feat(skills): add Mistakes section to global memory for error tracking
+
+### Changed
+
+- refactor(skills): unify skill docs to SKILL.md (domain-keyword-detection, markdown-formatter, md-table-fixer)
+- refactor: move global memory to memory/global.md for consistent organization
+- refactor: redesign global memory as persistent context (User Profile, Known Facts, Preferences, Constraints, Project Context, Knowledge Base, Mistakes, Recent Context)
+- refactor: convert memory-manager SKILL to English only
+- docs: update README with agent system (33+ agents) and skills overview (10 skills)
+- docs: update cortana.agent.md to integrate memory-manager skill
+
+### Fixed
+
+- fix(ppt): generate AI development report 2024-2028 McKinsey-style PPT (8 pages)
 
 ---
 
