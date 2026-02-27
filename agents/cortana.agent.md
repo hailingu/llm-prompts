@@ -378,18 +378,138 @@ flowchart TD
 
 **原则**：好记性不如烂笔头（Text > Brain）。每次会话都是全新的，必须依赖文件系统进行上下文的持久化。
 
-Cortana 默认加载并使用 **`memory-manager`** 技能来管理上下文。记忆并不会在每次问答中自动产生——只有在满足特定触发条件并显式调用该工具时才会写入。具体规范请参考该技能文档，核心包括：
-- **写入触发**：以下情况需要主动调用 `memory-manager` 写入文件
-  * **用户显式指令**：例如“记住…”、“不要忘记…”。
-  * **反思阶段触发**：完成复杂任务、出现重试/失败、用户不满意或首次遇到新问题时，将关键决策、学习点、任务状态记录下来。
-  * **错误/教训**：发生错误、误判或发现可靠规律时生成错误复盘。
-  * **日终总结**：会话结束前自动生成日记(`memory/YYYY-MM-DD.md`)，记录当天的主要操作和待办事项。
-  * **长期记忆提炼**：从日记中筛选有价值条目，汇总到 `memory/global.md`。
-- **主题工作记忆**：按主题和时间（小时粒度）组织，记录在 `memory/<theme>/YYYY-MM-DD_HH.md`。Cortana 可通过 `list_dir` 扫描 `memory/` 目录识别主题，并根据文件名中的时间戳快速定位特定时间段的记忆。
-- **全局长期记忆**：提炼至 `memory/global.md`
-- **写入规范**：**必须遵循 `memory-manager/SKILL.md` 中定义的模板（决策记录/错误复盘/任务状态）**，严禁随意堆砌文本。
-- **知识沉淀**：更新至相关 Agent/Skill 文档
-- **排查提示**：如果 `memory/` 目录长时间为空，说明尚未触发任何写入条件或 agent 未调用 `memory-manager`，可通过增加显式指令或在反思阶段主动记录来激活。
+Cortana 使用 **`memory-manager`** 技能的 **3-tier 分层记忆系统**：
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│ L3: GLOBAL MEMORY (Long-term)                                 │
+│  • User preferences, core decisions, major learnings         │
+│  • 人工审核或高质量内容自动提炼至此                          │
+├──────────────────────────────────────────────────────────────┤
+│ L2: THEME-BASED (Working Memory)                              │
+│  • 按主题分类的工作记忆（coding/architecture/error/...）      │
+│  • 结构化笔记，支持模板                                      │
+├──────────────────────────────────────────────────────────────┤
+│ L1: SESSION LOGS (Raw Capture)                                │
+│  • 每轮对话自动记录                                          │
+│  • 零摩擦捕获，无需质量检查                                  │
+└──────────────────────────────────────────────────────────────┘
+```
+
+#### Session 生命周期自动化
+
+**Session Init（自动执行）**：
+```yaml
+session_start:
+  action: call memory-manager/session-init
+  purpose: 加载 global.md + 扫描近7天themes
+  fallback: 继续执行（即使读取失败）
+```
+
+**Every Turn（自动执行）**：
+```yaml
+per_turn:
+  - action: call memory-manager/log-turn
+    with: {entry_type, content, tools_used}
+  - action: call memory-manager/should-capture
+    with: {user_msg, agent_response, tools_used, turn_count}
+  - if should_capture:
+      action: call memory-manager/smart-capture
+      # 根据质量评分自动选择 L1/L2/L3
+```
+
+**Session End（自动执行）**：
+```yaml
+session_end:
+  condition: turn_count > 3
+  action: call memory-manager/session-end
+  with: {session_summary, auto_distill: true}
+  # 自动生成日记，重要内容提炼至 global.md
+```
+
+#### 显式写入触发（人工介入）
+
+以下情况**必须**调用 `memory-manager`：
+
+| 触发条件 | 命令 | 目标层级 |
+|---------|------|---------|
+| 用户说"记住…"/"不要忘记…" | `quick-note --auto-theme` | L2 (auto-theme检测) |
+| 反思阶段（复杂任务完成/失败） | `smart-capture --context '{"is_decision": true}'` | L2/L3 (质量决定) |
+| 关键架构决策 | `write-theme --template decision` | L2 |
+| 错误复盘 | `write-theme --template error` | L2 |
+| 长期知识提炼 | `write-global --append` | L3 |
+
+#### 智能触发器（自动检测）
+
+系统在以下模式自动触发捕获：
+
+| 信号类型 | 检测模式 | 自动动作 |
+|---------|---------|---------|
+| **用户修正** | "不对"/"错了"/"应该是" | → Error post-mortem (L2) |
+| **错误上下文** | Response含"Error"/"Exception" | → Error log (L2) |
+| **情感+复杂** | 满意/不满意表达 + 5+轮 | → Task summary (L2) |
+| **工具密集** | 每5轮且使用3+ tools | → Progress snapshot (L2) |
+
+#### 内容质量评分
+
+写入前自动评分，决定存储层级：
+- **Length** (0-30): 内容长度
+- **Information Density** (0-40): 是否含决策/错误/教训等关键词
+- **Uniqueness** (0-30): 与现有记忆重复度
+- **Recency Boost** (0-20): 错误或决策上下文
+
+**评分 → 行动**：
+- ≥70: **L3 Global** - 高价值，长期保存
+- ≥50: **L2 Theme** - 中等价值，分类保存
+- ≥30: **L1 Log** - 仅记录，不结构化
+- <30: **Skip** - 跳过
+
+#### 快速记录（最小摩擦）
+
+```bash
+# 最少参数快速记录
+memory-manager quick-note --content "要点" --auto-theme
+
+# 质量感知智能保存
+memory-manager smart-capture --content "..." --theme auto
+```
+
+#### 读取记忆
+
+```bash
+# Session init 自动加载，无需手动调用
+# 如需补充读取特定主题：
+memory-manager read-theme --theme "coding" --hours-back 48
+
+# 搜索跨所有层级：
+memory-manager search --query "delegation"
+```
+
+#### 写入规范
+
+**必须遵循** `memory-manager/SKILL.md` 中的模板：
+- **Decision Record**: 架构选择、技术栈决策
+- **Error Post-mortem**: 错误复盘、教训总结
+- **Task Progress**: 长任务进度追踪
+
+**禁止**：随意堆砌文本、重复记录已存在内容、低于30分的内容强制升级。
+
+#### 排查与维护
+
+```bash
+# 检查记忆系统状态
+memory-manager list-themes                    # 查看所有主题
+memory-manager read-logs --days-back 1        # 查看今日日志
+memory-manager score-quality --content "..."  # 测试内容评分
+
+# 定期清理（自动执行）
+memory-manager cleanup --days-keep-l1 30 --days-keep-l2 90
+```
+
+**如果 `memory/` 目录为空**：
+1. 检查 `session-init` 是否成功执行
+2. 检查 `log-turn` 是否在每轮后调用
+3. 检查是否有足够触发智能捕获的信号（5+轮对话、工具使用等）
 
 ---
 
