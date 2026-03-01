@@ -78,10 +78,10 @@ Automatic memory loading at session start and summarization at end.
 
 ```bash
 # On session start - auto-load memories
-python3 skills/memory-manager/scripts/memory_manager.py session-init
+./tools/memory-manager session-init
 
 # On session end - auto-generate summary
-python3 skills/memory-manager/scripts/memory_manager.py session-end \
+./tools/memory-manager session-end \
   --summary '{"key_decisions": 2, "errors_encountered": 1}'
 ```
 
@@ -91,7 +91,7 @@ Quality-aware persistence with automatic tier selection.
 
 ```bash
 # Let system decide where to store based on quality
-python3 skills/memory-manager/scripts/memory_manager.py smart-capture \
+./tools/memory-manager smart-capture \
   --content "Decision: use Redis for caching layer due to high read throughput" \
   --context '{"is_decision": true}'
 
@@ -103,7 +103,7 @@ python3 skills/memory-manager/scripts/memory_manager.py smart-capture \
 Analyze conversation to decide if worth capturing.
 
 ```bash
-python3 skills/memory-manager/scripts/memory_manager.py should-capture \
+./tools/memory-manager should-capture \
   --user-msg "That didn't work, still getting timeout errors" \
   --agent-response "Error: connection timeout after 30s" \
   --tools '["read", "edit", "execute"]' \
@@ -118,12 +118,12 @@ Fast capture with optional auto-theme detection.
 
 ```bash
 # Quick note with manual theme
-python3 skills/memory-manager/scripts/memory_manager.py quick-note \
+./tools/memory-manager quick-note \
   --content "Refactored auth module to use JWT" \
   --theme "coding"
 
 # Quick note with auto-theme detection
-python3 skills/memory-manager/scripts/memory_manager.py quick-note \
+./tools/memory-manager quick-note \
   --content "Fixed the deployment pipeline in GitHub Actions" \
   --auto-theme
   # Auto-detected as: "devops"
@@ -336,7 +336,7 @@ memory/
 **Migration:**
 ```bash
 # Old global memory still readable
-python3 skills/memory-manager/scripts/memory_manager.py read-global
+./tools/memory-manager read-global
 # Will check legacy location if new location empty
 ```
 

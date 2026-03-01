@@ -2,7 +2,7 @@
 name: cortana
 description: 通用问题解决代理（General-purpose Problem-Solving Agent）
 tools:
-  ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'agent', '@amap/amap-maps-mcp-server/*', 'todo', 'memory-manager', 'rss-reader']
+  ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'agent', '@amap/amap-maps-mcp-server/*', 'todo']
 ---
 
 # Cortana：通用问题解决代理
@@ -398,33 +398,38 @@ Cortana 使用 **`memory-manager`** 技能的 **3-tier 分层记忆系统**：
 
 #### Session 生命周期自动化
 
-**Session Init（自动执行）**：
-```yaml
-session_start:
-  action: call memory-manager/session-init
-  purpose: 加载 global.md + 扫描近7天themes
-  fallback: 继续执行（即使读取失败）
+**说明**：这里的“自动执行”指由宿主执行器/编排层触发，不是文档本身自动生效。若无事件 Hook，必须显式调用脚本。
+
+**Session Init（执行器触发）**：
+```bash
+./tools/memory-manager session-init
 ```
 
-**Every Turn（自动执行）**：
-```yaml
-per_turn:
-  - action: call memory-manager/log-turn
-    with: {entry_type, content, tools_used}
-  - action: call memory-manager/should-capture
-    with: {user_msg, agent_response, tools_used, turn_count}
-  - if should_capture:
-      action: call memory-manager/smart-capture
-      # 根据质量评分自动选择 L1/L2/L3
+**Every Turn（执行器触发）**：
+```bash
+# 1) 记录本轮
+./tools/memory-manager log-turn \
+  --entry-type assistant \
+  --content "<turn_summary>" \
+  --tools '["read","edit","search"]'
+
+# 2) 判断是否需要捕获
+./tools/memory-manager should-capture \
+  --user-msg "<user_msg>" \
+  --agent-response "<agent_response>" \
+  --tools '["read","edit","search"]' \
+  --turn-count <N>
+
+# 3) should_capture=true 时再执行
+./tools/memory-manager smart-capture \
+  --content "<high_value_summary>" \
+  --theme auto
 ```
 
-**Session End（自动执行）**：
-```yaml
-session_end:
-  condition: turn_count > 3
-  action: call memory-manager/session-end
-  with: {session_summary, auto_distill: true}
-  # 自动生成日记，重要内容提炼至 global.md
+**Session End（执行器触发）**：
+```bash
+./tools/memory-manager session-end \
+  --summary '{"auto_distill": true}'
 ```
 
 #### 显式写入触发（人工介入）
@@ -468,10 +473,10 @@ session_end:
 
 ```bash
 # 最少参数快速记录
-memory-manager quick-note --content "要点" --auto-theme
+./tools/memory-manager quick-note --content "要点" --auto-theme
 
 # 质量感知智能保存
-memory-manager smart-capture --content "..." --theme auto
+./tools/memory-manager smart-capture --content "..." --theme auto
 ```
 
 #### 读取记忆
@@ -479,10 +484,10 @@ memory-manager smart-capture --content "..." --theme auto
 ```bash
 # Session init 自动加载，无需手动调用
 # 如需补充读取特定主题：
-memory-manager read-theme --theme "coding" --hours-back 48
+./tools/memory-manager read-theme --theme "coding" --hours-back 48
 
 # 搜索跨所有层级：
-memory-manager search --query "delegation"
+./tools/memory-manager search --query "delegation"
 ```
 
 #### 写入规范
@@ -498,12 +503,12 @@ memory-manager search --query "delegation"
 
 ```bash
 # 检查记忆系统状态
-memory-manager list-themes                    # 查看所有主题
-memory-manager read-logs --days-back 1        # 查看今日日志
-memory-manager score-quality --content "..."  # 测试内容评分
+./tools/memory-manager list-themes                    # 查看所有主题
+./tools/memory-manager read-logs --days-back 1        # 查看今日日志
+./tools/memory-manager score-quality --content "..."  # 测试内容评分
 
 # 定期清理（自动执行）
-memory-manager cleanup --days-keep-l1 30 --days-keep-l2 90
+./tools/memory-manager cleanup --days-keep-l1 30 --days-keep-l2 90
 ```
 
 **如果 `memory/` 目录为空**：

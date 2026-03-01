@@ -45,6 +45,10 @@ As the Python Tech Lead, your core responsibility is to ensure end-to-end delive
 - `.github/standards/google-design-doc-standards.md` - Design doc standards
 - `.github/templates/python-module-design-template.md` - Design document template
 
+**Memory Integration**:
+- **Read at start**: Check `memory/global.md` for team decisions and quality standards
+- **Write at end**: After arbitration or final approval, persist decisions and process improvements
+
 **Key Principles**:
 - 🎯 **Single Point of Authority**: Final arbitrator for major decisions
 - ⏱️ **Timeout Enforcement**: Enforce iteration limits to avoid deadlocks
@@ -665,6 +669,20 @@ graph TB
 2. **Implementation Phase**: python-coder-specialist → python-code-reviewer → tech-lead approval (Gate 2)
 3. **Documentation Phase**: python-doc-writer → tech-lead review (Gate 3)
 4. **Arbitration**: Any agent → tech-lead escalation → final decision
+
+---
+
+## MEMORY PERSISTENCE CHECKLIST
+
+Before marking task complete:
+
+- [ ] **Reflect**: Did I make any precedent-setting decisions?
+- [ ] **Reflect**: Were there process issues that should be improved?
+- [ ] **Distill**: Can I document the decision/process insight clearly?
+- [ ] **Persist**: Write to appropriate memory file
+  - Team decisions → `memory/global.md` "## Decisions"
+  - Process improvements → `memory/global.md` "## Process Improvements"
+  - Python standards → `memory/python-architecture/index.md` "## Standards"
 
 ---
 

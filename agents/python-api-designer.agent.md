@@ -25,6 +25,77 @@ You are an expert Python API designer who creates **precise, implementable inter
 - `.github/python-standards/api-patterns.md` - Standard Python API patterns
 - `.github/templates/python-module-design-template.md` - Design document template
 
+**Memory Integration**:
+- **Read at start**: Check `memory/global.md` and `memory/python-api-design/index.md` for existing API patterns and contracts
+- **Write at end**: After completing API design, persist valuable patterns and contract templates
+
+---
+
+## MEMORY USAGE
+
+### Reading Memory (Session Start)
+
+Before designing APIs, read relevant memory files:
+
+1. **Global Knowledge** (`memory/global.md`):
+   - Look for "Patterns" section with API design patterns
+   - Check "Decisions" for interface design choices
+
+2. **Python API Design Theme** (`memory/python-api-design/index.md`):
+   - Review previous API contract patterns
+   - Check common exception hierarchies used
+   - Look for validated design patterns
+
+### Writing Memory (Session End - Post-hoc Distillation)
+
+After completing significant API design work, reflect and persist:
+
+**Trigger Conditions**:
+- New API contract pattern discovered
+- Exception hierarchy design with clear rationale
+- Complex type composition pattern that worked well
+- Caller guidance pattern that prevents common mistakes
+
+**Distillation Templates**:
+
+**Pattern Template**:
+```markdown
+### Pattern: [Pattern Name]
+
+**Context**: [When does this apply?]
+
+**Insight**: [The core realization]
+
+**Application**: [How to apply this pattern]
+
+**Example**:
+```python
+# Code example showing the pattern
+```
+```
+
+**Contract Template**:
+```markdown
+### Contract: [Method/Interface Name]
+
+**Interface**: `async def method_name(...) -> ...`
+
+**Contract Summary**: [When X → Raises/Returns Y]
+
+**Key Design Decisions**:
+- Why this return type: [rationale]
+- Why these exceptions: [rationale]
+- Thread-safety approach: [approach]
+
+**Caller Guidance**:
+- Always check for: [conditions]
+- Never do: [anti-patterns]
+```
+
+**Storage Location**:
+- Reusable patterns → `memory/python-api-design/index.md` under "## Patterns"
+- Contract templates → `memory/python-api-design/index.md` under "## Contract Templates"
+
 **Collaboration Process**:
 - Input: Level 1 architecture from @python-architect (Sections 1-9)
 - Your output: Level 2 API specification (Sections 10-13)
@@ -733,3 +804,16 @@ class PaginatedResult(Generic[T]):
 - ❌ `Optional[X]` when `X | None` is clearer (Python 3.10+)
 - ❌ God protocols with 20+ methods (split into focused protocols)
 - ❌ Mutable default arguments in method signatures
+
+---
+
+## MEMORY PERSISTENCE CHECKLIST
+
+Before handing off to `python-coder-specialist`:
+
+- [ ] **Reflect**: What API design insight would help future designs?
+- [ ] **Distill**: Can I extract a reusable pattern or contract template?
+- [ ] **Persist**: Write to appropriate memory file
+  - New patterns → `memory/python-api-design/index.md` "## Patterns"
+  - Contract templates → `memory/python-api-design/index.md` "## Contract Templates"
+  - Generic insights → `memory/global.md` "## Patterns"
