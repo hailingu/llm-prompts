@@ -1,5 +1,5 @@
 name: nesting_in_the_bowl
-description: "High-end dual-track flow diagram where a sinuous wave interleaved between top and bottom content tracks. Nodes are placed on a collinear horizontal midline, with text components tethered above and below strictly avoiding any overlap."
+description: "High-end dual-track flow diagram (嵌碗式排版). Core layout logic: Collinear Midline + Dual-Track Flow (代码布局逻辑：中水线+双穿梭轨). A sinuous wave interleaves between top/bottom content tracks. Nodes are placed exactly on the horizontal midline, with text tethered above and below to strictly avoid overlap."
 type: layout
 version: 1.1.0
 selection_criteria:
