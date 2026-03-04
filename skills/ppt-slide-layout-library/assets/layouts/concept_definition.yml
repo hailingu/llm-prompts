@@ -1,0 +1,130 @@
+# 概念定义/政策详情布局 (concept_definition)
+# 文件: layouts/concept_definition.yml
+
+layout:
+  id: concept_definition
+  name: 概念定义/政策详情
+  version: 2.7
+  category: text
+
+selection_criteria:
+  when_to_use:
+    - "定义特定政策、概念或项目 (Definition)"
+    - "解释复杂的准入标准或规则 (Criteria)"
+    - "展示带有属性列表的单一主题"
+  when_not_to_use:
+    - "多列对等的支柱内容 (改用 pillar)"
+    - "简单的左右文图 (改用 full_width 或 data_chart)"
+    - "比较多个方案 (改用 comparison)"
+
+spec:
+  regions:
+    hero:
+      layout: "split_row"
+      left_width_pct: 25
+      right_width_pct: 75
+    attributes:
+      layout: "two_column_list"
+      label_width_pct: 25
+      content_width_pct: 75
+
+content_spec:
+  hero:
+    label_max_chars: 10
+    content_max_chars: 200
+  attributes:
+    item_count: { min: 3, max: 6 }
+    label_style: "bold"
+
+constraints:
+  - "必须包含顶部的 Hero 定义框"
+  - "属性列表必须严格对齐"
+  - "主要内容区域需要使用灰色背景以突显层次"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white text-slate-800">
+    <!-- Header -->
+    <header class="h-[80px] border-b-2 border-brand-primary px-12 pt-6 pb-2 shrink-0">
+      <h1 class="text-3xl font-bold text-brand-primary tracking-tight">安全与安保 (Safety and Security)</h1>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="flex-1 w-full px-12 py-8 flex flex-col min-h-0 space-y-8">
+      
+      <!-- 1. Hero Definition Block -->
+      <section class="flex w-full shadow-sm">
+        <!-- Left: Label -->
+        <div class="w-1/4 bg-brand-primary text-white flex items-center justify-center p-6">
+           <h2 class="text-2xl font-bold tracking-wide">定义 (Definition)</h2>
+        </div>
+        <!-- Right: Content -->
+        <div class="w-3/4 bg-slate-100 p-6 flex items-center">
+           <p class="text-lg font-medium leading-relaxed text-slate-800">
+             确保符合 TSA 强制的 TWIC 认证，以保证进入安全海运区域的工作人员具备适当的资质和安全许可；通过特许经营加强检查。通过 LMC 对设备和司机培训的问责制，提高司机和车辆的安全性。
+           </p>
+        </div>
+      </section>
+
+      <!-- 2. Attributes List Section -->
+      <section class="flex-1">
+         <!-- Section Headers -->
+         <div class="flex border-b-2 border-brand-primary mb-6 pb-2">
+            <div class="w-1/4 text-center font-bold text-lg text-slate-800">控制手段 (Levers)</div>
+            <div class="w-3/4 text-center font-bold text-lg text-slate-800">示例选择范围 (Illustrative range of choices)</div>
+         </div>
+
+         <!-- Attribute Items Group -->
+         <div class="space-y-8">
+            
+            <!-- Item 1 -->
+            <div class="flex items-start">
+               <div class="w-1/4 pr-8 font-bold text-lg text-slate-900 leading-tight">
+                  准入标准 (Criteria)
+               </div>
+               <div class="w-3/4 pl-8 border-l border-slate-200">
+                  <div class="font-semibold text-lg mb-2">符合 TSA 港口安全规则 - 以下申请人将被取消资格：</div>
+                  <ul class="list-disc pl-5 space-y-1 text-slate-700">
+                     <li>缺乏合法居留和工作身份</li>
+                     <li>犯有特定刑事罪行</li>
+                  </ul>
+               </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="flex items-start">
+               <div class="w-1/4 pr-8 font-bold text-lg text-slate-900 leading-tight">
+                  时间表 (Timing)
+               </div>
+               <div class="w-3/4 pl-8 border-l border-slate-200">
+                  <div class="font-semibold text-lg mb-2">可能于 2009 年 1 月开始</div>
+                  <ul class="list-disc pl-5 space-y-1 text-slate-700">
+                     <li>由 TSA 确定最终时间</li>
+                  </ul>
+               </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="flex items-start">
+               <div class="w-1/4 pr-8 font-bold text-lg text-slate-900 leading-tight">
+                  执法 (Enforcement)
+                  <span class="block text-sm font-normal text-slate-500 mt-1">(由海岸警卫队执行)</span>
+               </div>
+               <div class="w-3/4 pl-8 border-l border-slate-200">
+                  <div class="font-semibold text-lg mb-2">抽查始于 2009 年初</div>
+                  <ul class="list-disc pl-5 space-y-1 text-slate-700">
+                     <li>2009 年中期开始使用生物识别卡扫描进行全面执法</li>
+                  </ul>
+               </div>
+            </div>
+
+         </div>
+      </section>
+
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0 flex justify-between items-center text-xs text-slate-400">
+      <span>Source: Interviews with POLA staff; TWIC guidelines from www.TSA.gov</span>
+      <span>29</span>
+    </footer>
+  </div>

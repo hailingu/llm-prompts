@@ -29,6 +29,7 @@ This skill serves as the single source of truth for multi-brand design system, c
 | BCG | `#009A44` | None (top navigation) | Professional rigorous, green-based |
 | Bain | `#DC291E` | Right | Red-focused, results-oriented |
 | Deloitte | `#86BC25` | None | Green, modern, tech-savvy |
+| Strategic Report | `#0F172A` | None (minimalist) | High-contrast typography, deep navy, excessive white space |
 
 ## Brand Detailed Definitions
 
@@ -74,6 +75,14 @@ This skill serves as the single source of truth for multi-brand design system, c
 - **Fonts**: Arial, Noto Sans SC
 - **Layout**: Rounded corners, gradient background
 
+### Strategic Report (New)
+
+- **Primary Color**: `#0F172A` (Slate 900 / Deep Navy)
+- **Secondary Color**: `#64748B` (Slate 500)
+- **Accent Color**: `#F1F5F9` (Slate 100 - Background)
+- **Fonts**: Inter, Noto Sans SC (Focus on weight contrast: Black vs Light)
+- **Layout**: Minimalist, no sidebar, excessive whitespace, high-contrast typography
+
 ## Brand Switching Mechanism
 
 ### CSS Class Pattern
@@ -91,6 +100,14 @@ This skill serves as the single source of truth for multi-brand design system, c
   --brand-secondary: #0091DA;
   --brand-accent: #483698;
 }
+
+.brand-strategic-report {
+  --brand-primary: #0F172A;   /* Slate-900: Deep Navy/Black for Headlines */
+  --brand-secondary: #64748B; /* Slate-500: Muted for Subtitles */
+  --brand-accent: #E2E8F0;    /* Slate-200: Subtle Borders/Lines */
+  --font-heading: 'Inter', sans-serif;
+  --font-body: 'Noto Sans SC', sans-serif; 
+}
 ```
 
 ### Switching Rules
@@ -98,6 +115,21 @@ This skill serves as the single source of truth for multi-brand design system, c
 1. Production `slide-*.html` files should not contain brand switching controls
 2. Debug controls only retained in `presentation.html`
 3. After switching brand, must delay 50ms before calling `chart.resize()`
+
+## Typography System (New in v1.1)
+
+### Visual Hierarchy Principles
+Standard business reports often rely on size alone for hierarchy (H1 > H2). The `Strategic Report` brand introduces **Weight Contrast** as a primary tool:
+
+- **Display Title**: `text-6xl font-black tracking-tight leading-none` (e.g., "地缘政治 2026")
+- **Subtitle / Essence**: `text-4xl font-light tracking-wide text-slate-500` (e.g., "新秩序与战略转折")
+- **Eyebrow / Meta**: `text-xm font-bold tracking-widest uppercase text-slate-400` (e.g., "CONFIDENTIAL BOARD BRIEFING")
+
+### Font Pairings (`.brand-strategic-report` Only)
+- **Primary Headings**: `font-weight: 900` (Inter Black / Noto Sans Black)
+- **Secondary Headings**: `font-weight: 300` (Inter Light / Noto Sans Light)
+- **Body Text**: `font-weight: 400` (Inter Regular) but with `leading-relaxed` for readability.
+
 
 ## Semantic Color System
 

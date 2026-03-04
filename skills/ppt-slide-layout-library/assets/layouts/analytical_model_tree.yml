@@ -1,0 +1,171 @@
+name: analytical_model_tree
+description: "Mathematical model logic tree analyzing cause-and-effect relationships between metrics. Features convergent flows (e.g., Supply vs Demand), explicit mathematical operators (×, +, Σ), and color-coded node types (Inputs, Outputs, Levers)."
+type: layout
+version: 1.0.0
+selection_criteria:
+  - "Use when breaking down a complex calculation or financial model."
+  - "Use to show how 'Supply' and 'Demand' factors converge."
+  - "Use for Value Driver Trees (ROIC trees, Profitability trees)."
+  - "Use to highlight 'Key Levers' that influence the final outcome."
+  - "Not suitable for qualitative processes (Use 'process_steps' or 'system_process_map')."
+
+spec:
+  structure:
+    - area: "header"
+      height: "80px"
+      fixed: true
+    - area: "main"
+      flex: 1
+      layout: "convergent-flow"
+      elements:
+        - "left_branch (Demand Side)"
+        - "right_branch (Supply Side)"
+        - "center_convergence (Result)"
+        - "legend_box"
+    - area: "footer"
+      height: "50px"
+      fixed: true
+
+  style_presets:
+    input_node: "bg-slate-200 text-slate-700 text-xs p-2 rounded shadow-sm border border-slate-300 text-center flex flex-col justify-center min-h-[48px]"
+    output_node: "bg-amber-300 text-amber-900 text-xs font-bold p-2 rounded shadow-sm border border-amber-400 text-center flex flex-col justify-center min-h-[48px]"
+    lever_node: "bg-emerald-200 text-emerald-800 text-xs font-bold p-2 rounded shadow-sm border border-emerald-300 text-center flex flex-col justify-center min-h-[48px]"
+    alert_node: "bg-red-700 text-white text-xs font-bold p-3 rounded-full shadow-lg border-2 border-white text-center flex items-center justify-center w-24 h-24"
+    operator_node: "w-6 h-6 rounded-full bg-slate-400 text-white text-[10px] font-bold flex items-center justify-center border-2 border-white absolute z-20 shadow-sm"
+
+content_spec:
+  text_limits:
+    box_text: "15-40 chars (3-4 lines)"
+    header_label: "20-30 chars"
+
+template: |
+  <div class="slide-container flex flex-col h-full bg-white font-sans text-slate-800 relative overflow-hidden">
+    <!-- Header -->
+    <header class="h-20 px-12 flex flex-col justify-center border-b border-green-700 bg-white z-50">
+      <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Analytical approach</div>
+      <h1 class="text-2xl font-bold text-emerald-800 tracking-tight leading-none">{{title}}</h1>
+      <p class="text-sm text-slate-600 mt-1 pb-2 border-b-2 border-emerald-600 inline-block w-full">{{subtitle}}</p>
+    </header>
+
+    <!-- Main Content: Converging Model Tree -->
+    <main class="flex-1 relative w-full h-full bg-slate-50 p-6 overflow-hidden flex flex-col">
+      
+      <!-- Top Headers -->
+      <div class="flex justify-between w-full px-16 mb-2">
+        <div class="w-1/3 text-center border-b-2 border-slate-800 pb-1 font-bold text-slate-800">Drayage demand by SPB Ports</div>
+        <div class="w-1/3 text-center border-b-2 border-slate-800 pb-1 font-bold text-slate-800">Drayage capacity for SPB</div>
+      </div>
+
+      <!-- Logic Canvas -->
+      <div class="relative flex-1 w-full mx-auto max-w-6xl flex justify-center items-center">
+        
+        <!-- SVG Connections Layer -->
+        <svg class="absolute inset-0 w-full h-full z-0 pointer-events-none stroke-slate-400 fill-none" preserveAspectRatio="xMidYMid meet">
+           <defs>
+            <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 L1,3 z" fill="#94a3b8" />
+            </marker>
+           </defs>
+           <!-- Left Branch Flow -->
+           <path d="M100,200 L140,200" stroke-width="1.5" />
+           <path d="M100,300 L140,300" stroke-width="1.5" />
+           <path d="M140,200 Q160,250 140,300" stroke="transparent" /> <!-- Visual spacer -->
+           <!-- Curly Bracket Simulation or Merge lines -->
+           <path d="M190,250 L230,250" stroke-width="1.5" marker-end="url(#arrow)" />
+
+           <!-- Right Branch Flow -->
+           <path d="M900,200 L860,200" stroke-width="1.5" /> 
+           <path d="M900,300 L860,300" stroke-width="1.5" />
+
+           <!-- Center Convergence -->
+           <path d="M400,250 L480,250" stroke-width="2" marker-end="url(#arrow)" />
+           <path d="M600,250 L520,250" stroke-width="2" marker-end="url(#arrow)" />
+           <path d="M500,280 L500,330" stroke-width="1.5" stroke-dasharray="4,4" />
+        </svg>
+
+        <!-- LEFT SIDE: Demand Logic -->
+        <div class="absolute left-0 top-0 bottom-0 w-1/2 p-4">
+            <!-- Col 1 -->
+            <div class="absolute left-4 top-[30%] space-y-4 w-32">
+                <div class="text-xs text-right pr-2 font-bold text-slate-600">Macro economics</div>
+                <div class="text-xs text-right pr-2 font-bold text-slate-600">U.S. cargo movement</div>
+            </div>
+            
+            <!-- Col 2: Inputs -->
+            <div class="absolute left-40 top-[25%] space-y-8 w-32">
+                 <div class="bg-slate-200 text-slate-700 text-[10px] p-2 rounded shadow-sm border border-slate-300">Volume via SPB ports</div>
+                 <div class="bg-slate-200 text-slate-700 text-[10px] p-2 rounded shadow-sm border border-slate-300">Volume via on-dock rail</div>
+            </div>
+            
+            <!-- Operator Sigma -->
+            <div class="absolute left-[135px] top-[40%] w-6 h-6 rounded-full bg-slate-400 text-white flex items-center justify-center text-xs z-20">Σ</div>
+
+            <!-- Col 3: Calculated -->
+            <div class="absolute left-80 top-[35%] w-36">
+                 <div class="bg-amber-300 text-amber-900 text-xs font-bold p-2 rounded shadow-sm border border-amber-400 text-center">Volume via drayage (containers/yr)</div>
+            </div>
+
+            <!-- Col 4: Final Demand -->
+            <div class="absolute right-4 top-[35%] w-36">
+                 <div class="bg-amber-400 text-amber-950 text-xs font-bold p-3 rounded shadow-md border border-amber-500 text-center shadow-lg">Total drayage demand (hrs/yr)</div>
+            </div>
+        </div>
+
+
+        <!-- RIGHT SIDE: Capacity Logic -->
+        <div class="absolute right-0 top-0 bottom-0 w-1/2 p-4">
+             <!-- Col 1: Final Capacity -->
+             <div class="absolute left-4 top-[35%] w-36">
+                 <div class="bg-amber-400 text-amber-950 text-xs font-bold p-3 rounded shadow-md border border-amber-500 text-center shadow-lg">Total potential truck capacity (hrs/yr)</div>
+             </div>
+
+             <!-- Col 2: Inputs -->
+             <div class="absolute left-52 top-[20%] space-y-4 w-32">
+                <div class="bg-amber-100 text-amber-800 text-[10px] p-2 rounded shadow-sm border border-amber-300 text-center">Non-wage trucking costs</div>
+                <div class="bg-slate-200 text-slate-700 text-[10px] p-2 rounded shadow-sm border border-slate-300 text-center">Truck segments</div>
+             </div>
+             
+             <!-- Col 3: Inputs -->
+             <div class="absolute right-10 top-[20%] space-y-4 w-32">
+                 <div class="bg-slate-200 text-slate-700 text-[10px] p-2 rounded shadow-sm border border-slate-300 text-center">Existing truck supply (#)</div>
+                 <div class="bg-slate-200 text-slate-700 text-[10px] p-2 rounded shadow-sm border border-slate-300 text-center">Drayage capacity %</div>
+             </div>
+        </div>
+
+        <!-- CENTER: Disruption Check -->
+        <div class="absolute mt-24 z-30">
+            <div class="w-8 h-8 rounded-full bg-slate-400 text-white flex items-center justify-center font-bold text-lg mb-2 mx-auto">=</div>
+            <div class="w-32 h-32 rounded-full bg-red-700 border-4 border-white shadow-2xl flex items-center justify-center text-center p-2 animate-pulse">
+                <span class="text-white font-bold text-sm">check for market disruption</span>
+            </div>
+        </div>
+
+      </div>
+      
+      <!-- Legend -->
+      <div class="absolute bottom-4 left-6 bg-white border border-slate-300 p-2 rounded flex flex-col space-y-2 text-[10px] shadow-sm z-50">
+          <div class="flex items-center space-x-2">
+              <div class="w-4 h-4 bg-amber-300 border border-amber-400"></div>
+              <span>Key outputs</span>
+          </div>
+          <div class="flex items-center space-x-2">
+              <div class="w-4 h-4 bg-slate-200 border border-slate-300"></div>
+              <span>Key inputs</span>
+          </div>
+          <div class="flex items-center space-x-2">
+              <div class="w-4 h-4 bg-emerald-200 border border-emerald-300"></div>
+              <span>Efficiency Key Levers</span>
+          </div>
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="h-[50px] bg-white border-t border-slate-200 px-12 flex items-center justify-between text-xs text-slate-400 z-50">
+      <span>Source: BCG Analysis.</span>
+      <div class="flex items-center space-x-4">
+        <span>The Boston Consulting Group</span>
+        <span>Page 38</span>
+      </div>
+    </footer>
+  </div>

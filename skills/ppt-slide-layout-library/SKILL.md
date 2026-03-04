@@ -73,6 +73,16 @@ For any page using the standard comparison/timeline/data layout (typically utili
 | 14 | Comparison | `comparison` | 3+方案对比/多维度竞品分析 |
 | 15 | Closing | `closing` | PPT结束/致谢/Q&A |
 | 16 | Conclusion | `conclusion` | 最终结论/战略收尾 |
+| 17 | Map Overlay | `map_overlay` | 地图背景+悬浮/地理战略/全球布局 |
+| 18 | Progressive Comparison | `comparison_progressive` | 方案演进/逐步增强/阶梯式对比 |
+| 19 | Assessment Matrix | `assessment_matrix` | 定性评估/哈维球对比/多维度评级 |
+| 20 | System Process Map | `system_process_map` | 复杂系统流程/生态全景/多层级流转 |
+| 21 | Chart Synthesis | `chart_synthesis` | 核心图表+底部强结论/单图深度洞察 |
+| 22 | Mixed Chart Overlay | `chart_mixed_overlay` | 混合图表+悬浮洞察/趋势波动分析 |
+| 23 | Concept Definition | `concept_definition` | 概念定义/政策详情/结构化文本 |
+| 24 | Causal Loop Diagram | `causal_loop_diagram` | 因果回路图/系统动力学/正负反馈循环 |
+| 25 | Analytical Model Tree | `analytical_model_tree` | 算术逻辑树/供需模型/价值驱动树 |
+| 26 | Cost Curve Stack | `cost_curve_stack` | 成本供给曲线/变宽柱状图/市场分层堆叠 |
 
 ---
 
@@ -89,26 +99,38 @@ flowchart TD
     Special --> Content{内容类型?}
     
     Content --> Chart[📊 数据分析类]
+    Content --> Map[🌍 地图分析类]
     Content --> Dashboard[📈 仪表盘类]
     Content --> Text[📝 文字/全宽类]
     Content --> Timeline[⏱️ 时间线/流程类]
     
+    Map -->|"地理战略+悬浮卡片"| MapOverlay[map_overlay]
+    
     Chart -->|"单图表 + 2-3洞察"| DataChart[data_chart]
     Chart -->|"两方案对比"| SideBySide[side_by_side]
     Chart -->|"3+方案对比"| Comparison[comparison]
+    Chart -->|"方案演进/阶梯式"| ProgComparison[comparison_progressive]
     Chart -->|"图表+多指标混合"| Hybrid[hybrid]
+    Chart -->|"核心图表+底部强结论"| Synthesis[chart_synthesis]
+    Chart -->|"混合图表+悬浮洞察"| MixedOverlay[chart_mixed_overlay]
+    Chart -->|"定性评估/哈维球"| Assessment[assessment_matrix]
+    Chart -->|"供给成本曲线/变宽柱图"| CostStack[cost_curve_stack]
     
     Dashboard -->|"多维度KPI + 趋势图"| DashboardGrid[dashboard_grid]
     Dashboard -->|"实时监控/业务概览"| Dashboard[dashboard]
     
     Text -->|"战略愿景/大量文字"| FullWidth[full_width]
     Text -->|"Executive Summary"| Pillar[pillar]
+    Text -->|"概念定义/政策详情"| Concept[concept_definition]
+    Text -->|"逻辑公式/驱动树"| AnalytModel[analytical_model_tree]
     
     Timeline -->|"3-5步流程"| ProcessSteps[process_steps]
     Timeline -->|"5-8个年度里程碑"| Milestone[milestone_timeline]
     Timeline -->|"Era 1/2/3代际更迭"| Evolution[timeline_evolution]
     Timeline -->|">6个密集事件"| Vertical[timeline_vertical]
     Timeline -->|"精确日期事件"| Standard[timeline_standard]
+    Timeline -->|"复杂系统流程"| SystemMap[system_process_map]
+    Timeline -->|"因果回路/正负反馈"| CausalLoop[causal_loop_diagram]
 ```
 
 ---
@@ -128,6 +150,10 @@ flowchart TD
 | Era/代际更迭 | 阶段演进/版本迭代 | timeline_evolution |
 | 密集事件 | 详尽时间线 | timeline_vertical |
 | 精确日期 | 具体日期事件 | timeline_standard |
+| 复杂系统流程 | 生态/供应链全景 | system_process_map |
+| 因果回路/反馈循环 | 政策影响/系统动力学 | causal_loop_diagram |
+| 供需平衡/逻辑树 | 成本模型/驱动因子分析 | analytical_model_tree |
+| 成本曲线/供给堆栈 | 市场分层/边际成本分析 | cost_curve_stack |
 
 ## Layout Selection Guide
 
@@ -144,6 +170,14 @@ flowchart TD
 | Core pillars | `pillar` | Executive Summary |
 | Simple steps | `process_steps` | Simple timeline |
 | Competitor comparison | `comparison` | Competitor analysis, solution comparison |
+| Evolution analysis | `comparison_progressive` | Solution evolution, step-by-step enhancement |
+| Qualitative rating | `assessment_matrix` | Multi-dimensional qualitative assessment |
+| System Process | `system_process_map` | Complex system diagram |
+| Deep Dive + Synthesis | `chart_synthesis` | Single large chart with strong bottom takeaway |
+| Seasonality / Fluctuations | `chart_mixed_overlay` | Mixed chart with annotated fluctuations |
+| Concept Definition | `concept_definition` | Policy details, structured attributes |
+| Causal Analysis | `causal_loop_diagram` | Feedback loops, system dynamics, policy intervention |
+| Model Logic | `analytical_model_tree` | Value driver tree, supply/demand balance check |
 
 ## Core Layout Details
 
@@ -248,6 +282,22 @@ flowchart TD
 | process | 582px | - | 5 steps |
 | dashboard | 582px | 232px | 4 KPI |
 | milestone_timeline | 582px | - | 6 cards |
+| map_overlay | Full | - | 3-5 floating cards |
+
+## Map Overlay Specs (Layout v2.1)
+
+### Visual Architecture
+- **Layer 0 (Base)**: Full-screen interactive map (ECharts Geo). Use `absolute inset-0 z-0`.
+- **Layer 1 (Data)**: ECharts Series (Scatter/Lines/Heatmap).
+- **Layer 2 (UI)**: Floating containers (`absolute z-10`).
+  - **Header**: Standard slide header (transparent bg).
+  - **KPI Card**: Top-right or Bottom-left (`backdrop-blur`).
+  - **Narrative**: Floating text block (max-width 300px).
+
+### Interaction Policy
+- **Zoom/Pan**: Enabled but constrained (min/max zoom levels).
+- **Tooltips**: Custom HTML tooltips for rich data.
+- **Responsive**: Auto-resize on window change.
 
 ## Dependencies
 
@@ -273,7 +323,14 @@ assets/layouts/
 ├── timeline_vertical.yml  # 垂直时间轴
 ├── comparison.yml         # 对比型布局
 ├── hybrid.yml             # 混合布局
-└── closing.yml            # 尾页布局
+├── closing.yml            # 尾页布局
+├── map_overlay.yml        # 地图背景布局 (Global/Regional)
+├── comparison_progressive.yml # [新增] 渐进式对比布局
+├── assessment_matrix.yml      # [新增] 定性评估矩阵布局
+├── system_process_map.yml     # [新增] 系统流程图布局
+├── chart_synthesis.yml        # [新增] 核心图表+底部强结论布局
+├── chart_mixed_overlay.yml    # [新增] 混合图表+悬浮洞察布局
+├── concept_definition.yml     # [新增] 概念定义/政策详情布局
 ```
 
 ### 使用方法
@@ -292,3 +349,183 @@ assets/layouts/
 | `constraints` | 硬性约束 | `"图表优先：左侧 ≥ 58%"` |
 
 **旧版文件**: `assets/layouts.yml` (保留，但推荐使用新版模块化文件)
+
+## Progressive Comparison Specs (Layout v2.2)
+
+### Visual Architecture
+- **Concept**: A matrix layout designed to show the evolution or enhancement of options (e.g., Basic -> Enhanced -> Premium).
+- **Grid Structure**: CSS Grid with 4 distinct zones:
+  - **Zone A (Row Headers)**: Leftmost column (approx 15-20%) containing numbered indicators (Successive integer circles 1, 2, 3...) and category labels.
+  - **Zone B (Option I)**: First option column (Basic/Current State).
+  - **Zone C (Option II)**: Second option column (intermediate state), often connected to I and III with chevron arrows.
+  - **Zone D (Option III)**: Third option column (Target/Ideal State).
+- **Visual Elements**:
+  - **Number Badges**: Circular badges with white numbers on dark background (Brand Color) to index the criteria rows.
+  - **Progression Arrows**: Large, block-style chevron arrows (`>`) placed between option columns to indicate the "flow" of value addition.
+  - **Dashed Borders**: Horizontal dashed lines separating each evaluation criterion row.
+  - **Spanning Cells**: Capabilities shared across options must use merged cells (colspan) to visually group them.
+
+### Constraint Rules
+- **Column Count**: Strictly 3 comparison columns + 1 label column layout.
+- **Row Limit**: Maximum 6 content rows to maintain vertical rhythm.
+- **Header Hierarchy**: 
+  - Level 1: Option Name (e.g., "I: Basic Plan")
+  - Level 2: Descriptive Subtitle / Essence
+- **Typography strategy**: Content text should be `text-sm` or `text-xs` to accommodate detailed descriptions.
+
+### HTML Implementation Hints
+- Use `grid-cols-12` system:
+  - Label Column: `col-span-2`
+  - Option Columns: `col-span-3` (approx) with gap for arrows or overlap for chevron effect.
+- **Cell Merging**: Use `col-span-X` utility classes for shared features.
+- **Chevron Borders**: Use CSS `clip-path: polygon(...)` or SVG background images to create the arrow-shaped column headers or separators.
+
+## Assessment Matrix Specs (Layout v2.3)
+
+### Visual Architecture
+- **Concept**: A qualitative assessment grid using status indicators (Harvey Balls, Pie Charts, Traffic Lights) to visualize performance across multiple dimensions and timeframes.
+- **Key Components**:
+  - **Left Row Headers**: Vertical blocks (colored background, white text) defining the evaluation criteria (e.g., "Environment", "Port Operations").
+  - **Column Groups**: Hierarchical headers.
+    - Level 1: Scenario/Plan (e.g., "I: Basic Plan")
+    - Level 2: Timeframe/Detail (e.g., "Short term", "Long term")
+  - **Data Cells**: Centered icons representing the qualitative score.
+  - **Separators**: Dashed vertical lines separating major scenario groups.
+- **Legend**: Essential bottom-right component explaining the icon scale (e.g., Empty = Worse, Full = Better).
+
+### Constraint Rules
+- **Icon Consistency**: Must use the same set of icons (SVG) throughout the matrix.
+- **Header Alignment**: Text in column headers must be center-aligned. Row headers must be vertically centered.
+- **Row Height**: All data rows must have equal height.
+- **Group Separation**: Different high-level options (Plans I, II, III) must be visually separated by `border-l-2 border-dashed border-gray-300`.
+
+### Content Specifications
+- **Max Columns**: 8 data columns (excluding row headers).
+- **Max Rows**: 5 criteria rows.
+- **Label Conciseness**: Top-level headers ≤ 2 lines. Sub-headers ≤ 1 line.
+
+### HTML Implementation Hints
+- **Grid Layout**: Use `grid` with `auto-rows-fr` to ensure equal row heights.
+- **Row Header Styling**: Use a distinct background color (e.g., Brand Primary) for the first column to anchor the row.
+- **Icon Sizing**: Icons should be scalable SVGs, typically `w-8 h-8` or `w-10 h-10`.
+- **Vertical Rhythm**: Use `items-center` for all grid cells.
+
+## System Process Map Specs (Layout v2.4)
+
+### Visual Architecture
+- **Concept**: A non-linear diagram mapping complex system flows, typically involving multiple layers (e.g., Governance, Operations, Support) and multiple entity types.
+- **Key Components**:
+  - **Layers**: Horizontal bands or zones grouping entities by function (e.g., "Government" at top, "Physical Flow" in middle, "Financial Flow" at bottom).
+  - **Nodes**: Rectangular or shaped containers representing system actors (Manufacturers, Ports, Shippers).
+  - **Edges**:
+    - **Solid Arrows**: Main physical flow or primary process.
+    - **Dashed Arrows**: Information flow, permitting, or soft dependencies.
+    - **Curved Lines**: Financial flows or indirect influence (often spanning multiple steps).
+  - **Groups**: Visual containers wrapping multiple nodes (e.g., "Drayage + Rail" wrapped in "LMC").
+  - **Callouts**: Speech bubbles or pointers highlighting specific definitions or insights.
+
+### Constraint Rules
+- **Flow Direction**: Primary physical flow (`Solid`) should generally move Left-to-Right.
+- **Hierarchy**: Governance/Oversight entities should start at the Top. Support/Financial entities often at the Bottom.
+- **Edge Clarity**: Different line styles (solid, dashed, dotted) must be distinguishable and explained in a Legend.
+- **Node Spacing**: Maintain consistent horizontal spacing between process steps.
+
+### Content Specifications
+- **Max Nodes**: Recommended 10-15 nodes max per slide to avoid clutter.
+- **Text Specs**: Node labels < 20 chars. Callouts < 100 chars.
+- **Color Coding**: Use brand colors to distinguish actor types (e.g., Green for Ops, Grey for Admin).
+
+### HTML Implementation Hints
+- **Positioning**: Use `relative` container and `absolute` positioning for nodes to allow precise placement. Alternatively, use CSS Grid if the flow is regular.
+- **Arrows**:
+  - Simple straight arrows: Use CSS borders and pseudo-elements.
+  - Complex/Curved arrows: Use an inline SVG overlay (`<svg class="absolute inset-0 pointer-events-none">`) with `<path>` elements and markers.
+- **Z-Index**: Ensure floating elements (Callouts, Legend) have higher z-index than base nodes.
+
+## Chart Synthesis Specs (Layout v2.5)
+
+### Visual Architecture
+- **Concept**: A layout prioritizing a single, large chart (often time-series or complex curve) followed by a prominent bottom conclusion box (Kicker).
+- **Core Areas**:
+  - **Upper Canvas (Chart)**: Occupies top 70-80% of main area. Annotations (brackets, arrows) are key.
+  - **Bottom Kicker (Synthesis)**: Full-width colored container with white text, summarizing the "So What".
+  - **Annotation Layer**: Floating text labels and connectors overlaying the chart.
+- **Styling**:
+  - **Chart**: Minimal grid, direct labelling (no legend if possible), brand colors.
+  - **Kicker**: Brand primary or secondary color background, bold text.
+
+### Constraint Rules
+- **Chart Height**: Must be at least 400px to allow detailed data rendering.
+- **Kicker Visibility**: The bottom conclusion must be distinct from the chart area (using background color).
+- **Footnotes**: Sources and method notes go below the Kicker in the footer area.
+
+### Content Specifications
+- **Chart Complexity**: Supports high-density data (20+ points, multiple series).
+- **Kicker Text**: Max 2 lines (approx 150 chars). Should be an actionable insight, not just a description.
+- **Annotations**: Essential component. Use overlay markers to guide attention.
+
+### HTML Implementation Hints
+- **Flex Column**: Use `flex flex-col` for the main area.
+- **Chart Container**: `flex-1` (grow to fill available space).
+- **Kicker Container**: Fixed or auto height at the bottom, e.g., `p-4 mt-4 bg-brand-primary text-white rounded`.
+- **ECharts MarkAreas**: Use ECharts `markLine`, `markArea`, and `graphic` components for brackets and arrows.
+
+## Mixed Chart Overlay Specs (Layout v2.6)
+
+### Visual Architecture
+- **Concept**: A data-heavy layout featuring a large mixed-type chart (Bars + Lines) where the core insight is presented as a floating "Callout Box" physically pointing to relevant data segments.
+- **Key Components**:
+  - **Full-Width Chart Canvas**: Supports time-series data (e.g., Monthly Seasonality).
+  - **Floating Insight Box**: A styled container (rounded, shadow) overlaying the chart, explaining specific phenomena (e.g., "Peak-trough fluctuations").
+  - **Connectors**: Thin lines or arrows linking the Insight Box to specific data points (peaks/valleys).
+  - **Reference Lines**: Horizontal or vertical lines (e.g., Mean, Targets) for context.
+
+### Constraint Rules
+- **Chart Type**: Ideally Mixed (Bar + Line) or Multi-Line. Pure Bar charts may be less suitable for this "fluctuation" emphasis.
+- **Data Density**: High data density (12+ months/periods) is recommended to justify the full width.
+- **Legend Position**: Place legend at the **bottom** to maximize vertical chart space.
+
+### Content Specifications
+- **Title**: Focus on the "Movement" or "Fluctuation" (e.g., "Large fluctuations in demand...").
+- **Insight Box**: Concise text (bullet points), < 30 words.
+- **Series Count**: Supports 3-8 comparable series (e.g., Multi-year data).
+
+### HTML Implementation Hints
+- **Container**: `relative` div for the chart area.
+- **Callout Box**: `absolute` positioning with `z-10`. use `backdrop-blur-sm` if covering grid lines.
+- **Connectors**: SVG overlay or simple CSS borders.
+- **ECharts**: Use `series[type='line']` for the mean/trend and `series[type='bar']` for periodic data.
+
+## Concept Definition Specs (Layout v2.7)
+
+### Visual Architecture
+- **Concept**: A highly structured text layout designed for presenting a single concept, policy, or initiative in detail. It uses a prominent "Hero Definition" block followed by a breakdown of key attributes.
+- **Key Components**:
+  - **Definition Hero**: A split container at the top. 
+    - Left (Label): Brand primary color background, white text, centered.
+    - Right (Content): Light grey background, black text, descriptive.
+  - **Attribute Grid**: A two-column structure below the hero.
+    - Left Column (Labels): Attribute names (e.g., Criteria, Timing), bold text.
+    - Right Column (Details): Detailed descriptions, bullet points.
+  - **Section Headers**: Distinct underlying labels (e.g., "Levers", "Illustrative range of choices") separating the definition from attributes.
+
+### Constraint Rules
+- **Hero Dominance**: The definition block must be the visual anchor.
+- **Alignment**: Attribute labels (Left) and details (Right) must be strictly top-aligned.
+- **Grid Consistency**: Attribute rows should follow a consistent vertical rhythm.
+- **Typography**: Definition content should be larger/prominent. Attribute details `text-sm`.
+
+### Content Specifications
+- **Definition Text**: Concise, 2-3 lines max.
+- **Attributes**: 3-5 key attributes recommended.
+- **Bullets**: Use standard bullets for details.
+
+### HTML Implementation Hints
+- **Flex Row**: Use for the Hero Definition (`w-1/4` + `w-3/4`).
+- **Grid / Table**: Use CSS Grid `grid-cols-[1fr_3fr]` for the attribute section to ensure alignment.
+- **Borders**: heavy top borders (`border-t-4`) for section headers to create visual separation.
+
+
+
+
+

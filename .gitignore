@@ -49,7 +49,6 @@ coverage.out
 docs/
 .agents/
 .clinerules/
-.github/
 .venv/
 
 .env
