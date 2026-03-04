@@ -1,0 +1,17 @@
+指令层优化：防止“注意力稀释”
+规则前置与加粗：将最关键的硬性规则置于 Markdown 文件的顶部，并使用 **MUST** 或 **CRITICAL** 等强语义词汇。
+结构化输出约束：不要只写“规则”，要给出“负面示例”。例如：“NEVER use class-based components, ONLY functional components”。
+精简 Token：冗长的背景描述会稀释核心指令。建议将 Agent 的 Instruction 控制在 1000 字符以内，保持指令的高“信噪比”。
+
+. 规则“防御性编码” (Defensive Prompting)
+在 .agent.md 中增加自我提醒机制，强制 Agent 在生成回复前进行“校验”： 
+GitHub
+GitHub
+增加 Checkpoint 指令：在指令末尾添加：“在每一轮输出前，请先在内部检查你的输出是否符合前述的所有规则。”
+示例约束 (Few-shot)：在规则中提供一个“错误 vs 正确”的对比示例。Agent 对示例的记忆通常比单纯的陈述性规则更持久。 
+Medium
+Medium
+3. 处理对话过程中的“上下文断裂”
+观察“Summarized conversation history”：如果你在对话框看到这个提示，说明 Copilot 已经开始丢弃早期上下文（包括部分系统规则）。
+手动锚定：如果 Agent 在第二轮开始偏离，可以在你的 Prompt 前面加上 @agent-name 使用你定义的规则处理：[你的问题]。这会重新激活 Agent 对特定配置文件的注意力。
+控制对话长度：Agent 模式目前更适合“一事一议”。对于复杂任务，建议在完成第一阶段后，点击“New Chat”并再次呼叫 Agent。

@@ -14,7 +14,7 @@ metadata:
 
 A comprehensive memory and persistence management system enabling AI agents to:
 - **Preserve context** across multi-turn sessions
-- **Capture learnings** automatically with optional quality gating
+- **Capture learnings** automatically with quality filtering
 - **Distill knowledge** from raw logs to long-term memory
 - **Maintain session continuity** through lifecycle hooks
 
@@ -65,10 +65,32 @@ A comprehensive memory and persistence management system enabling AI agents to:
 - **Trigger**: Smart detection or quick capture
 
 ### L3: Global (Long-term)
-- **Purpose**: Distilled knowledge, user preferences, key decisions
+- **Purpose**: Distilled knowledge, user preferences, key decisions, and central mission control
 - **Location**: `memory/global.md`
 - **Retention**: Indefinite
-- **Trigger**: Manual or auto-distill from high-value sessions
+- **Trigger**: Manual or mission status change
+- **Structure Requirement**:
+```markdown
+# Global Knowledge & Context Control
+> **System Status**: Active Session - [Scenario Name]
+> **Current Date (Simulated)**: [Date]
+
+## 1. Active Mission: [Mission Name]
+**Goal**: [Objective]
+**Current Phase**: [Status]
+### Key Constraints
+- [Fact 1]
+- [Fact 2]
+
+## 2. Research Index (L2 Memory)
+- [Report Title](research/filename.md) - *Description*
+
+## 3. Decisions (Technical & Process)
+- [Decision Item]
+
+## 4. User Preferences
+- [Preference Item]
+```
 
 ## Key Features
 
@@ -101,22 +123,15 @@ python3 skills/memory-manager/scripts/memory_manager.py session-end \
 
 ### 2. Smart Capture
 
-Default direct persistence (ungated), with optional quality gating via `--gate`.
+Quality-aware persistence with automatic tier selection.
 
 ```bash
-# Default behavior: ungated (direct write to theme/global)
+# Let system decide where to store based on quality
 python3 skills/memory-manager/scripts/memory_manager.py smart-capture \
   --content "Decision: use Redis for caching layer due to high read throughput" \
   --context '{"is_decision": true}'
 
-# Explicit gated behavior: run quality scoring + tier recommendation
-python3 skills/memory-manager/scripts/memory_manager.py smart-capture \
-  --content "Decision: use Redis for caching layer due to high read throughput" \
-  --context '{"is_decision": true}' \
-  --gate
-
-# Returns (default): {"quality_score": null, "recommendation": "ungated_theme|ungated_global", ...}
-# Returns (--gate): {"quality_score": 85, "recommendation": "persist_l3_global", ...}
+# Returns: {"quality_score": 85, "recommendation": "persist_l3_global", ...}
 ```
 
 ### 3. Automatic Turn Analysis
@@ -150,9 +165,9 @@ python3 skills/memory-manager/scripts/memory_manager.py quick-note \
   # Auto-detected as: "devops"
 ```
 
-### 5. Content Quality Scoring (`--gate` mode)
+### 5. Content Quality Scoring
 
-When `--gate` is enabled, content is scored on:
+Before persisting, content is scored on:
 - **Length** (0-30): Adequate detail?
 - **Information Density** (0-40): Contains valuable patterns (decisions, errors, lessons)?
 - **Uniqueness** (0-30): Not duplicate of existing memory?
@@ -260,14 +275,14 @@ write-global --content "..." [--append]
 
 ### Smart Features
 ```bash
-# Smart capture (default ungated)
-smart-capture --content "..." [--theme auto] [--context '{...}'] [--gate]
+# Quality-aware capture
+smart-capture --content "..." [--theme auto] [--context '{...}']
 
 # Analyze if turn worth capturing
 should-capture --user-msg "..." --agent-response "..." --tools '[...]' --turn-count N
 
 # Atomic capture for one turn (log + decide + persist)
-capture-turn --user-msg "..." --agent-response "..." --tools '[...]' --turn-count N [--summary-content "..."] [--gate]
+capture-turn --user-msg "..." --agent-response "..." --tools '[...]' --turn-count N [--summary-content "..."]
 
 # Score content quality
 score-quality --content "..." [--context '{...}']
@@ -373,10 +388,6 @@ memory/
 - Global memory moved from `MEMORY.md` to `memory/global.md`
 - New L1 session logs layer
 - Added quality scoring
-
-**Behavior Update (v2.x):**
-- `smart-capture` and `capture-turn` are **ungated by default**
-- Use `--gate` to enable capture/quality gate logic explicitly
 
 **Migration:**
 ```bash

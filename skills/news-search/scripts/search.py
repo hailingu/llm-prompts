@@ -9,7 +9,7 @@ import argparse
 def search_duckduckgo(query, category=None, max_results=3):
     actual_query = f"{query} {category}新闻" if category else query
     # Using DuckDuckGo Lite for better stability
-    url = 'https://duckduckgo.com/lite/?q=' + urllib.parse.quote(actual_query)
+    url = 'https://lite.duckduckgo.com/lite/?q=' + urllib.parse.quote(actual_query)
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
     
     try:

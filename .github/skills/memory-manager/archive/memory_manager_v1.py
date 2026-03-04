@@ -389,8 +389,7 @@ class MemoryManager:
         content_lower = content.lower()
         
         theme_keywords = {
-            'travel': ['travel', 'trip', 'route', 'commute', 'flight', 'hotel', 'transit', 'taxi', 'itinerary', '出行', '路线', '通勤', '航班', '酒店'],
-            'research': ['research', 'investigation', 'survey', 'benchmark', 'comparison', 'analysis', '调研', '对比', '评估'],
+            'agent': ['agent', 'cortana', 'delegation', 'subagent'],
             'coding': ['code', 'function', 'class', 'refactor', 'bug', 'fix'],
             'architecture': ['design', 'api', 'system', 'component', 'interface'],
             'devops': ['deploy', 'pipeline', 'ci/cd', 'docker', 'kubernetes'],
@@ -421,9 +420,6 @@ class MemoryManager:
             'emotional_signal': False,
             'tool_heavy': False,
             'error_context': False,
-            'analysis_intent': False,
-            'long_response': False,
-            'multi_entity_reasoning': False,
         }
         
         user_lower = user_msg.lower()
@@ -437,34 +433,14 @@ class MemoryManager:
         satisfaction_patterns = ['谢谢', '完美', 'great', 'perfect', 'awesome', 'excellent']
         dissatisfaction_patterns = ['不行', '还是', 'still', 'not working', 'fails']
         signals['emotional_signal'] = any(p in user_lower for p in satisfaction_patterns + dissatisfaction_patterns)
-
-        # Detect analysis intent (single-turn complex tasks should also be captured)
-        analysis_patterns = [
-            '分析', '比较', '评估', '推演', '关系', '策略', '风险', 'trade-off',
-            'analyze', 'analysis', 'compare', 'evaluate', 'reasoning', 'strategy', 'risk'
-        ]
-        signals['analysis_intent'] = any(p in user_lower for p in analysis_patterns)
-
-        # Detect multi-entity reasoning (e.g., country A/B/C relations)
-        entity_count = len(re.findall(r'[、,，/]|\band\b', user_lower)) + 1
-        signals['multi_entity_reasoning'] = entity_count >= 3 and signals['analysis_intent']
-
-        # Long response often indicates non-trivial reasoning output
-        signals['long_response'] = len(agent_response) >= 600
         
         # Detect errors in response
-        error_patterns = ['error', 'exception', 'fail', 'crash', 'timeout', 'unable to', 'cannot', '错误', '失败', '无法']
+        error_patterns = ['error', 'exception', 'fail', 'crash', 'timeout', 'unable to', 'cannot']
         signals['error_context'] = any(p in response_lower for p in error_patterns)
         
         # Complex task signals
         signals['tool_heavy'] = len(tools_used) >= 3
-        signals['complex_task'] = (
-            turn_count >= 5
-            or len(tools_used) >= 3
-            or signals['analysis_intent']
-            or signals['long_response']
-            or signals['multi_entity_reasoning']
-        )
+        signals['complex_task'] = turn_count >= 5 or len(tools_used) >= 3
         
         # Decision logic
         if signals['user_correction']:
@@ -473,9 +449,6 @@ class MemoryManager:
         if signals['error_context']:
             return True, 'error_log', {'reason': 'error_occurred', **signals}
         
-        if signals['complex_task'] and (signals['analysis_intent'] or signals['long_response']):
-            return True, 'task_summary', {'reason': 'high_cognitive_task', **signals}
-
         if signals['emotional_signal'] and signals['complex_task']:
             return True, 'task_summary', {'reason': 'complex_task_completed', **signals}
         
@@ -483,78 +456,6 @@ class MemoryManager:
             return True, 'progress_snapshot', {'reason': 'milestone', **signals}
         
         return False, 'skip', signals
-
-    def capture_turn(self,
-                     user_msg: str,
-                     agent_response: str,
-                     tools_used: List[str],
-                     turn_count: int,
-                     summary_content: str = None,
-                     theme: str = "auto",
-                     context: dict = None,
-                     session_id: str = None,
-                     no_gate: bool = True) -> Dict:
-        """
-        Atomic turn capture:
-        1) log turn (L1)
-        2) decide should-capture
-        3) smart-capture when needed
-        """
-        result = {
-            'status': 'success',
-            'logged': False,
-            'log_path': None,
-            'should_capture': False,
-            'capture_type': 'skip',
-            'signals': {},
-            'captured': False,
-            'capture_result': None,
-        }
-
-        # Step 1: always log assistant turn summary
-        log_path = self.append_session_log(
-            entry_type='assistant',
-            content=agent_response,
-            tools_used=tools_used,
-            session_id=session_id
-        )
-        result['logged'] = True
-        result['log_path'] = log_path
-
-        # Step 2: decide capture (or bypass gate)
-        if no_gate:
-            should, cap_type, signals = True, 'ungated_capture', {'reason': 'no_gate'}
-        else:
-            should, cap_type, signals = self.should_capture_from_turn(
-                user_msg=user_msg,
-                agent_response=agent_response,
-                tools_used=tools_used,
-                turn_count=turn_count
-            )
-        result['should_capture'] = should
-        result['capture_type'] = cap_type
-        result['signals'] = signals
-
-        if not should:
-            return result
-
-        # Step 3: capture
-        content = summary_content or (
-            f"CaptureType: {cap_type}\n"
-            f"User: {user_msg[:400]}\n"
-            f"Assistant: {agent_response[:800]}"
-        )
-
-        capture_context = dict(context or {})
-        if cap_type in ['error_log', 'error_post_mortem']:
-            capture_context['is_error'] = True
-        if cap_type in ['task_summary', 'progress_snapshot']:
-            capture_context['is_decision'] = capture_context.get('is_decision', False)
-
-        cap_result = self.smart_persist(content, theme, capture_context, no_gate=no_gate)
-        result['captured'] = cap_result.get('action_taken') != 'skipped_low_quality'
-        result['capture_result'] = cap_result
-        return result
     
     # ========== Quality Assessment ==========
     
@@ -590,7 +491,6 @@ class MemoryManager:
             r'\b(lesson learned|takeaway|insight)\b',
             r'\b(architecture|design pattern|best practice)\b',
             r'\b(记住|remember|preference|prefer)\b',
-            r'(结论|洞察|教训|复盘|决策|对比分析|风险评估|推理链)',
         ]
         density_score = sum(10 for p in valuable_patterns if re.search(p, content, re.I))
         scores['information_density'] = min(40, density_score)
@@ -649,34 +549,11 @@ class MemoryManager:
         
         return {'score': 100, 'similar_to': []}
     
-    def smart_persist(self, content: str, theme: str = "auto", context: dict = None, no_gate: bool = True) -> Dict:
+    def smart_persist(self, content: str, theme: str = "auto", context: dict = None) -> Dict:
         """
         Smart persistence - quality check before writing.
         Auto-selects storage tier based on quality score.
         """
-        if no_gate:
-            if theme == "global":
-                self.write_global_memory(f"\n## {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n{content}")
-                return {
-                    'quality_score': None,
-                    'recommendation': 'ungated_global',
-                    'details': {'mode': 'no_gate'},
-                    'action_taken': 'written_to_global_ungated',
-                    'path': self.l3_global_file,
-                }
-
-            if theme == "auto":
-                theme = self._detect_theme(content)
-
-            path = self.write_theme_memory(theme, content)
-            return {
-                'quality_score': None,
-                'recommendation': 'ungated_theme',
-                'details': {'mode': 'no_gate', 'theme': theme},
-                'action_taken': 'written_to_theme_ungated',
-                'path': path,
-            }
-
         # Score content
         quality = self.score_content_quality(content, context)
         
@@ -839,8 +716,8 @@ Examples:
   
   # L2: Theme-based memory
   %(prog)s quick-note --content "Refactored auth module" --auto-theme
-    %(prog)s write-theme --theme travel --content "Prefer fewer transfers in commute planning"
-    %(prog)s read-theme --theme travel
+  %(prog)s write-theme --theme agent-optimization --content "Changed delegation logic"
+  %(prog)s read-theme --theme agent-optimization
   
   # L3: Global memory
   %(prog)s read-global
@@ -849,7 +726,6 @@ Examples:
   # Smart features
   %(prog)s smart-capture --content "Fixed critical bug in parser" --context '{"is_error": true}'
   %(prog)s should-capture --user-msg "Wrong output" --agent-response "Error: timeout" --tools '["read", "edit"]' --turn-count 3
-    %(prog)s capture-turn --user-msg "..." --agent-response "..." --tools '["read"]' --turn-count 1
   %(prog)s score-quality --content "Decision: use Redis for caching"
   
   # Search & maintenance
@@ -857,10 +733,6 @@ Examples:
   %(prog)s list-themes
   %(prog)s cleanup --days-keep-l1 30 --days-keep-l2 90
         """
-    )
-    parser.add_argument(
-        '--workspace',
-        help='Workspace root path (defaults to current working directory)'
     )
     
     subparsers = parser.add_subparsers(dest='command', help='Command to execute')
@@ -919,11 +791,10 @@ Examples:
     # ========== Smart Features ==========
     
     # Smart capture
-    smart_capture_parser = subparsers.add_parser('smart-capture', help='Quality-aware capture (default ungated)')
+    smart_capture_parser = subparsers.add_parser('smart-capture', help='Quality-aware capture')
     smart_capture_parser.add_argument('--content', required=True, help='Content to capture')
     smart_capture_parser.add_argument('--theme', default='auto', help='Theme (auto for detection)')
     smart_capture_parser.add_argument('--context', help='Context JSON for scoring')
-    smart_capture_parser.add_argument('--gate', action='store_true', help='Explicitly enable quality gate')
     
     # Should capture
     should_capture_parser = subparsers.add_parser('should-capture', help='Analyze if turn is worth capturing')
@@ -931,18 +802,6 @@ Examples:
     should_capture_parser.add_argument('--agent-response', required=True, help='Agent response')
     should_capture_parser.add_argument('--tools', default='[]', help='Tools used (JSON array)')
     should_capture_parser.add_argument('--turn-count', type=int, required=True, help='Turn count')
-
-    # Atomic capture turn
-    capture_turn_parser = subparsers.add_parser('capture-turn', help='Atomic log+decide+capture for one turn (default ungated)')
-    capture_turn_parser.add_argument('--user-msg', required=True, help='User message')
-    capture_turn_parser.add_argument('--agent-response', required=True, help='Agent response')
-    capture_turn_parser.add_argument('--tools', default='[]', help='Tools used (JSON array)')
-    capture_turn_parser.add_argument('--turn-count', type=int, required=True, help='Turn count')
-    capture_turn_parser.add_argument('--summary-content', help='Optional distilled content to persist')
-    capture_turn_parser.add_argument('--theme', default='auto', help='Theme (auto for detection)')
-    capture_turn_parser.add_argument('--context', help='Context JSON for scoring')
-    capture_turn_parser.add_argument('--session-id', help='Session identifier')
-    capture_turn_parser.add_argument('--gate', action='store_true', help='Explicitly enable capture and quality gates')
     
     # Score quality
     score_quality_parser = subparsers.add_parser('score-quality', help='Score content quality')
@@ -967,7 +826,7 @@ Examples:
         parser.print_help()
         sys.exit(1)
     
-    manager = MemoryManager(args.workspace)
+    manager = MemoryManager()
     
     try:
         # ========== Session Lifecycle ==========
@@ -1034,8 +893,7 @@ Examples:
         
         elif args.command == 'smart-capture':
             context = json.loads(args.context) if args.context else {}
-            no_gate = not args.gate
-            result = manager.smart_persist(args.content, args.theme, context, no_gate=no_gate)
+            result = manager.smart_persist(args.content, args.theme, context)
             print(json.dumps(result, ensure_ascii=False, indent=2))
         
         elif args.command == 'should-capture':
@@ -1051,31 +909,6 @@ Examples:
                 'capture_type': cap_type,
                 'signals': signals
             }, ensure_ascii=False, indent=2))
-
-        elif args.command == 'capture-turn':
-            tools = json.loads(args.tools) if args.tools else []
-            context = json.loads(args.context) if args.context else {}
-            no_gate = not args.gate
-            result = manager.capture_turn(
-                user_msg=args.user_msg,
-                agent_response=args.agent_response,
-                tools_used=tools,
-                turn_count=args.turn_count,
-                summary_content=args.summary_content,
-                theme=args.theme,
-                context=context,
-                session_id=args.session_id,
-                no_gate=no_gate
-            )
-
-            marker = {
-                'marker': 'MEMORY_CAPTURED' if result.get('captured') else 'MEMORY_SKIPPED',
-                'capture_type': result.get('capture_type'),
-                'path': (result.get('capture_result') or {}).get('path') if result.get('capture_result') else None,
-                'action_taken': (result.get('capture_result') or {}).get('action_taken') if result.get('capture_result') else None,
-            }
-            result['audit'] = marker
-            print(json.dumps(result, ensure_ascii=False, indent=2))
         
         elif args.command == 'score-quality':
             context = json.loads(args.context) if args.context else {}
