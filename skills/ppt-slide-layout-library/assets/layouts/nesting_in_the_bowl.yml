@@ -1,0 +1,139 @@
+name: nesting_in_the_bowl
+description: "High-end dual-track flow diagram where a sinuous wave interleaved between top and bottom content tracks. Nodes are placed on a collinear horizontal midline, with text components tethered above and below strictly avoiding any overlap."
+type: layout
+version: 1.1.0
+selection_criteria:
+  - "Use when representing a chronological or sequential pipeline with equal importance on each step."
+  - "Use when avoiding text overlap is critical, utilizing dual-track top and bottom text zones."
+  - "Provides a high-end consulting visual (e.g., BCG/McKinsey) with a clean wavy central separator."
+
+spec:
+  structure:
+    - area: header
+      height: 80px
+      fixed: true
+    - area: main
+      flex: 1
+      layout: "flex-row"
+      elements:
+        - "left_panel (driver summary + icon grid)"
+        - "right_panel (collinear nodes + interleaved wavy path + dual-track text)"
+    - area: footer
+      height: 50px
+      fixed: true
+
+content_spec:
+  logos_max: 8
+  stages_min: 3
+  stages_max: 4
+  text_limits:
+    headline: "up to 30 chars"
+    callout: "up to 90 chars"
+
+template: |
+  <div class="slide-container w-full h-full flex flex-col bg-white font-sans text-slate-800 relative overflow-hidden">
+    <!-- Header -->
+    <header class="h-24 px-12 flex items-center justify-between border-b border-[var(--brand-primary)] bg-white z-50">
+      <div class="flex flex-col">
+        <h1 class="text-3xl font-black tracking-tighter text-[var(--brand-primary)] uppercase">{{title}}</h1>
+        <p class="text-sm text-slate-500 mt-1 pl-1">{{subtitle}}</p>
+      </div>
+      <div class="text-[var(--brand-primary)] font-bold tracking-widest text-xs bg-[var(--brand-bg)] px-3 py-1 rounded border border-[var(--brand-primary)]">
+        {{badge_text}}
+      </div>
+    </header>
+
+    <main class="flex-1 flex overflow-hidden">
+      <!-- Sidebar W=280px -->
+      <div class="w-[280px] p-8 border-r border-slate-100 bg-slate-50/50 shrink-0 flex flex-col pt-12">
+        <div class="relative rounded-full bg-white text-[var(--brand-primary)] mx-auto w-40 h-40 flex flex-col items-center justify-center shadow-lg border border-slate-200 z-20 mb-12">
+          <i class="fa-solid fa-layer-group text-3xl mb-2" style="color: var(--brand-primary);"></i>
+          <span class="text-lg leading-tight font-black text-center text-slate-800">{{left_headline}}</span>
+        </div>
+        <div class="grid gap-3 px-2">
+            <!-- Iterate items here -->
+            <div class="h-16 bg-white rounded-lg border border-slate-200 flex items-center px-4 shadow-sm"><i class="fa-solid fa-cube w-8" style="color: var(--brand-primary);"></i><span class="text-xs font-bold uppercase">{{item_1}}</span></div>
+            <div class="h-16 bg-white rounded-lg border border-slate-200 flex items-center px-4 shadow-sm"><i class="fa-solid fa-cube w-8" style="color: var(--brand-secondary);"></i><span class="text-xs font-bold uppercase">{{item_2}}</span></div>
+            <div class="h-16 bg-white rounded-lg border border-slate-200 flex items-center px-4 shadow-sm"><i class="fa-solid fa-cube w-8 text-slate-500"></i><span class="text-xs font-bold uppercase">{{item_3}}</span></div>
+        </div>
+      </div>
+
+      <!-- Main Canvas W=1000px -->
+      <div class="relative w-[1000px] h-full bg-white overflow-hidden shrink-0">
+        <!-- Interleaved Background SVG Wave: Midline is Y=270. Peaks/Valleys at 130/410 -->
+        <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 1000 576" preserveAspectRatio="none">
+          <path d="M -80,270 C 0,270 80,410 160,410 S 320,130 400,130 S 560,410 640,410 S 800,130 880,130 S 1040,410 1120,410" stroke="#F1F5F9" stroke-width="80" fill="none" stroke-linecap="round" />
+          <path d="M -80,270 C 0,270 80,410 160,410 S 320,130 400,130 S 560,410 640,410 S 800,130 880,130 S 1040,410 1120,410" stroke="var(--brand-primary)" stroke-width="3" fill="none" stroke-dasharray="10,8" />
+        </svg>
+
+        <!-- Vertical Phase Separators (Phase Boundaries) -->
+        <div class="absolute border-l border-dashed border-slate-300" style="left: 280px; top: 40px; height: 490px; z-index: 0;"></div>
+        <div class="absolute border-l border-dashed border-slate-300" style="left: 520px; top: 40px; height: 490px; z-index: 0;"></div>
+        <div class="absolute border-l border-dashed border-slate-300" style="left: 760px; top: 40px; height: 490px; z-index: 0;"></div>
+
+        <!-- Phase Labels -->
+        <div class="absolute text-slate-400 font-bold text-[10px] tracking-widest" style="left: 290px; top: 40px;">PHASE 02</div>
+        <div class="absolute text-slate-400 font-bold text-[10px] tracking-widest" style="left: 530px; top: 40px;">PHASE 03</div>
+        <div class="absolute text-slate-400 font-bold text-[10px] tracking-widest" style="left: 770px; top: 40px;">TERMINAL</div>
+
+
+        <!-- STAGE 1 (Node exactly on midline Y=270 - Text Up) -->
+        <div class="absolute w-56 flex flex-col items-center justify-end pb-3 border-b-[3px]" style="border-color: var(--brand-primary); left: 160px; top: 40px; height: 90px; transform: translateX(-50%); z-index: 10;">
+          <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">{{stage_1_title}}</h3>
+          <p class="text-[10px] text-slate-500 mt-1 leading-relaxed text-center px-1">{{stage_1_desc}}</p>
+        </div>
+        <!-- Tether from Text Bottom to Node Top -->
+        <div class="absolute border-l-[3px] border-dashed border-slate-200" style="left: 160px; top: 130px; height: 108px; transform: translateX(-50%); z-index: 0;"></div>
+        <div class="absolute" style="left: 160px; top: 270px; transform: translate(-50%, -50%); z-index: 20;">
+          <div class="w-16 h-16 rounded-full bg-white border-[6px] shadow-xl flex items-center justify-center relative" style="border-color: var(--brand-primary);">
+            <span class="text-[22px] font-black" style="color: var(--brand-primary);">1</span>
+          </div>
+        </div>
+
+        <!-- STAGE 2 (Node exactly on midline Y=270 - Text Down) -->
+        <div class="absolute" style="left: 400px; top: 270px; transform: translate(-50%, -50%); z-index: 20;">
+          <div class="w-16 h-16 rounded-full bg-white border-[6px] shadow-xl flex items-center justify-center relative" style="border-color: var(--brand-secondary);">
+            <span class="text-[22px] font-black" style="color: var(--brand-secondary);">2</span>
+          </div>
+        </div>
+        <!-- Tether from Node Bottom to Text Top -->
+        <div class="absolute border-l-[3px] border-dashed border-slate-200" style="left: 400px; top: 302px; height: 118px; transform: translateX(-50%); z-index: 0;"></div>
+        <div class="absolute w-56 flex flex-col items-center justify-start pt-3 border-t-[3px]" style="border-color: var(--brand-secondary); left: 400px; top: 420px; height: 90px; transform: translateX(-50%); z-index: 10;">
+          <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">{{stage_2_title}}</h3>
+          <p class="text-[10px] text-slate-500 mt-1 leading-relaxed text-center px-1">{{stage_2_desc}}</p>
+        </div>
+
+        <!-- STAGE 3 (Node exactly on midline Y=270 - Text Up) -->
+        <div class="absolute w-56 flex flex-col items-center justify-end pb-3 border-b-[3px]" style="border-color: var(--brand-primary); left: 640px; top: 40px; height: 90px; transform: translateX(-50%); z-index: 10;">
+          <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide">{{stage_3_title}}</h3>
+          <p class="text-[10px] text-slate-500 mt-1 leading-relaxed text-center px-1">{{stage_3_desc}}</p>
+        </div>
+        <div class="absolute border-l-[3px] border-dashed border-slate-200" style="left: 640px; top: 130px; height: 108px; transform: translateX(-50%); z-index: 0;"></div>
+        <div class="absolute" style="left: 640px; top: 270px; transform: translate(-50%, -50%); z-index: 20;">
+          <div class="w-16 h-16 rounded-full bg-white border-[6px] shadow-xl flex items-center justify-center relative" style="border-color: var(--brand-primary);">
+            <span class="text-[22px] font-black" style="color: var(--brand-primary);">3</span>
+          </div>
+        </div>
+
+        <!-- STAGE 4 / IMPACT (Node exactly on midline Y=270 - Text Down) -->
+        <div class="absolute" style="left: 880px; top: 270px; transform: translate(-50%, -50%); z-index: 20;">
+          <div class="w-20 h-20 rounded-full border-[6px] border-white outline outline-4 shadow-xl flex items-center justify-center relative" style="background-color: var(--brand-secondary); outline-color: var(--brand-bg);">
+            <span class="text-[14px] font-black text-white">END</span>
+          </div>
+        </div>
+        <!-- Tether to Bottom -->
+        <div class="absolute border-l-[3px] border-dashed border-slate-200" style="left: 880px; top: 310px; height: 110px; transform: translateX(-50%); z-index: 0;"></div>
+        <div class="absolute w-56 flex flex-col items-center justify-start pt-3 pb-4 border-t-[3px] bg-slate-50/80 rounded-b shadow-md" style="border-color: var(--brand-secondary); left: 880px; top: 420px; transform: translateX(-50%); z-index: 10;">
+          <h3 class="text-sm font-black text-slate-800 uppercase tracking-wide mt-1">{{stage_4_title}}</h3>
+          <p class="text-[10px] text-slate-700 mt-1.5 leading-tight text-center font-medium px-3">{{stage_4_desc}}</p>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="h-12 px-12 border-t border-slate-200 flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-widest bg-slate-50">
+      <div class="flex gap-4"><span style="color: var(--brand-primary);">{{footer_text}}</span></div>
+      <span>{{page}} / {{total_pages}}</span>
+    </footer>
+  </div>

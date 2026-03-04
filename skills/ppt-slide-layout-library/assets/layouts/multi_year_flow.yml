@@ -1,0 +1,77 @@
+name: multi_year_flow
+description: "Two-tier flow diagram showing model inputs, effects, and outputs across consecutive years. Each tier has three colored boxes connected by arrows, with optional cross-tier connector. Ideal for illustrating year-over-year model mechanics."
+type: layout
+version: 1.0.0
+selection_criteria:
+  - "Use when depicting sequential annual inputs/effects/outputs in a two-row format."
+  - "Use for models where Year N results feed Year N+1 inputs."
+  - "Not suitable for simple linear steps (use process_steps) or complex systems (use system_process_map)."
+
+spec:
+  structure:
+    - area: "header"
+      height: "80px"
+      fixed: true
+    - area: "main"
+      flex: 1
+      layout: "two_tier_flow"
+      elements:
+        - "tier1_boxes (3)"
+        - "tier2_boxes (3)"
+        - "horizontal_arrows"
+        - "vertical_connector (optional)"
+    - area: "footer"
+      height: "50px"
+      fixed: true
+
+  style_presets:
+    box_year0: "bg-amber-200 border border-amber-400 p-4 rounded shadow text-slate-800 text-sm leading-snug"
+    box_year1: "bg-emerald-200 border border-emerald-400 p-4 rounded shadow text-slate-800 text-sm leading-snug"
+    box_output: "bg-slate-200 border border-slate-300 p-4 rounded shadow text-slate-800 text-sm leading-snug"
+    arrow: "w-6 h-6 text-slate-400"
+
+content_spec:
+  tier_count: { exact: 2 }
+  boxes_per_tier: { exact: 3 }
+  text_limits:
+    box: "15-50 chars"
+    header: "20-30 chars"
+
+template: |
+  <div class="slide-container flex flex-col h-full bg-white text-slate-800">
+    <!-- Header -->
+    <header class="h-20 px-12 flex flex-col justify-center border-b border-green-700 bg-white z-50">
+      <h1 class="text-2xl font-bold text-emerald-800 tracking-tight">{{title}}</h1>
+      <p class="text-sm text-slate-600 mt-1">{{subtitle}}</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 relative w-full p-8 flex flex-col justify-around">
+      <!-- Tier 1 Row -->
+      <div class="flex justify-center items-center space-x-8">
+        <div class="box_year0 w-1/4">Year 0 baseline<br/>inputs...</div>
+        <svg class="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        <div class="box_year1 w-1/4">Year0 effects...</div>
+        <svg class="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        <div class="box_output w-1/4">Year0 outputs used</div>
+      </div>
+
+      <!-- Tier 2 Row -->
+      <div class="flex justify-center items-center space-x-8">
+        <div class="box_year0 w-1/4">Year1 market model output</div>
+        <svg class="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        <div class="box_year1 w-1/4">Year1 CTP impacts</div>
+        <svg class="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        <div class="box_output w-1/4">Year1 inputs for later years</div>
+      </div>
+
+      <!-- Optional vertical connector -->
+      <svg class="absolute right-12 top-1/2 transform -translate-y-1/2 h-20" viewBox="0 0 24 24"><path d="M12 0v24" stroke="currentColor" stroke-width="2" stroke-dasharray="4,4"/></svg>
+    </main>
+
+    <!-- Footer -->
+    <footer class="h-[50px] px-12 flex items-center justify-between text-xs text-slate-400 border-t border-slate-200">
+      <span>Source: BCG analysis</span>
+      <span>Page {{page}}</span>
+    </footer>
+  </div>

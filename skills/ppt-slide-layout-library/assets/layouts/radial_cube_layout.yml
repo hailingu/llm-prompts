@@ -1,0 +1,86 @@
+name: radial_cube_layout
+description: "Central 3D cube surrounded by three radial sectors (People, Platform, Product) with explanatory bullet lists on left and right semicircles. Useful for showing multi-dimensional tagging or governance frameworks."
+type: layout
+version: 1.0.0
+selection_criteria:
+  - "Use when the primary visual is a central cube or 3D box with three labeled axes/sectors."
+  - "Accompanies two columns of descriptive bullet points positioned in soft circular background shapes."
+  - "Not suitable for linear processes or pure charts."
+
+spec:
+  structure:
+    - area: header
+      height: 80px
+      fixed: true
+    - area: main
+      flex: 1
+      layout: "flex-row"
+      elements:
+        - "left_bullets (col-4)"
+        - "center_cube (col-4)"
+        - "right_bullets (col-4)"
+    - area: footer
+      height: 50px
+      fixed: true
+
+  style_presets:
+    semicircle_bg: "absolute inset-y-0 w-[50%] bg-amber-100/20 rounded-full"
+    cube_3d: "relative w-40 h-40 bg-amber-300 shadow-lg transform rotate-[30deg] skew-y-6"
+    axis_label: "text-amber-700 font-bold text-lg absolute"
+    bullet_icon: "w-6 h-6 text-amber-700 mr-2"
+
+content_spec:
+  bullet_count: { min: 2, max: 5 }
+  text_limits:
+    header: "up to 60 chars"
+    bullet: "20-60 chars"
+    axis_label: "10-20 chars"
+
+template: |
+  <div class="slide-container flex flex-col h-full bg-white text-slate-800">
+    <!-- Header -->
+    <header class="h-20 px-12 flex items-center border-b border-brand-primary">
+      <h1 class="text-2xl font-bold text-emerald-800 tracking-tight">{{title}}</h1>
+    </header>
+
+    <!-- Main Row -->
+    <main class="flex-1 flex relative">
+      <!-- Left semicircle bullet area -->
+      <div class="relative flex-1 flex items-center justify-center">
+        <div class="semicircle_bg left-0"></div>
+        <div class="w-[80%]">
+          <!-- bullet list placeholder -->
+          <ul class="space-y-4">
+            <li class="flex items-start"><span class="bullet_icon">•</span><span>Full Coverage including factual, regulated and algorithm tagging</span></li>
+            <li class="flex items-start"><span class="bullet_icon">•</span><span>Algorithm Tagging Development with business requirements</span></li>
+            <li class="flex items-start"><span class="bullet_icon">•</span><span>Tagging Management dashboard for clients</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Center cube with radial labels -->
+      <div class="flex-1 flex items-center justify-center relative">
+        <div class="cube_3d"></div>
+        <div class="axis_label" style="top:10%; left:50%;">PEOPLE</div>
+        <div class="axis_label" style="top:50%; left:90%; transform:translateX(-100%);">PRODUCT</div>
+        <div class="axis_label" style="top:90%; left:50%;">PLATFORM</div>
+      </div>
+
+      <!-- Right semicircle bullet area -->
+      <div class="relative flex-1 flex items-center justify-center">
+        <div class="semicircle_bg right-0"></div>
+        <div class="w-[80%] text-right">
+          <ul class="space-y-4">
+            <li class="flex items-start justify-end"><span>Individual/Group Persona</span><span class="bullet_icon">•</span></li>
+            <li class="flex items-start justify-end"><span>Third-Party Tagging Replenish</span><span class="bullet_icon">•</span></li>
+          </ul>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="h-[50px] px-12 flex items-center justify-between border-t border-slate-200 text-xs text-slate-400">
+      <span>Source: Example</span>
+      <span>Page {{page}}</span>
+    </footer>
+  </div>

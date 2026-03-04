@@ -83,6 +83,10 @@ For any page using the standard comparison/timeline/data layout (typically utili
 | 24 | Causal Loop Diagram | `causal_loop_diagram` | 因果回路图/系统动力学/正负反馈循环 |
 | 25 | Analytical Model Tree | `analytical_model_tree` | 算术逻辑树/供需模型/价值驱动树 |
 | 26 | Cost Curve Stack | `cost_curve_stack` | 成本供给曲线/变宽柱状图/市场分层堆叠 |
+| 27 | Multi-year Flow | `multi_year_flow` | 多年份分层流程/模型输入-输出演示 |
+| 28 | Nesting in the Bowl | `nesting_in_the_bowl` | 嵌碗式波浪线/节点水平居中/上下图文双轨防重叠排版 |
+| 29 | Methodology Funnel + Venn | `methodology_funnel_venn` | 方法论 3 步 + 漏斗/重叠分析 |
+| 30 | Radial Cube Layout | `radial_cube_layout` | 中心立方体+左右半圆说明 |
 
 ---
 
