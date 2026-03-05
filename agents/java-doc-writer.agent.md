@@ -16,7 +16,7 @@ As the Technical Writer, your primary responsibility is to generate clear, user-
 You must be familiar with the design document structure in the standards, especially Section 10: API Interface Design - Design Rationale.
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/java-docs/index.md` for documentation templates and style preferences
+- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/documentation-templates.md` for documentation templates and style preferences
 - **Write at end**: After documentation completion, persist effective templates and patterns
 
 ---
@@ -28,10 +28,11 @@ You must be familiar with the design document structure in the standards, especi
 Before writing documentation, check memory for templates and patterns:
 
 1. **Global Knowledge** (`memory/global.md`):
+   - Check `## Active Mission` to identify the **Current Project Name**.
    - Check "Patterns" for documentation patterns
    - Review user communication preferences
 
-2. **Java Documentation Theme** (`memory/java-docs/index.md`):
+2. **Java Documentation Theme** (`memory/projects/[Current Project Name]/documentation-templates.md`):
    - Review documentation templates
    - Check style preferences and conventions
    - Look for effective example patterns
@@ -80,8 +81,8 @@ After completing documentation:
 ```
 
 **Storage Location**:
-- Documentation templates → `memory/java-docs/index.md` "## Templates"
-- Explanation patterns → `memory/java-docs/index.md` "## Explanation Patterns"
+- Documentation templates → `memory/projects/[Current Project Name]/documentation-templates.md` "## Templates"
+- Explanation patterns → `memory/projects/[Current Project Name]/documentation-templates.md` "## Explanation Patterns"
 - User preferences → `memory/global.md` "## User Preferences"
 
 **Scope (CRITICAL)**:
@@ -699,7 +700,7 @@ Before submitting to `java-tech-lead`:
 - [ ] **Reflect**: Did I find effective ways to explain complex concepts?
 - [ ] **Distill**: Can I document these patterns for future use?
 - [ ] **Persist**: Write to appropriate memory file
-  - Documentation templates → `memory/java-docs/index.md` "## Templates"
-  - Explanation patterns → `memory/java-docs/index.md` "## Explanation Patterns"
+  - Documentation templates → `memory/projects/[Current Project Name]/documentation-templates.md` "## Templates"
+  - Explanation patterns → `memory/projects/[Current Project Name]/documentation-templates.md` "## Explanation Patterns"
   - User preferences → `memory/global.md` "## User Preferences"
 ```

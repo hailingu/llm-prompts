@@ -19,7 +19,7 @@ As the Java API designer, your core responsibility is to **generate the detailed
 - `.github/java-standards/static-analysis-setup.md` - Static analysis tools
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/java-api-design/index.md` for existing API patterns and contracts
+- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/api-patterns.md` for existing API patterns and contracts
 - **Write at end**: After completing API design, persist valuable patterns and contract templates
 
 ---
@@ -31,10 +31,11 @@ As the Java API designer, your core responsibility is to **generate the detailed
 Before designing APIs, read relevant memory files:
 
 1. **Global Knowledge** (`memory/global.md`):
+   - Check `## Active Mission` to identify the **Current Project Name**.
    - Look for "Patterns" section with API design patterns
    - Check "Decisions" for interface design choices
 
-2. **Java API Design Theme** (`memory/java-api-design/index.md`):
+2. **Java API Design Theme** (`memory/projects/[Current Project Name]/api-patterns.md`):
    - Review previous API contract patterns
    - Check common exception hierarchies used
    - Look for validated design patterns (Interface vs Abstract Class, etc.)
@@ -86,8 +87,8 @@ After completing significant API design work, reflect and persist:
 ```
 
 **Storage Location**:
-- Reusable patterns → `memory/java-api-design/index.md` under "## Patterns"
-- Contract templates → `memory/java-api-design/index.md` under "## Contract Templates"
+- Reusable patterns → `memory/projects/[Current Project Name]/api-patterns.md` under "## Patterns"
+- Contract templates → `memory/projects/[Current Project Name]/api-patterns.md` under "## Contract Templates"
 
 **Level**: Level 2 - API Specification (Detailed)  
 **Corresponding Google practice**: Engineers author Protocol Buffers (.proto files) + AIP Guidelines
@@ -682,8 +683,8 @@ Before handing off to `java-coder-specialist`:
 - [ ] **Reflect**: What API design insight would help future designs?
 - [ ] **Distill**: Can I extract a reusable pattern or contract template?
 - [ ] **Persist**: Write to appropriate memory file
-  - New patterns → `memory/java-api-design/index.md` "## Patterns"
-  - Contract templates → `memory/java-api-design/index.md` "## Contract Templates"
+  - New patterns → `memory/projects/[Current Project Name]/api-patterns.md` "## Patterns"
+  - Contract templates → `memory/projects/[Current Project Name]/api-patterns.md` "## Contract Templates"
   - Generic insights → `memory/global.md` "## Patterns"
 
 ---

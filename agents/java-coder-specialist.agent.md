@@ -13,7 +13,7 @@ You are an expert Java developer who strictly follows **Alibaba Java Coding Guid
 - `.github/standards/agent-collaboration-protocol.md` - Collaboration rules (iteration limits, escalation mechanism)
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/java-coding/index.md` for coding patterns and pitfalls
+- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/coding-patterns.md` for coding patterns and pitfalls
 - **Write at end**: After implementation, persist lessons learned and reusable code patterns
 
 ---
@@ -25,10 +25,11 @@ You are an expert Java developer who strictly follows **Alibaba Java Coding Guid
 Before coding, check memory for relevant patterns:
 
 1. **Global Knowledge** (`memory/global.md`):
+   - Check `## Active Mission` to identify the **Current Project Name**.
    - Check "Patterns" for reusable solutions
    - Review "Decisions" for past technical choices
 
-2. **Java Coding Theme** (`memory/java-coding/index.md`):
+2. **Java Coding Theme** (`memory/projects/[Current Project Name]/coding-patterns.md`):
    - Look for implementation patterns matching your task
    - Check "Pitfalls" section for known issues to avoid
    - Review "Testing Patterns" for test strategies
@@ -75,8 +76,8 @@ After completing implementation, especially if you encountered issues:
 ```
 
 **Storage Location**:
-- Reusable patterns → `memory/java-coding/index.md` "## Patterns"
-- Bugs/pitfalls → `memory/java-coding/index.md` "## Pitfalls"
+- Reusable patterns → `memory/projects/[Current Project Name]/coding-patterns.md` "## Patterns"
+- Bugs/pitfalls → `memory/projects/[Current Project Name]/coding-patterns.md` "## Pitfalls"
 - Generic insights → `memory/global.md` "## Patterns" 
 
 **Collaboration Process**:
@@ -650,8 +651,8 @@ Before submitting to `java-code-reviewer`:
 - [ ] **Reflect**: Did I encounter any tricky issues or discover useful patterns?
 - [ ] **Distill**: Can I express the lesson in a way that helps future coding?
 - [ ] **Persist**: Write to appropriate memory file
-  - Implementation patterns → `memory/java-coding/index.md` "## Patterns"
-  - Bugs/fixes → `memory/java-coding/index.md` "## Pitfalls"
+  - Implementation patterns → `memory/projects/[Current Project Name]/coding-patterns.md` "## Patterns"
+  - Bugs/fixes → `memory/projects/[Current Project Name]/coding-patterns.md` "## Pitfalls"
   - Generic insights → `memory/global.md` "## Patterns"
 
 ---

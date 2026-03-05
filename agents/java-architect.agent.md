@@ -15,7 +15,7 @@ As the Java Architect, your core responsibility is to provide **Level 1: Archite
 - `.github/java-standards/static-analysis-setup.md` - Static analysis tools (Checkstyle, SpotBugs, PMD)
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/java-architecture/index.md` for existing patterns and decisions
+- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/architecture-decisions.md` for existing patterns and decisions
 - **Write at end**: After completing architecture design, distill and persist key decisions to memory
 
 ---
@@ -27,11 +27,12 @@ As the Java Architect, your core responsibility is to provide **Level 1: Archite
 Before starting architecture design, read relevant memory files:
 
 1. **Global Knowledge** (`memory/global.md`):
+   - Check `## Active Mission` to identify the **Current Project Name**.
    - Look for "Decisions" section with architectural choices
    - Check "Patterns" for reusable design patterns
    - Note any Java-specific preferences
 
-2. **Java Architecture Theme** (`memory/java-architecture/index.md`):
+2. **Java Architecture Theme** (`memory/projects/[Current Project Name]/architecture-decisions.md`):
    - Check previous architecture decisions for similar modules
    - Review technology stack preferences (Spring Boot, frameworks)
    - Look for performance targets and constraints
@@ -67,7 +68,7 @@ After completing a significant architecture design, reflect and persist insights
 ```
 
 **Storage Location**:
-- Write to `memory/java-architecture/index.md` under "## Key Decisions"
+- Write to `memory/projects/[Current Project Name]/architecture-decisions.md` under "## Key Decisions"
 - If broadly applicable, also add to `memory/global.md` "## Decisions" 
 
 **Level**: Level 1 - Architecture Design (High-level)  
@@ -1316,5 +1317,5 @@ Before handing off to `java-api-designer`:
 - [ ] **Reflect**: What architectural insight would help future me?
 - [ ] **Distill**: Can I express it in 3-5 sentences?
 - [ ] **Persist**: Write to appropriate memory file
-  - Module-specific decisions → `memory/java-architecture/index.md`
+  - Module-specific decisions → `memory/projects/[Current Project Name]/architecture-decisions.md`
   - Generic Java patterns → `memory/global.md`"

@@ -45,11 +45,12 @@ As the Java Tech Lead, your core responsibility is to ensure end-to-end delivery
 Before review or arbitration, check memory for context:
 
 1. **Global Knowledge** (`memory/global.md`):
+   - Check `## Active Mission` to identify the **Current Project Name**.
    - Review "Decisions" for past architectural choices
    - Check "Patterns" for quality standards
    - Note user preferences and team conventions
 
-2. **Theme-Specific Memory** (`memory/java-*/index.md`):
+2. **Theme-Specific Memory** (`memory/projects/[Current Project Name]/`):
    - Review previous decisions in similar contexts
    - Check for recurring issues that need process fixes
 
@@ -94,7 +95,7 @@ After final approval or arbitration:
 **Storage Location**:
 - Team decisions → `memory/global.md` "## Decisions"
 - Process improvements → `memory/global.md` "## Process Improvements"
-- Java-specific standards → `memory/java-architecture/index.md` "## Standards"
+- Java-specific standards → `memory/projects/[Current Project Name]/architecture-decisions.md` "## Standards"
 
 ---
 
@@ -615,7 +616,7 @@ Before marking task complete:
 - [ ] **Persist**: Write to appropriate memory file
   - Team decisions → `memory/global.md` "## Decisions"
   - Process improvements → `memory/global.md` "## Process Improvements"
-  - Java standards → `memory/java-architecture/index.md` "## Standards"
+  - Java standards → `memory/projects/[Current Project Name]/architecture-decisions.md` "## Standards"
 
 ---
 
