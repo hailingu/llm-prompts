@@ -1,0 +1,213 @@
+# ============================================================
+# ppt-component-library / core_components.yml
+# Standardized UI Component Templates (Tailwind CSS)
+# ============================================================
+
+components:
+
+  # 1. Containers (Cards)
+  # ------------------------------------------------------------
+  Card_Glass:
+    description: "Standard semi-transparent card for dark backgrounds."
+    use_case: "General content grouping, insight blocks."
+    html: |
+      <div class="bg-white/5 backdrop-blur-sm border border-white/10 p-6 rounded-xl flex flex-col gap-4">
+        <h3 class="text-lg font-bold text-white tracking-tight">{{Title}}</h3>
+        <p class="text-sm text-slate-400 font-sans leading-relaxed">{{Body Text}}</p>
+      </div>
+
+  Card_Accent:
+    description: "Card with a colored accent border on the left."
+    use_case: "Highlighting key strategic pillars or warnings."
+    html: |
+      <div class="bg-slate-800/50 border-l-4 border-{{color}}-500 p-6 flex flex-col gap-2 shadow-lg">
+        <div class="text-xs font-bold text-{{color}}-400 uppercase tracking-widest mb-1">{{Label}}</div>
+        <h3 class="text-xl font-bold text-white">{{Title}}</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">{{Description}}</p>
+      </div>
+
+  Card_Solid:
+    description: "Solid background card for high contrast."
+    use_case: "Light mode or high-emphasis blocks."
+    html: |
+      <div class="bg-slate-900 border border-slate-700 p-6 rounded-lg shadow-md">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-{{color}}-900/50 flex items-center justify-center text-{{color}}-400">
+            <i class="fa-solid fa-{{icon}}"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">{{Title}}</h3>
+        </div>
+        <div class="text-sm text-slate-300 font-sans">{{Content}}</div>
+      </div>
+
+  # 2. Metrics (Numbers)
+  # ------------------------------------------------------------
+  Metric_Big:
+    description: "Large hero number with label."
+    use_case: "GDP, Growth Rate, Key Performance Indicator."
+    html: |
+      <div class="flex flex-col">
+        <div class="text-5xl font-bold text-white tracking-tighter leading-none mb-1">{{Value}}</div>
+        <div class="text-[10px] font-bold text-{{color}}-500 uppercase tracking-[0.2em]">{{Label}}</div>
+      </div>
+
+  Metric_Trend:
+    description: "Number with an up/down trend indicator."
+    use_case: "Stock price, Year-over-Year change."
+    html: |
+      <div class="flex items-end gap-3">
+        <div class="text-4xl font-bold text-white">{{Value}}</div>
+        <span class="text-sm font-bold text-{{trend_color}}-500 mb-1 flex items-center gap-1">
+          <i class="fa-solid fa-arrow-{{trend_direction}}"></i> {{Change}}%
+        </span>
+      </div>
+      <div class="text-xs text-slate-500 font-bold uppercase mt-1">{{Label}}</div>
+
+  Metric_KpiRow:
+    description: "Horizontal row of simple metrics."
+    use_case: "Dashboard headers, summary statistics."
+    html: |
+      <div class="flex justify-between items-center bg-slate-800/50 p-4 border-t border-slate-700">
+        <!-- Item 1 -->
+        <div>
+          <div class="text-2xl font-bold text-white">{{Val1}}</div>
+          <div class="text-[9px] uppercase font-bold text-slate-500">{{Lab1}}</div>
+        </div>
+        <!-- Divider -->
+        <div class="w-px h-8 bg-slate-700"></div>
+        <!-- Item 2 -->
+        <div>
+          <div class="text-2xl font-bold text-white">{{Val2}}</div>
+          <div class="text-[9px] uppercase font-bold text-slate-500">{{Lab2}}</div>
+        </div>
+      </div>
+
+  # 3. Lists (Structured Text)
+  # ------------------------------------------------------------
+  List_Icon:
+    description: "List items with icons on the left."
+    use_case: "Features, Benefits, Key Points."
+    html: |
+      <ul class="space-y-4">
+        <li class="flex items-start gap-3">
+          <i class="fa-solid fa-check text-{{color}}-500 mt-1"></i>
+          <span class="text-sm text-slate-300">{{Item 1 text}}</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <i class="fa-solid fa-check text-{{color}}-500 mt-1"></i>
+          <span class="text-sm text-slate-300">{{Item 2 text}}</span>
+        </li>
+      </ul>
+
+  List_Timeline:
+    description: "Vertical timeline list."
+    use_case: "Process steps, History of events."
+    html: |
+      <div class="space-y-6 relative border-l border-slate-700 ml-3 pl-6">
+        <!-- Step 1 -->
+        <div class="relative">
+          <div class="absolute -left-[29px] top-1 w-3 h-3 rounded-full bg-{{color}}-500 border-2 border-slate-900"></div>
+          <h4 class="text-sm font-bold text-white mb-1">{{Year/Step 1}}</h4>
+          <p class="text-xs text-slate-400">{{Description 1}}</p>
+        </div>
+        <!-- Step 2 -->
+        <div class="relative">
+          <div class="absolute -left-[29px] top-1 w-3 h-3 rounded-full bg-slate-600 border-2 border-slate-900"></div>
+          <h4 class="text-sm font-bold text-white mb-1">{{Year/Step 2}}</h4>
+          <p class="text-xs text-slate-400">{{Description 2}}</p>
+        </div>
+      </div>
+
+  # 4. Badges & Tags
+  # ------------------------------------------------------------
+  Badge_Pill:
+    description: "Rounded status label."
+    use_case: "Status (Active/Pending), Category tags."
+    html: |
+      <span class="px-3 py-1 bg-{{color}}-900/30 text-{{color}}-400 text-[10px] font-bold uppercase tracking-widest border border-{{color}}-500/30 rounded-full">
+        {{Label}}
+      </span>
+
+  Badge_Tag:
+    description: "Rectangular tag attached to corners."
+    use_case: "Versioning, Security Level."
+    html: |
+      <div class="bg-slate-700 text-white text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider inline-block">
+        {{Label}}
+      </div>
+
+  # 5. Visuals & Decor
+  # ------------------------------------------------------------
+  Visual_Arrow:
+    description: "Large directional arrow for process flows."
+    use_case: "Connecting two cards."
+    html: |
+      <div class="flex items-center justify-center text-slate-600 text-2xl h-full">
+        <i class="fa-solid fa-arrow-right"></i>
+      </div>
+
+  Visual_Glow:
+    description: "Background glow effect."
+    use_case: "Atmosphere behind hero elements."
+    html: |
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-{{color}}-500/20 rounded-full blur-[80px] -z-10"></div>
+
+  # 6. Abstract Maps (Geopolitics)
+  # ------------------------------------------------------------
+  Map_Grid:
+    description: "Conceptual grid map for regions."
+    use_case: "Showing political alignment without precise geography (e.g., Europe Populism)."
+    html: |
+      <div class="grid grid-cols-3 gap-2 w-[300px] mx-auto p-4 bg-slate-900/50 border border-slate-700 rounded-xl">
+        <!-- Grid Item -->
+        <div class="bg-{{color}}-900/50 border border-{{color}}-700/50 p-2 flex items-center justify-center text-xs font-bold text-{{color}}-400 hover:bg-{{color}}-800 transition-colors">
+          {{Country Code}}
+        </div>
+      </div>
+
+  Map_NodeNetwork:
+    description: "Strategic nodes on an abstract map layer."
+    use_case: "Iron Ring Strategy, Supply Chain Nodes."
+    html: |
+      <div class="relative w-full h-full bg-[#050510] border border-slate-800 rounded-lg overflow-hidden">
+        <!-- Background Grid -->
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,...')] opacity-10"></div>
+        <!-- Node 1 -->
+        <div class="absolute top-[40%] left-[30%] group">
+          <div class="w-4 h-4 bg-{{color}}-500 rounded-full shadow-[0_0_10px_currentColor] animate-pulse"></div>
+          <div class="absolute top-6 left-1/2 -translate-x-1/2 text-[9px] font-bold text-white bg-black/80 px-2 py-1 border border-{{color}}-500/30 whitespace-nowrap">{{Node Name}}</div>
+        </div>
+      </div>
+
+  Map_FlowArrow:
+    description: "Simple SVG flow between two points."
+    use_case: "Energy export flow, Trade route."
+    html: |
+      <svg class="w-full h-full overflow-visible pointer-events-none absolute inset-0">
+        <defs>
+          <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:{{hex_color}};stop-opacity:1" />
+            <stop offset="100%" style="stop-color:{{hex_color}};stop-opacity:0.2" />
+          </linearGradient>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="{{hex_color}}" />
+          </marker>
+        </defs>
+        <path d="M {{x1}},{{y1}} C {{cx1}},{{cy1}} {{cx2}},{{cy2}} {{x2}},{{y2}}" stroke="url(#flowGrad)" stroke-width="4" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="8 4" class="animate-pulse" />
+      </svg>
+
+  Map_RadarRing:
+    description: "Concentric rings for defense depth."
+    use_case: "Strategic depth, Area Denial (A2/AD)."
+    html: |
+      <div class="relative flex items-center justify-center w-64 h-64">
+        <!-- Core -->
+        <div class="w-16 h-16 bg-{{color}}-600 rounded-full z-20 flex items-center justify-center shadow-lg border-2 border-white/20">
+          <i class="fa-solid fa-shield text-white"></i>
+        </div>
+        <!-- Ring 1 -->
+        <div class="absolute w-32 h-32 border border-{{color}}-500/50 rounded-full z-10 animate-ping opacity-20"></div>
+        <div class="absolute w-32 h-32 border border-{{color}}-500/30 bg-{{color}}-500/10 rounded-full z-10"></div>
+        <!-- Ring 2 -->
+        <div class="absolute w-48 h-48 border border-dashed border-{{color}}-500/30 rounded-full z-0"></div>
+      </div>
