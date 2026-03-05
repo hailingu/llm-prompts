@@ -77,11 +77,15 @@ This skill serves as the single source of truth for multi-brand design system, c
 
 ### Strategic Report (New)
 
-- **Primary Color**: `#0F172A` (Slate 900 / Deep Navy)
-- **Secondary Color**: `#64748B` (Slate 500)
-- **Accent Color**: `#F1F5F9` (Slate 100 - Background)
-- **Fonts**: Inter, Noto Sans SC (Focus on weight contrast: Black vs Light)
-- **Layout**: Minimalist, no sidebar, excessive whitespace, high-contrast typography
+- **Primary Color**: `#000000` (Pure Black)
+- **Secondary Color**: `#666666` (Neutral Gray)
+- **Accent Color**: `#E5E5E5` (Structural Lines)
+- **Fonts**: **Serif Headings** (Times New Roman / Songti), Sans Body (Arial)
+- **Layout**: 
+    - **No Sidebars/Navbars**: Absolute canvas cleanliness.
+    - **No "Color Blocks"**: Backgrounds must be white (`#FFFFFF`).
+    - **Typography Driven**: Hierarchy established by size and weight (Bold Serif vs Light Sans), not color.
+    - **Structural Elements**: Use thin vertical/horizontal lines (1px) for separation.
 
 ## Brand Switching Mechanism
 

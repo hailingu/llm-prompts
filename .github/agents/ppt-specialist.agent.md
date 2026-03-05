@@ -418,10 +418,16 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
   4. **键盘支持**：← → 箭头键翻页，空格键下一页，F 键全屏。
   5. **禁止画廊模式**：不得使用 Grid + 多 iframe 缩略图的画廊/卡片式布局，不得 `window.open` 在新标签页打开单页。
 
-## 11. 布局类型库
+## 11. 布局类型库与组件库
 
 > **8 种布局模板**（cover / data-chart / side-by-side / full-width / hybrid / process / dashboard / milestone-timeline）及其 HTML 模板、版式约束、选择指南、去重规则、Notion 骨架均见 `skills/ppt-slide-layout-library/assets/layouts.yml`。
 > 选择布局 → `selection_guide`；HTML 模板 → `layouts.{type}.template`；版式约束 → `layouts.{type}.constraints`；去重 → `dedup_rules`。
+
+> **标准化组件库**（`ppt-component-library`）：
+> - **用途**：确保跨页面的视觉一致性，标准复用卡片、指标、列表等微观 UI 元素。
+> - **核心组件**：`Card_Glass` (深色卡片), `Card_Accent` (强调卡片), `Metric_Big` (大字指标), `Metric_Trend` (趋势指标), `List_Timeline` (步骤列表) 等。
+> - **使用方法**：Agent 必须在 Intent 阶段构思组件，Implementation 阶段读取 `skills/ppt-component-library/assets/core_components.yml` 获取 HTML 源码并填入数据。
+> - **强制约束**：禁止手动拼接 Tailwind 类来“发明”新的卡片样式，必须优先使用库中定义的标准组件。
 
 ## 12. 图表选择规则
 

@@ -292,3 +292,34 @@ accessibility:
     - "dark-bg-light-text: 若背景亮度 <= 0.5，强制使用浅色文本 (white/slate-50)"
     - "primary-on-primary-ban: 禁止在品牌主色背景上使用品牌主色文本，除非有白色描边"
 
+
+  strategic:
+    name: Strategic Report (Minimalism)
+    colors:
+      primary: "#000000"          # Pure Black
+      secondary: "#666666"        # Neutral Gray
+      accent: "#E5E5E5"           # Structural Line
+      supplementary:
+        - "#333333"               # Dark Gray
+        - "#999999"               # Light Gray
+    fonts:
+      heading_en: '"Times New Roman", Georgia, serif'
+      body_en: Arial, Helvetica, sans-serif
+      zh: "Songti SC", "SimSun", serif
+      stack: '"Times New Roman", "Songti SC", serif'
+    font_sizes:
+      h1: "text-7xl"             # Massive Strategy Title
+      h2: "text-3xl"             # Insight Subtitle
+      body: "text-lg"            # Readable Report Body
+      small: "text-xs"           # Source/Legal
+    design:
+      style: "战略极简主义、黑白高对比、衬线字体权威感、绝对留白"
+      primary_tone: "黑白灰权威感"
+    layout:
+      sidebar: none
+      navbar: none
+      full_width: true
+      features:
+        - "衬线体大标题 (Serif Typography)"
+        - "严格左对齐 (Strict Left Alignment)"
+        - "无色块设计 (No-Block Design)"

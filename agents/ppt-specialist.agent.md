@@ -49,52 +49,18 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
 
 ### ❌ 行为反模式 (Strict Anti-Patterns)
 1. **盲目自信 (Blind Confidence)**：
-   - *现象*：生成 HTML 后，不运行 QA 或不读 QA 报告，直接认为"我代码写的很完美"。
+   - *现象*：生成 HTML 后，不运行 QA 或不读 QA 报告，直接认为“我代码写的很完美”。
    - *后果*：严禁！必须假设生成的代码 100% 会有溢出，必须依赖 `run_visual_qa.py` 的客观反馈。
-2. **h-full 滥用导致内容截断 (h-full Content Truncation)**：
-   - *现象*：在多行文本卡片上使用 `h-full`，导致内容被强制压缩截断。
-   - *原理*：`h-full` 强制元素高度等于父容器高度，会压缩内部内容；`flex-1` 让元素分配剩余空间，不截断内容。
-   - *正确做法*：
-     - **父容器列**：使用 `flex flex-col flex-1` 让两列等高
-     - **内部容器**：使用 `flex flex-col justify-between flex-1 gap-3` 让内部卡片均匀分布
-     - **内部卡片**：**禁止使用 `h-full`**，让内容自然流动
-   - *示例*：
-     ```html
-     <!-- 错误：卡片被截断 -->
-     <div class="flex flex-col h-full">
-       <div class="bg-red-50 p-4 h-full">长文本内容...</div>
-       <div class="bg-blue-50 p-4 h-full">长文本内容...</div>
-     </div>
-     
-     <!-- 正确：内容完整展示 -->
-     <div class="flex flex-col justify-between flex-1 gap-3">
-       <div class="bg-red-50 p-4">长文本内容...</div>
-       <div class="bg-blue-50 p-4">长文本内容...</div>
-     </div>
-     ```
-   - *检测规则*：如果卡片内文本超过2行，**严禁**在卡片上使用 `h-full`
-3. **硬编码魔法数 (Magic Numbers)**：
-   - *现象*：使用 `mt-[37px]`, `w-[83%]`, `h-[600px]` 这种非系统化的数值来"凑"布局。
+2. **硬编码魔法数 (Magic Numbers)**：
+   - *现象*：使用 `mt-[37px]`, `w-[83%]`, `h-[600px]` 这种非系统化的数值来“凑”布局。
    - *后果*：导致跨分辨率崩坏。必须使用 Flex (`flex-1`)、Grid (`grid-cols-12`) 和 Tailwind 标准比例 (`w-3/4`)。
-3. **内联尺寸样式 (Inline Size Styles)**：
-   - *现象*：在 HTML 标签中使用 `style="width: ...; height: ...; position: ..."` 内联样式设置尺寸和定位，或在 `<style>` 块中定义 `.slide { width: 1280px; ... }` 等。
-   - *后果*：布局无法统一管理、维护困难、容易与全局 CSS 冲突。
-   - *正确做法*：**尺寸（width/height）和定位（position）必须使用 Tailwind 类来调整**，如 `w-1280 h-720 relative overflow-hidden` 等。禁止使用内联 `style` 属性或 `<style>` 块定义尺寸和定位。
-4. **上下文遗忘 (Context Amnesia)**：
-   - *现象*：生成第 5 页时，忘记了第 1-4 页已经使用了"蓝色圆角卡片"风格，突然改用"红色直角线框"。
+3. **上下文遗忘 (Context Amnesia)**：
+   - *现象*：生成第 5 页时，忘记了第 1-4 页已经使用了“蓝色圆角卡片”风格，突然改用“红色直角线框”。
    - *后果*：破坏整体感。必须在 `Batch Summary` 中传递视觉上下文。
-   - **垂直空间规划遗漏**：
-     - *现象*：在同一个 Main 区域内，先看到一组组件（如"四大行业卡片"）就立即使用 `h-full` 填满父容器，然后继续添加第二组组件（如"其他重点行业预测"），导致两组内容叠加后总高度超过 Main 可用空间。
-     - *示例*：slide-9 中四大行业卡片使用 `h-full`，其下方还有"其他重点行业"Grid，导致溢出。
-     - *正确做法*：
-       1. **先扫描整体布局**：在编写任何组件前，先识别 Main 区域内有多少个"模块/区块"
-       2. **计算垂直预算**：Header(80px) + Footer(40px) = 120px 固定 → Main 可用 = 720 - 120 = 600px
-       3. **分配高度给各模块**：如果存在 2 个模块，应分别使用固定高度（如 `h-48`）而非 `h-full`
-       4. **禁止在有兄弟节点的 Grid/Flex 上使用 `h-full`**：当 Main 区域内有多个同级元素时，任意一个都不应使用 `h-full` 抢占全部剩余空间
-5. **伪造数据源 (Hallucinated Source)**：
+4. **伪造数据源 (Hallucinated Source)**：
    - *现象*：HTML 注释写 `Data Source: data.csv`，但 CSV 里根本没有这个字段。
    - *后果*：信任崩塌。找不到数据时必须留空或标 `N/A`，禁止编造。
-6. **硬编码布局冲突 (Hardcoded Layout Conflict)**：
+5. **硬编码布局冲突 (Hardcoded Layout Conflict)**：
    - *现象*：生成 `slide-theme.css` 时，给 `.slide-main` 添加 `display: flex; flex-direction: column;`。
    - *后果*：与 Tailwind 的 `grid` 布局冲突，导致 Grid 内部排列异常。
    - *正确做法*：`.slide-main` 应使用 `display: block;`，让 Tailwind 全权控制布局（flex 或 grid）。
@@ -149,42 +115,30 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
 #### 4.2.2 深度思考与策略设计 (Deep Thinking)
 在进入编码阶段前，必须**先行完成当前批次幻灯片的 Thinking 设计**。
 
-**批次执行协议 (Batch Protocol — 两阶段模式)**：
+**批次执行协议 (Batch Protocol — 1页滚动执行)**：
 
-采用 **先批量 Thinking，再批量 HTML** 的两阶段模式：
+采用 **1页为一批次** 的严格滚动模式，全程执行如下循环，直到所有页面完成：
 
 ```
-[阶段1: 批量 Thinking]
-  Step 1 — WRITE ALL：
-    - 遍历 master-outline 中的所有页面
-    - 为每页创建独立的 slide-{N}-thinking.md
-    - 每个 thinking 必须包含 2.5 Header 布局信息和 2.6 Footer 布局信息
-    - **此阶段不生成任何 HTML**
+[前置]
+  1. 生成 master-outline.md（全局大纲固化）
+  2. 生成 `assets/slide-theme.css`（品牌样式）
+  3. 生成 master-layout.html（母版规格文件）：
+     - 定义严格的 Header (高度/结构) 和 Footer (高度/结构) HTML 模板。
+     - **资源引用规范**：所有 CSS/JS 引用必须使用 `href="assets/..."` 或 `src="assets/..."`。
+     - 后续所有页面必须把 content 注入到该母版的 <main> 区域中，严禁重新发明 Header/Footer。
          ↓
-[阶段2: 分析与模板设计]
-  Step 2 — ANALYZE：
-    - 读取所有 slide-N-thinking.md
-    - 提取每个页面的 2.5 Header 布局信息
-    - 提取每个页面的 2.6 Footer 布局信息
-    - 分析最复杂的标题结构
-    - 分析 Footer 元素差异
-    - 生成《Header + Footer 布局分析报告》（追加到 master-outline.md）
-  
-  Step 3 — DESIGN MASTER：
-    - 根据分析结果，确定统一的 Header 结构
-    - 更新 master-layout.html
-    - **此步骤必须在生成任何 HTML 之前完成**
+[LOOP] 针对第 N 页，执行以下操作：
+  Step 1 — WRITE：创建独立文件 `slide-{N}-thinking.md`。
+  Step 2 — VERIFY：read_file 确认 `slide-{N}-thinking.md` 存在。
+  Step 3 — BUILD：读取 `master-layout.html` 提取头部/尾部，结合 thinking 生成 `slide-{N}.html`。
+  Step 4 — LINT (Non-Blocking)：
+     - 执行 `run_visual_qa.py --mode draft` (仅检查严重结构错误)。
+     - 若 pass，继续；若 fail (如严重溢出/文件缺失)，则尝试修复 1 次。
+     - **不再进行像素级视觉阻断**。视觉微调留给后续的 `ppt-qa-specialist` 进行。
+  Step 5 — SUMMARIZE：生成本页总结。
          ↓
-[阶段3: 批量 HTML]
-  Step 4 — BUILD ALL：
-    - 读取更新后的 master-layout.html
-    - 读取每个 slide-{N}-thinking.md
-    - 使用统一模板生成所有 slide-{N}.html
-    - **短标题自动补齐 Header 结构**（如需2行但标题只有1行，用副标题位置填充）
-  
-  Step 5 — LINT ALL：
-    - 对所有生成的 HTML 运行 QA 检查
-    - 批量修复发现的问题
+[继续] N += 1，回到 LOOP 直到全部页面完成
 ```
 
 **硬性卡点（物理防跳步机制）**：
@@ -253,17 +207,6 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
 ### 2.4 叙事文案 (Narrative)
 - **Headline**: [主标题]
 - **Insight**: [核心洞察文案]
-
-### 2.5 Header 布局信息 (Header Layout Info)
-- **标题行数**: [1行 / 2行 / 3行]
-- **包含元素**: [主标题 / 主标题+副标题 / 主标题+副标题+面包屑]
-- **预计高度**: [~60px / ~80px / ~100px]
-- **备注**: [如标题特别长需要换行等特殊情况]
-
-### 2.6 Footer 布局信息 (Footer Layout Info)
-- **包含元素**: [页码 / 数据来源 / 品牌标识 / 保密声明]
-- **预计高度**: [~30px / ~40px]
-- **备注**: [如特殊页需要移除页码等]
 ```
 
 **机器友好原则**：
@@ -475,10 +418,16 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
   4. **键盘支持**：← → 箭头键翻页，空格键下一页，F 键全屏。
   5. **禁止画廊模式**：不得使用 Grid + 多 iframe 缩略图的画廊/卡片式布局，不得 `window.open` 在新标签页打开单页。
 
-## 11. 布局类型库
+## 11. 布局类型库与组件库
 
 > **8 种布局模板**（cover / data-chart / side-by-side / full-width / hybrid / process / dashboard / milestone-timeline）及其 HTML 模板、版式约束、选择指南、去重规则、Notion 骨架均见 `skills/ppt-slide-layout-library/assets/layouts.yml`。
 > 选择布局 → `selection_guide`；HTML 模板 → `layouts.{type}.template`；版式约束 → `layouts.{type}.constraints`；去重 → `dedup_rules`。
+
+> **标准化组件库**（`ppt-component-library`）：
+> - **用途**：确保跨页面的视觉一致性，标准复用卡片、指标、列表等微观 UI 元素。
+> - **核心组件**：`Card_Glass` (深色卡片), `Card_Accent` (强调卡片), `Metric_Big` (大字指标), `Metric_Trend` (趋势指标), `List_Timeline` (步骤列表) 等。
+> - **使用方法**：Agent 必须在 Intent 阶段构思组件，Implementation 阶段读取 `skills/ppt-component-library/assets/core_components.yml` 获取 HTML 源码并填入数据。
+> - **强制约束**：禁止手动拼接 Tailwind 类来“发明”新的卡片样式，必须优先使用库中定义的标准组件。
 
 ## 12. 图表选择规则
 
