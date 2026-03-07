@@ -37,6 +37,38 @@ content_spec:
     box: "15-50 chars"
     header: "20-30 chars"
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - time_horizon
+    - tier_labels
+    - stage_dependencies
+    - carry_forward_mechanism
+    - connector_policy
+    - fallback_plan
+  narrative_fit:
+    - multi_year_causal_flow
+    - annual_model_hand_off
+    - phased_operating_mechanism
+  compatible_chart_families:
+    - gantt_sequence
+    - line_trend
+  compatible_component_families:
+    - Step_Flow
+    - Card_Solid
+    - Card_Accent
+    - List_Icon
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - process_steps
+    - system_process_map
+    - timeline_evolution
+  overflow_recovery_order:
+    - reduce_text_per_box
+    - remove_optional_vertical_connector
+    - collapse_tier_annotations
+    - downgrade_to_process_steps
+
 template: |
   <div class="slide-container flex flex-col h-full bg-white text-slate-800">
     <!-- Header -->

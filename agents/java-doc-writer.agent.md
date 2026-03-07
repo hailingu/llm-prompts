@@ -16,8 +16,8 @@ As the Technical Writer, your primary responsibility is to generate clear, user-
 You must be familiar with the design document structure in the standards, especially Section 10: API Interface Design - Design Rationale.
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/documentation-templates.md` for documentation templates and style preferences
-- **Write at end**: After documentation completion, persist effective templates and patterns
+- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/documentation_templates.md` for documentation templates and style preferences
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable templates, examples, or explanation patterns
 
 ---
 
@@ -32,12 +32,12 @@ Before writing documentation, check memory for templates and patterns:
    - Check "Patterns" for documentation patterns
    - Review user communication preferences
 
-2. **Java Documentation Theme** (`memory/projects/[Current Project Name]/documentation-templates.md`):
+2. **Java Documentation Theme** (`memory/projects/[Current Project Name]/documentation_templates.md`):
    - Review documentation templates
    - Check style preferences and conventions
    - Look for effective example patterns
 
-### Writing Memory (Session End - Post-hoc Distillation)
+### Writing Memory (L1 First, Then Optional L2)
 
 After completing documentation:
 
@@ -81,8 +81,8 @@ After completing documentation:
 ```
 
 **Storage Location**:
-- Documentation templates → `memory/projects/[Current Project Name]/documentation-templates.md` "## Templates"
-- Explanation patterns → `memory/projects/[Current Project Name]/documentation-templates.md` "## Explanation Patterns"
+- Documentation templates → `memory/projects/[Current Project Name]/documentation_templates.md`
+- Explanation patterns → `memory/projects/[Current Project Name]/documentation_templates.md`
 - User preferences → `memory/global.md` "## User Preferences"
 
 **Scope (CRITICAL)**:
@@ -700,7 +700,7 @@ Before submitting to `java-tech-lead`:
 - [ ] **Reflect**: Did I find effective ways to explain complex concepts?
 - [ ] **Distill**: Can I document these patterns for future use?
 - [ ] **Persist**: Write to appropriate memory file
-  - Documentation templates → `memory/projects/[Current Project Name]/documentation-templates.md` "## Templates"
-  - Explanation patterns → `memory/projects/[Current Project Name]/documentation-templates.md` "## Explanation Patterns"
+   - Documentation templates → `memory/projects/[Current Project Name]/documentation_templates.md`
+   - Explanation patterns → `memory/projects/[Current Project Name]/documentation_templates.md`
   - User preferences → `memory/global.md` "## User Preferences"
 ```

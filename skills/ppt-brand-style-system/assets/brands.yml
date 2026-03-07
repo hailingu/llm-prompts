@@ -1,7 +1,7 @@
 # ============================================================
-# PPT Brand System — Single Source of Truth
+# PPT Brand-Style System — Single Source of Truth
 # ============================================================
-# All brand colors, fonts, layout traits, semantic colors,
+# All brand-style colors, fonts, layout traits, semantic colors,
 # and border tokens are defined HERE and only here.
 #
 # CHANGELOG (P1):
@@ -12,7 +12,7 @@
 # ============================================================
 
 # ----------------------------------------------------------
-# 1. Brand Definitions
+# 1. Style Profile Definitions
 # ----------------------------------------------------------
 brands:
   kpmg:
@@ -39,7 +39,7 @@ brands:
       style: "简洁专业、数据驱动、强调洞察"
       primary_tone: "蓝色为主色调"
     layout:
-      sidebar: left              # 左侧品牌栏
+      sidebar: left              # 左侧风格栏
       full_width: false
       features: []
 
@@ -159,20 +159,52 @@ brands:
         - "渐变背景"
         - "科技感图表"
 
+  strategic:
+    name: Editorial Briefing (Minimalism)
+    colors:
+      primary: "#0F172A"          # Deep Navy
+      secondary: "#64748B"        # Muted Slate
+      accent: "#E2E8F0"           # Structural Line
+      supplementary:
+        - "#334155"               # Dark Slate
+        - "#CBD5E1"               # Light Slate
+    fonts:
+      heading_en: Inter
+      body_en: Arial, Helvetica, sans-serif
+      zh: Noto Sans SC
+      stack: 'Inter, "Noto Sans SC", Arial, sans-serif'
+    font_sizes:
+      h1: "text-7xl"
+      h2: "text-3xl"
+      body: "text-lg"
+      small: "text-xs"
+    design:
+      style: "战略极简主义、深海军蓝、权重对比强、留白充足"
+      primary_tone: "深蓝灰战略感"
+    layout:
+      sidebar: none
+      navbar: none
+      full_width: true
+      features:
+        - "权重对比标题 (Weight-Contrast Typography)"
+        - "严格左对齐 (Strict Left Alignment)"
+        - "轻背景与细分隔线 (Light Background + Thin Dividers)"
+
 # ----------------------------------------------------------
-# 2. Brand Switching Mechanism
+# 2. Style Profile Switching Mechanism
 # ----------------------------------------------------------
 switching:
   method: "CSS class on <body>"
   pattern: "brand-{brand_id}"
+  naming_note: "brand-* / brand_id are retained as runtime compatibility identifiers; new public APIs should prefer style-profile naming."
   css_variables:
     - "--brand-primary"
     - "--brand-secondary"
     - "--brand-accent"
   rules:
-    - "成片 slide-*.html 不应出现品牌切换控件"
+    - "成片 slide-*.html 不应出现风格切换控件"
     - "调试控件仅在 presentation.html 中保留"
-    - "切换品牌后必须延迟 50ms 调用 chart.resize()"
+    - "切换风格档案后必须延迟 50ms 调用 chart.resize()"
 
 # ----------------------------------------------------------
 # 3. Common Design Tokens
@@ -290,36 +322,4 @@ accessibility:
     - "background-aware-text: 必须确保文本颜色与背景具有足够对比度 (WCAG AA)"
     - "light-bg-dark-text: 若背景亮度 > 0.5，强制使用深色文本 (slate-900/brand-primary/black)"
     - "dark-bg-light-text: 若背景亮度 <= 0.5，强制使用浅色文本 (white/slate-50)"
-    - "primary-on-primary-ban: 禁止在品牌主色背景上使用品牌主色文本，除非有白色描边"
-
-
-  strategic:
-    name: Strategic Report (Minimalism)
-    colors:
-      primary: "#000000"          # Pure Black
-      secondary: "#666666"        # Neutral Gray
-      accent: "#E5E5E5"           # Structural Line
-      supplementary:
-        - "#333333"               # Dark Gray
-        - "#999999"               # Light Gray
-    fonts:
-      heading_en: '"Times New Roman", Georgia, serif'
-      body_en: Arial, Helvetica, sans-serif
-      zh: "Songti SC", "SimSun", serif
-      stack: '"Times New Roman", "Songti SC", serif'
-    font_sizes:
-      h1: "text-7xl"             # Massive Strategy Title
-      h2: "text-3xl"             # Insight Subtitle
-      body: "text-lg"            # Readable Report Body
-      small: "text-xs"           # Source/Legal
-    design:
-      style: "战略极简主义、黑白高对比、衬线字体权威感、绝对留白"
-      primary_tone: "黑白灰权威感"
-    layout:
-      sidebar: none
-      navbar: none
-      full_width: true
-      features:
-        - "衬线体大标题 (Serif Typography)"
-        - "严格左对齐 (Strict Left Alignment)"
-        - "无色块设计 (No-Block Design)"
+    - "primary-on-primary-ban: 禁止在风格主色背景上使用同色文本，除非有白色描边"

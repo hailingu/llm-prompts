@@ -30,6 +30,37 @@ content_spec:
     headline: "up to 30 chars"
     callout: "up to 90 chars"
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - stage_sequence
+    - dual_track_assignment
+    - midline_nodes
+    - left_panel_payload
+    - terminal_message
+    - fallback_plan
+  narrative_fit:
+    - dual_track_process_story
+    - premium_journey_diagram
+    - stage_and_driver_narrative
+  compatible_chart_families:
+    - line_trend
+  compatible_component_families:
+    - Step_Flow
+    - Card_Solid
+    - List_Icon
+    - Badge_Status
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - process_steps
+    - timeline_evolution
+    - system_process_map
+  overflow_recovery_order:
+    - reduce_stage_count
+    - reduce_left_panel_items
+    - shorten_track_descriptions
+    - downgrade_to_process_steps
+
 template: |
   <div class="slide-container w-full h-full flex flex-col bg-white font-sans text-slate-800 relative overflow-hidden">
     <!-- Header -->

@@ -17,6 +17,9 @@ from .profile_collector import ProfileCollector
 from .gate_evaluator import GateEvaluator
 
 
+SLIDE_FILENAME_RE = re.compile(r"slide-(\d+)\.html$")
+
+
 class VisualQaRunner:
     """Orchestrates the visual QA process for PPT HTML slides."""
 
@@ -46,7 +49,12 @@ class VisualQaRunner:
         self.gates: List[GateDef] = self._load_gates(self.gates_file)
 
         # Load supporting files
-        self.slide_theme_path = self.presentation_dir / "slide-theme.css"
+        theme_candidates = [
+            self.presentation_dir / "slide-theme.css",
+            self.presentation_dir / "assets" / "slide-theme.css",
+            self.presentation_dir / "design" / "slide-theme.css",
+        ]
+        self.slide_theme_path = next((path for path in theme_candidates if path.exists()), theme_candidates[0])
         self.presentation_html_path = self.presentation_dir / "presentation.html"
         self.slide_theme_text = self.slide_theme_path.read_text(encoding="utf-8", errors="ignore") if self.slide_theme_path.exists() else ""
         self.presentation_text = self.presentation_html_path.read_text(encoding="utf-8", errors="ignore") if self.presentation_html_path.exists() else ""
@@ -71,15 +79,196 @@ class VisualQaRunner:
 
     def _get_slide_num(self, path: Path) -> int:
         """Extract slide number from filename."""
-        m = re.search(r"slide-(\d+)\.html$", path.name)
+        m = SLIDE_FILENAME_RE.search(path.name)
         return int(m.group(1)) if m else -1
 
     def _collect_slides(self) -> List[Path]:
         """Collect slide HTML files from presentation directory."""
         def key(path: Path):
-            m = re.search(r"slide-(\d+)\.html$", path.name)
+            m = SLIDE_FILENAME_RE.search(path.name)
             return (int(m.group(1)) if m else 10**9, path.name)
         return sorted(self.presentation_dir.glob("slide-*.html"), key=key)
+
+    def _load_existing_slides_data(self) -> List[Dict[str, object]]:
+        """Load existing report slides for incremental updates."""
+        if not (self.target_slides and self.report_out.exists()):
+            return []
+
+        try:
+            with open(self.report_out, "r", encoding="utf-8") as f:
+                old_report = json.load(f)
+                return old_report.get("slides", [])
+        except Exception as exc:
+            print(
+                f"Warning: Could not load existing report for incremental update: {exc}",
+                file=sys.stderr,
+            )
+            return []
+
+    def _merge_slide_reports(
+        self,
+        existing_slides_data: List[Dict[str, object]],
+        slide_reports: List[SlideReport],
+    ) -> List[Dict[str, object]]:
+        """Merge incremental slide reports and sort them by slide number."""
+        merged_slides_map = {s["slide"]: s for s in existing_slides_data}
+        for slide_report in slide_reports:
+            merged_slides_map[slide_report.slide] = asdict(slide_report)
+
+        def sort_key(slide_dict: Dict[str, object]):
+            slide_name = str(slide_dict.get("slide", ""))
+            match = SLIDE_FILENAME_RE.search(slide_name)
+            return int(match.group(1)) if match else 999999
+
+        return sorted(merged_slides_map.values(), key=sort_key)
+
+    def _deserialize_gate_results(self, slide_data: Dict[str, object]) -> List[GateResult]:
+        """Convert serialized gate payloads back into GateResult objects."""
+        return [
+            GateResult(
+                gate_id=gate["gate_id"],
+                status=gate["status"],
+                reason=gate["reason"],
+                level=gate["level"],
+                phase=gate["phase"],
+                scope=gate["scope"],
+                category=gate["category"],
+            )
+            for gate in slide_data.get("gates", [])
+        ]
+
+    def _summarize_slide_results(
+        self,
+        final_slides_list: List[Dict[str, object]],
+    ) -> Dict[str, object]:
+        """Build aggregate summary statistics from merged slide data."""
+        failed_slides_count = 0
+        passed_slides_count = 0
+        issue_slides_count = 0
+        warning_slides_count = 0
+        advisory_slides_count = 0
+        flat_gate_results: List[GateResult] = []
+
+        for slide_data in final_slides_list:
+            if slide_data.get("passed", False):
+                passed_slides_count += 1
+            else:
+                failed_slides_count += 1
+
+            slide_gates = self._deserialize_gate_results(slide_data)
+            if any(gate.status in {"fail", "not_implemented"} for gate in slide_gates):
+                issue_slides_count += 1
+            if any(gate.level == "warn" and gate.status == "fail" for gate in slide_gates):
+                warning_slides_count += 1
+            if any(gate.level == "info" and gate.status == "fail" for gate in slide_gates):
+                advisory_slides_count += 1
+
+            flat_gate_results.extend(slide_gates)
+
+        status_counts = self._count_statuses(flat_gate_results)
+        level_status_counts = self._count_level_statuses(flat_gate_results)
+        strict_failure_reasons = self._compute_strict_failure_reasons(flat_gate_results)
+
+        return {
+            "failed_slides_count": failed_slides_count,
+            "passed_slides_count": passed_slides_count,
+            "issue_slides_count": issue_slides_count,
+            "warning_slides_count": warning_slides_count,
+            "advisory_slides_count": advisory_slides_count,
+            "status_counts": status_counts,
+            "level_status_counts": level_status_counts,
+            "strict_failure_reasons": strict_failure_reasons,
+            "strict_would_fail": len(strict_failure_reasons) > 0,
+        }
+
+    def _build_report_slides(
+        self,
+        final_slides_list: List[Dict[str, object]],
+    ) -> List[Dict[str, object]]:
+        """Keep only slides with diagnostic issues in the written report."""
+        report_slides_list: List[Dict[str, object]] = []
+        for slide_data in final_slides_list:
+            diagnostic_gates = [
+                gate
+                for gate in slide_data.get("gates", [])
+                if gate.get("status") in {"fail", "not_implemented"}
+            ]
+            if not diagnostic_gates:
+                continue
+
+            strict_failure = any(
+                gate.get("level") == "block"
+                and (
+                    gate.get("status") == "fail"
+                    or (
+                        gate.get("status") == "not_implemented"
+                        and not self.allow_unimplemented
+                    )
+                )
+                for gate in diagnostic_gates
+            )
+            report_slides_list.append(
+                {
+                    "slide": slide_data["slide"],
+                    "strict_failure": strict_failure,
+                    "gates": diagnostic_gates,
+                }
+            )
+
+        return report_slides_list
+
+    def _print_run_summary(
+        self,
+        backend: str,
+        total_slides: int,
+        summary: Dict[str, object],
+    ) -> None:
+        """Print a concise diagnostic summary to stdout."""
+        print(
+            f"[ppt-visual-qa] backend={backend} slides={total_slides} "
+            f"passed={summary['passed_slides_count']} failed={summary['failed_slides_count']}"
+        )
+        print(f"[ppt-visual-qa] gate_status={summary['status_counts']}")
+        print(
+            f"[ppt-visual-qa] issue_slides={summary['issue_slides_count']} "
+            f"warning_slides={summary['warning_slides_count']} advisory_slides={summary['advisory_slides_count']}"
+        )
+        print(
+            f"[ppt-visual-qa] strict enabled={self.strict} "
+            f"would_fail={summary['strict_would_fail']} "
+            f"reasons={summary['strict_failure_reasons'] or ['none']}"
+        )
+        print(f"[ppt-visual-qa] report: {self.report_out}")
+
+    def _count_level_statuses(self, gate_results: List[GateResult]) -> Dict[str, Dict[str, int]]:
+        """Count gate results grouped by level and status."""
+        level_status_counts: Dict[str, Dict[str, int]] = {}
+        for item in gate_results:
+            level_bucket = level_status_counts.setdefault(item.level, {})
+            level_bucket[item.status] = level_bucket.get(item.status, 0) + 1
+        return level_status_counts
+
+    def _compute_strict_failure_reasons(self, gate_results: List[GateResult]) -> List[str]:
+        """Summarize the conditions that make strict mode return a non-zero exit code."""
+        reasons: List[str] = []
+
+        block_fail_count = sum(
+            1 for item in gate_results if item.level == "block" and item.status == "fail"
+        )
+        if block_fail_count > 0:
+            reasons.append(f"blocking gate failures: {block_fail_count}")
+
+        block_not_implemented_count = sum(
+            1
+            for item in gate_results
+            if item.level == "block" and item.status == "not_implemented"
+        )
+        if (not self.allow_unimplemented) and block_not_implemented_count > 0:
+            reasons.append(
+                f"blocking checker coverage gaps: {block_not_implemented_count}"
+            )
+
+        return reasons
 
     def run(self) -> int:
         """Execute the QA process and return exit code."""
@@ -118,68 +307,35 @@ class VisualQaRunner:
             slides, features_map, profiles_map, gate_evaluator
         )
 
-        # Incremental merge logic
-        existing_slides_data = []
-        if self.target_slides and self.report_out.exists():
-            try:
-                with open(self.report_out, "r", encoding="utf-8") as f:
-                    old_report = json.load(f)
-                    existing_slides_data = old_report.get("slides", [])
-            except Exception as e:
-                print(f"Warning: Could not load existing report for incremental update: {e}", file=sys.stderr)
-
-        merged_slides_map = {s["slide"]: s for s in existing_slides_data}
-        for sr in slide_reports:
-            merged_slides_map[sr.slide] = asdict(sr)
-
-        # Sort slides by number
-        def sort_key(s_dict):
-            m = re.search(r"slide-(\d+)\.html$", s_dict["slide"])
-            return int(m.group(1)) if m else 999999
-        final_slides_list = sorted(merged_slides_map.values(), key=sort_key)
-
-        # Recalculate summary stats
-        failed_slides_count = 0
-        passed_slides_count = 0
-        flat_gate_results: List[GateResult] = []
-
-        for s_data in final_slides_list:
-            if s_data.get("passed", False):
-                passed_slides_count += 1
-            else:
-                failed_slides_count += 1
-            for g in s_data.get("gates", []):
-                flat_gate_results.append(GateResult(
-                    gate_id=g["gate_id"],
-                    status=g["status"],
-                    reason=g["reason"],
-                    level=g["level"],
-                    phase=g["phase"],
-                    scope=g["scope"],
-                    category=g["category"]
-                ))
-
-        status_counts = self._count_statuses(flat_gate_results)
-
-        # Build report (only failed gates)
-        report_slides_list = []
-        for s_data in final_slides_list:
-            failed_gates = [g for g in s_data.get("gates", []) if g.get("status") == "fail"]
-            if failed_gates:
-                report_slides_list.append({
-                    "slide": s_data["slide"],
-                    "gates": failed_gates
-                })
+        existing_slides_data = self._load_existing_slides_data()
+        final_slides_list = self._merge_slide_reports(existing_slides_data, slide_reports)
+        summary = self._summarize_slide_results(final_slides_list)
+        report_slides_list = self._build_report_slides(final_slides_list)
 
         report = {
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "mode": self.mode,
             "backend": backend,
+            "interpretation": {
+                "qa_role": "diagnostic",
+                "strict_mode_meaning": "non-zero exit means blocking defects or configured blocking coverage gaps were found",
+                "delivery_note": "Use upstream layout, chart, map, and component contracts before treating QA output as a redesign mandate",
+            },
             "summary": {
                 "total_slides": len(final_slides_list),
-                "passed_slides": passed_slides_count,
-                "failed_slides": failed_slides_count,
-                "gate_status_counts": status_counts,
+                "passed_slides": summary["passed_slides_count"],
+                "failed_slides": summary["failed_slides_count"],
+                "issue_slides": summary["issue_slides_count"],
+                "warning_slides": summary["warning_slides_count"],
+                "advisory_slides": summary["advisory_slides_count"],
+                "gate_status_counts": summary["status_counts"],
+                "gate_level_status_counts": summary["level_status_counts"],
+                "strict_summary": {
+                    "enabled": self.strict,
+                    "allow_unimplemented": self.allow_unimplemented,
+                    "would_fail": summary["strict_would_fail"],
+                    "failure_reasons": summary["strict_failure_reasons"],
+                },
             },
             "slides": report_slides_list,
         }
@@ -189,18 +345,9 @@ class VisualQaRunner:
         with open(self.report_out, "w", encoding="utf-8") as f:
             json.dump(report, f, ensure_ascii=False, indent=2)
 
-        print(
-            f"[ppt-visual-qa] backend={backend} slides={len(final_slides_list)} "
-            f"passed={passed_slides_count} failed={failed_slides_count}"
-        )
-        print(f"[ppt-visual-qa] gate_status={status_counts}")
-        print(f"[ppt-visual-qa] report: {self.report_out}")
+        self._print_run_summary(backend, len(final_slides_list), summary)
 
-        hard_fail = failed_slides_count > 0
-        if not self.allow_unimplemented and status_counts.get("not_implemented", 0) > 0:
-            hard_fail = True
-
-        return 1 if self.strict and hard_fail else 0
+        return 1 if self.strict and summary["strict_would_fail"] else 0
 
     def _evaluate_all_gates(
         self,
@@ -215,7 +362,7 @@ class VisualQaRunner:
         # Filter gates if target_gates is specified
         gates_to_check = self.gates
         if self.target_gates:
-            target_gate_set = set(g.upper() for g in self.target_gates)
+            target_gate_set = {g.upper() for g in self.target_gates}
             gates_to_check = [g for g in self.gates if g.id.upper() in target_gate_set]
             if not gates_to_check:
                 print(f"Warning: No gates found matching filter: {self.target_gates}", file=sys.stderr)

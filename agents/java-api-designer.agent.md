@@ -19,8 +19,8 @@ As the Java API designer, your core responsibility is to **generate the detailed
 - `.github/java-standards/static-analysis-setup.md` - Static analysis tools
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/api-patterns.md` for existing API patterns and contracts
-- **Write at end**: After completing API design, persist valuable patterns and contract templates
+- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/api_patterns.md` for existing API patterns and contracts
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable patterns, contracts, or design decisions
 
 ---
 
@@ -35,12 +35,12 @@ Before designing APIs, read relevant memory files:
    - Look for "Patterns" section with API design patterns
    - Check "Decisions" for interface design choices
 
-2. **Java API Design Theme** (`memory/projects/[Current Project Name]/api-patterns.md`):
+2. **Java API Design Theme** (`memory/projects/[Current Project Name]/api_patterns.md`):
    - Review previous API contract patterns
    - Check common exception hierarchies used
    - Look for validated design patterns (Interface vs Abstract Class, etc.)
 
-### Writing Memory (Session End - Post-hoc Distillation)
+### Writing Memory (L1 First, Then Optional L2)
 
 After completing significant API design work, reflect and persist:
 
@@ -87,8 +87,8 @@ After completing significant API design work, reflect and persist:
 ```
 
 **Storage Location**:
-- Reusable patterns → `memory/projects/[Current Project Name]/api-patterns.md` under "## Patterns"
-- Contract templates → `memory/projects/[Current Project Name]/api-patterns.md` under "## Contract Templates"
+- Reusable patterns → `memory/projects/[Current Project Name]/api_patterns.md`
+- Contract templates → `memory/projects/[Current Project Name]/api_patterns.md`
 
 **Level**: Level 2 - API Specification (Detailed)  
 **Corresponding Google practice**: Engineers author Protocol Buffers (.proto files) + AIP Guidelines
@@ -683,8 +683,8 @@ Before handing off to `java-coder-specialist`:
 - [ ] **Reflect**: What API design insight would help future designs?
 - [ ] **Distill**: Can I extract a reusable pattern or contract template?
 - [ ] **Persist**: Write to appropriate memory file
-  - New patterns → `memory/projects/[Current Project Name]/api-patterns.md` "## Patterns"
-  - Contract templates → `memory/projects/[Current Project Name]/api-patterns.md` "## Contract Templates"
+   - New patterns → `memory/projects/[Current Project Name]/api_patterns.md`
+   - Contract templates → `memory/projects/[Current Project Name]/api_patterns.md`
   - Generic insights → `memory/global.md` "## Patterns"
 
 ---

@@ -32,6 +32,37 @@ content_spec:
       title_max_chars: 20
       desc_max_chars: 60
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - chronology
+    - event_count
+    - milestone_labels
+    - sequencing_basis
+    - takeaway_message
+    - fallback_plan
+  narrative_fit:
+    - milestone_history
+    - project_roadmap
+    - event_based_progression
+  compatible_chart_families:
+    - line_trend
+  compatible_component_families:
+    - Step_Flow
+    - Card_Accent
+    - Card_Solid
+    - List_Icon
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - timeline_vertical
+    - timeline_evolution
+    - process_steps
+  overflow_recovery_order:
+    - reduce_event_count
+    - shorten_event_descriptions
+    - collapse_secondary_events
+    - downgrade_to_timeline_vertical
+
 constraints:
   - "事件数 5-8 个"
   - "必须有年份标注"

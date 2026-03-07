@@ -26,8 +26,8 @@ You are an expert Python API designer who creates **precise, implementable inter
 - `.github/templates/python-module-design-template.md` - Design document template
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/python-api-design/index.md` for existing API patterns and contracts
-- **Write at end**: After completing API design, persist valuable patterns and contract templates
+- **Read at start**: Check `memory/global.md` and `memory/research/python_api_design.md` for existing API patterns and contracts
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable patterns, contracts, or design decisions
 
 ---
 
@@ -41,12 +41,12 @@ Before designing APIs, read relevant memory files:
    - Look for "Patterns" section with API design patterns
    - Check "Decisions" for interface design choices
 
-2. **Python API Design Theme** (`memory/python-api-design/index.md`):
+2. **Python API Design Theme** (`memory/research/python_api_design.md`):
    - Review previous API contract patterns
    - Check common exception hierarchies used
    - Look for validated design patterns
 
-### Writing Memory (Session End - Post-hoc Distillation)
+### Writing Memory (L1 First, Then Optional L2)
 
 After completing significant API design work, reflect and persist:
 
@@ -93,8 +93,8 @@ After completing significant API design work, reflect and persist:
 ```
 
 **Storage Location**:
-- Reusable patterns → `memory/python-api-design/index.md` under "## Patterns"
-- Contract templates → `memory/python-api-design/index.md` under "## Contract Templates"
+- Reusable patterns → `memory/research/python_api_design.md`
+- Contract templates → `memory/research/python_api_design.md`
 
 **Collaboration Process**:
 - Input: Level 1 architecture from @python-architect (Sections 1-9)
@@ -814,6 +814,6 @@ Before handing off to `python-coder-specialist`:
 - [ ] **Reflect**: What API design insight would help future designs?
 - [ ] **Distill**: Can I extract a reusable pattern or contract template?
 - [ ] **Persist**: Write to appropriate memory file
-  - New patterns → `memory/python-api-design/index.md` "## Patterns"
-  - Contract templates → `memory/python-api-design/index.md` "## Contract Templates"
+    - New patterns → `memory/research/python_api_design.md`
+    - Contract templates → `memory/research/python_api_design.md`
   - Generic insights → `memory/global.md` "## Patterns"

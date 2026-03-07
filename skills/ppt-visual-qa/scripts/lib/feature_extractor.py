@@ -25,6 +25,28 @@ class FeatureExtractor:
             return True
         return False
 
+    def _has_length_alignment_guard(self, html: str) -> bool:
+        """Detect either explicit length guards or minLength+slice normalization."""
+        if "labels.length" in html and ".data.length" in html:
+            return True
+
+        has_min_length = bool(
+            re.search(
+                r"minLength\s*=\s*Math\.min\(\s*[A-Za-z_$][\w$.]*\.length\s*,\s*[A-Za-z_$][\w$.]*\.length\s*\)",
+                html,
+                flags=re.I,
+            )
+        )
+        if not has_min_length:
+            return False
+
+        slice_matches = re.findall(
+            r"([A-Za-z_$][\w$]*)\s*=\s*\1\.slice\(\s*0\s*,\s*minLength\s*\)",
+            html,
+            flags=re.I,
+        )
+        return len(slice_matches) >= 2
+
     def extract_features(self, slides: List[Path]) -> Dict[str, SlideFeatures]:
         """Extract features from all slides."""
         features_map: Dict[str, SlideFeatures] = {}
@@ -98,7 +120,7 @@ class FeatureExtractor:
                 has_step_size="stepSize" in html,
                 has_empty_data_fallback=("暂无数据" in html) or ("N/A" in html) or ("未提供" in html),
                 has_nan_guard=("isNaN(" in html) or ("Number.isNaN" in html) or ("?? 0" in html) or ("|| 0" in html),
-                has_labels_data_length_guard=("labels.length" in html and ".data.length" in html),
+                has_labels_data_length_guard=self._has_length_alignment_guard(html),
                 has_debug_controls=any(k in html for k in ["brand-switcher", "debug", "grid-overlay", "dev-ruler"]),
                 inferred_layout=infer_layout(html),
                 is_analysis_like=(not special) and has_required_skeleton,

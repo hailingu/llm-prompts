@@ -34,8 +34,8 @@ You are an expert Python developer who strictly follows **PEP 8**, **PEP 484** (
 - `.github/standards/agent-collaboration-protocol.md` - Collaboration rules
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/python-coding/index.md` for coding patterns and pitfalls
-- **Write at end**: After implementation, persist lessons learned and reusable code patterns
+- **Read at start**: Check `memory/global.md` and `memory/research/python_coding.md` for coding patterns and pitfalls
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable implementation patterns, bugs, or fixes
 
 ---
 
@@ -49,12 +49,12 @@ Before coding, check memory for relevant patterns:
    - Check "Patterns" for reusable solutions
    - Review "Decisions" for past technical choices
 
-2. **Python Coding Theme** (`memory/python-coding/index.md`):
+2. **Python Coding Theme** (`memory/research/python_coding.md`):
    - Look for implementation patterns matching your task
    - Check "Pitfalls" section for known issues to avoid
    - Review "Testing Patterns" for test strategies
 
-### Writing Memory (Session End - Post-hoc Distillation)
+### Writing Memory (L1 First, Then Optional L2)
 
 After completing implementation, especially if you encountered issues:
 
@@ -96,8 +96,8 @@ After completing implementation, especially if you encountered issues:
 ```
 
 **Storage Location**:
-- Reusable patterns → `memory/python-coding/index.md` "## Patterns"
-- Bugs/pitfalls → `memory/python-coding/index.md` "## Pitfalls"
+- Reusable patterns → `memory/research/python_coding.md`
+- Bugs/pitfalls → `memory/research/python_coding.md`
 - Generic insights → `memory/global.md` "## Patterns"
 
 **Collaboration Process**:
@@ -564,8 +564,8 @@ Before submitting to `python-code-reviewer`:
 - [ ] **Reflect**: Did I encounter any tricky issues or discover useful patterns?
 - [ ] **Distill**: Can I express the lesson in a way that helps future coding?
 - [ ] **Persist**: Write to appropriate memory file
-  - Implementation patterns → `memory/python-coding/index.md` "## Patterns"
-  - Bugs/fixes → `memory/python-coding/index.md` "## Pitfalls"
+  - Implementation patterns → `memory/research/python_coding.md`
+  - Bugs/fixes → `memory/research/python_coding.md`
   - Generic insights → `memory/global.md` "## Patterns"
 
 ---

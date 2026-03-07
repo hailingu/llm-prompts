@@ -40,6 +40,36 @@ content_spec:
     node_title: "15-20 chars"
     annotation: "10-30 chars"
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - core_loop_variables
+    - intervention_nodes
+    - polarity_map
+    - loop_type
+    - intervention_message
+    - fallback_plan
+  narrative_fit:
+    - feedback_loop_analysis
+    - system_dynamics
+    - policy_intervention_map
+  compatible_chart_families:
+    - network_graph
+  compatible_component_families:
+    - Badge_Status
+    - Card_Accent
+    - List_Icon
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - analytical_model_tree
+    - system_process_map
+    - concept_definition
+  overflow_recovery_order:
+    - reduce_intervention_count
+    - collapse_secondary_annotations
+    - simplify_loop_to_single_core_cycle
+    - downgrade_to_concept_definition
+
 template: |
   <div class="slide-container flex flex-col h-full bg-white font-sans text-slate-800 relative overflow-hidden">
     <!-- Header -->

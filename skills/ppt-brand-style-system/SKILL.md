@@ -1,47 +1,52 @@
 ---
-name: ppt-brand-system
-description: Multi-brand design system for PPT HTML slides - single source of truth for 5 consulting brands (KPMG/McKinsey/BCG/Bain/Deloitte), semantic color palette, border tokens, and brand switching implementation.
+name: ppt-brand-style-system
+description: Brand-style design system for PPT HTML slides - single source of truth for 6 reusable style profiles, including consulting-style and editorial-briefing styles.
 metadata: 
   - version: 1.0.0
   - author: ppt-html-generator
 ---
 
-# PPT Brand System
+# PPT Brand-Style System
 
 ## Overview
 
-This skill serves as the single source of truth for multi-brand design system, containing color, font, layout characteristics, semantic color system, and border tokens for 5 consulting brands.
+This skill serves as the single source of truth for a brand-style design system, containing color, font, layout characteristics, semantic color system, and border tokens for reusable PPT style profiles.
+
+The repository path is `ppt-brand-style-system`. Its intended meaning is a **brand-style system**: a library of brand-inspired or report-style visual profiles rather than a registry of literal corporate brands.
+
+`brand_id` is retained as the technical identifier for compatibility, but in practice it means a **style profile**, not necessarily a real-world corporate identity.
 
 ## When to Use This Skill
 
-- Get brand colors and font definitions
-- Implement CSS variables and brand switching
+- Get style colors and font definitions
+- Implement CSS variables and style switching
 - Query semantic color mappings
+- Resolve component semantic payloads into style-compatible class payloads
 - Apply border tokens
 - Ensure design consistency
 
-## Supported Brands
+## Supported Style Profiles
 
-| Brand | Primary Color | Sidebar | Characteristics |
-|-------|--------------|---------|-----------------|
+| Style Profile | Primary Color | Sidebar | Characteristics |
+|--------------|--------------|---------|-----------------|
 | KPMG (Default) | `#00338D` | Left | Clean professional, data-driven |
 | McKinsey | `#00A3A0` | None (full-width) | Minimalist, authoritative |
 | BCG | `#009A44` | None (top navigation) | Professional rigorous, green-based |
 | Bain | `#DC291E` | Right | Red-focused, results-oriented |
 | Deloitte | `#86BC25` | None | Green, modern, tech-savvy |
-| Strategic Report | `#0F172A` | None (minimalist) | High-contrast typography, deep navy, excessive white space |
+| Editorial Briefing | `#0F172A` | None (minimalist) | Weight-contrast typography, deep navy, restrained background, editorial briefing feel |
 
-## Brand Detailed Definitions
+## Style Profile Definitions
 
-### KPMG (Default)
+### KPMG (Default Style)
 
 - **Primary Color**: `#00338D` (KPMG Blue)
 - **Secondary Color**: `#0091DA` (Light Blue)
 - **Accent Color**: `#483698` (Purple)
 - **Fonts**: Georgia, Arial, Noto Sans SC
-- **Layout**: Left brand sidebar
+- **Layout**: Left style sidebar
 
-### McKinsey
+### McKinsey Style
 
 - **Primary Color**: `#00A3A0` (McKinsey Teal)
 - **Secondary Color**: `#1A1A1A` (Dark Gray)
@@ -49,7 +54,7 @@ This skill serves as the single source of truth for multi-brand design system, c
 - **Fonts**: Helvetica Neue, PingFang SC
 - **Layout**: No sidebar, full-width design
 
-### BCG
+### BCG Style
 
 - **Primary Color**: `#009A44` (BCG Green) - **C1 Fix**
 - **Secondary Color**: `#1D428A` (Navy Blue)
@@ -59,7 +64,7 @@ This skill serves as the single source of truth for multi-brand design system, c
 
 > **C1 Fix**: BCG primary color changed from `#00A3A0` to `#009A44` to differentiate from McKinsey.
 
-### Bain
+### Bain Style
 
 - **Primary Color**: `#DC291E` (Bain Red)
 - **Secondary Color**: `#1A1A1A` (Dark Gray)
@@ -67,7 +72,7 @@ This skill serves as the single source of truth for multi-brand design system, c
 - **Fonts**: Gotham, Arial, Source Han Sans SC
 - **Layout**: Right insight sidebar
 
-### Deloitte
+### Deloitte Style
 
 - **Primary Color**: `#86BC25` (Deloitte Green)
 - **Secondary Color**: `#0033A0` (Blue)
@@ -75,24 +80,29 @@ This skill serves as the single source of truth for multi-brand design system, c
 - **Fonts**: Arial, Noto Sans SC
 - **Layout**: Rounded corners, gradient background
 
-### Strategic Report (New)
+### Editorial Briefing Style
 
-- **Primary Color**: `#000000` (Pure Black)
-- **Secondary Color**: `#666666` (Neutral Gray)
-- **Accent Color**: `#E5E5E5` (Structural Lines)
-- **Fonts**: **Serif Headings** (Times New Roman / Songti), Sans Body (Arial)
+- **Primary Color**: `#0F172A` (Deep Navy)
+- **Secondary Color**: `#64748B` (Muted Slate)
+- **Accent Color**: `#E2E8F0` (Structural Lines)
+- **Fonts**: Sans-based weight-contrast system (Inter / Noto Sans SC or equivalent)
 - **Layout**: 
     - **No Sidebars/Navbars**: Absolute canvas cleanliness.
-    - **No "Color Blocks"**: Backgrounds must be white (`#FFFFFF`).
-    - **Typography Driven**: Hierarchy established by size and weight (Bold Serif vs Light Sans), not color.
-    - **Structural Elements**: Use thin vertical/horizontal lines (1px) for separation.
+  - **Restrained Background**: White or very light neutral background, no heavy style blocks.
+  - **Typography Driven**: Hierarchy established by weight contrast and scale, not by saturated color blocks.
+  - **Structural Elements**: Use thin vertical/horizontal lines for separation.
+  - **Use Case**: Board briefings, strategy narratives, geopolitics or macro decks where editorial typography and restraint matter more than literal corporate identity.
 
-## Brand Switching Mechanism
+`Strategic Report` is treated as a use case, not the canonical style name. The visual language here is closer to an editorial briefing or editorial-report cover system than to a generic strategy-report category.
+
+## Style Profile Switching Mechanism
+
+Preferred API naming should now use `style profile` semantics such as `getStyleProfileColors()` and `switchStyleProfile()`. Legacy names like `getBrandColors()` and `switchBrand()` may be retained only as backward-compatible aliases.
 
 ### CSS Class Pattern
 
 ```css
-/* Add brand-{brand_id} class on <body> */
+/* Add brand-{brand_id} class on <body>. brand_id is a style-profile id. */
 <body class="brand-kpmg">
 ```
 
@@ -105,6 +115,7 @@ This skill serves as the single source of truth for multi-brand design system, c
   --brand-accent: #483698;
 }
 
+.brand-strategic,
 .brand-strategic-report {
   --brand-primary: #0F172A;   /* Slate-900: Deep Navy/Black for Headlines */
   --brand-secondary: #64748B; /* Slate-500: Muted for Subtitles */
@@ -116,23 +127,24 @@ This skill serves as the single source of truth for multi-brand design system, c
 
 ### Switching Rules
 
-1. Production `slide-*.html` files should not contain brand switching controls
+1. Production `slide-*.html` files should not contain style-switching controls
 2. Debug controls only retained in `presentation.html`
-3. After switching brand, must delay 50ms before calling `chart.resize()`
+3. After switching style profile, must delay 50ms before calling `chart.resize()`
+4. New examples and new runtime code should prefer style-profile API names; `brand-*` naming is a compatibility contract, not the recommended public vocabulary
 
 ## Typography System (New in v1.1)
 
 ### Visual Hierarchy Principles
-Standard business reports often rely on size alone for hierarchy (H1 > H2). The `Strategic Report` brand introduces **Weight Contrast** as a primary tool:
+Standard business reports often rely on size alone for hierarchy (H1 > H2). The `Editorial Briefing` style profile introduces **Weight Contrast** as a primary tool:
 
 - **Display Title**: `text-6xl font-black tracking-tight leading-none` (e.g., "地缘政治 2026")
 - **Subtitle / Essence**: `text-4xl font-light tracking-wide text-slate-500` (e.g., "新秩序与战略转折")
 - **Eyebrow / Meta**: `text-xm font-bold tracking-widest uppercase text-slate-400` (e.g., "CONFIDENTIAL BOARD BRIEFING")
 
-### Font Pairings (`.brand-strategic-report` Only)
+### Font Pairings (`.brand-strategic` / `.brand-strategic-report`)
 - **Primary Headings**: `font-weight: 900` (Inter Black / Noto Sans Black)
 - **Secondary Headings**: `font-weight: 300` (Inter Light / Noto Sans Light)
-- **Body Text**: `font-weight: 400` (Inter Regular) but with `leading-relaxed` for readability.
+- **Body Text**: `font-weight: 400` with `leading-relaxed` for readability.
 
 
 ## Semantic Color System
@@ -151,6 +163,21 @@ Standard business reports often rely on size alone for hierarchy (H1 > H2). The 
 - Forbidden: "Negative content using emerald" or "Achieved content using red" mismatches
 - Semantic expression diversity: left border, top border, light background, colored icons, shadows, gradients, badges
 - Forbidden: Mechanically using only single left border or top border throughout
+
+## Component Semantic Resolution
+
+If a component example exposes a `semantic_payload`, resolve it through `assets/component_semantic_mappings.yml` before relying on raw fallback classes.
+
+Use this order:
+
+1. Determine the style profile (`brand_id` compatibility id).
+2. Read the component family contract in `component_semantic_mappings.yml` to confirm the correct `slot_set`, allowed semantic fields, and resolution order.
+3. Read component-level semantic roles such as `emphasis_role`, `surface_role`, `value_role`, or `timeline_role`.
+4. Merge neutral tokens first (`primary_text`, `secondary_text`, `muted_text`, `neutral_structure`).
+5. Merge emphasis-role tokens second (`primary`, `info`, `positive`, `warning`, `critical`, `neutral`).
+6. Only then apply page-local exceptions.
+
+This keeps component instances aligned with the style profile while avoiding hardcoded dark defaults inside each component payload.
 
 ## Border System
 
@@ -206,5 +233,6 @@ Basic card and container borders uniformly use `border border-slate-200`
 
 ## Resource Files
 
-- `assets/brands.yml`: Complete brand definitions, semantic colors, border tokens
+- `assets/brands.yml`: Complete style-profile definitions, semantic colors, border tokens
+- `assets/component_semantic_mappings.yml`: Semantic role -> component-ready class payload resolver, including component family contracts and slot-set bindings
 - `examples/examples.md`: CSS/JS/HTML implementation examples

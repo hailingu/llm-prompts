@@ -22,6 +22,19 @@ selection_criteria:
     chart_data_points: { min: 3, max: 15, optimal: "6-10" }
     insight_cards: { min: 2, max: 3, optimal: 3 }
 
+layout_contract:
+  required_thinking_fields: [layout_key, primary_encoding, chart_family, contract_fields, null_policy, contract_source, fallback_plan]
+  narrative_fit: [single_insight, chart_led_deep_dive, evidence_plus_interpretation]
+  compatible_chart_families: [line_trend, bar_comparison, bubble_relationship]
+  compatible_component_families: [Card_Accent, Card_Glass, Metric_Big, Metric_Trend]
+  compatible_map_archetypes: []
+  fallback_layouts: [chart_synthesis, hybrid, full_width]
+  overflow_recovery_order:
+    - reduce_right_card_count
+    - shorten_card_copy
+    - reduce_chart_annotation_density
+    - downgrade_to_chart_synthesis_or_full_width
+
 # ── 布局规格 ─────────────────────────────────────────
 spec:
   structure_type: "header-main-footer"

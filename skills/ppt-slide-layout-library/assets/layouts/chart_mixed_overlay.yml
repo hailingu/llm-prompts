@@ -32,6 +32,38 @@ content_spec:
     max_words: 30
     style: "rounded_shadow_box"
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - primary_encoding
+    - secondary_encoding
+    - callout_targets
+    - reference_line
+    - annotation_message
+    - fallback_plan
+  narrative_fit:
+    - mixed_chart_annotation
+    - volatility_story
+    - event_annotated_time_series
+  compatible_chart_families:
+    - mixed_bar_line
+    - line_trend
+    - bar_comparison
+  compatible_component_families:
+    - Card_Glass
+    - Badge_Status
+    - Metric_Trend
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - data_chart
+    - chart_synthesis
+    - hybrid
+  overflow_recovery_order:
+    - reduce_series_count
+    - reduce_callout_count
+    - simplify_reference_lines
+    - downgrade_to_data_chart
+
 constraints:
   - "必须包含均值线或趋势线作为参考"
   - "悬浮框必须指向具体的数据特征点"

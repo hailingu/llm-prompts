@@ -28,8 +28,8 @@ As the Go Code Reviewer, your core responsibility is to perform independent code
 - `.github/standards/agent-collaboration-protocol.md` - Iteration limits
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/go-review/index.md` for common issues and review patterns
-- **Write at end**: After review cycles, persist common issues and review insights
+- **Read at start**: Check `memory/global.md` and `memory/research/go_review.md` for common issues and review patterns
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable review issues, checklists, or standards decisions
 
 ---
 
@@ -43,12 +43,12 @@ Before starting code review, check memory for context:
    - Check "Patterns" for code quality patterns
    - Review "Decisions" affecting code standards
 
-2. **Go Review Theme** (`memory/go-review/index.md`):
+2. **Go Review Theme** (`memory/research/go_review.md`):
    - Review "Common Issues" checklist
    - Check previous review patterns for similar code
    - Look for frequently missed issues
 
-### Writing Memory (Session End - Post-hoc Distillation)
+### Writing Memory (L1 First, Then Optional L2)
 
 After completing review cycles, especially if patterns emerge:
 
@@ -91,8 +91,8 @@ After completing review cycles, especially if patterns emerge:
 ```
 
 **Storage Location**:
-- Common issues → `memory/go-review/index.md` "## Common Issues"
-- Review checklists → `memory/go-review/index.md` "## Review Checklists"
+- Common issues → `memory/research/go_review.md`
+- Review checklists → `memory/research/go_review.md`
 - Generic insights → `memory/global.md` "## Patterns"
 
 ---
@@ -919,8 +919,8 @@ Before submitting to `go-tech-lead`:
 - [ ] **Reflect**: Were there recurring issues or patterns in this review?
 - [ ] **Distill**: Can I document a common issue or effective review pattern?
 - [ ] **Persist**: Write to appropriate memory file
-  - New common issues → `memory/go-review/index.md` "## Common Issues"
-  - Review patterns → `memory/go-review/index.md` "## Review Checklists"
+   - New common issues → `memory/research/go_review.md`
+   - Review patterns → `memory/research/go_review.md`
   - Generic insights → `memory/global.md` "## Patterns"
 
 ---

@@ -16,6 +16,19 @@ selection_criteria:
     - "有明确时间线 → 改用 milestone_timeline"
     - ">6 步骤 → 改用 timeline_vertical"
 
+layout_contract:
+  required_thinking_fields: [layout_key, primary_encoding, source, filter_logic, mapping]
+  narrative_fit: [step_sequence, methodology_walkthrough, phased_process]
+  compatible_chart_families: [milestone_timeline]
+  compatible_component_families: [List_Timeline, Card_Accent, Visual_Arrow, Badge_Pill]
+  compatible_map_archetypes: []
+  fallback_layouts: [timeline_evolution, milestone_timeline, multi_year_flow]
+  overflow_recovery_order:
+    - reduce_step_count
+    - shorten_step_copy
+    - collapse_secondary_notes
+    - downgrade_to_timeline_evolution_or_multi_year_flow
+
 spec:
   regions:
     steps_row:

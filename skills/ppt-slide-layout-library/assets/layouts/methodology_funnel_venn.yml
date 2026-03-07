@@ -39,6 +39,38 @@ content_spec:
     funnel_label: "10-50 chars"
     venn_label: "10-30 chars"
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - methodology_steps
+    - funnel_stages
+    - overlap_entities
+    - comparison_message
+    - synthesis_takeaway
+    - fallback_plan
+  narrative_fit:
+    - methodology_plus_evidence
+    - funnel_and_overlap_story
+    - multi_stage_analytics_explanation
+  compatible_chart_families:
+    - funnel_conversion
+    - venn_overlap
+  compatible_component_families:
+    - Step_Flow
+    - Card_Solid
+    - List_Icon
+    - Badge_Status
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - process_steps
+    - chart_synthesis
+    - full_width
+  overflow_recovery_order:
+    - reduce_funnel_levels
+    - reduce_step_copy_density
+    - simplify_overlap_annotations
+    - downgrade_to_process_steps
+
 template: |
   <div class="slide-container flex flex-col h-full bg-white font-sans text-slate-800">
     <!-- Header with Title -->

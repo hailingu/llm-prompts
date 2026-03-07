@@ -46,8 +46,8 @@ As the Python Tech Lead, your core responsibility is to ensure end-to-end delive
 - `.github/templates/python-module-design-template.md` - Design document template
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` for team decisions and quality standards
-- **Write at end**: After arbitration or final approval, persist decisions and process improvements
+- **Read at start**: Check `memory/global.md` and `memory/research/python_architecture.md` for team decisions and quality standards
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable precedent, standards, or process improvements
 
 **Key Principles**:
 - 🎯 **Single Point of Authority**: Final arbitrator for major decisions
@@ -682,7 +682,7 @@ Before marking task complete:
 - [ ] **Persist**: Write to appropriate memory file
   - Team decisions → `memory/global.md` "## Decisions"
   - Process improvements → `memory/global.md` "## Process Improvements"
-  - Python standards → `memory/python-architecture/index.md` "## Standards"
+  - Python standards → `memory/research/python_architecture.md`
 
 ---
 

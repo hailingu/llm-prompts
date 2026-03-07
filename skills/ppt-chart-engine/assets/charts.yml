@@ -30,12 +30,19 @@ chart_types:
     标记为「需插件」的图表类型，<head> 中必须引入对应 CDN，否则禁止使用。
     标记为 ECharts 的类型，必须用 <div> 容器 + echarts.init()，禁止用 <canvas> + Chart.js API。
     标记为 HTML+CSS 的类型，使用 Flex/Grid 布局手动构建 DOM 结构，不依赖图表库。
+    若为 geo chart 且需要底图或注册地图源，底图输入必须遵循 `ppt-map-storytelling` 的 basemap source contract，不得在 chart-engine 内单独发明来源规范。
 
 # ╔══════════════════════════════════════════════════════════╗
 # ║  2. 图表选择算法                                        ║
 # ╚══════════════════════════════════════════════════════════╝
 
 selection_algorithm:
+  decision_gate:
+    - "先判断是否需要图表：若时间线、流程、矩阵、KPI 卡、对比卡能更清楚表达，则优先不用图表。"
+    - "图表用于压缩关系，不用于装饰页面。"
+    - "架构/包含/分层问题默认使用 HTML+CSS 结构图，不优先使用图表库。"
+    - "构成关系只有在类别 <= 5、标签较短、且核心任务真的是占比时，才优先考虑饼图/环形图。"
+
   by_data_dimension:
     - { dims: "1维", charts: ["饼图", "柱状图"] }
     - { dims: "2维", charts: ["折线图", "散点图"] }
@@ -124,6 +131,90 @@ semantic_mapping:
 # ╚══════════════════════════════════════════════════════════╝
 
 data_contracts:
+  common_rules:
+    - "优先使用 tidy rows（表格行）而不是为某个图表临时发明专用数组结构。"
+    - "字段角色必须可区分：dimension / measure / series / semantic / metadata。"
+    - "若图表需要派生值，保留原始 sourceData，并在映射层显式计算。"
+    - "缺失值必须遵守明确 null_policy，不得静默丢弃导致图形失真。"
+
+  common_metadata:
+    recommended_fields:
+      - { field: source_id, desc: "数据源标识（文件名、表名或查询名）" }
+      - { field: metric_name, desc: "业务指标名，用于标题、图例或脚注" }
+      - { field: unit, desc: "度量单位，如 % / index / USD mn / count" }
+      - { field: notes, desc: "脚注或口径说明" }
+    null_policy:
+      - "缺失值处理必须在映射前声明：replace_zero / keep_null / drop_row 三选一。"
+      - "若使用 drop_row，必须确保不会破坏 labels 与 datasets 长度一致性。"
+
+  line_trend:
+    required_fields:
+      - { field: "time 或 period", desc: "X 轴时间键，如 2024Q1 / 2025 / Jan-2026" }
+      - { field: value, desc: "数值字段" }
+    conditional_fields:
+      - { field: series, desc: "多折线场景必填；单折线可省略" }
+    optional_fields:
+      - { field: unit, desc: "显示单位" }
+      - { field: target, desc: "目标值或基准线" }
+      - { field: annotation, desc: "关键事件标记" }
+    accepted_shapes:
+      - "tidy rows：每行一个 time x series 观测值"
+      - "single-series rows：每行一个 time + value"
+    fallback_rules:
+      - "若标签过密且趋势不依赖连续折线，降级为表格或阶段卡。"
+      - "若多系列 > 4 且辨识度不足，优先拆图或降级为对比表。"
+
+  bar_comparison:
+    required_fields:
+      - { field: category, desc: "比较对象名称" }
+      - { field: value, desc: "数值字段" }
+    conditional_fields:
+      - { field: series, desc: "分组柱 / 堆叠柱场景必填" }
+    optional_fields:
+      - { field: rank, desc: "排序字段" }
+      - { field: unit, desc: "显示单位" }
+      - { field: highlight_flag, desc: "高亮关键对象" }
+    accepted_shapes:
+      - "simple rows：category + value"
+      - "grouped rows：category + series + value"
+    fallback_rules:
+      - "若 category 文案很长且数量 > 8，优先横向条形图或表格。"
+      - "若真正目标是结论强调而非量化比较，降级为 KPI 卡 + 证据条。"
+
+  heatmap_matrix:
+    required_fields:
+      - { field: row_key, desc: "矩阵行标签" }
+      - { field: col_key, desc: "矩阵列标签" }
+      - { field: value, desc: "单元格值" }
+    optional_fields:
+      - { field: value_label, desc: "格式化显示文本" }
+      - { field: series_group, desc: "上层分组" }
+      - { field: unit, desc: "显示单位" }
+    accepted_shapes:
+      - "tidy matrix rows：每行一个 row_key x col_key x value"
+    fallback_rules:
+      - "若双轴标签无法在预算内可读，降级为结构化矩阵表。"
+      - "若值的核心用途是精确读取而非强弱模式识别，优先表格而非热力图。"
+
+  bubble_relationship:
+    required_fields:
+      - { field: x, desc: "X 轴数值" }
+      - { field: y, desc: "Y 轴数值" }
+      - { field: size, desc: "气泡大小驱动字段" }
+      - { field: label, desc: "对象名称" }
+    recommended_alias:
+      - { field: growth_rate, maps_to: x, desc: "推荐 X 轴业务语义" }
+      - { field: index_0_100, maps_to: y, desc: "推荐 Y 轴业务语义" }
+      - { field: confidence_level, maps_to: size, desc: "推荐气泡半径驱动" }
+    optional_fields:
+      - { field: group, desc: "颜色或图例分组" }
+      - { field: short_label, desc: "紧凑图例名" }
+      - { field: note, desc: "对象补充说明" }
+    accepted_shapes:
+      - "one row per object：x + y + size + label"
+    fallback_rules:
+      - "若标签、半径和图例无法同时可读，降级为散点图 + 排名表或纯对比表。"
+
   milestone_timeline:
     required_fields:
       - { field: "time 或 year", desc: "时间点（如 2021、2026E）" }
@@ -151,6 +242,88 @@ data_contracts:
       - "不得伪造精确排程"
       - "若可从区间文案解析出阶段时长，优先使用示意甘特（相对时间轴）"
       - "仅当既无精确排程字段也无可解析区间文案时，才降级为阶段卡流程图，并标注'示意，不含精确起止时间（非排程视图）'"
+
+thinking_contracts:
+  usage_rule:
+    - "Thinking 阶段优先引用这里的 machine-readable contract，而不是只凭自然语言记忆。"
+    - "`chart_family` 必须映射到本节存在的 contract id。"
+    - "`contract_fields` 必须至少覆盖 required_fields；conditional_fields 按场景声明。"
+    - "`null_policy` 必须显式写明 replace_zero / keep_null / drop_row。"
+    - "`fallback_plan` 必须与对应 data_contracts.*.fallback_rules 一致，不得临时发明相反策略。"
+
+  line_trend:
+    template_fields:
+      chart_family: line_trend
+      contract_fields: [time, value, series]
+      null_policy_allowed: [keep_null, drop_row]
+      contract_source: data_contracts.line_trend
+      fallback_plan_required: true
+    required_fields: [time, value]
+    conditional_fields: [series]
+    default_layouts: [side_by_side, dashboard_grid]
+    supported_examples:
+      - templates/ppt-chart-thinking-examples.md#example-a-multi-series-line-chart
+
+  bar_comparison:
+    template_fields:
+      chart_family: bar_comparison
+      contract_fields: [category, value, series]
+      null_policy_allowed: [replace_zero, drop_row]
+      contract_source: data_contracts.bar_comparison
+      fallback_plan_required: true
+    required_fields: [category, value]
+    conditional_fields: [series]
+    default_layouts: [side_by_side, dashboard_grid, comparison]
+
+  heatmap_matrix:
+    template_fields:
+      chart_family: heatmap_matrix
+      contract_fields: [row_key, col_key, value]
+      null_policy_allowed: [replace_zero, keep_null]
+      contract_source: data_contracts.heatmap_matrix
+      fallback_plan_required: true
+    required_fields: [row_key, col_key, value]
+    conditional_fields: []
+    default_layouts: [dashboard_grid, hybrid]
+    supported_examples:
+      - templates/ppt-chart-thinking-examples.md#example-b-heatmap-matrix
+
+  bubble_relationship:
+    template_fields:
+      chart_family: bubble_relationship
+      contract_fields: [x, y, size, label]
+      null_policy_allowed: [drop_row]
+      contract_source: data_contracts.bubble_relationship
+      fallback_plan_required: true
+    required_fields: [x, y, size, label]
+    conditional_fields: [group, short_label]
+    recommended_alias: [growth_rate, index_0_100, confidence_level]
+    default_layouts: [side_by_side]
+    supported_examples:
+      - templates/ppt-chart-thinking-examples.md#example-c-bubble-relationship
+
+  milestone_timeline:
+    template_fields:
+      chart_family: milestone_timeline
+      contract_fields: [time, event_type, description]
+      null_policy_allowed: [drop_row]
+      contract_source: data_contracts.milestone_timeline
+      fallback_plan_required: true
+    required_fields: [time, event_type, description]
+    conditional_fields: [impact_direction, proxy_metrics]
+    default_layouts: [process, hybrid]
+
+  gantt:
+    template_fields:
+      chart_family: gantt
+      contract_fields: [task, start, end, phase]
+      null_policy_allowed: [drop_row]
+      contract_source: data_contracts.gantt
+      fallback_plan_required: true
+    required_fields: [task, start, phase]
+    conditional_fields: [end, duration, progress, owner]
+    relative_timeline_fields: [phase_label, range_text, duration_min, duration_max]
+    default_layouts: [process, side_by_side]
 
 # ╔══════════════════════════════════════════════════════════╗
 # ║  5. 图表专项约束                                        ║
@@ -275,7 +448,7 @@ rendering:
     - id: DG-3
       rule: "空数据降级：全 0/缺失时渲染 '暂无数据' 提示卡"
     - id: DG-4
-      rule: "品牌切换后重绘：switchBrand() 后延迟 50ms 调用 chart.resize()"
+      rule: "风格档案切换后重绘：switchStyleProfile() 后延迟 50ms 调用 chart.resize()；switchBrand() 仅作兼容别名"
     - id: DG-5
       rule: "首帧保护：图表初始化在 DOMContentLoaded 事件后执行"
 
@@ -304,41 +477,56 @@ rendering:
 
 examples:
 
+  contract_style:
+    - "所有示例统一使用 sourceData 作为输入变量名。"
+    - "所有示例都要体现『原始数据 -> 映射/转换 -> 渲染』三段结构。"
+    - "若为 HTML+CSS 结构图，也应从 sourceData 显式生成 DOM，而不是只写死最终节点。"
+
   bubble_chart: |
-    <!-- 气泡图示例 (G03: Explicit Height Wrapper) -->
+    <!-- 气泡图示例：Bubble Contract -> Mapping -> Render -->
     <div class="chart-container relative w-full" style="height: 300px;">
         <canvas id="bubbleChart"></canvas>
     </div>
     <script>
-      const rawPoints = [
-        { x: 20, y: 30, confidence: 78 },
-        { x: 40, y: 10, confidence: 88 },
-        { x: 60, y: 50, confidence: 94 }
+      // 1. Source data follows the bubble_relationship contract.
+      const sourceData = [
+        { label: 'Platform A', growth_rate: 20, index_0_100: 30, confidence_level: 78, group: 'Tier 1' },
+        { label: 'Platform B', growth_rate: 40, index_0_100: 10, confidence_level: 88, group: 'Tier 1' },
+        { label: 'Platform C', growth_rate: 60, index_0_100: 50, confidence_level: 94, group: 'Tier 2' }
       ];
-      const confs = rawPoints.map(p => p.confidence);
+
+      // 2. Map contract fields into chart-ready points.
+      const confs = sourceData.map(row => row.confidence_level);
       const cMin = Math.min(...confs);
       const cMax = Math.max(...confs);
+
       const getRadius = (val, min, max) => {
         if (max === min) return 14; // Default fallback per rule BN-2
         const rawR = 8 + ((val - min) / (max - min)) * 16;
         return Math.max(8, Math.min(24, rawR)); // Clamp [8, 24]
       };
-      const points = rawPoints.map(p => ({ 
-        x: p.growth, 
-        y: p.share, 
-        r: getRadius(p.confidence, cMin, cMax) 
+
+      const points = sourceData.map(row => ({
+        x: row.growth_rate,
+        y: row.index_0_100,
+        r: getRadius(row.confidence_level, cMin, cMax),
+        label: row.label,
+        group: row.group
       }));
+
       const yDataMax = Math.max(...points.map(p => p.y));
       const rMax = Math.max(...points.map(p => p.r));
       const ySuggestedMax = yDataMax + Math.max(2, Math.ceil(rMax / 8));
+      const brandPrimary = getComputedStyle(document.body).getPropertyValue('--brand-primary').trim() || '#00338D';
 
+      // 3. Render chart.
       new Chart(document.getElementById('bubbleChart'), {
         type: 'bubble',
         data: {
           datasets: [{
             label: 'R&D人才分布',
             data: points,
-            backgroundColor: '#00338D'
+            backgroundColor: brandPrimary
           }]
         },
         options: {
@@ -353,26 +541,38 @@ examples:
         }
       });
   architecture_layers: |
-    <!-- 架构图示例（使用HTML/CSS Grid） -->
-    <div class="arch-container flex flex-col gap-2 p-4 bg-gray-50 border border-gray-200 rounded text-xs">
-      <!-- Top Layer -->
-      <div class="layer bg-blue-100 p-2 text-center font-bold text-blue-900 border border-blue-200 rounded">User Space (Applications)</div>
-      
-      <!-- Arrow separator -->
-      <div class="text-center text-gray-400 text-[10px]">▼ System Calls</div>
-      
-      <!-- Middle Layer (Grouped) -->
-      <div class="layer-group bg-gray-200 p-2 border border-gray-300 rounded grid grid-cols-4 gap-2">
-         <div class="col-span-4 text-center font-bold mb-1 text-gray-700">Kernel Space</div>
-         <!-- Sub-modules -->
-         <div class="module bg-white p-2 text-center shadow-sm border border-gray-300 rounded">Process Mgmt</div>
-         <div class="module bg-white p-2 text-center shadow-sm border border-gray-300 rounded">Memory Mgmt</div>
-         <div class="module bg-white p-2 text-center shadow-sm border border-gray-300 rounded">File System</div>
-         <div class="module bg-white p-2 text-center shadow-sm border border-gray-300 rounded">Device Drivers</div>
-      </div>
-      
-      <!-- Bottom Layer -->
-      <div class="layer bg-green-100 p-2 text-center font-bold text-green-900 border border-green-200 rounded mt-2">Hardware (CPU, RAM, Disk)</div>
-    </div
-      });
+    <!-- 架构图示例：HTML+CSS Contract -> DOM Mapping -> Render -->
+    <div id="archDiagram" class="arch-container flex flex-col gap-2 p-4 bg-gray-50 border border-gray-200 rounded text-xs"></div>
+    <script>
+      // 1. Source data follows a structural contract rather than chart-library data.
+      const sourceData = {
+        top_layer: { title: 'User Space (Applications)', tone: 'blue' },
+        separator: '▼ System Calls',
+        middle_group: {
+          title: 'Kernel Space',
+          modules: ['Process Mgmt', 'Memory Mgmt', 'File System', 'Device Drivers']
+        },
+        bottom_layer: { title: 'Hardware (CPU, RAM, Disk)', tone: 'green' }
+      };
+
+      // 2. Map contract fields into HTML.
+      const topToneClass = 'bg-blue-100 text-blue-900 border-blue-200';
+      const bottomToneClass = 'bg-green-100 text-green-900 border-green-200';
+
+      const moduleHtml = sourceData.middle_group.modules
+        .map(module => `<div class="module bg-white p-2 text-center shadow-sm border border-gray-300 rounded">${module}</div>`)
+        .join('');
+
+      const html = `
+        <div class="layer p-2 text-center font-bold border rounded ${topToneClass}">${sourceData.top_layer.title}</div>
+        <div class="text-center text-gray-400 text-[10px]">${sourceData.separator}</div>
+        <div class="layer-group bg-gray-200 p-2 border border-gray-300 rounded grid grid-cols-4 gap-2">
+          <div class="col-span-4 text-center font-bold mb-1 text-gray-700">${sourceData.middle_group.title}</div>
+          ${moduleHtml}
+        </div>
+        <div class="layer p-2 text-center font-bold border rounded mt-2 ${bottomToneClass}">${sourceData.bottom_layer.title}</div>
+      `;
+
+      // 3. Render structure.
+      document.getElementById('archDiagram').innerHTML = html;
     </script>

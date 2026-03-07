@@ -1,68 +1,67 @@
 # ============================================================
-# PPT Visual QA — Auto-Fallback Sequence
+# PPT Visual QA — Recovery Guidance Sequence
 # ============================================================
-# When blocking gates fail, fixes are attempted in this order.
-# Each step checks if the gate now passes before proceeding.
-# Maximum 2 retries before reporting failure.
+# When high-signal gates fail, use this sequence as repair guidance.
+# Upstream layout/chart/map/component contracts take precedence.
 # ============================================================
 
 description: |
-  Auto-fallback sequence for automated repair attempts.
-  Executed when blocking gates fail in production mode.
+  Recovery guidance for QA-driven debugging.
+  Use this after reviewing the failing gates and the page's upstream contracts.
 
 modes:
   production:
     max_retries: 2
-    on_final_fail: "Output failure reason and suggested manual intervention points"
+    on_final_fail: "Output failure reason, upstream contract context, and suggested manual intervention points"
   draft:
     max_retries: 1
     on_final_fail: "Mark as Draft + failed items, allow delivery"
 
 sequence:
   - step: 1
-    action: "Data mapping correction (radius recalculation + distinguishability spread)"
-    targets: [G21, G22, G23]
-    description: "Fix bubble chart data mapping issues"
+    action: "Respect upstream layout recovery order first"
+    targets: [G10, G11, G12, G35, G36, G37, G38, G39, G40, G41, G60, G61, G77, G78, G79, G80, G82]
+    description: "Before changing page structure, consult the chosen layout asset's overflow_recovery_order and fallback_layouts"
 
   - step: 2
-    action: "Axis correction (suggestedMax / stepSize / clipping check)"
-    targets: [G20, G29, G30]
-    description: "Fix chart axis configuration"
+    action: "Apply chart-contract recovery"
+    targets: [G19, G20, G21, G22, G23, G24, G25, G26, G27, G29, G30, G31, G32, G33, G34, G75, G76, G83]
+    description: "Use chart-family contract and chart fallback_plan before replacing the chart or layout"
 
   - step: 3
-    action: "Copy enhancement (add quantified statements, three-part structure)"
-    targets: [G14, G15, G16, G17]
-    description: "Enhance content with structured claims and insights"
+    action: "Apply map-overlay or map-routing recovery"
+    targets: [G60, G61, G68, G75, G76, G77, G78, G79, G80]
+    description: "For map pages, reduce overlay density and label competition before abandoning the map expression"
 
   - step: 4
-    action: "Layout fine-tuning (use style='...' to force override)"
-    targets: [G10, G11, G12, G60, G61, G77, G78, G80]
+    action: "Apply component-density recovery"
+    targets: [G14, G15, G16, G17, G46, G47, G50, G51, G52, G53, G55, G62, G63, G64, G67, G72, G73]
     executable_actions:
-      - "gap: -2/-4 px (!important)"
-      - "padding: -2/-4 px"
-      - "margin: -2/-4 px"
-      - "min-height: 0 (!important)"
-    description: "Fine-tune layout with inline style overrides"
+      - "reduce card/list density"
+      - "shorten secondary copy"
+      - "collapse low-priority badges or notes"
+    description: "Trim component and copy density only after layout/chart/map recovery has been evaluated"
 
   - step: 5
-    action: "Visual downgrade"
-    targets: [G82]
+    action: "Use safe structural fine-tuning"
+    targets: [G10, G11, G12, G60, G61, G77, G78, G80, G82]
     executable_actions:
-      - "chart -> metric_cards (if height < 140px)"
-      - "chart -> table"
-    description: "Downgrade visual elements if size constraints can't be met"
+      - "gap: -2/-4 px"
+      - "padding: -2/-4 px"
+      - "min-height: 0"
+    description: "Use restrained spacing changes; avoid conflicting visual hacks that break style/profile switching"
 
   - step: 6
-    action: "Structure reorganization (Grid -> Flex / Row -> Col)"
-    targets: [G36, G37, G38, G39, G40, G41]
-    description: "Restructure layout for better fit"
+    action: "Switch to contract-approved fallback layout or fallback chart expression"
+    targets: [G19, G35, G36, G37, G38, G39, G40, G41, G46, G47, G50, G55, G72, G73, G82]
+    description: "Only switch when the upstream contract explicitly allows fallback and prior recovery has been exhausted"
 
   - step: 7
-    action: "Copy trimming and density adjustment"
-    targets: [QR-13, QR-14]
-    description: "Trim content to meet density requirements"
+    action: "Escalate heuristic-only failures to design review"
+    targets: [G14, G15, G16, G17, G35, G62, G64, G72, G73, G74]
+    description: "Heuristic failures should trigger review, not blind auto-repair"
 
   - step: 8
-    action: "Abandon auto-repair, output manual intervention suggestions"
+    action: "Stop guided recovery and output manual intervention suggestions"
     targets: []
-    description: "Cease auto-repair and suggest manual intervention"
+    description: "Cease guided recovery and suggest manual intervention with upstream contract references"

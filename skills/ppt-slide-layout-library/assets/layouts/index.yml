@@ -46,6 +46,22 @@ categories:
         file: comparison.yml
         name: 多方案对比布局
         trigger: "3+方案/竞品对比"
+      - id: comparison_progressive
+        file: comparison_progressive.yml
+        name: 渐进式对比布局
+        trigger: "方案演进/逐步增强/阶梯式对比"
+      - id: chart_synthesis
+        file: chart_synthesis.yml
+        name: 图表综合布局
+        trigger: "核心图表+底部强结论"
+      - id: chart_mixed_overlay
+        file: chart_mixed_overlay.yml
+        name: 混合图表叠加布局
+        trigger: "混合图表+悬浮洞察"
+      - id: cost_curve_stack
+        file: cost_curve_stack.yml
+        name: 成本曲线堆叠布局
+        trigger: "成本供给曲线/变宽柱图"
 
   # ── 仪表盘类 (dashboard) ─────────────────────────────────
   dashboard:
@@ -55,14 +71,10 @@ categories:
         file: dashboard_grid.yml
         name: 仪表盘网格布局
         trigger: "多维度KPI+趋势图"
-      - id: dashboard
-        file: dashboard.yml
-        name: 仪表板布局
-        trigger: "实时监控"
 
-  # ── 全宽/文字类 (fullwidth) ──────────────────────────────
-  fullwidth:
-    description: "大量文字或全宽展示"
+  # ── 叙事/全宽类 (narrative) ─────────────────────────────
+  narrative:
+    description: "大量文字、方法说明或中心概念展示"
     layouts:
       - id: full_width
         file: full_width.yml
@@ -72,9 +84,25 @@ categories:
         file: pillar.yml
         name: 支柱型布局
         trigger: "Executive Summary"
+      - id: concept_definition
+        file: concept_definition.yml
+        name: 概念定义布局
+        trigger: "概念定义/政策详情/结构化文本"
+      - id: methodology_funnel_venn
+        file: methodology_funnel_venn.yml
+        name: 方法漏斗+维恩布局
+        trigger: "方法论3步+漏斗/重叠分析"
+      - id: nesting_in_the_bowl
+        file: nesting_in_the_bowl.yml
+        name: 嵌碗式双轨布局
+        trigger: "波浪线双轨/上下图文防重叠排版"
+      - id: radial_cube_layout
+        file: radial_cube_layout.yml
+        name: 径向立方体布局
+        trigger: "中心概念+左右半圆说明"
 
-  # ── 流程/时间线类 (timeline) ─────────────────────────────
-  timeline:
+  # ── 流程/时间线类 (timeline_process) ────────────────────
+  timeline_process:
     description: "流程步骤与时间线"
     layouts:
       - id: process_steps
@@ -97,6 +125,40 @@ categories:
         file: timeline_standard.yml
         name: 高精度时间线
         trigger: "精确日期事件"
+      - id: system_process_map
+        file: system_process_map.yml
+        name: 系统流程地图布局
+        trigger: "复杂系统流程/生态全景/多层级流转"
+      - id: multi_year_flow
+        file: multi_year_flow.yml
+        name: 多年流转布局
+        trigger: "多年份分层流程/输入输出演示"
+
+  # ── 地图叙事类 (map) ────────────────────────────────────
+  map:
+    description: "地图作为叙事表面的页面"
+    layouts:
+      - id: map_overlay
+        file: map_overlay.yml
+        name: 地图叠加布局
+        trigger: "地缘冲突/路线/区域暴露/全球布局"
+
+  # ── 分析框架类 (analytical) ────────────────────────────
+  analytical:
+    description: "定性评估、因果关系与逻辑模型"
+    layouts:
+      - id: assessment_matrix
+        file: assessment_matrix.yml
+        name: 评估矩阵布局
+        trigger: "定性评估/哈维球对比/多维评级"
+      - id: causal_loop_diagram
+        file: causal_loop_diagram.yml
+        name: 因果回路布局
+        trigger: "因果回路图/系统动力学/反馈循环"
+      - id: analytical_model_tree
+        file: analytical_model_tree.yml
+        name: 分析模型树布局
+        trigger: "算术逻辑树/供需模型/价值驱动树"
 
 # ═════════════════════════════════════════════════════════════
 # 2. 快速选择决策表
@@ -121,6 +183,15 @@ quick_selection:
     - condition: "大量文字叙事"
       layout: full_width
       file: full_width.yml
+    - condition: "核心图表 + 强结论收束"
+      layout: chart_synthesis
+      file: chart_synthesis.yml
+    - condition: "混合图表 + 悬浮注释"
+      layout: chart_mixed_overlay
+      file: chart_mixed_overlay.yml
+    - condition: "成本曲线 / 变宽柱图"
+      layout: cost_curve_stack
+      file: cost_curve_stack.yml
 
   # 按内容类型
   by_content:
@@ -139,6 +210,36 @@ quick_selection:
     - condition: "Executive Summary"
       layout: pillar
       file: pillar.yml
+    - condition: "地图叙事 / 地缘冲突 / 路线走廊 / 区域暴露"
+      layout: map_overlay
+      file: map_overlay.yml
+    - condition: "概念定义 / 结构化政策说明"
+      layout: concept_definition
+      file: concept_definition.yml
+    - condition: "复杂系统流程 / 多层级流转"
+      layout: system_process_map
+      file: system_process_map.yml
+    - condition: "因果回路 / 反馈循环"
+      layout: causal_loop_diagram
+      file: causal_loop_diagram.yml
+    - condition: "逻辑树 / 驱动树 / 供需模型"
+      layout: analytical_model_tree
+      file: analytical_model_tree.yml
+    - condition: "定性评估 / 哈维球矩阵"
+      layout: assessment_matrix
+      file: assessment_matrix.yml
+    - condition: "方法论三步 + 漏斗/重叠"
+      layout: methodology_funnel_venn
+      file: methodology_funnel_venn.yml
+    - condition: "多年分层流程 / 输入输出"
+      layout: multi_year_flow
+      file: multi_year_flow.yml
+    - condition: "嵌碗式双轨叙事"
+      layout: nesting_in_the_bowl
+      file: nesting_in_the_bowl.yml
+    - condition: "中心概念 + 两侧解释"
+      layout: radial_cube_layout
+      file: radial_cube_layout.yml
 
   # 排除规则
   exclusion_rules:
@@ -146,9 +247,23 @@ quick_selection:
     - "尾页 → 必须用 closing"
     - "2对比 → 禁止用 comparison（用 side_by_side）"
     - "单图表 → 禁止用 dashboard_grid"
+    - "地图页若空间关系不是核心含义 → 禁止用 map_overlay"
 
 # ═════════════════════════════════════════════════════════════
-# 3. 全局配置
+# 3. Contract Consumption Order
+# ═════════════════════════════════════════════════════════════
+
+contract_consumption:
+  selection_resolution_order:
+    - "Use this index to narrow candidate layouts by trigger and category."
+    - "Read the candidate layout asset and treat layout_contract as the machine-readable source of truth."
+    - "Apply constraints/content_spec/template only after layout_contract confirms narrative fit and fallback path."
+  notes:
+    - "If index trigger text conflicts with layout_contract, prefer the layout asset."
+    - "Fallback decisions should follow the candidate layout's own fallback_layouts and overflow_recovery_order."
+
+# ═════════════════════════════════════════════════════════════
+# 4. 全局配置
 # ═════════════════════════════════════════════════════════════
 
 global_config:
@@ -160,7 +275,7 @@ global_config:
   footer_safe_gap_px: 8
 
 # ═════════════════════════════════════════════════════════════
-# 4. 去重规则
+# 5. 去重规则
 # ═════════════════════════════════════════════════════════════
 
 dedup_rules:
@@ -171,3 +286,22 @@ dedup_rules:
     side_by_side: [comparison, data_chart]
     full_width: [pillar, hybrid]
     process_steps: [timeline_evolution, milestone_timeline]
+    comparison_progressive: [comparison, side_by_side]
+    chart_synthesis: [data_chart, hybrid]
+    chart_mixed_overlay: [hybrid, data_chart]
+    system_process_map: [multi_year_flow, analytical_model_tree]
+    analytical_model_tree: [assessment_matrix, concept_definition]
+    causal_loop_diagram: [system_process_map, analytical_model_tree]
+    map_overlay: [side_by_side, chart_synthesis]
+
+inventory_summary:
+  total_layouts: 30
+  indexed_categories:
+    special: 3
+    chart: 8
+    dashboard: 2
+    narrative: 6
+    timeline_process: 7
+    map: 1
+    analytical: 3
+  note: "Directory inventory and index are aligned at 30 layouts as of version 2.1."

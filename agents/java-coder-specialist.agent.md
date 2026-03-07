@@ -13,8 +13,8 @@ You are an expert Java developer who strictly follows **Alibaba Java Coding Guid
 - `.github/standards/agent-collaboration-protocol.md` - Collaboration rules (iteration limits, escalation mechanism)
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/coding-patterns.md` for coding patterns and pitfalls
-- **Write at end**: After implementation, persist lessons learned and reusable code patterns
+- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/coding_patterns.md` for coding patterns and pitfalls
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable implementation patterns, bugs, or fixes
 
 ---
 
@@ -29,12 +29,12 @@ Before coding, check memory for relevant patterns:
    - Check "Patterns" for reusable solutions
    - Review "Decisions" for past technical choices
 
-2. **Java Coding Theme** (`memory/projects/[Current Project Name]/coding-patterns.md`):
+2. **Java Coding Theme** (`memory/projects/[Current Project Name]/coding_patterns.md`):
    - Look for implementation patterns matching your task
    - Check "Pitfalls" section for known issues to avoid
    - Review "Testing Patterns" for test strategies
 
-### Writing Memory (Session End - Post-hoc Distillation)
+### Writing Memory (L1 First, Then Optional L2)
 
 After completing implementation, especially if you encountered issues:
 
@@ -76,8 +76,8 @@ After completing implementation, especially if you encountered issues:
 ```
 
 **Storage Location**:
-- Reusable patterns → `memory/projects/[Current Project Name]/coding-patterns.md` "## Patterns"
-- Bugs/pitfalls → `memory/projects/[Current Project Name]/coding-patterns.md` "## Pitfalls"
+- Reusable patterns → `memory/projects/[Current Project Name]/coding_patterns.md`
+- Bugs/pitfalls → `memory/projects/[Current Project Name]/coding_patterns.md`
 - Generic insights → `memory/global.md` "## Patterns" 
 
 **Collaboration Process**:
@@ -651,8 +651,8 @@ Before submitting to `java-code-reviewer`:
 - [ ] **Reflect**: Did I encounter any tricky issues or discover useful patterns?
 - [ ] **Distill**: Can I express the lesson in a way that helps future coding?
 - [ ] **Persist**: Write to appropriate memory file
-  - Implementation patterns → `memory/projects/[Current Project Name]/coding-patterns.md` "## Patterns"
-  - Bugs/fixes → `memory/projects/[Current Project Name]/coding-patterns.md` "## Pitfalls"
+   - Implementation patterns → `memory/projects/[Current Project Name]/coding_patterns.md`
+   - Bugs/fixes → `memory/projects/[Current Project Name]/coding_patterns.md`
   - Generic insights → `memory/global.md` "## Patterns"
 
 ---

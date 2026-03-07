@@ -21,14 +21,27 @@ def count_structured_claims(plain_text: str) -> int:
 def infer_layout(html: str) -> str:
     """Infer the layout type from HTML content."""
     low = html.lower()
+    has_timeline_container = any(token in low for token in [
+        "timeline-item",
+        "timeline-track",
+        "milestone-timeline",
+    ])
+    has_timeline_nodes = "timeline-node" in low and any(token in low for token in ["dot", "year", "phase"])
+    has_process_container = any(token in low for token in [
+        "process-step",
+        "step-process-container",
+        "process-flow",
+        "process-card",
+    ])
+
     if "cover-slide" in low or "thank-you-slide" in low:
         return "cover"
     if "title slide" in low or "title section" in low:
         return "cover"
-    if "timeline" in low or "milestone" in low or "year" in low and ("dot" in low or "phase" in low):
-        return "milestone-timeline"
-    if "process" in low or "step" in low:
+    if has_process_container:
         return "process"
+    if has_timeline_container or has_timeline_nodes:
+        return "milestone-timeline"
     if "grid-cols-2" in low or "w-1/2" in low or "w-7/12" in low or "w-5/12" in low or "w-8/12" in low or "w-4/12" in low or "w-2/3" in low or "w-1/3" in low:
         return "dual-column"
     if "grid-cols-3" in low or "w-1/3" in low:

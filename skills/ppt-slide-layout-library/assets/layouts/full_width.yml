@@ -5,7 +5,7 @@ layout:
   id: full_width
   name: 全宽重点布局
   version: 2.0
-  category: fullwidth
+  category: narrative
 
 selection_criteria:
   when_to_use:
@@ -14,6 +14,19 @@ selection_criteria:
     - "核心结论强调"
   when_not_to_use:
     - "有数据图表 → 改用 data_chart"
+
+layout_contract:
+  required_thinking_fields: [layout_key, primary_encoding, source, filter_logic, mapping]
+  narrative_fit: [strategic_narrative, editorial_statement, long_form_explanation]
+  compatible_chart_families: []
+  compatible_component_families: [Card_Glass, Card_Accent, Badge_Tag, Metric_Big]
+  compatible_map_archetypes: []
+  fallback_layouts: [pillar, concept_definition, data_chart]
+  overflow_recovery_order:
+    - reduce_paragraph_count
+    - convert_body_to_highlights
+    - move_supporting_metrics_to_cards
+    - downgrade_to_pillar_or_concept_definition
 
 spec:
   structure_type: "header-main-footer"

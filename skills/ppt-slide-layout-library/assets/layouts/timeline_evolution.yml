@@ -30,6 +30,38 @@ content_spec:
       items_max: 4
       per_item_max_chars: 40
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - era_sequence
+    - transition_logic
+    - period_labels
+    - key_shifts
+    - endpoint_message
+    - fallback_plan
+  narrative_fit:
+    - era_evolution
+    - maturity_model
+    - strategic_transition_story
+  compatible_chart_families:
+    - line_trend
+    - bar_comparison
+  compatible_component_families:
+    - Step_Flow
+    - Card_Accent
+    - List_Icon
+    - Metric_Trend
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - milestone_timeline
+    - process_steps
+    - full_width
+  overflow_recovery_order:
+    - reduce_era_count
+    - reduce_items_per_era
+    - shorten_period_labels
+    - downgrade_to_milestone_timeline
+
 constraints:
   - "代际数 2-4 个"
   - "必须有时间段标注"

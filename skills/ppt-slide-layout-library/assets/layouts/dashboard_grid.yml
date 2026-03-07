@@ -16,6 +16,19 @@ selection_criteria:
     - "深度分析单一主题 → 改用 data_chart"
     - "只需2-3个指标 → 改用 data_chart"
 
+layout_contract:
+  required_thinking_fields: [layout_key, primary_encoding, source, filter_logic, mapping]
+  narrative_fit: [kpi_overview, multi_metric_monitoring, dense_dashboard]
+  compatible_chart_families: [line_trend, bar_comparison, heatmap_matrix]
+  compatible_component_families: [Metric_Big, Metric_Trend, Metric_KpiRow, Badge_Pill]
+  compatible_map_archetypes: []
+  fallback_layouts: [hybrid, data_chart, dashboard]
+  overflow_recovery_order:
+    - reduce_kpi_count
+    - reduce_chart_count
+    - simplify_chart_labels
+    - downgrade_to_hybrid_or_data_chart
+
 spec:
   structure_type: "header-main-footer"
   canvas: { width: 1280, height: 720 }

@@ -38,6 +38,37 @@ content_spec:
     box_text: "15-40 chars (3-4 lines)"
     header_label: "20-30 chars"
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - target_metric
+    - branch_logic
+    - operator_types
+    - lever_nodes
+    - convergence_message
+    - fallback_plan
+  narrative_fit:
+    - value_driver_tree
+    - calculation_breakdown
+    - supply_demand_model
+  compatible_chart_families:
+    - waterfall_bridge
+    - bar_comparison
+  compatible_component_families:
+    - Card_Solid
+    - Badge_Status
+    - List_Icon
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - causal_loop_diagram
+    - system_process_map
+    - full_width
+  overflow_recovery_order:
+    - reduce_node_count
+    - collapse_secondary_levers
+    - simplify_operator_labels
+    - downgrade_to_full_width
+
 template: |
   <div class="slide-container flex flex-col h-full bg-white font-sans text-slate-800 relative overflow-hidden">
     <!-- Header -->

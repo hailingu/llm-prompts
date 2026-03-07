@@ -17,6 +17,19 @@ selection_criteria:
     - "简单的左右文图 (改用 full_width 或 data_chart)"
     - "比较多个方案 (改用 comparison)"
 
+layout_contract:
+   required_thinking_fields: [layout_key, primary_encoding, source, filter_logic, mapping]
+   narrative_fit: [definition_page, policy_explanation, structured_attribute_breakdown]
+   compatible_chart_families: []
+   compatible_component_families: [Badge_Tag, Card_Glass, List_Icon]
+   compatible_map_archetypes: []
+   fallback_layouts: [full_width, pillar, analytical_model_tree]
+   overflow_recovery_order:
+      - reduce_attribute_count
+      - shorten_definition_copy
+      - collapse_secondary_examples
+      - downgrade_to_full_width_or_pillar
+
 spec:
   regions:
     hero:

@@ -28,8 +28,8 @@ As the Go Tech Lead, your core responsibility is to ensure end-to-end delivery q
 - `.github/templates/go-module-design-template.md` - Design document template
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` for team decisions and quality standards
-- **Write at end**: After arbitration or final approval, persist decisions and process improvements
+- **Read at start**: Check `memory/global.md` and `memory/research/go_architecture.md` for team decisions and quality standards
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable precedent, standards, or process improvements
 
 ---
 
@@ -44,11 +44,11 @@ Before review or arbitration, check memory for context:
    - Check "Patterns" for quality standards
    - Note user preferences and team conventions
 
-2. **Theme-Specific Memory** (`memory/go-*/index.md`):
+2. **Theme-Specific Memory** (`memory/research/go_*.md`):
    - Review previous decisions in similar contexts
    - Check for recurring issues that need process fixes
 
-### Writing Memory (Session End - Post-hoc Distillation)
+### Writing Memory (L1 First, Then Optional L2)
 
 After final approval or arbitration:
 
@@ -89,7 +89,7 @@ After final approval or arbitration:
 **Storage Location**:
 - Team decisions → `memory/global.md` "## Decisions"
 - Process improvements → `memory/global.md` "## Process Improvements"
-- Go-specific standards → `memory/go-architecture/index.md` "## Standards"
+- Go-specific standards → `memory/research/go_architecture.md`
 - 🔍 **Effective Go First**: All decisions must align with Effective Go principles
 
 ---
@@ -696,7 +696,7 @@ Before marking task complete:
 - [ ] **Persist**: Write to appropriate memory file
   - Team decisions → `memory/global.md` "## Decisions"
   - Process improvements → `memory/global.md` "## Process Improvements"
-  - Go standards → `memory/go-architecture/index.md` "## Standards"
+   - Go standards → `memory/research/go_architecture.md`
 
 ---
 

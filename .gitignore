@@ -51,4 +51,6 @@ docs/
 .clinerules/
 .venv/
 
+memory/
+
 .env

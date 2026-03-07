@@ -12,8 +12,9 @@ Usage:
     --mode production \
     --strict
 
-This runner executes a practical subset of gates and explicitly marks the rest
-as `not_implemented` to avoid false green results.
+This runner executes the current QA gate set and reports both implemented
+checks and diagnostic coverage gaps. `--strict` only elevates high-signal
+blocking defects, plus optional blocking `not_implemented` coverage gaps.
 """
 
 from __future__ import annotations
@@ -51,12 +52,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--strict",
         action="store_true",
-        help="Exit with code 1 if gates fail (and optionally if unimplemented exists)",
+        help="Exit with code 1 only for blocking defects, and optionally blocking not_implemented coverage gaps",
     )
     parser.add_argument(
         "--allow-unimplemented",
         action="store_true",
-        help="Do not fail strict mode on not_implemented gates",
+        help="Do not make strict mode fail on blocking not_implemented coverage gaps",
     )
     parser.add_argument(
         "--slides",

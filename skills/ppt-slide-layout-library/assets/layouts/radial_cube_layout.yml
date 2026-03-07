@@ -36,6 +36,35 @@ content_spec:
     bullet: "20-60 chars"
     axis_label: "10-20 chars"
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - core_object
+    - axis_labels
+    - left_bullets
+    - right_bullets
+    - explanatory_balance
+    - fallback_plan
+  narrative_fit:
+    - hub_and_spoke_framework
+    - multidimensional_model
+    - central_concept_explainer
+  compatible_chart_families: []
+  compatible_component_families:
+    - List_Icon
+    - Card_Solid
+    - Badge_Status
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - concept_definition
+    - pillar
+    - full_width
+  overflow_recovery_order:
+    - reduce_bullet_count
+    - shorten_axis_labels
+    - collapse_secondary_explanations
+    - downgrade_to_concept_definition
+
 template: |
   <div class="slide-container flex flex-col h-full bg-white text-slate-800">
     <!-- Header -->

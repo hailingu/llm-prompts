@@ -25,6 +25,30 @@ content_spec:
     max_items: 4
     per_item_chars: 40
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - page_role
+    - closing_message
+    - secondary_prompt
+    - contact_info
+    - brand_tone
+  narrative_fit:
+    - qa_page
+    - thank_you_page
+    - closing_contact_page
+  compatible_chart_families: []
+  compatible_component_families:
+    - Badge_Status
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - conclusion
+    - full_width
+  overflow_recovery_order:
+    - reduce_contact_items
+    - remove_secondary_prompt
+    - shorten_closing_message
+
 constraints:
   - "必须作为最后一页"
   - "禁止图表"

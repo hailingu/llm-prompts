@@ -61,7 +61,7 @@ color_richness:
     category: visual
 
   - id: QR-11
-    rule: "Brand consistency: Semantic colors within brand color system or use preset Tailwind status colors, forbid random color changes across pages"
+    rule: "Brand-style consistency: Semantic colors must stay within the brand-style system or use preset Tailwind status colors; forbid random color changes across pages"
     draft_skip: true
     category: brand
 

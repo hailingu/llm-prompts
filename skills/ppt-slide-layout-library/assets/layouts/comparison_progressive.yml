@@ -37,6 +37,38 @@ content_spec:
     title_max_chars: 20
     subtitle_max_chars: 40
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - progression_axis
+    - stage_order
+    - row_labels
+    - carry_forward_logic
+    - recommendation_stage
+    - fallback_plan
+  narrative_fit:
+    - maturity_progression
+    - phased_strategy_evolution
+    - capability_build_up
+  compatible_chart_families:
+    - bar_comparison
+    - line_trend
+  compatible_component_families:
+    - Step_Flow
+    - Card_Accent
+    - List_Icon
+    - Metric_Trend
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - comparison
+    - process_steps
+    - milestone_timeline
+  overflow_recovery_order:
+    - reduce_row_count
+    - reduce_header_copy_density
+    - collapse_shared_cells
+    - downgrade_to_comparison
+
 constraints:
   - "必须包含逐步增强的视觉流向 (箭头)"
   - "必须使用数字角标引导行"

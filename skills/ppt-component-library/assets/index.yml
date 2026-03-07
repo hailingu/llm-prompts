@@ -1,0 +1,38 @@
+# ============================================================
+# ppt-component-library / index.yml
+# 组件索引 — 按类别、布局适配、使用任务与主题支持检索
+# ============================================================
+
+categories:
+  container: [Card_Glass, Card_Accent, Card_Solid]
+  metric: [Metric_Big, Metric_Trend, Metric_KpiRow]
+  list: [List_Icon, List_Timeline]
+  badge: [Badge_Pill, Badge_Tag]
+  visual: [Visual_Arrow, Visual_Glow]
+  geo_primitive: [Map_Grid, Map_NodeNetwork, Map_FlowArrow, Map_RadarRing]
+
+by_layout:
+  side_by_side: [Card_Glass, Card_Accent, Card_Solid, Metric_Big, Metric_Trend, Metric_KpiRow, List_Icon, List_Timeline, Visual_Arrow, Map_Grid, Map_NodeNetwork, Map_FlowArrow, Map_RadarRing]
+  dashboard_grid: [Card_Glass, Card_Accent, Card_Solid, Metric_Big, Metric_Trend, Metric_KpiRow, List_Icon]
+  hybrid: [Card_Glass, Card_Accent, Card_Solid, List_Icon, List_Timeline, Visual_Arrow, Visual_Glow, Map_Grid, Map_NodeNetwork, Map_FlowArrow, Map_RadarRing]
+  map_overlay: [Map_Grid, Map_NodeNetwork, Map_FlowArrow, Map_RadarRing]
+  process: [Card_Accent, List_Timeline, Visual_Arrow, Map_FlowArrow]
+  executive_summary: [Metric_Big, Metric_Trend, Metric_KpiRow, Visual_Glow]
+  conclusion: [Card_Glass, Metric_Big, Visual_Glow]
+
+by_use_case:
+  insight_card: [Card_Glass, Card_Accent, Card_Solid]
+  hero_metric: [Metric_Big]
+  directional_change: [Metric_Trend]
+  compact_kpi_summary: [Metric_KpiRow]
+  feature_list: [List_Icon]
+  compact_sequence: [List_Timeline]
+  status_label: [Badge_Pill, Badge_Tag]
+  connector: [Visual_Arrow, Map_FlowArrow]
+  atmosphere: [Visual_Glow]
+  abstract_geo_view: [Map_Grid, Map_NodeNetwork, Map_RadarRing]
+
+selection_notes:
+  - "先过 component decision gate，再查索引，不要反过来。"
+  - "Map_* 只能作为 geo-adjacent primitive，不替代 ppt-map-storytelling。"
+  - "颜色入口优先使用 class-level semantic placeholders，不再依赖 color-name 拼接。"

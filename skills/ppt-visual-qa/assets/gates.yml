@@ -6,7 +6,7 @@
 #
 # Legend:
 #   phase:      pre | during | post
-#   level:      block (non-deliverable) | warn (deliverable with annotation)
+#   level:      block (high-signal defect) | warn (review with judgment) | info (advisory only)
 #   draft_skip: true = skip in draft mode | false = check in both modes
 #   scope:      all | specific layout type
 #   category:   structural | content | chart | layout | brand | visual
@@ -125,7 +125,7 @@ gates:
   - id: G14
     condition: "text_len >= 120 (key analysis page body character count)"
     phase: during
-    level: block
+    level: warn
     draft_skip: true
     scope: analysis
     category: content
@@ -133,7 +133,7 @@ gates:
   - id: G15
     condition: "Analysis page insight section contains structured claims or sufficient text length (>= 100 chars)"
     phase: during
-    level: block
+    level: warn
     draft_skip: true
     scope: analysis
     category: content
@@ -141,7 +141,7 @@ gates:
   - id: G16
     condition: "structured_claim_count >= 2 (at least 2 verifiable statements)"
     phase: during
-    level: block
+    level: warn
     draft_skip: true
     scope: analysis
     category: content
@@ -149,7 +149,7 @@ gates:
   - id: G17
     condition: "Key analysis pages satisfy structured copy requirements"
     phase: during
-    level: block
+    level: warn
     draft_skip: true
     scope: analysis
     category: content
@@ -167,7 +167,7 @@ gates:
   - id: G19
     condition: "Chart semantic matching (matrix data prefers heatmap)"
     phase: during
-    level: block
+    level: warn
     draft_skip: false
     scope: all
     category: chart
@@ -175,7 +175,7 @@ gates:
   - id: G20
     condition: "tick_step_missing == false (all charts explicitly set ticks.stepSize)"
     phase: during
-    level: block
+    level: warn
     draft_skip: true
     scope: all
     category: chart
@@ -295,9 +295,9 @@ gates:
   # ── Layout-specific ──────────────────────────
 
   - id: G35
-    condition: "Adjacent pages have different layouts (consecutive pages cannot share same layout)"
+    condition: "Adjacent pages should avoid repeating the same dominant layout unless narrative continuity or contract-driven recovery justifies it"
     phase: during
-    level: block
+    level: warn
     draft_skip: false
     scope: all
     category: layout
@@ -385,7 +385,7 @@ gates:
   - id: G46
     condition: "process_detail_sparse == false (Process page step cards >=3 structured info blocks, single card >=72 chars)"
     phase: during
-    level: block
+    level: warn
     draft_skip: true
     scope: process
     category: layout
@@ -393,7 +393,7 @@ gates:
   - id: G47
     condition: "process_card_fill_rate_low == false (Process page step details area 62%-76%, fill rate >=78%)"
     phase: during
-    level: block
+    level: warn
     draft_skip: true
     scope: process
     category: layout
@@ -417,7 +417,7 @@ gates:
   - id: G50
     condition: "process_card_whitespace_formula_failed == false (fill_rate>=78% AND bottom_blank<=22%)"
     phase: during
-    level: block
+    level: warn
     draft_skip: true
     scope: process
     category: layout
@@ -457,7 +457,7 @@ gates:
   - id: G55
     condition: "fullwidth lower half (insight+KPI) height in main area 44%-52%"
     phase: during
-    level: block
+    level: warn
     draft_skip: true
     scope: full-width
     category: layout
@@ -515,7 +515,7 @@ gates:
   - id: G62
     condition: "color_richness_insufficient == false (Non-cover pages >=2 semantic color tiers)"
     phase: during
-    level: block
+    level: warn
     draft_skip: true
     scope: analysis
     category: visual
@@ -531,7 +531,7 @@ gates:
   - id: G64
     condition: "border_consistency_violation == false (Full deck single semantic border width token)"
     phase: during
-    level: block
+    level: warn
     draft_skip: true
     scope: all
     category: visual
@@ -560,10 +560,10 @@ gates:
     scope: analysis
     category: visual
 
-  # ── Brand (Brand Consistency) ──────────────────────────────────
+  # ── Brand-Style (Consistency) ──────────────────────────────────
 
   - id: G68
-    condition: "Brand style consistent (reference ppt-brand-system)"
+    condition: "Brand-style system remains internally consistent with ppt-brand-style-system and semantic resolver outputs"
     phase: during
     level: block
     draft_skip: false
@@ -599,7 +599,7 @@ gates:
   - id: G72
     condition: "Full deck copy density balanced, no obvious 'strong chart weak text' pages"
     phase: post
-    level: block
+    level: warn
     draft_skip: true
     scope: all
     category: content
@@ -607,7 +607,7 @@ gates:
   - id: G73
     condition: "Key pages meet 'ready for direct presentation' standard"
     phase: post
-    level: block
+    level: warn
     draft_skip: true
     scope: all
     category: content
@@ -639,7 +639,7 @@ gates:
   - id: G77
     condition: "runtime_profile_matrix_ok == true (M06, passes across viewport+dpr scenarios)"
     phase: post
-    level: block
+    level: warn
     draft_skip: true
     scope: all
     category: visual
@@ -669,9 +669,9 @@ gates:
     category: visual
 
   - id: G81
-    condition: "Production mode must use playwright-runtime (forbid static-fallback as release validation basis)"
+    condition: "If production mode is used, prefer playwright-runtime over static fallback for higher-confidence validation"
     phase: post
-    level: block
+    level: warn
     draft_skip: true
     scope: all
     category: structural

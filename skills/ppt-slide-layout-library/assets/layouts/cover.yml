@@ -50,6 +50,30 @@ content_spec:
     max_total_chars: 80
     max_sentences: 2
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - page_role
+    - eyebrow
+    - main_title
+    - subtitle
+    - meta_info
+    - visual_tone
+  narrative_fit:
+    - opening_cover
+    - chapter_divider
+    - title_page
+  compatible_chart_families: []
+  compatible_component_families:
+    - Badge_Status
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - full_width
+  overflow_recovery_order:
+    - reduce_meta_items
+    - reduce_subtitle_length
+    - remove_body_text
+
 # ── 约束 ─────────────────────────────────────────────
 constraints:
   - "首页必须使用 cover 布局"

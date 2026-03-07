@@ -1,1105 +1,773 @@
 #!/usr/bin/env python3
-"""
-Memory Manager - Persistent memory management for AI agents.
+"""Memory manager aligned to the repository's current two-level standard."""
 
-Provides file-based memory persistence across sessions with:
-- 3-tier memory hierarchy (L1 Raw Logs / L2 Theme / L3 Global)
-- Session lifecycle hooks (auto-init / auto-cleanup)
-- Smart triggers for automatic memory capture
-- Quality scoring for memory filtering
-"""
+from __future__ import annotations
 
-import os
-import json
 import argparse
-import datetime
-import hashlib
-import re
-from pathlib import Path
-from typing import List, Dict, Optional, Tuple
+import csv
+import datetime as dt
+import json
+import os
 import sys
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+
+TOOLS_JSON_HELP = "Tools used (JSON array)"
+SESSION_ID_HELP = "Session identifier"
+THEME_NAME_HELP = "Theme name provided by the calling agent"
+ENTRY_TYPE_L1_HELP = "Entry type for the L1 raw log"
+SOURCE_LABEL_HELP = "Optional source label recorded in the CSV manifest"
+THEME_REQUIRED_ERROR = "theme is required"
+TEMPLATE_CHOICES = ["decision", "error", "task"]
+EXCLUDED_THEME_DIRS = {"sessions", "data"}
+DEFAULT_GLOBAL_MEMORY = "# Global Memory\n\n## Active Mission\n- None\n"
+
+
+def _parse_json_arg(value: Optional[str], default: Any) -> Any:
+    if not value:
+        return default
+    return json.loads(value)
+
+
+def _read_text(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def _write_text(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as handle:
+        handle.write(content)
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
+def _append_text(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    mode = "a" if path.exists() else "w"
+    with path.open(mode, encoding="utf-8") as handle:
+        handle.write(content)
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
+def _normalize_theme(theme: Optional[str], *, required: bool = False) -> Optional[str]:
+    if theme is None:
+        if required:
+            raise ValueError(THEME_REQUIRED_ERROR)
+        return None
+    normalized = theme.strip().lower()
+    if not normalized:
+        if required:
+            raise ValueError(THEME_REQUIRED_ERROR)
+        return None
+    if normalized == "auto":
+        raise ValueError("auto theme detection has been removed; the calling agent must pass --theme explicitly")
+    return normalized
+
+
+def _normalize_csv_name(name: str) -> str:
+    normalized = Path(name).name.strip()
+    if not normalized:
+        raise ValueError("CSV file name is required")
+    if normalized != name.strip():
+        raise ValueError("CSV file name must not contain directory components")
+    if not normalized.lower().endswith(".csv"):
+        normalized = f"{normalized}.csv"
+    return normalized
+
+
+def _read_csv_source(csv_content: Optional[str], source_file: Optional[str]) -> str:
+    if bool(csv_content) == bool(source_file):
+        raise ValueError("provide exactly one of --csv-content or --source-file")
+    if csv_content is not None:
+        return csv_content
+    if source_file is None:
+        raise ValueError("source file is required")
+    return Path(source_file).read_text(encoding="utf-8")
+
+
+def _preview_text_lines(content: str, line_count: int) -> str:
+    if line_count <= 0:
+        return ""
+    lines = content.splitlines()
+    return "\n".join(lines[:line_count])
+
 
 class MemoryManager:
-    """File-based memory management system with 3-tier hierarchy."""
-    
-    def __init__(self, workspace_root=None):
-        self.workspace_root = workspace_root or os.getcwd()
-        self.memory_dir = os.path.join(self.workspace_root, "memory")
-        self.global_memory_file = os.path.join(self.memory_dir, "global.md")
-        
-        # 3-tier structure
-        self.l1_sessions_dir = os.path.join(self.memory_dir, "sessions")  # Raw logs
-        self.l2_themes_dir = self.memory_dir  # Theme-based working memory
-        self.l3_global_file = self.global_memory_file  # Long-term memory
-        
-        # Metadata tracking
-        self.metadata_file = os.path.join(self.memory_dir, ".metadata.json")
-        
-        # Ensure directories exist
-        os.makedirs(self.memory_dir, exist_ok=True)
-        os.makedirs(self.l1_sessions_dir, exist_ok=True)
-    
-    # ========== L1: Raw Session Logs ==========
-    
-    def get_session_log_path(self, date=None):
-        """Get path for daily session log file."""
-        if date is None:
-            date = datetime.datetime.now()
-        date_str = date.strftime("%Y-%m-%d")
-        return os.path.join(self.l1_sessions_dir, f"{date_str}.md")
-    
-    def append_session_log(self, entry_type: str, content: str, 
-                          tools_used: List[str] = None, 
-                          session_id: str = None) -> str:
-        """
-        Append entry to L1 raw session log.
-        Auto-captured every turn, no quality check needed.
-        """
-        file_path = self.get_session_log_path()
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
-        # Build entry
-        entry_lines = [f"### [{timestamp}] {entry_type.upper()}"]
+    """Minimal memory manager for repo-local L1/L2/L3 persistence."""
+
+    def __init__(self, workspace_root: Optional[str] = None) -> None:
+        self.workspace_root = Path(workspace_root or os.getcwd()).resolve()
+        self.memory_dir = self.workspace_root / "memory"
+        self.sessions_dir = self.memory_dir / "sessions"
+        self.data_dir = self.memory_dir / "data"
+        self.data_manifest_file = self.data_dir / "manifest.json"
+        self.global_memory_file = self.memory_dir / "global.md"
+        self._ensure_layout()
+
+    def _ensure_layout(self) -> None:
+        self.memory_dir.mkdir(parents=True, exist_ok=True)
+        self.sessions_dir.mkdir(parents=True, exist_ok=True)
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        if not self.data_manifest_file.exists():
+            _write_text(self.data_manifest_file, "{}\n")
+        if not self.global_memory_file.exists():
+            _write_text(self.global_memory_file, DEFAULT_GLOBAL_MEMORY)
+
+    def _now(self) -> dt.datetime:
+        return dt.datetime.now()
+
+    def _session_log_path(self, when: Optional[dt.datetime] = None) -> Path:
+        when = when or self._now()
+        return self.sessions_dir / f"{when.strftime('%Y-%m-%d')}.md"
+
+    def _theme_dir(self, theme: str) -> Path:
+        return self.memory_dir / theme.strip().lower()
+
+    def _theme_path(self, theme: str, when: Optional[dt.datetime] = None) -> Path:
+        when = when or self._now()
+        return self._theme_dir(theme) / f"{when.strftime('%Y-%m-%d_%H')}.md"
+
+    def _data_path(self, name: str) -> Path:
+        return self.data_dir / _normalize_csv_name(name)
+
+    def _read_data_manifest(self) -> Dict[str, Any]:
+        if not self.data_manifest_file.exists():
+            return {}
+        content = _read_text(self.data_manifest_file).strip()
+        if not content:
+            return {}
+        parsed = json.loads(content)
+        if not isinstance(parsed, dict):
+            raise ValueError("CSV manifest must be a JSON object")
+        return parsed
+
+    def _write_data_manifest(self, manifest: Dict[str, Any]) -> None:
+        _write_text(self.data_manifest_file, json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
+
+    def _csv_summary(self, csv_content: str) -> Dict[str, Any]:
+        rows = list(csv.reader(csv_content.splitlines()))
+        if not rows:
+            return {"row_count": 0, "column_count": 0, "columns": []}
+        header = rows[0]
+        data_rows = rows[1:] if len(rows) > 1 else []
+        return {
+            "row_count": len(data_rows),
+            "column_count": len(header),
+            "columns": header,
+        }
+
+    def _upsert_data_manifest_entry(
+        self,
+        name: str,
+        csv_content: str,
+        source_label: Optional[str] = None,
+        description: Optional[str] = None,
+        columns: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        path = self._data_path(name)
+        manifest = self._read_data_manifest()
+        summary = self._csv_summary(csv_content)
+        manifest[path.name] = {
+            "name": path.name,
+            "path": str(path),
+            "updated_at": self._now().isoformat(timespec="seconds"),
+            "source_label": source_label,
+            "description": description,
+            "declared_columns": columns or None,
+            "detected_columns": summary["columns"],
+            "row_count": summary["row_count"],
+            "column_count": summary["column_count"],
+            "size_bytes": len(csv_content.encode("utf-8")),
+        }
+        self._write_data_manifest(manifest)
+        return manifest[path.name]
+
+    def _is_global_worthy(self, content: str, theme: str) -> bool:
+        if theme != "preferences":
+            return False
+        lowered = content.lower()
+        durable_markers = [
+            "remember",
+            "default",
+            "always",
+            "preference",
+            "constraint",
+            "记住",
+            "不要忘记",
+            "默认",
+            "长期",
+            "以后",
+            "约束",
+            "规则",
+        ]
+        return any(marker in lowered or marker in content for marker in durable_markers)
+
+    def append_session_log(
+        self,
+        entry_type: str,
+        content: str,
+        tools_used: Optional[List[str]] = None,
+        session_id: Optional[str] = None,
+        when: Optional[dt.datetime] = None,
+    ) -> str:
+        when = when or self._now()
+        path = self._session_log_path(when)
+        header = f"# Session Log - {when.strftime('%Y-%m-%d')}\n\n"
+        entry_lines = [f"### [{when.strftime('%Y-%m-%d %H:%M:%S')}] {entry_type.upper()}"]
         if session_id:
             entry_lines.append(f"**Session:** {session_id}")
         if tools_used:
             entry_lines.append(f"**Tools:** {', '.join(tools_used)}")
         entry_lines.append("")
-        entry_lines.append(content)
+        entry_lines.append(content.strip())
         entry_lines.append("")
         entry_lines.append("---")
-        
-        entry_text = "\n".join(entry_lines)
-        
-        # Append to file
-        if os.path.exists(file_path):
-            with open(file_path, 'a', encoding='utf-8') as f:
-                f.write(f"\n\n{entry_text}")
+        entry = "\n".join(entry_lines)
+
+        if path.exists():
+            _append_text(path, f"\n\n{entry}")
         else:
-            # Create new file with header
-            header = f"# Session Log - {datetime.datetime.now().strftime('%Y-%m-%d')}\n\n"
-            with open(file_path, 'w', encoding='utf-8') as f:
-                f.write(header + entry_text)
-        
-        return file_path
-    
-    def read_session_logs(self, days_back: int = 7) -> List[Dict]:
-        """Read recent session logs."""
-        logs = []
-        cutoff = datetime.datetime.now() - datetime.timedelta(days=days_back)
-        
-        for filename in sorted(os.listdir(self.l1_sessions_dir), reverse=True):
-            if not filename.endswith('.md'):
-                continue
-            
+            _write_text(path, header + entry)
+        return str(path)
+
+    def read_session_logs(self, days_back: int = 7, limit: int = 20) -> List[Dict[str, Any]]:
+        cutoff = self._now() - dt.timedelta(days=days_back)
+        records: List[Dict[str, Any]] = []
+        for path in sorted(self.sessions_dir.glob("*.md"), reverse=True):
             try:
-                date_str = filename.replace('.md', '')
-                file_date = datetime.datetime.strptime(date_str, "%Y-%m-%d")
-                
-                if file_date >= cutoff:
-                    file_path = os.path.join(self.l1_sessions_dir, filename)
-                    with open(file_path, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                    
-                    logs.append({
-                        'date': date_str,
-                        'content': content,
-                        'size': len(content)
-                    })
+                file_date = dt.datetime.strptime(path.stem, "%Y-%m-%d")
             except ValueError:
                 continue
-        
-        return logs
-    
-    # ========== L2: Theme-Based Working Memory ==========
-    
-    def get_theme_path(self, theme: str, timestamp=None):
-        """Get path for theme-based memory file."""
-        if timestamp is None:
-            timestamp = datetime.datetime.now()
-        
-        time_str = timestamp.strftime("%Y-%m-%d_%H")
-        theme_dir = os.path.join(self.l2_themes_dir, theme)
-        os.makedirs(theme_dir, exist_ok=True)
-        
-        return os.path.join(theme_dir, f"{time_str}.md")
-    
-    def write_theme_memory(self, theme: str, content: str, 
-                          timestamp=None, template: str = None) -> str:
-        """
-        Write to L2 theme-based memory.
-        Supports simplified templates.
-        """
-        file_path = self.get_theme_path(theme, timestamp)
-        now = timestamp or datetime.datetime.now()
-        timestamp_str = now.strftime("%Y-%m-%d %H:%M:%S")
-        
-        # Apply template if specified
-        if template == "decision":
-            formatted = f"## Decision Record - {timestamp_str}\n\n{content}\n"
-        elif template == "error":
-            formatted = f"## Error Post-mortem - {timestamp_str}\n\n{content}\n"
-        elif template == "task":
-            formatted = f"## Task Progress - {timestamp_str}\n\n{content}\n"
+            if file_date < cutoff:
+                continue
+            content = _read_text(path)
+            records.append(
+                {
+                    "date": path.stem,
+                    "path": str(path),
+                    "size": len(content),
+                    "content": content,
+                }
+            )
+            if len(records) >= limit:
+                break
+        return records
+
+    def _format_theme_entry(
+        self,
+        content: str,
+        template: Optional[str] = None,
+        title: Optional[str] = None,
+        when: Optional[dt.datetime] = None,
+    ) -> str:
+        when = when or self._now()
+        timestamp = when.strftime("%Y-%m-%d %H:%M:%S")
+        template_titles = {
+            "decision": "Decision Record",
+            "error": "Error Record",
+            "task": "Task Record",
+        }
+        if title and template:
+            heading = f"{template_titles[template]}: {title}"
+        elif title:
+            heading = title
+        elif template:
+            heading = f"{template_titles[template]} - {timestamp}"
         else:
-            # Simple format - minimal overhead
-            formatted = f"## {timestamp_str}\n\n{content}\n"
-        
-        # Append or create
-        if os.path.exists(file_path):
-            with open(file_path, 'a', encoding='utf-8') as f:
-                f.write(f"\n\n{formatted}")
+            heading = timestamp
+        return f"## {heading}\n\n{content.strip()}\n"
+
+    def write_theme_memory(
+        self,
+        theme: str,
+        content: str,
+        template: Optional[str] = None,
+        title: Optional[str] = None,
+        when: Optional[dt.datetime] = None,
+    ) -> str:
+        resolved_theme = _normalize_theme(theme, required=True)
+        if resolved_theme is None:
+            raise ValueError(THEME_REQUIRED_ERROR)
+        when = when or self._now()
+        path = self._theme_path(resolved_theme, when)
+        entry = self._format_theme_entry(content, template=template, title=title, when=when)
+        if path.exists():
+            _append_text(path, f"\n\n{entry}")
         else:
-            with open(file_path, 'w', encoding='utf-8') as f:
-                f.write(formatted)
-        
-        return file_path
-    
-    def read_theme_memory(self, theme: str, hours_back: int = 24) -> List[Dict]:
-        """Read recent theme-based memories."""
-        theme_dir = os.path.join(self.l2_themes_dir, theme)
-        if not os.path.exists(theme_dir):
+            _write_text(path, entry)
+        return str(path)
+
+    def write_data_memory(self, name: str, csv_content: str, replace: bool = False) -> str:
+        path = self._data_path(name)
+        if path.exists() and not replace:
+            raise ValueError(f"CSV data file already exists: {path.name}. Use --replace to overwrite it")
+        _write_text(path, csv_content)
+        return str(path)
+
+    def read_data_memory(self, name: str, head: Optional[int] = None) -> Dict[str, Any]:
+        path = self._data_path(name)
+        if not path.exists():
+            raise ValueError(f"CSV data file does not exist: {path.name}")
+        content = _read_text(path)
+        manifest = self._read_data_manifest()
+        return {
+            "name": path.name,
+            "path": str(path),
+            "size": path.stat().st_size,
+            "metadata": manifest.get(path.name),
+            "content": _preview_text_lines(content, head) if head is not None else content,
+            "truncated": head is not None,
+        }
+
+    def list_data_files(self) -> List[Dict[str, Any]]:
+        manifest = self._read_data_manifest()
+        records: List[Dict[str, Any]] = []
+        for path in sorted(self.data_dir.glob("*.csv")):
+            record = {
+                "name": path.name,
+                "path": str(path),
+                "size": path.stat().st_size,
+            }
+            metadata = manifest.get(path.name)
+            if metadata:
+                record["metadata"] = metadata
+            records.append(record)
+        return records
+
+    def read_theme_memory(self, theme: str, hours_back: int = 24, limit: int = 20) -> List[Dict[str, Any]]:
+        directory = self._theme_dir(theme)
+        if not directory.exists():
             return []
-        
-        files = sorted(os.listdir(theme_dir), reverse=True)
-        memories = []
-        cutoff = datetime.datetime.now() - datetime.timedelta(hours=hours_back)
-        
-        for file in files:
-            if not file.endswith('.md'):
-                continue
-            
+        cutoff = self._now() - dt.timedelta(hours=hours_back)
+        records: List[Dict[str, Any]] = []
+        for path in sorted(directory.glob("*.md"), reverse=True):
             try:
-                time_str = file.replace('.md', '')
-                file_time = datetime.datetime.strptime(time_str, "%Y-%m-%d_%H")
-                
-                if file_time >= cutoff:
-                    file_path = os.path.join(theme_dir, file)
-                    with open(file_path, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                    
-                    memories.append({
-                        'timestamp': file_time.isoformat(),
-                        'filename': file,
-                        'content': content
-                    })
+                file_time = dt.datetime.strptime(path.stem, "%Y-%m-%d_%H")
             except ValueError:
                 continue
-        
-        return memories
-    
+            if file_time < cutoff:
+                continue
+            records.append(
+                {
+                    "timestamp": file_time.isoformat(),
+                    "path": str(path),
+                    "content": _read_text(path),
+                }
+            )
+            if len(records) >= limit:
+                break
+        return records
+
     def list_themes(self) -> List[str]:
-        """List all available memory themes."""
-        themes = []
-        if not os.path.exists(self.memory_dir):
-            return themes
-        
-        for item in os.listdir(self.memory_dir):
-            item_path = os.path.join(self.memory_dir, item)
-            # Skip non-directory items and special directories
-            if os.path.isdir(item_path) and item not in ['sessions', 'archive']:
-                themes.append(item)
-        
-        return sorted(themes)
-    
-    # ========== L3: Global Long-Term Memory ==========
-    
+        return sorted(
+            path.name
+            for path in self.memory_dir.iterdir()
+            if path.is_dir() and path.name not in EXCLUDED_THEME_DIRS and not path.name.startswith(".")
+        )
+
     def read_global_memory(self) -> str:
-        """Read L3 global long-term memory."""
-        if not os.path.exists(self.l3_global_file):
-            return "# Global Memory\n\n*No global memory yet.*"
-        
-        with open(self.l3_global_file, 'r', encoding='utf-8') as f:
-            return f.read()
-    
-    def write_global_memory(self, content: str, append: bool = True) -> None:
-        """Write to L3 global long-term memory."""
-        if append and os.path.exists(self.l3_global_file):
-            with open(self.l3_global_file, 'a', encoding='utf-8') as f:
-                f.write(f"\n\n{content}")
+        return _read_text(self.global_memory_file) if self.global_memory_file.exists() else DEFAULT_GLOBAL_MEMORY
+
+    def write_global_memory(self, content: str, append: bool = True) -> str:
+        normalized = content.strip()
+        if append and self.global_memory_file.exists():
+            _append_text(self.global_memory_file, f"\n\n{normalized}")
         else:
-            with open(self.l3_global_file, 'w', encoding='utf-8') as f:
-                f.write(content)
-    
-    # ========== Session Lifecycle Hooks ==========
-    
-    def session_init(self, session_context: dict = None) -> Dict:
-        """
-        Session initialization hook.
-        Auto-loads global memory and recent themes.
-        """
+            _write_text(self.global_memory_file, normalized + "\n")
+        return str(self.global_memory_file)
+
+    def _recent_theme_index(self, hours_back: int, limit: int) -> List[Dict[str, Any]]:
+        records: List[Dict[str, Any]] = []
+        for theme in self.list_themes():
+            memories = self.read_theme_memory(theme, hours_back=hours_back, limit=1)
+            if not memories:
+                continue
+            latest = memories[0]
+            records.append(
+                {
+                    "theme": theme,
+                    "timestamp": latest["timestamp"],
+                    "path": latest["path"],
+                    "preview": latest["content"].strip().replace("\n", " ")[:160],
+                }
+            )
+        records.sort(key=lambda item: item["timestamp"], reverse=True)
+        return records[:limit]
+
+    def session_init(
+        self,
+        session_id: Optional[str] = None,
+        recent_days: int = 7,
+        theme_limit: int = 8,
+        write_log: bool = True,
+    ) -> Dict[str, Any]:
         result = {
-            'status': 'success',
-            'global_loaded': False,
-            'themes_loaded': [],
-            'recent_logs': [],
-            'context': {}
+            "status": "success",
+            "global_path": str(self.global_memory_file),
+            "global_excerpt": self.read_global_memory()[:2000],
+            "recent_logs": [
+                {"date": item["date"], "path": item["path"], "size": item["size"]}
+                for item in self.read_session_logs(days_back=recent_days, limit=3)
+            ],
+            "recent_themes": self._recent_theme_index(hours_back=recent_days * 24, limit=theme_limit),
+            "log_written": False,
         }
-        
-        try:
-            # Load global memory
-            global_content = self.read_global_memory()
-            result['global_loaded'] = True
-            result['context']['global'] = global_content[:2000] if len(global_content) > 2000 else global_content
-            
-            # Scan recent themes (last 7 days)
-            for theme in self.list_themes():
-                memories = self.read_theme_memory(theme, hours_back=168)  # 7 days
-                if memories:
-                    result['themes_loaded'].append({
-                        'theme': theme,
-                        'entries': len(memories)
-                    })
-                    # Include summary in context
-                    result['context'][f'theme_{theme}'] = f"[{len(memories)} recent entries]"
-            
-            # Load recent session logs summary
-            recent_logs = self.read_session_logs(days_back=3)
-            result['recent_logs'] = [log['date'] for log in recent_logs[:3]]
-            
-            # Log the init event
-            self.append_session_log(
+        if write_log:
+            result["log_path"] = self.append_session_log(
                 entry_type="session_init",
-                content=f"Session initialized. Loaded {len(result['themes_loaded'])} themes.",
-                session_id=session_context.get('session_id') if session_context else None
+                content="Session initialized and memory context loaded.",
+                session_id=session_id,
             )
-            
-        except Exception as e:
-            result['status'] = 'error'
-            result['error'] = str(e)
-        
+            result["log_written"] = True
         return result
-    
-    def session_end(self, session_summary: dict = None, auto_distill: bool = True) -> Dict:
-        """
-        Session end hook.
-        Generates daily summary and optionally distills to global.
-        """
-        result = {
-            'status': 'success',
-            'summary_generated': False,
-            'distilled_to_global': False,
-            'actions': []
-        }
-        
-        try:
-            # Get today's session logs
-            today = datetime.datetime.now().strftime("%Y-%m-%d")
-            session_log_path = self.get_session_log_path()
-            
-            if os.path.exists(session_log_path):
-                with open(session_log_path, 'r', encoding='utf-8') as f:
-                    today_logs = f.read()
-                
-                # Generate summary entry
-                summary_content = self._generate_session_summary(today_logs, session_summary)
-                
-                # Write to daily summary (L2: daily-summaries theme)
-                summary_path = self.write_theme_memory(
-                    theme="daily-summaries",
-                    content=summary_content,
-                    template="task"
-                )
-                result['summary_generated'] = True
-                result['actions'].append(f"Summary written to {summary_path}")
-                
-                # Auto-distill if enabled and session is significant
-                if auto_distill and self._should_distill_to_global(today_logs, session_summary):
-                    self._distill_to_global(summary_content)
-                    result['distilled_to_global'] = True
-                    result['actions'].append("Key insights distilled to global memory")
-            
-        except Exception as e:
-            result['status'] = 'error'
-            result['error'] = str(e)
-        
-        return result
-    
-    def _generate_session_summary(self, logs: str, session_summary: dict = None) -> str:
-        """Generate a summary from session logs."""
-        lines = logs.split('\n')
-        
-        # Count entry types
-        entry_types = {}
-        for line in lines:
-            if line.startswith('### ['):
-                entry_type = line.split('] ')[-1].lower() if '] ' in line else 'unknown'
-                entry_types[entry_type] = entry_types.get(entry_type, 0) + 1
-        
-        summary_parts = [
-            f"**Session Date:** {datetime.datetime.now().strftime('%Y-%m-%d')}",
-            f"**Total Entries:** {len([l for l in lines if l.startswith('### ')])}",
-            f"**Entry Types:** {', '.join([f'{k}({v})' for k, v in entry_types.items()])}",
-        ]
-        
-        if session_summary:
-            if 'key_decisions' in session_summary:
-                summary_parts.append(f"**Key Decisions:** {session_summary['key_decisions']}")
-            if 'errors_encountered' in session_summary:
-                summary_parts.append(f"**Errors:** {session_summary['errors_encountered']}")
-        
-        return '\n'.join(summary_parts)
-    
-    def _should_distill_to_global(self, logs: str, session_summary: dict = None) -> bool:
-        """Determine if session is significant enough for global memory."""
-        # Criteria for global distillation
-        significant_signals = [
-            'error' in logs.lower() or 'fail' in logs.lower(),
-            session_summary and session_summary.get('has_decisions', False),
-            len(logs) > 5000,  # Long session = more context
-            'user preference' in logs.lower() or 'remember' in logs.lower(),
-        ]
-        return any(significant_signals)
-    
-    def _distill_to_global(self, summary: str) -> None:
-        """Distill session summary to global memory."""
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-        entry = f"## Auto-distilled Summary - {timestamp}\n\n{summary}\n"
-        self.write_global_memory(entry, append=True)
-    
-    # ========== Smart Triggers ==========
-    
-    def quick_note(self, content: str, theme: str = "misc", 
-                   auto_theme: bool = False) -> Dict:
-        """
-        Quick note capture - minimal friction.
-        Supports auto-theme detection from content.
-        """
-        result = {'status': 'success'}
-        
-        # Auto-detect theme if enabled
-        if auto_theme:
-            theme = self._detect_theme(content)
-        
-        # Write to L2
-        file_path = self.write_theme_memory(theme, content)
-        result['theme'] = theme
-        result['path'] = file_path
-        
-        # Also log to L1
-        self.append_session_log(
-            entry_type="quick_note",
-            content=f"Theme: {theme} | Content: {content[:100]}..."
-        )
-        
-        return result
-    
-    def _detect_theme(self, content: str) -> str:
-        """Auto-detect theme from content keywords."""
-        content_lower = content.lower()
-        
-        theme_keywords = {
-            'travel': ['travel', 'trip', 'route', 'commute', 'flight', 'hotel', 'transit', 'taxi', 'itinerary', '出行', '路线', '通勤', '航班', '酒店'],
-            'research': ['research', 'investigation', 'survey', 'benchmark', 'comparison', 'analysis', '调研', '对比', '评估'],
-            'coding': ['code', 'function', 'class', 'refactor', 'bug', 'fix'],
-            'architecture': ['design', 'api', 'system', 'component', 'interface'],
-            'devops': ['deploy', 'pipeline', 'ci/cd', 'docker', 'kubernetes'],
-            'data': ['data', 'database', 'query', 'model', 'analytics'],
-            'error': ['error', 'exception', 'fail', 'crash', 'bug'],
-            'decision': ['decision', 'choose', 'select', 'option', 'alternatives'],
-        }
-        
-        scores = {}
-        for theme, keywords in theme_keywords.items():
-            score = sum(1 for kw in keywords if kw in content_lower)
-            if score > 0:
-                scores[theme] = score
-        
-        if scores:
-            return max(scores, key=scores.get)
-        return "misc"
-    
-    def should_capture_from_turn(self, user_msg: str, agent_response: str,
-                                 tools_used: List[str], turn_count: int) -> Tuple[bool, str, dict]:
-        """
-        Smart trigger - analyze a conversation turn and decide if worth capturing.
-        Returns: (should_capture, capture_type, metadata)
-        """
-        signals = {
-            'user_correction': False,
-            'complex_task': False,
-            'emotional_signal': False,
-            'tool_heavy': False,
-            'error_context': False,
-            'analysis_intent': False,
-            'long_response': False,
-            'multi_entity_reasoning': False,
-        }
-        
-        user_lower = user_msg.lower()
-        response_lower = agent_response.lower()
-        
-        # Detect user corrections
-        correction_patterns = ['不对', '错了', '应该是', '不对不对', 'no,', 'incorrect', 'wrong', 'not right']
-        signals['user_correction'] = any(p in user_lower for p in correction_patterns)
-        
-        # Detect emotional signals
-        satisfaction_patterns = ['谢谢', '完美', 'great', 'perfect', 'awesome', 'excellent']
-        dissatisfaction_patterns = ['不行', '还是', 'still', 'not working', 'fails']
-        signals['emotional_signal'] = any(p in user_lower for p in satisfaction_patterns + dissatisfaction_patterns)
 
-        # Detect analysis intent (single-turn complex tasks should also be captured)
-        analysis_patterns = [
-            '分析', '比较', '评估', '推演', '关系', '策略', '风险', 'trade-off',
-            'analyze', 'analysis', 'compare', 'evaluate', 'reasoning', 'strategy', 'risk'
-        ]
-        signals['analysis_intent'] = any(p in user_lower for p in analysis_patterns)
-
-        # Detect multi-entity reasoning (e.g., country A/B/C relations)
-        entity_count = len(re.findall(r'[、,，/]|\band\b', user_lower)) + 1
-        signals['multi_entity_reasoning'] = entity_count >= 3 and signals['analysis_intent']
-
-        # Long response often indicates non-trivial reasoning output
-        signals['long_response'] = len(agent_response) >= 600
-        
-        # Detect errors in response
-        error_patterns = ['error', 'exception', 'fail', 'crash', 'timeout', 'unable to', 'cannot', '错误', '失败', '无法']
-        signals['error_context'] = any(p in response_lower for p in error_patterns)
-        
-        # Complex task signals
-        signals['tool_heavy'] = len(tools_used) >= 3
-        signals['complex_task'] = (
-            turn_count >= 5
-            or len(tools_used) >= 3
-            or signals['analysis_intent']
-            or signals['long_response']
-            or signals['multi_entity_reasoning']
-        )
-        
-        # Decision logic
-        if signals['user_correction']:
-            return True, 'error_post_mortem', {'reason': 'user_correction', **signals}
-        
-        if signals['error_context']:
-            return True, 'error_log', {'reason': 'error_occurred', **signals}
-        
-        if signals['complex_task'] and (signals['analysis_intent'] or signals['long_response']):
-            return True, 'task_summary', {'reason': 'high_cognitive_task', **signals}
-
-        if signals['emotional_signal'] and signals['complex_task']:
-            return True, 'task_summary', {'reason': 'complex_task_completed', **signals}
-        
-        if signals['tool_heavy'] and turn_count % 5 == 0:  # Every 5 turns if tool-heavy
-            return True, 'progress_snapshot', {'reason': 'milestone', **signals}
-        
-        return False, 'skip', signals
-
-    def capture_turn(self,
-                     user_msg: str,
-                     agent_response: str,
-                     tools_used: List[str],
-                     turn_count: int,
-                     summary_content: str = None,
-                     theme: str = "auto",
-                     context: dict = None,
-                     session_id: str = None,
-                     no_gate: bool = True) -> Dict:
-        """
-        Atomic turn capture:
-        1) log turn (L1)
-        2) decide should-capture
-        3) smart-capture when needed
-        """
-        result = {
-            'status': 'success',
-            'logged': False,
-            'log_path': None,
-            'should_capture': False,
-            'capture_type': 'skip',
-            'signals': {},
-            'captured': False,
-            'capture_result': None,
-        }
-
-        # Step 1: always log assistant turn summary
-        log_path = self.append_session_log(
-            entry_type='assistant',
-            content=agent_response,
-            tools_used=tools_used,
-            session_id=session_id
-        )
-        result['logged'] = True
-        result['log_path'] = log_path
-
-        # Step 2: decide capture (or bypass gate)
-        if no_gate:
-            should, cap_type, signals = True, 'ungated_capture', {'reason': 'no_gate'}
-        else:
-            should, cap_type, signals = self.should_capture_from_turn(
-                user_msg=user_msg,
-                agent_response=agent_response,
+    def persist_turn(
+        self,
+        raw_content: str,
+        entry_type: str = "turn",
+        tools_used: Optional[List[str]] = None,
+        session_id: Optional[str] = None,
+        extracted_content: Optional[str] = None,
+        theme: str = "auto",
+        template: Optional[str] = None,
+        title: Optional[str] = None,
+        promote_global: bool = False,
+    ) -> Dict[str, Any]:
+        result: Dict[str, Any] = {
+            "status": "success",
+            "l1_written": True,
+            "l1_path": self.append_session_log(
+                entry_type=entry_type,
+                content=raw_content,
                 tools_used=tools_used,
-                turn_count=turn_count
-            )
-        result['should_capture'] = should
-        result['capture_type'] = cap_type
-        result['signals'] = signals
-
-        if not should:
+                session_id=session_id,
+            ),
+            "l2_written": False,
+            "l2_path": None,
+            "theme": None,
+            "global_updated": False,
+            "global_path": None,
+        }
+        if not extracted_content:
             return result
 
-        # Step 3: capture
-        content = summary_content or (
-            f"CaptureType: {cap_type}\n"
-            f"User: {user_msg[:400]}\n"
-            f"Assistant: {agent_response[:800]}"
+        resolved_theme = _normalize_theme(theme, required=True)
+        if resolved_theme is None:
+            raise ValueError(THEME_REQUIRED_ERROR)
+        result["l2_path"] = self.write_theme_memory(
+            theme=resolved_theme,
+            content=extracted_content,
+            template=template,
+            title=title,
         )
+        result["l2_written"] = True
+        result["theme"] = resolved_theme
 
-        capture_context = dict(context or {})
-        if cap_type in ['error_log', 'error_post_mortem']:
-            capture_context['is_error'] = True
-        if cap_type in ['task_summary', 'progress_snapshot']:
-            capture_context['is_decision'] = capture_context.get('is_decision', False)
+        if promote_global or self._is_global_worthy(extracted_content, resolved_theme):
+            timestamp = self._now().strftime("%Y-%m-%d %H:%M")
+            result["global_path"] = self.write_global_memory(
+                f"## Persisted Turn Promotion - {timestamp}\n\n{extracted_content.strip()}",
+                append=True,
+            )
+            result["global_updated"] = True
 
-        cap_result = self.smart_persist(content, theme, capture_context, no_gate=no_gate)
-        result['captured'] = cap_result.get('action_taken') != 'skipped_low_quality'
-        result['capture_result'] = cap_result
         return result
-    
-    # ========== Quality Assessment ==========
-    
-    def score_content_quality(self, content: str, context: dict = None) -> Dict:
-        """
-        Score content quality for memory persistence.
-        Returns quality metrics and persistence recommendation.
-        """
-        scores = {
-            'length_score': 0,
-            'information_density': 0,
-            'uniqueness_score': 100,  # Default to unique
-            'recency_boost': 0,
-            'total_score': 0,
-        }
-        
-        # Length score (0-30)
-        content_len = len(content)
-        if content_len < 20:
-            scores['length_score'] = 0
-        elif content_len < 100:
-            scores['length_score'] = 10
-        elif content_len < 500:
-            scores['length_score'] = 20
-        else:
-            scores['length_score'] = 30
-        
-        # Information density (0-40)
-        # Check for specific patterns that indicate valuable content
-        valuable_patterns = [
-            r'\b(decided|decision|chose|selected)\b',
-            r'\b(error|bug|fix|solved|resolved)\b',
-            r'\b(lesson learned|takeaway|insight)\b',
-            r'\b(architecture|design pattern|best practice)\b',
-            r'\b(记住|remember|preference|prefer)\b',
-            r'(结论|洞察|教训|复盘|决策|对比分析|风险评估|推理链)',
-        ]
-        density_score = sum(10 for p in valuable_patterns if re.search(p, content, re.I))
-        scores['information_density'] = min(40, density_score)
-        
-        # Uniqueness check against existing memories
-        uniqueness = self._check_uniqueness(content)
-        scores['uniqueness_score'] = uniqueness['score']
-        scores['similar_to'] = uniqueness.get('similar_to', [])
-        
-        # Recency boost for certain types
-        if context and context.get('is_error'):
-            scores['recency_boost'] = 20
-        elif context and context.get('is_decision'):
-            scores['recency_boost'] = 15
-        
-        # Calculate total
-        scores['total_score'] = (
-            scores['length_score'] + 
-            scores['information_density'] + 
-            min(scores['uniqueness_score'], 30) +  # Cap uniqueness at 30
-            scores['recency_boost']
+
+
+def _handle_session_init(manager: MemoryManager, args: argparse.Namespace) -> Dict[str, Any]:
+    return manager.session_init(
+        session_id=args.session_id,
+        recent_days=args.recent_days,
+        theme_limit=args.theme_limit,
+        write_log=not args.no_log,
+    )
+
+
+def _handle_log_turn(manager: MemoryManager, args: argparse.Namespace) -> Dict[str, Any]:
+    return {
+        "status": "success",
+        "path": manager.append_session_log(
+            entry_type=args.entry_type,
+            content=args.content,
+            tools_used=_parse_json_arg(args.tools, []),
+            session_id=args.session_id,
+        ),
+    }
+
+
+def _handle_read_logs(manager: MemoryManager, args: argparse.Namespace) -> Dict[str, Any]:
+    return {
+        "status": "success",
+        "logs": manager.read_session_logs(days_back=args.days_back, limit=args.limit),
+    }
+
+
+def _handle_persist_turn(manager: MemoryManager, args: argparse.Namespace) -> Dict[str, Any]:
+    return manager.persist_turn(
+        raw_content=args.raw_content,
+        entry_type=args.entry_type,
+        tools_used=_parse_json_arg(args.tools, []),
+        session_id=args.session_id,
+        extracted_content=args.extracted_content,
+        theme=args.theme,
+        template=args.template,
+        title=args.title,
+        promote_global=args.promote_global,
+    )
+
+
+def _handle_write_theme(manager: MemoryManager, args: argparse.Namespace) -> Dict[str, Any]:
+    l1_path = manager.append_session_log(
+        entry_type=args.entry_type,
+        content=args.raw_content or args.content,
+        tools_used=_parse_json_arg(args.tools, []),
+        session_id=args.session_id,
+    )
+    resolved_theme = _normalize_theme(args.theme, required=True)
+    if resolved_theme is None:
+        raise ValueError(THEME_REQUIRED_ERROR)
+    result = {
+        "status": "success",
+        "l1_written": True,
+        "l1_path": l1_path,
+        "path": manager.write_theme_memory(
+            theme=resolved_theme,
+            content=args.content,
+            template=args.template,
+            title=args.title,
+        ),
+        "theme": resolved_theme,
+        "global_updated": False,
+        "global_path": None,
+    }
+    if args.promote_global or manager._is_global_worthy(args.content, resolved_theme):
+        timestamp = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
+        result["global_path"] = manager.write_global_memory(
+            f"## Theme Memory Promotion - {timestamp}\n\n{args.content.strip()}",
+            append=True,
         )
-        
-        # Recommendation
-        if scores['total_score'] >= 70:
-            scores['recommendation'] = 'persist_l3_global'  # High value, persist to global
-        elif scores['total_score'] >= 50:
-            scores['recommendation'] = 'persist_l2_theme'   # Medium value, theme memory
-        elif scores['total_score'] >= 30:
-            scores['recommendation'] = 'persist_l1_log'     # Low value, just log
-        else:
-            scores['recommendation'] = 'skip'               # Skip
-        
-        return scores
-    
-    def _check_uniqueness(self, content: str, threshold: float = 0.7) -> Dict:
-        """Check if content is unique compared to existing memories."""
-        # Simple implementation - check for exact or near-exact matches
-        content_hash = hashlib.md5(content.lower().strip().encode()).hexdigest()[:16]
-        
-        # Check against recent theme memories (simplified)
-        for theme in self.list_themes()[:5]:  # Check last 5 themes
-            memories = self.read_theme_memory(theme, hours_back=168)
-            for mem in memories:
-                existing = mem['content'].lower()
-                # Simple similarity: check if content is substring
-                if content.lower() in existing or existing in content.lower():
-                    return {'score': 20, 'similar_to': [f"{theme}/{mem['filename']}"]}
-                # Check word overlap for rough similarity
-                content_words = set(content.lower().split())
-                existing_words = set(existing.split())
-                if content_words and existing_words:
-                    overlap = len(content_words & existing_words) / max(len(content_words), len(existing_words))
-                    if overlap > threshold:
-                        return {'score': 40, 'similar_to': [f"{theme}/{mem['filename']}"]}
-        
-        return {'score': 100, 'similar_to': []}
-    
-    def smart_persist(self, content: str, theme: str = "auto", context: dict = None, no_gate: bool = True) -> Dict:
-        """
-        Smart persistence - quality check before writing.
-        Auto-selects storage tier based on quality score.
-        """
-        if no_gate:
-            if theme == "global":
-                self.write_global_memory(f"\n## {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n{content}")
-                return {
-                    'quality_score': None,
-                    'recommendation': 'ungated_global',
-                    'details': {'mode': 'no_gate'},
-                    'action_taken': 'written_to_global_ungated',
-                    'path': self.l3_global_file,
-                }
-
-            if theme == "auto":
-                theme = self._detect_theme(content)
-
-            path = self.write_theme_memory(theme, content)
-            return {
-                'quality_score': None,
-                'recommendation': 'ungated_theme',
-                'details': {'mode': 'no_gate', 'theme': theme},
-                'action_taken': 'written_to_theme_ungated',
-                'path': path,
-            }
-
-        # Score content
-        quality = self.score_content_quality(content, context)
-        
-        result = {
-            'quality_score': quality['total_score'],
-            'recommendation': quality['recommendation'],
-            'details': quality,
-            'action_taken': None,
-            'path': None,
-        }
-        
-        # Auto-detect theme if needed
-        if theme == "auto":
-            theme = self._detect_theme(content)
-        
-        # Execute based on recommendation
-        if quality['recommendation'] == 'persist_l3_global':
-            self.write_global_memory(f"\n## {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n{content}")
-            result['action_taken'] = 'written_to_global'
-            result['path'] = self.l3_global_file
-            
-        elif quality['recommendation'] == 'persist_l2_theme':
-            path = self.write_theme_memory(theme, content)
-            result['action_taken'] = 'written_to_theme'
-            result['path'] = path
-            
-        elif quality['recommendation'] == 'persist_l1_log':
-            path = self.append_session_log('auto_captured', content)
-            result['action_taken'] = 'logged_only'
-            result['path'] = path
-            
-        else:
-            result['action_taken'] = 'skipped_low_quality'
-        
-        return result
-    
-    # ========== Search & Retrieval ==========
-    
-    def search_memories(self, query: str, max_results: int = 10) -> List[Dict]:
-        """Search across all memory tiers."""
-        results = []
-        query_lower = query.lower()
-        
-        # Search L3 Global
-        global_content = self.read_global_memory()
-        if query_lower in global_content.lower():
-            # Find context around match
-            idx = global_content.lower().find(query_lower)
-            start = max(0, idx - 100)
-            end = min(len(global_content), idx + 200)
-            snippet = global_content[start:end]
-            
-            results.append({
-                'tier': 'L3_GLOBAL',
-                'type': 'global',
-                'match': 'global.md',
-                'snippet': snippet,
-                'score': 100  # Global has highest priority
-            })
-        
-        # Search L2 Themes
-        for theme in self.list_themes():
-            memories = self.read_theme_memory(theme, hours_back=720)  # 30 days
-            
-            for memory in memories:
-                if query_lower in memory['content'].lower():
-                    results.append({
-                        'tier': 'L2_THEME',
-                        'type': 'theme',
-                        'theme': theme,
-                        'timestamp': memory['timestamp'],
-                        'match': f"{theme}/{memory['filename']}",
-                        'snippet': memory['content'][:200] + '...',
-                        'score': 50
-                    })
-                    
-                    if len(results) >= max_results:
-                        break
-            
-            if len(results) >= max_results:
-                break
-        
-        # Sort by score (highest first)
-        results.sort(key=lambda x: x['score'], reverse=True)
-        return results[:max_results]
-    
-    # ========== Maintenance ==========
-    
-    def cleanup_old_memories(self, days_keep_l1: int = 30, days_keep_l2: int = 90) -> Dict:
-        """
-        Clean up old memories based on retention policy.
-        - L1 (raw logs): archive after 30 days
-        - L2 (themes): archive after 90 days
-        """
-        result = {
-            'archived_l1': [],
-            'archived_l2': [],
-            'errors': []
-        }
-        
-        archive_dir = os.path.join(self.memory_dir, "archive")
-        os.makedirs(archive_dir, exist_ok=True)
-        
-        cutoff_l1 = datetime.datetime.now() - datetime.timedelta(days=days_keep_l1)
-        cutoff_l2 = datetime.datetime.now() - datetime.timedelta(days=days_keep_l2)
-        
-        # Archive old L1 logs
-        for filename in os.listdir(self.l1_sessions_dir):
-            if not filename.endswith('.md'):
-                continue
-            try:
-                date_str = filename.replace('.md', '')
-                file_date = datetime.datetime.strptime(date_str, "%Y-%m-%d")
-                
-                if file_date < cutoff_l1:
-                    src = os.path.join(self.l1_sessions_dir, filename)
-                    dst = os.path.join(archive_dir, f"session_{filename}")
-                    os.rename(src, dst)
-                    result['archived_l1'].append(filename)
-            except Exception as e:
-                result['errors'].append(f"L1 {filename}: {str(e)}")
-        
-        # Archive old L2 theme files
-        for theme in self.list_themes():
-            theme_dir = os.path.join(self.l2_themes_dir, theme)
-            for filename in os.listdir(theme_dir):
-                if not filename.endswith('.md'):
-                    continue
-                try:
-                    time_str = filename.replace('.md', '')
-                    file_time = datetime.datetime.strptime(time_str, "%Y-%m-%d_%H")
-                    
-                    if file_time < cutoff_l2:
-                        theme_archive = os.path.join(archive_dir, theme)
-                        os.makedirs(theme_archive, exist_ok=True)
-                        src = os.path.join(theme_dir, filename)
-                        dst = os.path.join(theme_archive, filename)
-                        os.rename(src, dst)
-                        result['archived_l2'].append(f"{theme}/{filename}")
-                except Exception as e:
-                    result['errors'].append(f"L2 {theme}/{filename}: {str(e)}")
-        
-        return result
+        result["global_updated"] = True
+    return result
 
 
-def main():
-    """CLI interface for memory manager."""
+def _handle_read_theme(manager: MemoryManager, args: argparse.Namespace) -> Dict[str, Any]:
+    return {
+        "status": "success",
+        "memories": manager.read_theme_memory(
+            theme=args.theme,
+            hours_back=args.hours_back,
+            limit=args.limit,
+        ),
+    }
+
+
+def _handle_read_global(manager: MemoryManager, _args: argparse.Namespace) -> Dict[str, Any]:
+    return {
+        "status": "success",
+        "path": str(manager.global_memory_file),
+        "content": manager.read_global_memory(),
+    }
+
+
+def _handle_write_global(manager: MemoryManager, args: argparse.Namespace) -> Dict[str, Any]:
+    l1_path = manager.append_session_log(
+        entry_type=args.entry_type,
+        content=args.raw_content or args.content,
+        tools_used=_parse_json_arg(args.tools, []),
+        session_id=args.session_id,
+    )
+    return {
+        "status": "success",
+        "l1_written": True,
+        "l1_path": l1_path,
+        "path": manager.write_global_memory(args.content, append=args.append),
+    }
+
+
+def _handle_list_themes(manager: MemoryManager, _args: argparse.Namespace) -> Dict[str, Any]:
+    return {"status": "success", "themes": manager.list_themes()}
+
+
+def _handle_write_data(manager: MemoryManager, args: argparse.Namespace) -> Dict[str, Any]:
+    csv_content = _read_csv_source(args.csv_content, args.source_file)
+    raw_log = args.raw_content or f"Stored CSV memory data file {_normalize_csv_name(args.name)}"
+    data_path = manager.write_data_memory(
+        name=args.name,
+        csv_content=csv_content,
+        replace=args.replace,
+    )
+    manifest_entry = manager._upsert_data_manifest_entry(
+        name=args.name,
+        csv_content=csv_content,
+        source_label=args.source_label,
+        description=args.description,
+        columns=_parse_json_arg(args.columns_json, None),
+    )
+    return {
+        "status": "success",
+        "l1_written": True,
+        "l1_path": manager.append_session_log(
+            entry_type=args.entry_type,
+            content=raw_log,
+            tools_used=_parse_json_arg(args.tools, []),
+            session_id=args.session_id,
+        ),
+        "data_path": data_path,
+        "manifest_entry": manifest_entry,
+    }
+
+
+def _handle_list_data(manager: MemoryManager, _args: argparse.Namespace) -> Dict[str, Any]:
+    return {"status": "success", "data_files": manager.list_data_files()}
+
+
+def _handle_read_data(manager: MemoryManager, args: argparse.Namespace) -> Dict[str, Any]:
+    return {
+        "status": "success",
+        "data": manager.read_data_memory(name=args.name, head=args.head),
+    }
+
+
+COMMAND_HANDLERS = {
+    "session-init": _handle_session_init,
+    "log-turn": _handle_log_turn,
+    "read-logs": _handle_read_logs,
+    "persist-turn": _handle_persist_turn,
+    "write-theme": _handle_write_theme,
+    "read-theme": _handle_read_theme,
+    "read-global": _handle_read_global,
+    "write-global": _handle_write_global,
+    "list-themes": _handle_list_themes,
+    "write-data": _handle_write_data,
+    "list-data": _handle_list_data,
+    "read-data": _handle_read_data,
+}
+
+
+def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description='Memory Manager for AI Agents - 3-tier memory system',
+        description="Memory Manager for repo-local L1/L2/L3 persistence",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Session lifecycle
-  %(prog)s session-init
-  %(prog)s session-end --summary '{"key_decisions": 2}'
-  
-  # L1: Raw session logs
-  %(prog)s log-turn --entry-type user --content "Hello"
-  %(prog)s read-logs --days-back 7
-  
-  # L2: Theme-based memory
-  %(prog)s quick-note --content "Refactored auth module" --auto-theme
-    %(prog)s write-theme --theme travel --content "Prefer fewer transfers in commute planning"
-    %(prog)s read-theme --theme travel
-  
-  # L3: Global memory
+  %(prog)s session-init --session-id abc
+  %(prog)s log-turn --entry-type user --content \"User asked for a plan\"
+  %(prog)s persist-turn --entry-type assistant --raw-content \"Full raw turn\" \\
+    --extracted-content \"Decision: standardize on persist-turn\" --theme decision
+    %(prog)s write-theme --theme preferences --content \"User prefers concise conclusions first\" --promote-global
+  %(prog)s read-theme --theme research --hours-back 72
   %(prog)s read-global
-  %(prog)s write-global --content "User prefers TypeScript"
-  
-  # Smart features
-  %(prog)s smart-capture --content "Fixed critical bug in parser" --context '{"is_error": true}'
-  %(prog)s should-capture --user-msg "Wrong output" --agent-response "Error: timeout" --tools '["read", "edit"]' --turn-count 3
-    %(prog)s capture-turn --user-msg "..." --agent-response "..." --tools '["read"]' --turn-count 1
-  %(prog)s score-quality --content "Decision: use Redis for caching"
-  
-  # Search & maintenance
-  %(prog)s search --query "delegation"
+    %(prog)s write-data --name metrics.csv --csv-content \"date,value\\n2026-03-07,1\" --description \"Sample metric"
+    %(prog)s read-data --name metrics.csv --head 5
   %(prog)s list-themes
-  %(prog)s cleanup --days-keep-l1 30 --days-keep-l2 90
-        """
+        """,
     )
     parser.add_argument(
-        '--workspace',
-        help='Workspace root path (defaults to current working directory)'
+        "--workspace",
+        help="Workspace root path (defaults to current working directory)",
     )
-    
-    subparsers = parser.add_subparsers(dest='command', help='Command to execute')
-    
-    # ========== Session Lifecycle ==========
-    
-    # Session init
-    session_init_parser = subparsers.add_parser('session-init', help='Initialize session - load memories')
-    session_init_parser.add_argument('--context', help='Session context JSON')
-    
-    # Session end
-    session_end_parser = subparsers.add_parser('session-end', help='End session - generate summary')
-    session_end_parser.add_argument('--summary', help='Session summary JSON')
-    session_end_parser.add_argument('--no-distill', action='store_true', help='Skip auto-distillation')
-    
-    # ========== L1: Session Logs ==========
-    
-    # Log turn
-    log_turn_parser = subparsers.add_parser('log-turn', help='Log a conversation turn to L1')
-    log_turn_parser.add_argument('--entry-type', default='turn', help='Entry type')
-    log_turn_parser.add_argument('--content', required=True, help='Content to log')
-    log_turn_parser.add_argument('--tools', help='Tools used (JSON array)')
-    log_turn_parser.add_argument('--session-id', help='Session identifier')
-    
-    # Read logs
-    read_logs_parser = subparsers.add_parser('read-logs', help='Read L1 session logs')
-    read_logs_parser.add_argument('--days-back', type=int, default=7, help='Days to look back')
-    
-    # ========== L2: Theme Memory ==========
-    
-    # Quick note
-    quick_note_parser = subparsers.add_parser('quick-note', help='Quick capture with minimal friction')
-    quick_note_parser.add_argument('--content', required=True, help='Note content')
-    quick_note_parser.add_argument('--theme', default='misc', help='Theme name')
-    quick_note_parser.add_argument('--auto-theme', action='store_true', help='Auto-detect theme')
-    
-    # Write theme
-    write_theme_parser = subparsers.add_parser('write-theme', help='Write to theme memory')
-    write_theme_parser.add_argument('--theme', required=True, help='Theme name')
-    write_theme_parser.add_argument('--content', required=True, help='Content to write')
-    write_theme_parser.add_argument('--template', choices=['decision', 'error', 'task'], help='Template type')
-    
-    # Read theme
-    read_theme_parser = subparsers.add_parser('read-theme', help='Read theme memory')
-    read_theme_parser.add_argument('--theme', required=True, help='Theme name')
-    read_theme_parser.add_argument('--hours-back', type=int, default=24, help='Hours to look back')
-    
-    # ========== L3: Global Memory ==========
-    
-    read_global_parser = subparsers.add_parser('read-global', help='Read global memory')
-    
-    write_global_parser = subparsers.add_parser('write-global', help='Write to global memory')
-    write_global_parser.add_argument('--content', required=True, help='Content to write')
-    write_global_parser.add_argument('--append', action='store_true', help='Append to existing')
-    
-    # ========== Smart Features ==========
-    
-    # Smart capture
-    smart_capture_parser = subparsers.add_parser('smart-capture', help='Quality-aware capture (default ungated)')
-    smart_capture_parser.add_argument('--content', required=True, help='Content to capture')
-    smart_capture_parser.add_argument('--theme', default='auto', help='Theme (auto for detection)')
-    smart_capture_parser.add_argument('--context', help='Context JSON for scoring')
-    smart_capture_parser.add_argument('--gate', action='store_true', help='Explicitly enable quality gate')
-    
-    # Should capture
-    should_capture_parser = subparsers.add_parser('should-capture', help='Analyze if turn is worth capturing')
-    should_capture_parser.add_argument('--user-msg', required=True, help='User message')
-    should_capture_parser.add_argument('--agent-response', required=True, help='Agent response')
-    should_capture_parser.add_argument('--tools', default='[]', help='Tools used (JSON array)')
-    should_capture_parser.add_argument('--turn-count', type=int, required=True, help='Turn count')
 
-    # Atomic capture turn
-    capture_turn_parser = subparsers.add_parser('capture-turn', help='Atomic log+decide+capture for one turn (default ungated)')
-    capture_turn_parser.add_argument('--user-msg', required=True, help='User message')
-    capture_turn_parser.add_argument('--agent-response', required=True, help='Agent response')
-    capture_turn_parser.add_argument('--tools', default='[]', help='Tools used (JSON array)')
-    capture_turn_parser.add_argument('--turn-count', type=int, required=True, help='Turn count')
-    capture_turn_parser.add_argument('--summary-content', help='Optional distilled content to persist')
-    capture_turn_parser.add_argument('--theme', default='auto', help='Theme (auto for detection)')
-    capture_turn_parser.add_argument('--context', help='Context JSON for scoring')
-    capture_turn_parser.add_argument('--session-id', help='Session identifier')
-    capture_turn_parser.add_argument('--gate', action='store_true', help='Explicitly enable capture and quality gates')
-    
-    # Score quality
-    score_quality_parser = subparsers.add_parser('score-quality', help='Score content quality')
-    score_quality_parser.add_argument('--content', required=True, help='Content to score')
-    score_quality_parser.add_argument('--context', help='Context JSON')
-    
-    # ========== Search & Maintenance ==========
-    
-    list_themes_parser = subparsers.add_parser('list-themes', help='List all themes')
-    
-    search_parser = subparsers.add_parser('search', help='Search memories')
-    search_parser.add_argument('--query', required=True, help='Search query')
-    search_parser.add_argument('--max-results', type=int, default=10, help='Max results')
-    
-    cleanup_parser = subparsers.add_parser('cleanup', help='Archive old memories')
-    cleanup_parser.add_argument('--days-keep-l1', type=int, default=30, help='Days to keep L1')
-    cleanup_parser.add_argument('--days-keep-l2', type=int, default=90, help='Days to keep L2')
-    
+    subparsers = parser.add_subparsers(dest="command", help="Command to execute")
+
+    session_init_parser = subparsers.add_parser(
+        "session-init",
+        help="Load global memory and recent memory index for a new session",
+    )
+    session_init_parser.add_argument("--session-id", help=SESSION_ID_HELP)
+    session_init_parser.add_argument("--recent-days", type=int, default=7, help="Days of recent context to inspect")
+    session_init_parser.add_argument("--theme-limit", type=int, default=8, help="Maximum recent themes to return")
+    session_init_parser.add_argument("--no-log", action="store_true", help="Do not write a session_init entry to L1")
+
+    log_turn_parser = subparsers.add_parser("log-turn", help="Write raw content to L1 only")
+    log_turn_parser.add_argument("--entry-type", default="turn", help="Entry type")
+    log_turn_parser.add_argument("--content", required=True, help="Content to log")
+    log_turn_parser.add_argument("--tools", help=TOOLS_JSON_HELP)
+    log_turn_parser.add_argument("--session-id", help=SESSION_ID_HELP)
+
+    read_logs_parser = subparsers.add_parser("read-logs", help="Read recent L1 session logs")
+    read_logs_parser.add_argument("--days-back", type=int, default=7, help="Days to look back")
+    read_logs_parser.add_argument("--limit", type=int, default=20, help="Maximum log files to return")
+
+    persist_turn_parser = subparsers.add_parser(
+        "persist-turn",
+        help="Write raw L1 content first, then optional extracted L2 content",
+    )
+    persist_turn_parser.add_argument("--entry-type", default="turn", help=ENTRY_TYPE_L1_HELP)
+    persist_turn_parser.add_argument("--raw-content", required=True, help="Raw interaction content for L1")
+    persist_turn_parser.add_argument("--extracted-content", help="Optional reusable content for L2")
+    persist_turn_parser.add_argument("--theme", help=THEME_NAME_HELP)
+    persist_turn_parser.add_argument("--template", choices=TEMPLATE_CHOICES, help="Optional L2 template")
+    persist_turn_parser.add_argument("--title", help="Optional L2 heading title")
+    persist_turn_parser.add_argument("--tools", help=TOOLS_JSON_HELP)
+    persist_turn_parser.add_argument("--session-id", help=SESSION_ID_HELP)
+    persist_turn_parser.add_argument("--promote-global", action="store_true", help="Also append extracted content to global memory")
+
+    write_theme_parser = subparsers.add_parser("write-theme", help="Write extracted content to L2")
+    write_theme_parser.add_argument("--theme", required=True, help=THEME_NAME_HELP)
+    write_theme_parser.add_argument("--content", required=True, help="Content to write")
+    write_theme_parser.add_argument("--template", choices=TEMPLATE_CHOICES, help="Optional L2 template")
+    write_theme_parser.add_argument("--title", help="Optional heading title")
+    write_theme_parser.add_argument("--promote-global", action="store_true", help="Also append content to global memory")
+    write_theme_parser.add_argument("--raw-content", help="Optional L1 raw content; defaults to --content")
+    write_theme_parser.add_argument("--entry-type", default="turn", help=ENTRY_TYPE_L1_HELP)
+    write_theme_parser.add_argument("--tools", help=TOOLS_JSON_HELP)
+    write_theme_parser.add_argument("--session-id", help=SESSION_ID_HELP)
+
+    read_theme_parser = subparsers.add_parser("read-theme", help="Read recent L2 theme memory")
+    read_theme_parser.add_argument("--theme", required=True, help=THEME_NAME_HELP)
+    read_theme_parser.add_argument("--hours-back", type=int, default=24, help="Hours to look back")
+    read_theme_parser.add_argument("--limit", type=int, default=20, help="Maximum files to return")
+
+    subparsers.add_parser("read-global", help="Read global memory")
+
+    write_global_parser = subparsers.add_parser("write-global", help="Write or append to global memory")
+    write_global_parser.add_argument("--content", required=True, help="Content to write")
+    write_global_parser.add_argument("--append", action="store_true", help="Append instead of replace")
+    write_global_parser.add_argument("--raw-content", help="Optional L1 raw content; defaults to --content")
+    write_global_parser.add_argument("--entry-type", default="turn", help=ENTRY_TYPE_L1_HELP)
+    write_global_parser.add_argument("--tools", help=TOOLS_JSON_HELP)
+    write_global_parser.add_argument("--session-id", help=SESSION_ID_HELP)
+
+    subparsers.add_parser("list-themes", help="List all L2 themes")
+    write_data_parser = subparsers.add_parser("write-data", help="Write a CSV data file to memory/data and log the action to L1")
+    write_data_parser.add_argument("--name", required=True, help="CSV file name")
+    write_data_parser.add_argument("--csv-content", help="CSV content to store")
+    write_data_parser.add_argument("--source-file", help="Existing CSV file to copy into memory/data")
+    write_data_parser.add_argument("--replace", action="store_true", help="Overwrite an existing CSV data file")
+    write_data_parser.add_argument("--description", help="Optional manifest description for the CSV dataset")
+    write_data_parser.add_argument("--source-label", help=SOURCE_LABEL_HELP)
+    write_data_parser.add_argument("--columns-json", help="Optional JSON array describing expected columns")
+    write_data_parser.add_argument("--raw-content", help="Optional L1 raw content for the write action")
+    write_data_parser.add_argument("--entry-type", default="turn", help=ENTRY_TYPE_L1_HELP)
+    write_data_parser.add_argument("--tools", help=TOOLS_JSON_HELP)
+    write_data_parser.add_argument("--session-id", help=SESSION_ID_HELP)
+
+    read_data_parser = subparsers.add_parser("read-data", help="Read a CSV data file stored under memory/data")
+    read_data_parser.add_argument("--name", required=True, help="CSV file name")
+    read_data_parser.add_argument("--head", type=int, help="Return only the first N lines of the CSV file")
+
+    subparsers.add_parser("list-data", help="List CSV data files stored under memory/data")
+    return parser
+
+
+def main() -> None:
+    parser = _build_parser()
     args = parser.parse_args()
-    
     if not args.command:
         parser.print_help()
         sys.exit(1)
-    
+
     manager = MemoryManager(args.workspace)
-    
     try:
-        # ========== Session Lifecycle ==========
-        
-        if args.command == 'session-init':
-            context = json.loads(args.context) if args.context else {}
-            result = manager.session_init(context)
-            print(json.dumps(result, ensure_ascii=False, indent=2))
-        
-        elif args.command == 'session-end':
-            summary = json.loads(args.summary) if args.summary else {}
-            result = manager.session_end(summary, auto_distill=not args.no_distill)
-            print(json.dumps(result, ensure_ascii=False, indent=2))
-        
-        # ========== L1: Session Logs ==========
-        
-        elif args.command == 'log-turn':
-            tools = json.loads(args.tools) if args.tools else []
-            path = manager.append_session_log(
-                entry_type=args.entry_type,
-                content=args.content,
-                tools_used=tools,
-                session_id=args.session_id
-            )
-            print(json.dumps({'status': 'success', 'path': path}, ensure_ascii=False))
-        
-        elif args.command == 'read-logs':
-            logs = manager.read_session_logs(days_back=args.days_back)
-            print(json.dumps({'status': 'success', 'logs': logs}, ensure_ascii=False, indent=2))
-        
-        # ========== L2: Theme Memory ==========
-        
-        elif args.command == 'quick-note':
-            result = manager.quick_note(
-                content=args.content,
-                theme=args.theme,
-                auto_theme=args.auto_theme
-            )
-            print(json.dumps(result, ensure_ascii=False, indent=2))
-        
-        elif args.command == 'write-theme':
-            path = manager.write_theme_memory(
-                theme=args.theme,
-                content=args.content,
-                template=args.template
-            )
-            print(json.dumps({'status': 'success', 'path': path}, ensure_ascii=False))
-        
-        elif args.command == 'read-theme':
-            memories = manager.read_theme_memory(args.theme, hours_back=args.hours_back)
-            print(json.dumps({'status': 'success', 'memories': memories}, ensure_ascii=False, indent=2))
-        
-        # ========== L3: Global Memory ==========
-        
-        elif args.command == 'read-global':
-            content = manager.read_global_memory()
-            print(json.dumps({'status': 'success', 'content': content}, ensure_ascii=False))
-        
-        elif args.command == 'write-global':
-            manager.write_global_memory(args.content, args.append)
-            print(json.dumps({'status': 'success'}, ensure_ascii=False))
-        
-        # ========== Smart Features ==========
-        
-        elif args.command == 'smart-capture':
-            context = json.loads(args.context) if args.context else {}
-            no_gate = not args.gate
-            result = manager.smart_persist(args.content, args.theme, context, no_gate=no_gate)
-            print(json.dumps(result, ensure_ascii=False, indent=2))
-        
-        elif args.command == 'should-capture':
-            tools = json.loads(args.tools) if args.tools else []
-            should, cap_type, signals = manager.should_capture_from_turn(
-                user_msg=args.user_msg,
-                agent_response=args.agent_response,
-                tools_used=tools,
-                turn_count=args.turn_count
-            )
-            print(json.dumps({
-                'should_capture': should,
-                'capture_type': cap_type,
-                'signals': signals
-            }, ensure_ascii=False, indent=2))
-
-        elif args.command == 'capture-turn':
-            tools = json.loads(args.tools) if args.tools else []
-            context = json.loads(args.context) if args.context else {}
-            no_gate = not args.gate
-            result = manager.capture_turn(
-                user_msg=args.user_msg,
-                agent_response=args.agent_response,
-                tools_used=tools,
-                turn_count=args.turn_count,
-                summary_content=args.summary_content,
-                theme=args.theme,
-                context=context,
-                session_id=args.session_id,
-                no_gate=no_gate
-            )
-
-            marker = {
-                'marker': 'MEMORY_CAPTURED' if result.get('captured') else 'MEMORY_SKIPPED',
-                'capture_type': result.get('capture_type'),
-                'path': (result.get('capture_result') or {}).get('path') if result.get('capture_result') else None,
-                'action_taken': (result.get('capture_result') or {}).get('action_taken') if result.get('capture_result') else None,
-            }
-            result['audit'] = marker
-            print(json.dumps(result, ensure_ascii=False, indent=2))
-        
-        elif args.command == 'score-quality':
-            context = json.loads(args.context) if args.context else {}
-            result = manager.score_content_quality(args.content, context)
-            print(json.dumps(result, ensure_ascii=False, indent=2))
-        
-        # ========== Search & Maintenance ==========
-        
-        elif args.command == 'list-themes':
-            themes = manager.list_themes()
-            print(json.dumps({'status': 'success', 'themes': themes}, ensure_ascii=False))
-        
-        elif args.command == 'search':
-            results = manager.search_memories(args.query, args.max_results)
-            print(json.dumps({'status': 'success', 'results': results}, ensure_ascii=False, indent=2))
-        
-        elif args.command == 'cleanup':
-            result = manager.cleanup_old_memories(args.days_keep_l1, args.days_keep_l2)
-            print(json.dumps(result, ensure_ascii=False, indent=2))
-    
-    except Exception as e:
-        print(json.dumps({'status': 'error', 'message': str(e)}, ensure_ascii=False))
+        result = COMMAND_HANDLERS[args.command](manager, args)
+    except Exception as error:
+        print(json.dumps({"status": "error", "message": str(error)}, ensure_ascii=False, indent=2))
         sys.exit(1)
 
+    print(json.dumps(result, ensure_ascii=False, indent=2))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

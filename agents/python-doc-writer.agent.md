@@ -34,8 +34,8 @@ As the Technical Writer, your primary responsibility is to generate clear, user-
 - `.github/python-standards/agent-collaboration-protocol.md` - Iteration limits
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/python-docs/index.md` for documentation templates and style preferences
-- **Write at end**: After documentation completion, persist effective templates and patterns
+- **Read at start**: Check `memory/global.md` and `memory/research/python_docs.md` for documentation templates and style preferences
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable templates, examples, or explanation patterns
 
 ---
 
@@ -49,12 +49,12 @@ Before writing documentation, check memory for templates and patterns:
    - Check "Patterns" for documentation patterns
    - Review user communication preferences
 
-2. **Python Documentation Theme** (`memory/python-docs/index.md`):
+2. **Python Documentation Theme** (`memory/research/python_docs.md`):
    - Review documentation templates
    - Check style preferences and conventions
    - Look for effective example patterns
 
-### Writing Memory (Session End - Post-hoc Distillation)
+### Writing Memory (L1 First, Then Optional L2)
 
 After completing documentation:
 
@@ -98,8 +98,8 @@ After completing documentation:
 ```
 
 **Storage Location**:
-- Documentation templates → `memory/python-docs/index.md` "## Templates"
-- Explanation patterns → `memory/python-docs/index.md` "## Explanation Patterns"
+- Documentation templates → `memory/research/python_docs.md`
+- Explanation patterns → `memory/research/python_docs.md`
 - User preferences → `memory/global.md` "## User Preferences"
 
 ---
@@ -980,8 +980,8 @@ Before submitting to `python-tech-lead`:
 - [ ] **Reflect**: Did I find effective ways to explain complex concepts?
 - [ ] **Distill**: Can I document these patterns for future use?
 - [ ] **Persist**: Write to appropriate memory file
-  - Documentation templates → `memory/python-docs/index.md` "## Templates"
-  - Explanation patterns → `memory/python-docs/index.md` "## Explanation Patterns"
+    - Documentation templates → `memory/research/python_docs.md`
+    - Explanation patterns → `memory/research/python_docs.md`
   - User preferences → `memory/global.md` "## User Preferences"
 
 ---

@@ -5,7 +5,7 @@ layout:
   id: conclusion
   name: 结论页布局
   version: 2.0
-  category: closing
+  category: special
 
 selection_criteria:
   when_to_use:
@@ -33,6 +33,36 @@ content_spec:
   actions:
     count: { min: 2, max: 4 }
     per_action_max_chars: 40
+
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - core_conclusion
+    - supporting_rationale
+    - action_items
+    - action_priority
+    - closing_message
+    - fallback_plan
+  narrative_fit:
+    - final_recommendation
+    - strategic_close
+    - action_summary
+  compatible_chart_families: []
+  compatible_component_families:
+    - Card_Accent
+    - Card_Solid
+    - List_Icon
+    - Badge_Status
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - full_width
+    - pillar
+    - closing
+  overflow_recovery_order:
+    - reduce_action_count
+    - shorten_supporting_rationale
+    - convert_actions_to_short_labels
+    - downgrade_to_full_width
 
 constraints:
   - "必须有核心结论标题"

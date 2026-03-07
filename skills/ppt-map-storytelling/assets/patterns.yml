@@ -1,0 +1,150 @@
+# ============================================================
+# ppt-map-storytelling / patterns.yml
+# 地图叙事模式 — 地图页类型、裁切范围、叠加语法、标注层级
+# ============================================================
+
+asset_index:
+  patterns_file: patterns.yml
+  examples_file: examples.yml
+  usage:
+    - "先用 patterns.yml 决定 narrative_archetype、scope、overlay grammar 与 basemap contract。"
+    - "再用 examples.yml 选择最接近的输入骨架，补全 render_engine 与 basemap_source。"
+
+narrative_archetypes:
+  territory_snapshot:
+    intent: "区域状态 / 暴露 / 集中度"
+    recommended_scope: ["regional", "global"]
+    default_overlays: ["fill_zone", "hotspot_callout"]
+    avoid: ["dense_route_line", "too_many_floating_cards"]
+
+  route_corridor:
+    intent: "路线 / 走廊 / 补给 / 航运 / 物流"
+    recommended_scope: ["regional", "local"]
+    default_overlays: ["route_line", "direction_arrow", "point_marker"]
+    avoid: ["excessive_fill_zone"]
+
+  conflict_theater:
+    intent: "冲突空间 / 打击方向 / 升级态势 / 风险区域"
+    recommended_scope: ["regional", "multi-region"]
+    default_overlays: ["direction_arrow", "fill_zone", "hotspot_callout"]
+    avoid: ["ranked_table_disguised_as_map"]
+
+  footprint_network:
+    intent: "全球布局 / 节点分布 / 网络覆盖"
+    recommended_scope: ["global", "regional"]
+    default_overlays: ["point_marker", "route_line", "floating_card"]
+    avoid: ["too_many_text_labels"]
+
+overlay_grammar:
+  fill_zone:
+    meaning: "区域状态或暴露范围"
+    use_for: ["风险区", "影响范围", "控制区"]
+  point_marker:
+    meaning: "关键节点"
+    use_for: ["港口", "城市", "基地", "设施"]
+  route_line:
+    meaning: "路径或连接"
+    use_for: ["航线", "补给线", "贸易走廊"]
+  direction_arrow:
+    meaning: "方向性动作或压力"
+    use_for: ["打击方向", "推进方向", "迁移方向"]
+  hotspot_callout:
+    meaning: "地图上无法自解释的重要点"
+    use_for: ["热点说明", "chokepoint", "事件点"]
+  floating_card:
+    meaning: "脱离地图底图的叙事摘要卡"
+    use_for: ["KPI", "结论", "区域摘要"]
+
+overlay_component_contracts:
+  fill_zone:
+    narrative_role: area_state_or_exposure
+    preferred_render_path: echarts-geo polygon fill or prepared SVG shaded region
+    compatible_component_families: [Map_Grid]
+    escalate_to_chart_engine_when:
+      - regional intensity must be encoded quantitatively
+      - the page needs choropleth-like geographic comparison
+    avoid_when:
+      - the audience needs exact numeric reading on-map
+  point_marker:
+    narrative_role: key_place_anchor
+    preferred_render_path: geo scatter anchor or static SVG point overlay
+    compatible_component_families: [Map_NodeNetwork]
+    escalate_to_chart_engine_when:
+      - markers are data-bound and require tooltip/legend behavior
+      - multiple nodes need consistent geo coordinates
+    avoid_when:
+      - the node count exceeds the label budget and becomes a network diagram
+  route_line:
+    narrative_role: corridor_or_connection
+    preferred_render_path: echarts geo lines or SVG route overlay
+    compatible_component_families: [Map_FlowArrow]
+    escalate_to_chart_engine_when:
+      - route geometry is data-driven across multiple paths
+      - directional sequencing or path intensity is encoded by value
+    avoid_when:
+      - the path is only decorative and not part of the argument
+  direction_arrow:
+    narrative_role: force_direction_or_pressure
+    preferred_render_path: SVG arrow overlay or simplified geo line with arrowhead
+    compatible_component_families: [Map_FlowArrow]
+    escalate_to_chart_engine_when:
+      - multiple directional paths need consistent geo anchoring
+    avoid_when:
+      - the map is static and the story is actually about region state, not movement
+  hotspot_callout:
+    narrative_role: high_attention_place_explainer
+    preferred_render_path: HTML/SVG callout plus local marker
+    compatible_component_families: [Map_NodeNetwork, Badge_Pill, Card_Accent]
+    escalate_to_chart_engine_when:
+      - the hotspot is one of many data-bound points in a geo scatter system
+    avoid_when:
+      - the place is already self-explanatory from the basemap and primary labels
+  floating_card:
+    narrative_role: detached_summary_or_kpi
+    preferred_render_path: layout-region card anchored to a map area
+    compatible_component_families: [Card_Accent, Card_Glass, Metric_Trend, Metric_Big, Metric_KpiRow, Badge_Pill]
+    escalate_to_chart_engine_when:
+      - the detached card is trying to encode a relationship that belongs in a chart
+    avoid_when:
+      - the card duplicates map labels instead of summarizing them
+
+overlay_planning_sequence:
+  - "先定 narrative_archetype，再定 overlay family。"
+  - "对每个 overlay family，先查 overlay_component_contracts 决定更接近 chart layer 还是 component layer。"
+  - "若 overlay 需要 geo-series、连续色标、tooltip 或多点坐标绑定，升级到 ppt-chart-engine。"
+  - "若 overlay 只是叙事锚点、方向暗示或摘要卡，优先使用 map storytelling + component families。"
+
+scope_rules:
+  - "优先选择能保留叙事的最小地理范围。"
+  - "全球图用于覆盖关系；区域图用于冲突、路线和 chokepoint。"
+  - "若依赖局部邻接关系，必须裁切而不是硬上全球图。"
+
+annotation_hierarchy:
+  primary: "1-3 个核心标签，定义这页地图要讲什么"
+  secondary: "支撑性地点或路线标签"
+  contextual: "仅在受众无法定位时补充"
+
+composition_rules:
+  - "地图页一次只回答一个空间问题。"
+  - "叠加层过多导致底图失去意义时，应降级为非地图表达。"
+  - "floating cards 必须与地图区域建立明确对应关系。"
+
+basemap_source_contract:
+  default_engine_policy:
+    geo_series_pages: "ECharts Geo"
+    editorial_map_pages: "prepared SVG + HTML/SVG overlay"
+    vector_tile_exception: "MapLibre GL JS only when tile/vector-map behavior is required"
+  allowed_inputs:
+    - { type: svg_asset, use_for: [editorial_map, conflict_theater, route_corridor], rule: "must be prepared vector asset, not hand-drawn in slide code" }
+    - { type: geojson, use_for: [echarts_geo, region_fill, point_binding, route_anchor], rule: "preferred structured source for ECharts map registration" }
+    - { type: topojson, use_for: [polygon_heavy_region_sets], rule: "use when lighter topology-aware payload improves runtime" }
+    - { type: vector_tile_style, use_for: [maplibre_only], rule: "allowed only after explicit exception decision" }
+  prohibited_inputs:
+    - "HTML/CSS/SVG 中从 0 手绘海岸线、边界或国家轮廓"
+    - "无法重着色或无法干净叠加标注的截图式底图"
+    - "投影、命名或许可状态不可追溯的地图资源"
+  readiness_checklist:
+    - "底图范围已裁切到实际叙事区域"
+    - "可与当前风格档案配色兼容"
+    - "可承载 1-3 个主标签与必要叠加层"
+    - "运行和导出成本适合 PPT HTML 页面"

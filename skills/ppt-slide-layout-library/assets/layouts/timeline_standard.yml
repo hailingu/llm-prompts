@@ -29,6 +29,36 @@ content_spec:
       title_max_chars: 20
       desc_max_chars: 50
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - chronology
+    - date_precision
+    - event_labels
+    - sequencing_basis
+    - endpoint_message
+    - fallback_plan
+  narrative_fit:
+    - precise_event_timeline
+    - project_tracking
+    - dated_milestone_sequence
+  compatible_chart_families:
+    - line_trend
+  compatible_component_families:
+    - Step_Flow
+    - Card_Solid
+    - List_Icon
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - milestone_timeline
+    - timeline_vertical
+    - process_steps
+  overflow_recovery_order:
+    - reduce_event_count
+    - shorten_event_descriptions
+    - reduce_date_label_density
+    - downgrade_to_milestone_timeline
+
 constraints:
   - "节点必须绝对居中 (top-1/2 -translate-y-1/2)"
   - "必须有精确日期"

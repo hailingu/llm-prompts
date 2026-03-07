@@ -1,6 +1,6 @@
 ---
 name: ppt-slide-layout-library
-description: Slide layout library for PPT HTML slides - 14 layout types with selection criteria, layout specs, content specs, HTML templates, constraints, and page-level budget/overflow constraints.
+description: Slide layout library for PPT HTML slides - 30 layout types with selection criteria, layout specs, content specs, HTML templates, constraints, and page-level budget/overflow constraints.
 metadata: 
   - version: 2.0.0
   - author: ppt-layout-library
@@ -10,7 +10,19 @@ metadata:
 
 ## Overview
 
-This skill provides **14 professional HTML slide layout templates** with a comprehensive specification system:
+This skill provides **30 professional HTML slide layout templates** with a comprehensive specification system.
+
+The authoritative inventory lives in `assets/layouts/index.yml`. If the quick reference in this file and the index ever drift, treat the index as the source of truth and update this file.
+
+Current inventory summary:
+
+- `special`: 3 layouts
+- `chart`: 8 layouts
+- `dashboard`: 1 layout
+- `narrative`: 6 layouts
+- `timeline_process`: 7 layouts
+- `map`: 1 layout
+- `analytical`: 3 layouts
 
 | Spec Type | Purpose | Example |
 |-----------|---------|---------|
@@ -27,6 +39,61 @@ This skill provides **14 professional HTML slide layout templates** with a compr
 - Apply layout constraints and specifications
 - Handle page vertical budget
 - Ensure layout deduplication and visual balance
+
+## Inventory Discipline
+
+Before selecting a layout:
+
+1. Read `assets/layouts/index.yml` first to narrow the candidate set.
+2. Use the category and quick-selection tables there before opening individual layout files.
+3. Treat directory-only layouts as unavailable until they are indexed.
+4. Do not rely on old mental models such as "the library mainly has 14 core layouts". The library now contains 30 indexed layouts, including advanced analytical and synthesis layouts.
+
+## Unified Layout Contract
+
+Core layouts should expose a `layout_contract` block so layout selection can be orchestrated rather than inferred from prose.
+
+Current canonical contract fields:
+
+- `required_thinking_fields`: fields that must appear in the Thinking phase before implementation
+- `narrative_fit`: what kind of reading task the layout is optimized for
+- `compatible_chart_families`: chart families this layout can host safely
+- `compatible_component_families`: component families this layout commonly composes with
+- `compatible_map_archetypes`: map narrative archetypes this layout can host, if any
+- `fallback_layouts`: preferred downgrade or alternate layouts when the chosen layout becomes unstable
+- `overflow_recovery_order`: ordered recovery sequence when content density breaks the layout budget
+
+`layout_contract` is now the default machine-readable contract layer for all indexed layout assets. Treat the specific layout file as the final source of truth whenever this document, the index, and a layout asset do not say exactly the same thing.
+
+## Thinking Template Consumption Contract
+
+The Thinking phase must consume layout contracts explicitly rather than implicitly.
+
+When a page selects a standard layout, the Thinking file should record at least:
+
+- `layout_key`
+- `layout_contract_source`
+- `narrative_fit_match`
+- `required_thinking_fields_check`
+- `overflow_recovery_order`
+- `fallback_layouts`
+
+Consumption rules:
+
+1. `index.yml` is only a candidate-discovery layer.
+2. The chosen layout asset's `layout_contract` is the machine-readable source of truth.
+3. `required_thinking_fields` must be reflected in the Thinking file before implementation.
+4. Overflow fixes must follow `overflow_recovery_order` before switching layouts.
+5. Layout switching is only valid when the page can no longer be stabilized through contract-defined recovery and the next choice is listed in `fallback_layouts`.
+
+Template alignment:
+
+- `templates/ppt-slide-thinking-template.md`
+- `templates/ppt-map-page-thinking-template.md`
+- `templates/ppt-thinking-examples.md`
+- `templates/ppt-chart-thinking-examples.md`
+
+If these templates and a layout asset diverge, update the templates to match the layout asset contract, not the other way around.
 
 ## General Constraints
 
@@ -63,30 +130,29 @@ For any page using the standard comparison/timeline/data layout (typically utili
 | 4 | Side by Side | `side_by_side` | 两方案对比/A/B测试/竞品一对一 |
 | 5 | Full Width | `full_width` | 战略愿景/趋势展示/大量文字叙事 |
 | 6 | Hybrid | `hybrid` | 图表+多维度指标混合/分层数据 |
-| 7 | Dashboard | `dashboard` | 实时监控/KPI追踪/业务概览 |
-| 8 | Pillar | `pillar` | Executive Summary/核心支柱/关键结论 |
-| 9 | Process Steps | `process_steps` | 3-5步流程/简单时间线 |
-| 10 | Milestone Timeline | `milestone_timeline` | 年度事件(5-8个)/关键里程碑 |
-| 11 | Timeline Evolution | `timeline_evolution` | Era 1/2/3代际更迭/战略演进 |
-| 12 | Timeline Vertical | `timeline_vertical` | 密集事件(>6个)/高密度叙事 |
-| 13 | Timeline Standard | `timeline_standard` | 精确日期事件/高精度时间点 |
-| 14 | Comparison | `comparison` | 3+方案对比/多维度竞品分析 |
-| 15 | Closing | `closing` | PPT结束/致谢/Q&A |
-| 16 | Conclusion | `conclusion` | 最终结论/战略收尾 |
-| 17 | Map Overlay | `map_overlay` | 地图背景+悬浮/地理战略/全球布局 |
-| 18 | Progressive Comparison | `comparison_progressive` | 方案演进/逐步增强/阶梯式对比 |
-| 19 | Assessment Matrix | `assessment_matrix` | 定性评估/哈维球对比/多维度评级 |
-| 20 | System Process Map | `system_process_map` | 复杂系统流程/生态全景/多层级流转 |
-| 21 | Chart Synthesis | `chart_synthesis` | 核心图表+底部强结论/单图深度洞察 |
-| 22 | Mixed Chart Overlay | `chart_mixed_overlay` | 混合图表+悬浮洞察/趋势波动分析 |
-| 23 | Concept Definition | `concept_definition` | 概念定义/政策详情/结构化文本 |
-| 24 | Causal Loop Diagram | `causal_loop_diagram` | 因果回路图/系统动力学/正负反馈循环 |
-| 25 | Analytical Model Tree | `analytical_model_tree` | 算术逻辑树/供需模型/价值驱动树 |
-| 26 | Cost Curve Stack | `cost_curve_stack` | 成本供给曲线/变宽柱状图/市场分层堆叠 |
-| 27 | Multi-year Flow | `multi_year_flow` | 多年份分层流程/模型输入-输出演示 |
-| 28 | Nesting in the Bowl | `nesting_in_the_bowl` | 嵌碗式波浪线/节点水平居中/上下图文双轨防重叠排版 |
-| 29 | Methodology Funnel + Venn | `methodology_funnel_venn` | 方法论 3 步 + 漏斗/重叠分析 |
-| 30 | Radial Cube Layout | `radial_cube_layout` | 中心立方体+左右半圆说明 |
+| 7 | Pillar | `pillar` | Executive Summary/核心支柱/关键结论 |
+| 8 | Process Steps | `process_steps` | 3-5步流程/简单时间线 |
+| 9 | Milestone Timeline | `milestone_timeline` | 年度事件(5-8个)/关键里程碑 |
+| 10 | Timeline Evolution | `timeline_evolution` | Era 1/2/3代际更迭/战略演进 |
+| 11 | Timeline Vertical | `timeline_vertical` | 密集事件(>6个)/高密度叙事 |
+| 12 | Timeline Standard | `timeline_standard` | 精确日期事件/高精度时间点 |
+| 13 | Comparison | `comparison` | 3+方案对比/多维度竞品分析 |
+| 14 | Closing | `closing` | PPT结束/致谢/Q&A |
+| 15 | Conclusion | `conclusion` | 最终结论/战略收尾 |
+| 16 | Map Overlay | `map_overlay` | 地图背景+悬浮/地理战略/全球布局 |
+| 17 | Progressive Comparison | `comparison_progressive` | 方案演进/逐步增强/阶梯式对比 |
+| 18 | Assessment Matrix | `assessment_matrix` | 定性评估/哈维球对比/多维度评级 |
+| 19 | System Process Map | `system_process_map` | 复杂系统流程/生态全景/多层级流转 |
+| 20 | Chart Synthesis | `chart_synthesis` | 核心图表+底部强结论/单图深度洞察 |
+| 21 | Mixed Chart Overlay | `chart_mixed_overlay` | 混合图表+悬浮洞察/趋势波动分析 |
+| 22 | Concept Definition | `concept_definition` | 概念定义/政策详情/结构化文本 |
+| 23 | Causal Loop Diagram | `causal_loop_diagram` | 因果回路图/系统动力学/正负反馈循环 |
+| 24 | Analytical Model Tree | `analytical_model_tree` | 算术逻辑树/供需模型/价值驱动树 |
+| 25 | Cost Curve Stack | `cost_curve_stack` | 成本供给曲线/变宽柱状图/市场分层堆叠 |
+| 26 | Multi-year Flow | `multi_year_flow` | 多年份分层流程/模型输入-输出演示 |
+| 27 | Nesting in the Bowl | `nesting_in_the_bowl` | 嵌碗式波浪线/节点水平居中/上下图文双轨防重叠排版 |
+| 28 | Methodology Funnel + Venn | `methodology_funnel_venn` | 方法论 3 步 + 漏斗/重叠分析 |
+| 29 | Radial Cube Layout | `radial_cube_layout` | 中心立方体+左右半圆说明 |
 
 ---
 
@@ -121,7 +187,6 @@ flowchart TD
     Chart -->|"供给成本曲线/变宽柱图"| CostStack[cost_curve_stack]
     
     Dashboard -->|"多维度KPI + 趋势图"| DashboardGrid[dashboard_grid]
-    Dashboard -->|"实时监控/业务概览"| Dashboard[dashboard]
     
     Text -->|"战略愿景/大量文字"| FullWidth[full_width]
     Text -->|"Executive Summary"| Pillar[pillar]
@@ -167,9 +232,8 @@ flowchart TD
 | Comparative analysis | `side_by_side` | A/B testing, competitor comparison |
 | Panoramic display | `full_width` | Strategic vision, overall overview |
 | Complex analysis | `hybrid` | Multi-layer data display |
-| Process explanation | `process` | Workflow, timeline display |
+| Process explanation | `process_steps` | Workflow, timeline display |
 | Milestone narrative | `milestone_timeline` | Annual event evolution, key nodes |
-| Monitoring report | `dashboard` | Real-time monitoring, KPI tracking |
 | Comprehensive data view | `dashboard_grid` | Complex multi-dimensional data analysis |
 | Core pillars | `pillar` | Executive Summary |
 | Simple steps | `process_steps` | Simple timeline |
@@ -182,6 +246,29 @@ flowchart TD
 | Concept Definition | `concept_definition` | Policy details, structured attributes |
 | Causal Analysis | `causal_loop_diagram` | Feedback loops, system dynamics, policy intervention |
 | Model Logic | `analytical_model_tree` | Value driver tree, supply/demand balance check |
+| Multi-year staged flow | `multi_year_flow` | Multi-period input-output or stage transfer story |
+| Nested wave narrative | `nesting_in_the_bowl` | Layered double-track storyline with centered nodes |
+| Method funnel + overlap | `methodology_funnel_venn` | Three-step method and overlap explanation |
+| Radial explanatory core | `radial_cube_layout` | Central concept with bilateral explanatory arcs |
+
+## Index First Workflow
+
+Use the layout skill in this order:
+
+1. Read `assets/layouts/index.yml` to identify category and candidate layouts.
+2. Use `quick_selection` and `exclusion_rules` to reduce false positives.
+3. Open the chosen layout asset only after the candidate set is narrow.
+4. Treat the chosen asset's `layout_contract` as the machine-readable source of truth.
+5. Mirror the asset's `required_thinking_fields`, `overflow_recovery_order`, and `fallback_layouts` into the Thinking file before implementation.
+6. If the page is map-led, route through `ppt-map-storytelling` first and only then pick `map_overlay` or another compatible skeleton.
+7. If the page is chart-led, confirm chart contract viability before locking a chart-heavy skeleton.
+
+Contract consumption rule:
+
+- `index.yml` narrows candidates.
+- `layout_contract` decides whether the candidate is valid.
+- `template`, `spec`, and `content_spec` are implementation layers, not selection truth.
+- If trigger prose and `layout_contract` conflict, prefer `layout_contract`.
 
 ## Core Layout Details
 
@@ -283,8 +370,8 @@ flowchart TD
 | side_by_side | 582px | 210px | - |
 | full_width | 582px | - | 4 KPI |
 | hybrid | 582px | 230px | 3 |
-| process | 582px | - | 5 steps |
-| dashboard | 582px | 232px | 4 KPI |
+| process_steps | 582px | - | 5 steps |
+| dashboard_grid | 582px | 232px | 4 KPI |
 | milestone_timeline | 582px | - | 6 cards |
 | map_overlay | Full | - | 3-5 floating cards |
 
@@ -305,8 +392,9 @@ flowchart TD
 
 ## Dependencies
 
-- **ppt-brand-system**: Brand colors/fonts/CSS variables
+- **ppt-brand-style-system**: Brand-style colors/fonts/CSS variables
 - **ppt-chart-engine**: Chart containers and rendering rules
+- **ppt-map-storytelling**: Map narrative archetypes, overlay grammar, and crop decisions for map-first pages
 
 ## Resource Files
 

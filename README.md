@@ -30,14 +30,15 @@ This repository contains reusable prompts, agent definitions, and documentation 
   - **Data Science Agents**: Algorithm designer, engineer, researcher, evaluator
   - **Utility Agents**: Git specialist, markdown writer, README/Changelog specialist
   - **PPT Specialist**: HTML slide generation with multi-brand support (KPMG/McKinsey/BCG/Bain/Deloitte)
-- 🛠️ **Skills** - 10 reusable skill modules for specialized tasks
+- 🛠️ **Skills** - 11 reusable skill modules for specialized tasks
   - `memory-manager`: Context persistence across sessions
   - `stock-price-tracker`: Real-time stock data via Yahoo Finance
   - `news-search`: Web news search with DuckDuckGo
   - `domain-keyword-detection`: 14-domain keyword detection (software, biotech, automotive, etc.)
   - `markdown-formatter` / `md-table-fixer`: Markdown utilities
-  - `ppt-brand-system`: Multi-brand design tokens
+  - `ppt-brand-style-system`: Multi-brand-style design tokens
   - `ppt-chart-engine`: Chart selection and rendering
+  - `ppt-map-storytelling`: Geographic narrative patterns for map-first slides
   - `ppt-slide-layout-library`: 14 layout types
   - `ppt-visual-qa`: Automated slide quality assurance (80+ gates)
 - 📚 **Standards** - Cross-language and language-specific coding guidelines

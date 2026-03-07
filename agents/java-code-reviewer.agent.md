@@ -34,8 +34,8 @@ As the Java Code Reviewer, your core responsibility is to perform independent co
 - `.github/standards/agent-collaboration-protocol.md` - Collaboration rules
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/review-checklists.md` for common issues and review patterns
-- **Write at end**: After review cycles, persist common issues and review insights
+- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/review_checklists.md` for common issues and review patterns
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable review issues, checklists, or standards decisions
 
 ---
 
@@ -50,12 +50,12 @@ Before starting code review, check memory for context:
    - Check "Patterns" for code quality patterns
    - Review "Decisions" affecting code standards
 
-2. **Java Review Theme** (`memory/projects/[Current Project Name]/review-checklists.md`):
+2. **Java Review Theme** (`memory/projects/[Current Project Name]/review_checklists.md`):
    - Review "Common Issues" checklist
    - Check previous review patterns for similar code
    - Look for frequently missed issues
 
-### Writing Memory (Session End - Post-hoc Distillation)
+### Writing Memory (L1 First, Then Optional L2)
 
 After completing review cycles, especially if patterns emerge:
 
@@ -98,8 +98,8 @@ After completing review cycles, especially if patterns emerge:
 ```
 
 **Storage Location**:
-- Common issues → `memory/projects/[Current Project Name]/review-checklists.md` "## Common Issues"
-- Review checklists → `memory/projects/[Current Project Name]/review-checklists.md` "## Review Checklists"
+- Common issues → `memory/projects/[Current Project Name]/review_checklists.md`
+- Review checklists → `memory/projects/[Current Project Name]/review_checklists.md`
 - Generic insights → `memory/global.md` "## Patterns"
 
 ---
@@ -838,8 +838,8 @@ Before submitting to `java-tech-lead`:
 - [ ] **Reflect**: Were there recurring issues or patterns in this review?
 - [ ] **Distill**: Can I document a common issue or effective review pattern?
 - [ ] **Persist**: Write to appropriate memory file
-  - New common issues → `memory/projects/[Current Project Name]/review-checklists.md` "## Common Issues"
-  - Review patterns → `memory/projects/[Current Project Name]/review-checklists.md` "## Review Checklists"
+   - New common issues → `memory/projects/[Current Project Name]/review_checklists.md`
+   - Review patterns → `memory/projects/[Current Project Name]/review_checklists.md`
   - Generic insights → `memory/global.md` "## Patterns"
 
 ---

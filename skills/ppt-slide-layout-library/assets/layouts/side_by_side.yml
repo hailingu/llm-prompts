@@ -20,6 +20,19 @@ selection_criteria:
     columns: 2
     items_per_column: { min: 3, max: 5, optimal: 4 }
 
+layout_contract:
+  required_thinking_fields: [layout_key, primary_encoding, source, filter_logic, mapping]
+  narrative_fit: [two_way_comparison, ab_test, before_after]
+  compatible_chart_families: [bar_comparison, line_trend, bubble_relationship]
+  compatible_component_families: [Card_Accent, Card_Solid, Metric_Trend, List_Icon]
+  compatible_map_archetypes: []
+  fallback_layouts: [comparison, data_chart, comparison_progressive]
+  overflow_recovery_order:
+    - reduce_items_per_column
+    - simplify_bottom_copy
+    - remove_secondary_chart
+    - downgrade_to_comparison_or_data_chart
+
 # ── 布局规格 ─────────────────────────────────────────
 spec:
   structure_type: "header-main-footer"

@@ -16,8 +16,8 @@ You are an expert Go system architect who designs production-grade applications 
 - `.github/templates/go-module-design-template.md` - Design document template
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/go-architecture/index.md` for existing patterns and decisions
-- **Write at end**: After completing architecture design, distill and persist key decisions to memory
+- **Read at start**: Check `memory/global.md` and `memory/research/go_architecture.md` for existing patterns and decisions
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable decisions, patterns, or trade-offs
 
 ---
 
@@ -32,12 +32,12 @@ Before starting architecture design, read relevant memory files:
    - Check "Patterns" for reusable design patterns
    - Note any Go-specific preferences
 
-2. **Go Architecture Theme** (`memory/go-architecture/index.md`):
+2. **Go Architecture Theme** (`memory/research/go_architecture.md`):
    - Check previous architecture decisions for similar modules
    - Review technology stack preferences
    - Look for performance targets and constraints
 
-### Writing Memory (Session End - Post-hoc Distillation)
+### Writing Memory (L1 First, Then Optional L2)
 
 After completing a significant architecture design, reflect and persist insights:
 
@@ -68,7 +68,7 @@ After completing a significant architecture design, reflect and persist insights
 ```
 
 **Storage Location**:
-- Write to `memory/go-architecture/index.md` under "## Key Decisions"
+- Write extracted architecture decisions to `memory/research/go_architecture.md`
 - If broadly applicable, also add to `memory/global.md` "## Decisions"
 
 **Collaboration Process**:
@@ -853,7 +853,7 @@ Before handing off to `go-api-designer`:
 - [ ] **Reflect**: What architectural insight would help future me?
 - [ ] **Distill**: Can I express it in 3-5 sentences?
 - [ ] **Persist**: Write to appropriate memory file
-  - Module-specific decisions → `memory/go-architecture/index.md`
+    - Module-specific decisions → `memory/research/go_architecture.md`
   - Generic Go patterns → `memory/global.md`
 
 ---

@@ -15,8 +15,8 @@ As the Java Architect, your core responsibility is to provide **Level 1: Archite
 - `.github/java-standards/static-analysis-setup.md` - Static analysis tools (Checkstyle, SpotBugs, PMD)
 
 **Memory Integration**:
-- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/architecture-decisions.md` for existing patterns and decisions
-- **Write at end**: After completing architecture design, distill and persist key decisions to memory
+- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/architecture_decisions.md` for existing patterns and decisions
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable decisions, patterns, or trade-offs
 
 ---
 
@@ -32,12 +32,12 @@ Before starting architecture design, read relevant memory files:
    - Check "Patterns" for reusable design patterns
    - Note any Java-specific preferences
 
-2. **Java Architecture Theme** (`memory/projects/[Current Project Name]/architecture-decisions.md`):
+2. **Java Architecture Theme** (`memory/projects/[Current Project Name]/architecture_decisions.md`):
    - Check previous architecture decisions for similar modules
    - Review technology stack preferences (Spring Boot, frameworks)
    - Look for performance targets and constraints
 
-### Writing Memory (Session End - Post-hoc Distillation)
+### Writing Memory (L1 First, Then Optional L2)
 
 After completing a significant architecture design, reflect and persist insights:
 
@@ -68,7 +68,7 @@ After completing a significant architecture design, reflect and persist insights
 ```
 
 **Storage Location**:
-- Write to `memory/projects/[Current Project Name]/architecture-decisions.md` under "## Key Decisions"
+- Write extracted architecture decisions to `memory/projects/[Current Project Name]/architecture_decisions.md`
 - If broadly applicable, also add to `memory/global.md` "## Decisions" 
 
 **Level**: Level 1 - Architecture Design (High-level)  
@@ -1317,5 +1317,5 @@ Before handing off to `java-api-designer`:
 - [ ] **Reflect**: What architectural insight would help future me?
 - [ ] **Distill**: Can I express it in 3-5 sentences?
 - [ ] **Persist**: Write to appropriate memory file
-  - Module-specific decisions → `memory/projects/[Current Project Name]/architecture-decisions.md`
+  - Module-specific decisions → `memory/projects/[Current Project Name]/architecture_decisions.md`
   - Generic Java patterns → `memory/global.md`"

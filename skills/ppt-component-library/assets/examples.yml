@@ -1,0 +1,349 @@
+# ============================================================
+# ppt-component-library / examples.yml
+# 最小 payload 示例 — 用于快速实例化标准组件
+# 若存在 semantic_payload，优先通过 ppt-brand-style-system/assets/component_semantic_mappings.yml 解析；
+# payload 中的类值仅作为安全 fallback，而不是首选的风格来源。
+# ============================================================
+
+resolver_validation:
+  rules:
+    - Confirm `component_family` exists in `ppt-brand-style-system/assets/component_semantic_mappings.yml`.
+    - Confirm every semantic field in `semantic_payload` is allowed by that component family's contract.
+    - Confirm resolver output slot set matches the placeholders actually used by the component.
+    - Use `payload` only as safe fallback classes, not as the primary semantic source.
+
+examples:
+  Card_Glass:
+    component_family: Card_Glass
+    description: Neutral evidence card with semantic-first text hierarchy
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [surface_role, text_role, secondary_text_role, structure_role]
+    resolver_checklist:
+      - component_family matches `Card_Glass`
+      - semantic fields match the `Card_Glass` contract
+      - resolved slot set is `card_glass`
+    semantic_payload:
+      surface_role: subtle
+      text_role: primary_text
+      secondary_text_role: secondary_text
+      structure_role: neutral_structure
+    payload:
+      surface_class: bg-slate-50
+      border_class: border-slate-200
+      title_text_class: text-slate-950
+      body_text_class: text-slate-600
+      backdrop_class: backdrop-blur-sm
+      title: Signal Concentration
+      body_text: Most operational stress is concentrated in one corridor rather than uniformly spread across the region.
+
+  Card_Accent:
+    component_family: Card_Accent
+    description: Highlighted evidence or watchpoint card
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [emphasis_role, surface_role, text_role, secondary_text_role]
+    resolver_checklist:
+      - component_family matches `Card_Accent`
+      - semantic fields match the `Card_Accent` contract
+      - resolved slot set is `card_accent`
+    semantic_payload:
+      emphasis_role: warning
+      surface_role: elevated
+      text_role: primary_text
+      secondary_text_role: secondary_text
+    payload:
+      surface_class: bg-white
+      accent_border_class: border-amber-500
+      accent_text_class: text-amber-700
+      title_text_class: text-slate-950
+      body_text_class: text-slate-600
+      label: Watchpoint
+      title: Corridor pressure is not system-wide
+      description: Risk concentrates around a single maritime chokepoint rather than across all export routes.
+
+  Card_Solid:
+    component_family: Card_Solid
+    description: High-contrast evidence card with icon-led emphasis
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [surface_role, emphasis_role, text_role, secondary_text_role]
+    resolver_checklist:
+      - component_family matches `Card_Solid`
+      - semantic fields match the `Card_Solid` contract
+      - resolved slot set is `card_solid`
+    semantic_payload:
+      surface_role: subtle
+      emphasis_role: info
+      text_role: primary_text
+      secondary_text_role: secondary_text
+    payload:
+      surface_class: bg-slate-50
+      border_class: border-slate-200
+      icon_bg_class: bg-sky-100
+      icon_text_class: text-sky-700
+      title_text_class: text-slate-950
+      body_text_class: text-slate-600
+      icon: radar
+      title: Monitoring Layer
+      content: The early-warning burden shifts to a small number of maritime and air surveillance nodes.
+
+  Metric_Big:
+    component_family: Metric_Big
+    description: Hero number with semantic-first emphasis color
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [value_role, emphasis_role]
+    resolver_checklist:
+      - component_family matches `Metric_Big`
+      - semantic fields match the `Metric_Big` contract
+      - resolved slot set is `metric_big`
+    semantic_payload:
+      value_role: primary_text
+      emphasis_role: critical
+    payload:
+      value_text_class: text-slate-950
+      value: "$158"
+      accent_text_class: text-red-700
+      label: Brent Peak
+
+  Metric_Trend:
+    component_family: Metric_Trend
+    description: KPI with directional change
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [trend_role, value_role, label_role]
+    resolver_checklist:
+      - component_family matches `Metric_Trend`
+      - semantic fields match the `Metric_Trend` contract
+      - resolved slot set is `metric_trend`
+    semantic_payload:
+      trend_role: warning
+      value_role: primary_text
+      label_role: muted_text
+    payload:
+      value: "82"
+      value_text_class: text-slate-950
+      trend_text_class: text-amber-700
+      trend_direction: up
+      change_pct: "12"
+      label_class: text-slate-500
+      label: Risk Index
+
+  Metric_KpiRow:
+    component_family: Metric_KpiRow
+    description: Compact KPI row with neutral structure and primary value emphasis
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [surface_role, structure_role, value_role, label_role]
+    resolver_checklist:
+      - component_family matches `Metric_KpiRow`
+      - semantic fields match the `Metric_KpiRow` contract
+      - resolved slot set is `kpi_row`
+    semantic_payload:
+      surface_role: subtle
+      structure_role: neutral_structure
+      value_role: primary_text
+      label_role: muted_text
+    payload:
+      row_surface_class: bg-slate-50
+      row_border_class: border-slate-200
+      value_text_class: text-slate-950
+      label_text_class: text-slate-500
+      divider_class: bg-slate-200
+      val_1: "3"
+      lab_1: Scenario Paths
+      val_2: "82"
+      lab_2: Risk Index
+
+  List_Icon:
+    component_family: List_Icon
+    description: Two-point evidence list with semantic-first accent
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [emphasis_role, text_role]
+    resolver_checklist:
+      - component_family matches `List_Icon`
+      - semantic fields match the `List_Icon` contract
+      - resolved slot set is `icon_list`
+    semantic_payload:
+      emphasis_role: positive
+      text_role: primary_text
+    payload:
+      accent_icon_class: text-emerald-700
+      item_text_class: text-slate-700
+      item_1_text: Escort capacity improves route resilience on the main corridor.
+      item_2_text: Residual insurance friction remains concentrated around the chokepoint.
+
+  List_Timeline:
+    component_family: List_Timeline
+    description: Compact two-step sequence
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [timeline_role, active_step_role, inactive_step_role, label_role, body_role]
+    resolver_checklist:
+      - component_family matches `List_Timeline`
+      - semantic fields match the `List_Timeline` contract
+      - resolved slot set is `timeline`
+    semantic_payload:
+      timeline_role: neutral_structure
+      active_step_role: primary
+      inactive_step_role: neutral
+      label_role: primary_text
+      body_role: secondary_text
+    payload:
+      timeline_border_class: border-slate-300
+      marker_ring_class: border-white
+      step_1_marker_class: bg-sky-600
+      step_1_label_class: text-slate-950
+      step_1_body_class: text-slate-600
+      step_1_label: 2025
+      step_1_description: Shadow conflict shifts toward direct signaling.
+      step_2_marker_class: bg-slate-300
+      step_2_label_class: text-slate-950
+      step_2_body_class: text-slate-600
+      step_2_label: 2026
+      step_2_description: Maritime disruption becomes the main transmission channel.
+
+  Badge_Pill:
+    component_family: Badge_Pill
+    description: Short semantic status marker
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [badge_role, surface_role]
+    resolver_checklist:
+      - component_family matches `Badge_Pill`
+      - semantic fields match the `Badge_Pill` contract
+      - resolved slot set is `badge`
+    semantic_payload:
+      badge_role: warning
+      surface_role: subtle
+    payload:
+      badge_bg_class: bg-amber-50
+      badge_text_class: text-amber-700
+      badge_border_class: border-amber-200
+      label: Elevated Risk
+
+  Badge_Tag:
+    component_family: Badge_Tag
+    description: Compact tag for access or handling state
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [surface_role, text_role]
+    resolver_checklist:
+      - component_family matches `Badge_Tag`
+      - semantic fields match the `Badge_Tag` contract
+      - resolved slot set is `tag`
+    semantic_payload:
+      surface_role: subtle
+      text_role: primary_text
+    payload:
+      tag_surface_class: bg-slate-100
+      tag_text_class: text-slate-900
+      label: Restricted
+
+  Visual_Arrow:
+    component_family: Visual_Arrow
+    description: Connector arrow with semantic-first neutral tone
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [text_role]
+    resolver_checklist:
+      - component_family matches `Visual_Arrow`
+      - semantic fields match the `Visual_Arrow` contract
+      - resolved slot set is `visual_arrow`
+    semantic_payload:
+      text_role: muted_text
+    payload:
+      arrow_text_class: text-slate-500
+      direction: right
+
+  Visual_Glow:
+    component_family: Visual_Glow
+    description: Atmospheric glow with semantic-first informational accent
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [emphasis_role]
+    resolver_checklist:
+      - component_family matches `Visual_Glow`
+      - semantic fields match the `Visual_Glow` contract
+      - resolved slot set is `visual_glow`
+    semantic_payload:
+      emphasis_role: info
+    payload:
+      glow_bg_class: bg-sky-400/18
+
+  Map_Grid:
+    component_family: Map_Grid
+    description: Abstract geo matrix with semantic-first cell highlighting
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [surface_role, structure_role, emphasis_role]
+    resolver_checklist:
+      - component_family matches `Map_Grid`
+      - semantic fields match the `Map_Grid` contract
+      - resolved slot set is `map_grid`
+    semantic_payload:
+      surface_role: subtle
+      structure_role: neutral_structure
+      emphasis_role: info
+    payload:
+      grid_surface_class: bg-slate-50
+      grid_border_class: border-slate-200
+      cell_bg_class: bg-sky-50
+      cell_border_class: border-sky-200
+      cell_text_class: text-sky-700
+      country_code: OMN
+
+  Map_NodeNetwork:
+    component_family: Map_NodeNetwork
+    description: Geo-adjacent node visual, not a true basemap
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [surface_role, node_role, label_role]
+    resolver_checklist:
+      - component_family matches `Map_NodeNetwork`
+      - semantic fields match the `Map_NodeNetwork` contract
+      - resolved slot set is `node_network`
+    semantic_payload:
+      surface_role: strong_surface
+      node_role: primary
+      label_role: primary_text
+    payload:
+      network_surface_class: bg-slate-950/90
+      network_border_class: border-slate-800
+      node_dot_class: bg-blue-500
+      node_border_class: border-blue-500/30
+      node_label_text_class: text-white
+      node_label_surface_class: bg-slate-950/80
+      node_name: Bahrain Hub
+
+  Map_FlowArrow:
+    component_family: Map_FlowArrow
+    description: SVG overlay path for a route or directional connector
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [flow_role]
+    resolver_checklist:
+      - component_family matches `Map_FlowArrow`
+      - semantic fields match the `Map_FlowArrow` contract
+      - resolved slot set is `flow_arrow`
+    semantic_payload:
+      flow_role: primary
+    payload:
+      flow_color: var(--brand-primary)
+      x1: 120
+      y1: 180
+      cx1: 240
+      cy1: 120
+      cx2: 380
+      cy2: 140
+      x2: 520
+      y2: 200
+
+  Map_RadarRing:
+    component_family: Map_RadarRing
+    description: Symbolic range or defense-depth ring
+    preferred_style_resolution: semantic_first
+    required_semantic_fields: [core_role, icon_role, ring_role]
+    resolver_checklist:
+      - component_family matches `Map_RadarRing`
+      - semantic fields match the `Map_RadarRing` contract
+      - resolved slot set is `radar_ring`
+    semantic_payload:
+      core_role: critical
+      icon_role: primary_text
+      ring_role: critical
+    payload:
+      core_bg_class: bg-red-600
+      core_border_class: border-white/20
+      icon_text_class: text-white
+      ring_outer_class: border-red-500/50
+      ring_fill_class: border-red-500/30 bg-red-500/10
+      ring_inner_class: border-red-500/30
+      icon: shield

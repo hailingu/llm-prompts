@@ -1,0 +1,116 @@
+# 地图叙事布局 (map_overlay)
+# 文件: layouts/map_overlay.yml
+
+layout:
+  id: map_overlay
+  name: 地图叙事叠加布局
+  version: 2.2
+  category: map
+
+selection_criteria:
+  when_to_use:
+    - "地图本身决定页面含义，而不是仅作为装饰背景"
+    - "地缘冲突、路线、走廊、航运、补给、区域暴露等空间叙事"
+    - "需要地图 + 浮层卡片 + callout 的复合表达"
+  when_not_to_use:
+    - "仅有简单地理数值编码（优先用 geo chart 或表格）"
+    - "地图无法保留足够可见面积（优先改非地图布局）"
+    - "真正要表达的是排序、矩阵或时间顺序，而不是空间关系"
+
+layout_contract:
+  required_thinking_fields: [layout_key, narrative_archetype, geographic_scope, primary_question, render_engine, basemap_source, overlay_families, overlay_routing, routing_source]
+  narrative_fit: [map_led_narrative, corridor_story, conflict_theater, footprint_network]
+  compatible_chart_families: []
+  compatible_component_families: [Card_Accent, Card_Glass, Metric_Trend, Metric_Big, Metric_KpiRow, Map_FlowArrow, Map_NodeNetwork, Map_RadarRing, Badge_Pill]
+  compatible_map_archetypes: [territory_snapshot, route_corridor, conflict_theater, footprint_network]
+  fallback_layouts: [side_by_side, chart_synthesis, full_width]
+  overflow_recovery_order:
+    - reduce_overlay_families
+    - reduce_floating_card_count
+    - crop_map_more_aggressively
+    - downgrade_to_side_by_side_or_chart_synthesis
+
+storytelling_contract:
+  required_fields:
+    - { field: narrative_archetype, values: [territory_snapshot, route_corridor, conflict_theater, footprint_network], desc: "地图叙事原型；与 ppt-map-storytelling 对齐" }
+    - { field: geographic_scope, values: [local, regional, multi-region, global], desc: "地图范围" }
+    - { field: primary_question, desc: "该页只回答的一个空间问题" }
+  optional_fields:
+    - { field: crop_focus, desc: "地图裁切焦点，如 Strait of Hormuz / Eastern Mediterranean" }
+    - { field: overlay_families, desc: "主叠加层类型，建议不超过 2 类" }
+    - { field: hotspot_count, desc: "热点数量，建议 1-3 个" }
+    - { field: floating_card_count, desc: "浮层卡片数量，建议 1-3 个" }
+
+content_spec:
+  map_base:
+    engine: "Default: ECharts Geo for geo series; Secondary: prepared static SVG + HTML/SVG overlay; Exception: MapLibre GL JS only for true vector-tile scenes"
+    visibility_requirement: "地图主体在叠加后仍应保持可辨识"
+    source_rule: "禁止从 0 手绘地图；底图必须来自已准备的 SVG、GeoJSON/TopoJSON 或 tile/vector source"
+  overlays:
+    allowed_types: [fill_zone, point_marker, route_line, direction_arrow, hotspot_callout, floating_card]
+    max_primary_families: 2
+  labels:
+    hierarchy:
+      primary: "1-3 个核心标签"
+      secondary: "支撑性地点或路线"
+      contextual: "仅在无法定位时补充"
+  cards:
+    recommended_count: "1-3"
+    linkage_rule: "每张卡片必须能指向明确地图区域或路线"
+
+constraints:
+  - "若页面需要 geo series、geo scatter、geo lines 或区域着色，默认使用 ECharts Geo"
+  - "若页面只是编辑型叙事底图，优先使用 prepared static SVG + HTML/SVG overlay"
+  - "只有在确实需要 vector-tile / slippy-map 行为时才允许 MapLibre GL JS"
+  - "Leaflet 不是该布局的默认实现栈"
+  - "地图页一次只回答一个空间问题"
+  - "overlay_families > 2 时默认判定为信息过载风险"
+  - "floating_card_count > 3 时应降级为 map + side panel 或非地图布局"
+  - "全局地图不得承担局部邻接推理；需要局部关系时必须裁切"
+  - "若地图退化为纯背景纹理，应改用非地图布局"
+
+visual_architecture:
+  layers:
+    - { id: base, z: 0, purpose: "Map base" }
+    - { id: data, z: 1, purpose: "Geo series / overlays" }
+    - { id: ui, z: 10, purpose: "Header / KPI / narrative / callouts" }
+  preferred_card_positions: [top-right, bottom-left, right-column]
+
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white text-slate-900">
+    <header class="slide-header relative z-10 bg-transparent px-12 pt-6 pb-2 shrink-0">
+      <div class="kicker">Map Narrative</div>
+      <h1 class="text-3xl font-bold tracking-tight">Regional Exposure and Route Pressure</h1>
+      <p class="text-sm text-slate-500 mt-1">Map-first storytelling layout for conflict, corridor, and regional footprint pages.</p>
+    </header>
+
+    <main class="slide-main relative flex-1 min-h-0 overflow-hidden">
+      <div class="absolute inset-0 z-0">
+        <div class="h-full w-full bg-slate-100 flex items-center justify-center text-slate-400 text-sm">
+          Map Base Layer
+        </div>
+      </div>
+
+      <div class="absolute inset-0 z-[1] pointer-events-none">
+        <div class="absolute left-[18%] top-[32%] h-3 w-3 rounded-full bg-red-500"></div>
+        <div class="absolute left-[20%] top-[34%] w-40 border-t-2 border-red-500 rotate-[18deg]"></div>
+      </div>
+
+      <section class="absolute right-8 top-8 z-10 w-72 rounded-2xl border border-white/40 bg-white/80 backdrop-blur p-5 shadow-lg">
+        <div class="text-xs uppercase tracking-[0.18em] text-slate-400">Primary Insight</div>
+        <div class="mt-3 text-2xl font-bold text-slate-900">Route disruption is geographically concentrated, not system-wide.</div>
+        <div class="mt-3 text-sm leading-6 text-slate-600">Use floating cards only for location-linked claims. Do not restate everything already encoded on the map.</div>
+      </section>
+
+      <section class="absolute left-8 bottom-8 z-10 w-64 rounded-2xl border border-slate-200 bg-white/88 backdrop-blur p-4 shadow-md">
+        <div class="text-xs uppercase tracking-[0.18em] text-slate-400">Hotspot</div>
+        <div class="mt-2 text-lg font-semibold">Chokepoint</div>
+        <div class="mt-2 text-sm text-slate-600">One clear callout tied to one map location.</div>
+      </section>
+    </main>
+
+    <footer class="slide-footer h-[40px] px-12 border-t border-slate-200 shrink-0 flex justify-between items-center text-xs text-slate-400">
+      <span>Map storytelling layout</span>
+      <span>1</span>
+    </footer>
+  </div>

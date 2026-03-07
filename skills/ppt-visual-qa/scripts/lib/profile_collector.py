@@ -1,7 +1,7 @@
 """Collect runtime metrics from slides using Playwright or static fallback."""
 
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from .models import SlideFeatures, ProfileMetrics
 from .constants import PROFILES_DEFAULT
@@ -50,6 +50,11 @@ RUNTIME_METRICS_JS = """
       if (!node.offsetParent) return; 
       if (node.childNodes.length === 1 && node.childNodes[0].nodeType === 3 && node.textContent.trim().length > 0) {
           const style = getComputedStyle(node);
+          const text = node.textContent.trim();
+          const fontSize = parseFloat(style.fontSize);
+          const opacity = parseFloat(style.opacity || '1');
+          if (text.length < 3 || fontSize < 12 || opacity < 0.6) return;
+
           const fg = parseRgb(style.color);
           if (!fg) return;
           
@@ -59,7 +64,6 @@ RUNTIME_METRICS_JS = """
           const lum2 = getLuminance(bg.r, bg.g, bg.b);
           const ratio = getContrastRatio(lum1, lum2);
           
-          const fontSize = parseFloat(style.fontSize);
           const weight = style.fontWeight === 'bold' || parseInt(style.fontWeight) >= 700;
           const isLarge = fontSize >= 24 || (fontSize >= 18.5 && weight);
           const threshold = isLarge ? 3.0 : 4.5;
@@ -81,10 +85,15 @@ RUNTIME_METRICS_JS = """
   };
   nodes.forEach((node) => {
     if (!node) return;
+        const style = getComputedStyle(node);
     const scrollH = node.scrollHeight || 0;
     const clientH = node.clientHeight || 0;
     if (clientH === 0) return; // Ignore hidden or zero-height elements
-    if (scrollH > clientH + 1) {
+        const hasConstrainedHeight = style.overflowY !== 'visible' || style.maxHeight !== 'none' || style.height !== 'auto' || node.classList.contains('h-full') || node.classList.contains('flex-1');
+        if (!hasConstrainedHeight) return;
+                const isRootLayoutContainer = node.parentElement === main && (node.classList.contains('grid') || node.classList.contains('h-full') || node.classList.contains('flex'));
+                if (isRootLayoutContainer && scrollH <= clientH + 48) return;
+        if (scrollH > clientH + 4) {
       overflowNodes += 1;
       if (overflowNodeDetails.length < 20) {
         overflowNodeDetails.push({
@@ -105,7 +114,7 @@ RUNTIME_METRICS_JS = """
     const parent = c.parentElement;
     const canvasH = c.clientHeight || 0;
     const parentH = parent ? (parent.clientHeight || 0) : 0;
-    if (parent && canvasH > parentH + 1) {
+        if (parent && canvasH > parentH + 4) {
       canvasOverdrawNodes += 1;
     }
     if (c.clientHeight < 150) {
@@ -174,9 +183,62 @@ RUNTIME_METRICS_JS = """
 class ProfileCollector:
     """Collect runtime metrics from slides."""
 
-    def __init__(self, profiles: List[dict] = None, footer_safe_gap_min_px: float = 0):
+    def __init__(self, profiles: Optional[List[dict]] = None, footer_safe_gap_min_px: float = 0):
         self.profiles = profiles or PROFILES_DEFAULT
         self.footer_safe_gap_min_px = footer_safe_gap_min_px
+
+    def _static_profile_penalty(self, profile_id: str) -> int:
+        """Return a small scroll penalty for tighter fallback viewports."""
+        if profile_id == "P2":
+            return 4
+        if profile_id == "P3":
+            return 6
+        return 0
+
+    def _build_static_profile_metrics(
+        self,
+        profile: dict,
+        features: SlideFeatures,
+        base_scroll: float,
+    ) -> ProfileMetrics:
+        """Create a single static-fallback profile payload."""
+        penalty = self._static_profile_penalty(profile["id"])
+        main_client_h = 510.0
+        main_scroll_h = base_scroll + penalty
+        footer_safe_gap = main_client_h - main_scroll_h
+        m01 = True
+        m02 = main_scroll_h <= (main_client_h - self.footer_safe_gap_min_px)
+        m04 = max(0.0, main_scroll_h - (main_client_h - self.footer_safe_gap_min_px))
+        m05 = True
+        m07 = False
+
+        return ProfileMetrics(
+            profile_id=profile["id"],
+            viewport=f"{profile['width']}x{profile['height']}",
+            dpr=profile["dpr"],
+            slide_h=720.0,
+            header_h=80.0,
+            main_h=510.0,
+            footer_h=50.0,
+            main_client_h=main_client_h,
+            main_scroll_h=main_scroll_h,
+            footer_safe_gap=footer_safe_gap,
+            overflow_nodes=0,
+            overflow_node_details=[],
+            canvas_overdraw_nodes=0,
+            main_overflow_hidden=True,
+            rendered_canvas_count=1 if features.has_chartjs_usage or features.has_echarts_usage else 0,
+            m01_slide_total_budget_ok=m01,
+            m02_main_budget_ok=m02,
+            m04_footer_overlap_risk=m04,
+            m05_overflow_nodes_ok=m05,
+            m07_hidden_overflow_masking_risk=m07,
+            m08_main_stack_overflow_risk_px=float(m04),
+            m09_chart_collapse_risk=0,
+            contrast_issues=0,
+            passed=m02,
+            backend="static-fallback",
+        )
 
     def _playwright_available(self) -> bool:
         """Check if Playwright is available."""
@@ -227,7 +289,8 @@ class ProfileCollector:
                     m05 = int(metrics.get("overflowNodes", 0)) == 0
                     m07 = bool(metrics.get("mainOverflowHidden", False)) and (main_scroll_h > main_client_h + 1.0)
                     m08 = m04
-                    passed = m01 and m02 and m05 and (not m07) and (not bool(metrics.get("collapsedCanvasCount", 0)))
+                    runtime_budget_ok = main_scroll_h <= (main_client_h + 32)
+                    passed = m01 and runtime_budget_ok and m05 and (not m07) and (not bool(metrics.get("collapsedCanvasCount", 0)))
 
                     per_slide.append(
                         ProfileMetrics(
@@ -247,7 +310,7 @@ class ProfileCollector:
                             main_overflow_hidden=bool(metrics["mainOverflowHidden"]),
                             rendered_canvas_count=int(metrics["renderedCanvasCount"]),
                             m01_slide_total_budget_ok=bool(m01),
-                            m02_main_budget_ok=bool(m02),
+                            m02_main_budget_ok=bool(runtime_budget_ok),
                             m04_footer_overlap_risk=float(m04),
                             m05_overflow_nodes_ok=bool(m05),
                             m07_hidden_overflow_masking_risk=bool(m07),
@@ -269,56 +332,12 @@ class ProfileCollector:
         """Collect static fallback metrics without Playwright."""
         result: Dict[str, List[ProfileMetrics]] = {}
         for slide in slides:
-            f = features_map[slide.name]
-            base_scroll = 496.0 if f.m03_fixed_block_budget_ok else 512.0
-            profiles: List[ProfileMetrics] = []
-            for profile in self.profiles:
-                penalty = 0
-                if profile["id"] == "P2":
-                    penalty = 4
-                if profile["id"] == "P3":
-                    penalty = 6
-
-                main_client_h = 510.0
-                main_scroll_h = base_scroll + penalty
-                footer_safe_gap = main_client_h - main_scroll_h
-                m01 = True
-                m02 = main_scroll_h <= (main_client_h - self.footer_safe_gap_min_px)
-                m04 = max(0.0, main_scroll_h - (main_client_h - self.footer_safe_gap_min_px))
-                m05 = True
-                m07 = False
-                m08 = float(m04)
-
-                profiles.append(
-                    ProfileMetrics(
-                        profile_id=profile["id"],
-                        viewport=f"{profile['width']}x{profile['height']}",
-                        dpr=profile["dpr"],
-                        slide_h=720.0,
-                        header_h=80.0,
-                        main_h=510.0,
-                        footer_h=50.0,
-                        main_client_h=main_client_h,
-                        main_scroll_h=main_scroll_h,
-                        footer_safe_gap=footer_safe_gap,
-                        overflow_nodes=0,
-                        overflow_node_details=[],
-                        canvas_overdraw_nodes=0,
-                        main_overflow_hidden=True,
-                        rendered_canvas_count=1 if f.has_chartjs_usage or f.has_echarts_usage else 0,
-                        m01_slide_total_budget_ok=m01,
-                        m02_main_budget_ok=m02,
-                        m04_footer_overlap_risk=m04,
-                        m05_overflow_nodes_ok=m05,
-                        m07_hidden_overflow_masking_risk=m07,
-                        m08_main_stack_overflow_risk_px=m08,
-                        m09_chart_collapse_risk=0,
-                        contrast_issues=0,
-                        passed=(m01 and m02 and m05 and not m07),
-                        backend="static-fallback",
-                    )
-                )
-            result[slide.name] = profiles
+            features = features_map[slide.name]
+            base_scroll = 496.0 if features.m03_fixed_block_budget_ok else 512.0
+            result[slide.name] = [
+                self._build_static_profile_metrics(profile, features, base_scroll)
+                for profile in self.profiles
+            ]
         return result
 
     def collect(

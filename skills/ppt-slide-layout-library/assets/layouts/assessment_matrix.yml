@@ -34,6 +34,38 @@ content_spec:
     required: true
     items: ["Worse", "Better"]
 
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - evaluation_dimensions
+    - option_groups
+    - rating_scale
+    - legend_definition
+    - recommendation_logic
+    - fallback_plan
+  narrative_fit:
+    - qualitative_assessment
+    - strategic_option_screening
+    - short_vs_long_term_tradeoff
+  compatible_chart_families:
+    - heatmap_matrix
+    - radar_profile
+  compatible_component_families:
+    - Table_Status
+    - Badge_Status
+    - Card_Solid
+    - List_Icon
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - comparison
+    - side_by_side
+    - dashboard_grid
+  overflow_recovery_order:
+    - reduce_column_count
+    - reduce_row_count
+    - simplify_rating_scale
+    - downgrade_to_comparison
+
 constraints:
   - "图标风格必须统一 (SVG)"
   - "方案组之间必须有虚线分隔"

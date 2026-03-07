@@ -1,6 +1,6 @@
 ---
 name: memory-manager
-description: "Persistent memory management for AI agents - 3-tier file-based memory system with auto-capture, quality scoring, and session lifecycle hooks."
+description: "Persistent memory management for AI agents - 3-tier file-based memory system with mandatory L1 raw logs and optional L2/L3 extraction."
 metadata:
   version: 2.0.0
   author: cortana
@@ -14,13 +14,20 @@ metadata:
 
 A comprehensive memory and persistence management system enabling AI agents to:
 - **Preserve context** across multi-turn sessions
-- **Capture learnings** automatically with optional quality gating
+- **Write raw interaction logs** on every material turn and extract reusable knowledge only when warranted
 - **Distill knowledge** from raw logs to long-term memory
-- **Maintain session continuity** through lifecycle hooks
+- **Persist useful acquired content** so agents do not need to rediscover it
+- **Maintain session continuity** through lightweight session initialization and recent-memory lookup
 
 ## Core Principle
 
 "Text > Brain" - Every session is fresh. Context must be persisted to the filesystem.
+
+## Storage Policy
+
+- For this repository, the canonical memory location is the workspace `memory/` directory.
+- Persist project memory through `python3 skills/memory-manager/scripts/memory_manager.py ...` so writes land in `./memory/`.
+- Do not route this repository's reusable memory outside `./memory/`.
 
 ## 3-Tier Memory Hierarchy
 
@@ -46,20 +53,20 @@ A comprehensive memory and persistence management system enabling AI agents to:
 │  ┌───────────────────────────────────────────────────────┐  │
 │  │  memory/sessions/YYYY-MM-DD.md                        │  │
 │  │  • Every conversation turn                            │  │
-│  │  • Zero-friction auto-capture                         │  │
-│  │  • Auto-archived after 30 days                        │  │
+│  │  • Append-only raw turn logging                       │  │
+│  │  • Retention follows repo memory policy               │  │
 │  └───────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### L1: Session Logs (Raw)
-- **Purpose**: Automatic capture of every conversation turn
+- **Purpose**: Raw record of every material conversation turn
 - **Location**: `memory/sessions/YYYY-MM-DD.md`
-- **Retention**: 30 days → auto-archive
-- **Trigger**: Automatic - no quality check
+- **Retention**: Managed by repository policy
+- **Trigger**: `persist-turn` or `log-turn`
 
 ### L2: Theme-Based (Working)
-- **Purpose**: Categorized, semi-structured notes
+- **Purpose**: Categorized, semi-structured notes, fetched facts, and interim research
 - **Location**: `memory/<theme>/YYYY-MM-DD_HH.md`
 - **Retention**: 90 days → auto-archive
 - **Trigger**: Smart detection or quick capture
@@ -69,6 +76,35 @@ A comprehensive memory and persistence management system enabling AI agents to:
 - **Location**: `memory/global.md`
 - **Retention**: Indefinite
 - **Trigger**: Manual or auto-distill from high-value sessions
+- **Read Contract**: Cortana reads `memory/global.md` in this order before complex, preference-sensitive, or routing tasks:
+  1. `Active Mission`
+  2. `Key Constraints`
+  3. `Research Index`
+  4. `User Preferences`
+
+`Research Index` is a discovery aid, not a hard reuse gate:
+- Reuse an entry when it is directly relevant and still usable.
+- If no entry is a close fit, continue with fresh search or tool verification.
+- After gathering useful material, write it into `memory/` even if you have not fully distilled it yet.
+
+Recommended top-level skeleton:
+
+```markdown
+# Global Memory
+
+Read Order: Active Mission -> Key Constraints -> Research Index -> User Preferences
+
+## 1. Active Mission
+### Mission Snapshot
+### Key Constraints (Immutable)
+### Next Useful Reads
+
+## 2. Research Index
+
+## 3. Decisions
+
+## 4. User Preferences
+```
 
 ## Key Features
 
@@ -86,83 +122,93 @@ Optional compatibility wrapper (project-specific):
 ./tools/memory-manager <command> [args]
 ```
 
-### 1. Session Lifecycle Hooks
+### 1. Session Initialization
 
-Automatic memory loading at session start and summarization at end.
+Use `session-init` once per new chat/session to load global memory and a recent memory index.
 
-```bash
-# On session start - auto-load memories
-python3 skills/memory-manager/scripts/memory_manager.py session-init
-
-# On session end - auto-generate summary
-python3 skills/memory-manager/scripts/memory_manager.py session-end \
-  --summary '{"key_decisions": 2, "errors_encountered": 1}'
-```
-
-### 2. Smart Capture
-
-Default direct persistence (ungated), with optional quality gating via `--gate`.
+**Practical default**: call `session-init` once per new chat/session. Do **not** call it on every reply.
 
 ```bash
-# Default behavior: ungated (direct write to theme/global)
-python3 skills/memory-manager/scripts/memory_manager.py smart-capture \
-  --content "Decision: use Redis for caching layer due to high read throughput" \
-  --context '{"is_decision": true}'
-
-# Explicit gated behavior: run quality scoring + tier recommendation
-python3 skills/memory-manager/scripts/memory_manager.py smart-capture \
-  --content "Decision: use Redis for caching layer due to high read throughput" \
-  --context '{"is_decision": true}' \
-  --gate
-
-# Returns (default): {"quality_score": null, "recommendation": "ungated_theme|ungated_global", ...}
-# Returns (--gate): {"quality_score": 85, "recommendation": "persist_l3_global", ...}
+python3 skills/memory-manager/scripts/memory_manager.py session-init --session-id "abc"
 ```
 
-### 3. Automatic Turn Analysis
+### 2. Core Persistence Flow
 
-Analyze conversation to decide if worth capturing.
+The latest standard is deliberately simple:
+
+1. write raw interaction content to `L1` in `memory/sessions/...`
+2. write extracted reusable content to `L2` in `memory/<theme>/...` when useful
+3. optionally append durable constraints/preferences to `L3` in `memory/global.md`
+
+**Repository-specific requirement for this workspace**: every interaction must first produce an `L1` raw write in `memory/sessions/...`. Any `L2` or `L3` write is additive and does not replace the mandatory `L1` write.
+
+Use `persist-turn` as the default command for interactive work because it enforces the required order in one call.
 
 ```bash
-python3 skills/memory-manager/scripts/memory_manager.py should-capture \
-  --user-msg "That didn't work, still getting timeout errors" \
-  --agent-response "Error: connection timeout after 30s" \
-  --tools '["read", "edit", "execute"]' \
-  --turn-count 5
-
-# Returns: {"should_capture": true, "capture_type": "error_log", "signals": {...}}
+python3 skills/memory-manager/scripts/memory_manager.py persist-turn \
+  --entry-type assistant \
+  --raw-content "User asked for a memory cleanup plan. Assistant decided to standardize L1 and L2 writes." \
+  --extracted-content "Decision: use persist-turn as the default two-level persistence command." \
+  --theme decision \
+  --template decision
 ```
 
-### 4. Quick Notes (Minimal Friction)
-
-Fast capture with optional auto-theme detection.
+If you only have raw content and no extracted value yet, use `log-turn` first and write `L2` later in the same turn when appropriate.
 
 ```bash
-# Quick note with manual theme
-python3 skills/memory-manager/scripts/memory_manager.py quick-note \
-  --content "Refactored auth module to use JWT" \
-  --theme "coding"
-
-# Quick note with auto-theme detection
-python3 skills/memory-manager/scripts/memory_manager.py quick-note \
-  --content "Fixed the deployment pipeline in GitHub Actions" \
-  --auto-theme
-  # Auto-detected as: "devops"
+python3 skills/memory-manager/scripts/memory_manager.py log-turn \
+  --entry-type assistant \
+  --content "Raw verification notes and working output."
 ```
 
-### 5. Content Quality Scoring (`--gate` mode)
+### 3. Direct L2 And L3 Writes
 
-When `--gate` is enabled, content is scored on:
-- **Length** (0-30): Adequate detail?
-- **Information Density** (0-40): Contains valuable patterns (decisions, errors, lessons)?
-- **Uniqueness** (0-30): Not duplicate of existing memory?
-- **Recency Boost** (0-20): Error or decision context?
+Use `write-theme` for deliberate extracted-note writes outside the main turn flow, such as backfilling verified facts or importing distilled notes.
 
-**Total Score → Action:**
-- ≥70: Persist to L3 (Global)
-- ≥50: Persist to L2 (Theme)
-- ≥30: Persist to L1 (Log only)
-- <30: Skip
+```bash
+python3 skills/memory-manager/scripts/memory_manager.py write-theme \
+  --theme preferences \
+  --content "User prefers concise conclusions first, then evidence." \
+  --promote-global
+```
+
+`write-theme` also writes an `L1` session entry before the `L2` note. Use
+`--raw-content` if the raw turn text should differ from the extracted note.
+
+Use `write-global` only when you explicitly need to append durable constraints or preferences to `memory/global.md`.
+
+```bash
+python3 skills/memory-manager/scripts/memory_manager.py write-global \
+  --content "## Durable Preference\n\nDefault to conclusion first, then evidence." \
+  --append
+```
+
+`write-global` also writes an `L1` session entry before appending to `L3`.
+
+### 4. CSV Data Memory
+
+Use `write-data` when the memory payload is tabular and should live as a CSV file.
+
+```bash
+python3 skills/memory-manager/scripts/memory_manager.py write-data \
+  --name market_snapshot.csv \
+  --csv-content "date,price\n2026-03-07,91.2" \
+  --description "Daily market snapshot" \
+  --source-label "manual_capture"
+```
+
+- **Location**: `memory/data/*.csv`
+- **Manifest**: `memory/data/manifest.json` tracks source label, description, columns, update time, row count, and file size
+- **Semantics**: the command writes an `L1` session log entry first, then stores the CSV file under `memory/data/` and updates the manifest
+- **Input**: provide exactly one of `--csv-content` or `--source-file`
+- **Reading**: use `read-data` to load one dataset or `list-data` to inspect all stored CSV files and their metadata
+
+Memory is a general workflow, not a research-only feature:
+
+- question / search / discussion
+- write `L1` raw memory immediately
+- extract to `L2` when value appears
+- promote to `L3` only for durable repo-wide facts or preferences
 
 ## Memory Templates
 
@@ -224,10 +270,7 @@ python3 skills/memory-manager/scripts/memory_manager.py --workspace /path/to/wor
 ### Session Lifecycle
 ```bash
 # Initialize session - loads global + recent themes
-session-init [--context '{"session_id": "abc"}']
-
-# End session - generates summary + optional distillation  
-session-end [--summary '{"key_decisions": 2}'] [--no-distill]
+session-init [--session-id "abc"] [--recent-days 7] [--theme-limit 8] [--no-log]
 ```
 
 ### L1: Session Logs
@@ -236,77 +279,72 @@ session-end [--summary '{"key_decisions": 2}'] [--no-distill]
 log-turn --entry-type user --content "Hello" \
   [--tools '["search"]'] [--session-id "abc"]
 
+# Preferred repository flow: raw L1 first, then optional L2 extraction
+persist-turn --entry-type assistant --raw-content "Raw interaction log" \
+  [--extracted-content "Reusable conclusion"] [--theme research] \
+  [--template decision|error|task] [--title "Optional heading"] \
+  [--tools '["read"]'] [--promote-global]
+
 # Read recent logs
-read-logs [--days-back 7]
+read-logs [--days-back 7] [--limit 20]
 ```
 
 ### L2: Theme Memory
 ```bash
-# Quick capture
-quick-note --content "Fixed bug" [--theme "coding"] [--auto-theme]
-
-# Write with template
-write-theme --theme "architecture" --content "..." [--template decision|error|task]
+# Write with a caller-provided theme; an L1 entry is written first
+write-theme --theme research --content "..." [--template decision|error|task] \
+  [--title "Optional heading"] [--promote-global] [--raw-content "..."]
 
 # Read theme
-read-theme --theme "coding" [--hours-back 24]
+read-theme --theme "coding" [--hours-back 24] [--limit 20]
 ```
 
 ### L3: Global Memory
 ```bash
 read-global
-write-global --content "..." [--append]
+write-global --content "..." [--append] [--raw-content "..."]
 ```
 
-### Smart Features
+### CSV Data Memory
 ```bash
-# Smart capture (default ungated)
-smart-capture --content "..." [--theme auto] [--context '{...}'] [--gate]
-
-# Analyze if turn worth capturing
-should-capture --user-msg "..." --agent-response "..." --tools '[...]' --turn-count N
-
-# Atomic capture for one turn (log + decide + persist)
-capture-turn --user-msg "..." --agent-response "..." --tools '[...]' --turn-count N [--summary-content "..."] [--gate]
-
-# Score content quality
-score-quality --content "..." [--context '{...}']
+write-data --name "metrics.csv" --csv-content "date,value\n2026-03-07,1" \
+  [--description "..."] [--source-label "..."] [--columns-json '["date","value"]']
+write-data --name "metrics.csv" --source-file /tmp/metrics.csv [--replace]
+read-data --name "metrics.csv" [--head 5]
+list-data
 ```
 
-`capture-turn` returns an audit marker in JSON:
-- `MEMORY_CAPTURED`: persistence happened (L1/L2/L3 path included)
-- `MEMORY_SKIPPED`: no persistence (quality/trigger not met)
+## Preferred Two-Level Workflow
 
-### Search & Maintenance
+For this repository, prefer `persist-turn` when you need one command that obeys
+the mandatory storage order:
+
+1. write raw interaction content to `L1` in `memory/sessions/...`
+2. write extracted reusable content to `L2` when provided
+3. optionally promote durable extracted content to `L3`
+
+Use `write-theme` and `write-global` only for deliberate writes that happen outside
+the main interactive turn. Both commands still emit an `L1` session log entry
+before writing `L2` or `L3` content.
+
+### Utilities
 ```bash
 list-themes
-search --query "delegation" [--max-results 10]
-cleanup [--days-keep-l1 30] [--days-keep-l2 90]
 ```
 
-## Auto-Theme Detection
+## Theme Selection
 
-The system automatically detects themes from content keywords:
+Theme selection is provided by the calling agent. The script no longer performs
+keyword-based auto-detection internally.
 
-| Theme | Keywords |
-|-------|----------|
-| `travel` | travel, trip, route, commute, flight, hotel, transit, taxi, itinerary, 出行, 路线, 通勤 |
-| `research` | research, investigation, survey, benchmark, comparison, analysis, 调研, 对比, 评估 |
-| `coding` | code, function, class, refactor, bug, fix |
-| `architecture` | design, api, system, component, interface |
-| `devops` | deploy, pipeline, ci/cd, docker, kubernetes |
-| `data` | data, database, query, model, analytics |
-| `error` | error, exception, fail, crash, bug |
-| `decision` | decision, choose, select, option, alternatives |
-| `misc` | (default) |
-
-## Smart Triggers
-
-The system automatically captures when detecting:
+- `persist-turn` requires `--theme` when `--extracted-content` is present
+- `write-theme` requires `--theme`
+- Passing `--theme auto` is rejected so the theme source stays outside the skill
 
 | Signal | Pattern | Action |
 |--------|---------|--------|
 | User correction | "不对", "错了", "应该是", "wrong", "incorrect" | → Error post-mortem |
+| Explicit memory request | "记住", "不要忘记", "remember", "偏好", "约束" | → Preference record |
 | Error in response | "Error:", "Exception", "timeout" | → Error log |
 | Emotional + complex | Satisfied/dissatisfied + 5+ turns | → Task summary |
 | Tool-heavy milestone | 3+ tools, every 5 turns | → Progress snapshot |
@@ -315,6 +353,12 @@ The system automatically captures when detecting:
 
 ### For cortana.agent.md
 
+Authoritative contract: `docs/specs/cortana-memory-contract.md`
+
+**Contract mapping from the current Cortana prompt:**
+
+Use the mapping in `docs/specs/cortana-memory-contract.md` as the single source of truth.
+
 **Session Start (Automatic):**
 ```yaml
 on_session_start:
@@ -322,29 +366,57 @@ on_session_start:
   - inject_result_into: context
 ```
 
-**Every Turn (Automatic):**
+If the task is complex and the injected context is insufficient, explicitly read `memory/global.md` and follow:
+
 ```yaml
-on_turn_complete:
-  - call: memory-manager/log-turn
-    with: {entry_type, content, tools_used}
-  - call: memory-manager/should-capture
-    with: {user_msg, agent_response, tools_used, turn_count}
-  - if should_capture:
-      call: memory-manager/smart-capture
+read_order:
+  - Active Mission
+  - Key Constraints
+  - Research Index
+  - User Preferences
 ```
 
-**Session End (Automatic):**
+Treat `Research Index` as a starting point only. If no existing note is a close fit, continue with fresh search and write the new material back to `memory/`.
+
+**Every Turn (Automatic):**
 ```yaml
-on_session_end:
-  - call: memory-manager/session-end
-    with: {session_summary, auto_distill: true}
+on_any_answered_turn:
+  - call: memory-manager/persist-turn
+    with: {raw_content, extracted_content?, theme?, tools_used?, session_id?}
+
+if_extracted_content_is_not_ready_yet:
+  - call: memory-manager/log-turn
+    with: {raw_content, tools_used?, session_id?}
+  - later_same_turn_when_value_is_clear:
+    call: memory-manager/write-theme
+    with: {content, theme, promote_global?}
 ```
 
 **Explicit User Request:**
 ```yaml
 when_user_says: ["记住", "不要忘记", "remember"]
-  - call: memory-manager/quick-note
-    with_auto_theme: true
+  - call: memory-manager/persist-turn
+    with: {raw_content, extracted_content, theme: preferences, promote_global: true}
+```
+
+Notes:
+- `persist-turn` is the default interactive command because it guarantees `L1` first.
+- `write-theme --promote-global` is the manual path for durable extracted notes outside the main turn flow.
+- Do not require full reuse or full distillation before persisting useful content.
+
+**Global Updates (Selective):**
+```yaml
+when_new_long_term_preference_or_active_mission_change:
+  - call: memory-manager/write-global
+    with: {content, append: true}
+```
+
+**Verified route / POI / commute tasks:**
+```yaml
+when_route_or_location_answer_was_tool_verified:
+  - follow: docs/specs/cortana-memory-contract.md
+  - preferred_call: memory-manager/persist-turn
+    with: {raw_content, extracted_content, theme: travel}
 ```
 
 ## File Structure
@@ -352,6 +424,9 @@ when_user_says: ["记住", "不要忘记", "remember"]
 ```
 memory/
 ├── global.md                    # L3: Long-term memory
+├── data/
+│   ├── market_snapshot.csv      # CSV memory data
+│   └── manifest.json            # CSV data manifest
 ├── sessions/
 │   ├── 2026-02-27.md           # L1: Today's raw logs
 │   └── 2026-02-26.md           # L1: Yesterday's logs
@@ -359,30 +434,44 @@ memory/
 │   └── 2026-02-27_14.md        # L2: Coding theme
 ├── architecture/
 │   └── 2026-02-27_15.md        # L2: Architecture theme
-├── daily-summaries/
-│   └── 2026-02-27_18.md        # L2: Auto-generated daily summary
-└── archive/                     # Archived old memories
-    ├── session_2026-01-27.md
-    └── coding/
-        └── 2026-01-15_10.md
+└── research/
+    └── 2026-02-27_18.md        # L2: Research theme
 ```
 
-## Migration from v1.0
+## Migration from Legacy CLI
 
 **Breaking Changes:**
-- Global memory moved from `MEMORY.md` to `memory/global.md`
-- New L1 session logs layer
-- Added quality scoring
+- Removed the legacy one-off capture, quality-gating, session-finalization, search, and cleanup command families
 
-**Behavior Update (v2.x):**
-- `smart-capture` and `capture-turn` are **ungated by default**
-- Use `--gate` to enable capture/quality gate logic explicitly
+**Current Standard:**
+- `persist-turn` is the default interactive command
+- `write-theme` is the manual extracted-note command
+- `write-global` is reserved for durable global updates
+- `session-init` only loads context and optionally logs the initialization event
 
 **Migration:**
 ```bash
-# Old global memory still readable
-python3 skills/memory-manager/scripts/memory_manager.py read-global
-# Will check legacy location if new location empty
+# Normal turn or milestone
+python3 skills/memory-manager/scripts/memory_manager.py persist-turn \
+  --raw-content "..." \
+  --extracted-content "..." \
+  --theme research
+
+# Manual extracted-note write
+python3 skills/memory-manager/scripts/memory_manager.py write-theme \
+  --theme research \
+  --content "..."
+
+# CSV data write
+python3 skills/memory-manager/scripts/memory_manager.py write-data \
+  --name metrics.csv \
+  --csv-content "date,value\n2026-03-07,1" \
+  --description "Sample metric series"
+
+# CSV data read
+python3 skills/memory-manager/scripts/memory_manager.py read-data \
+  --name metrics.csv \
+  --head 5
 ```
 
 ## Error Handling
