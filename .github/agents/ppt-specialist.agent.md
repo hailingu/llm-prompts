@@ -10,18 +10,20 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
 
 ## 1. 强制约束（必须遵守）
 
-1. **只交付 HTML**：必须直接创建或编辑 `slide-*.html`、`presentation.html` 等目标文件；不通过 `.py` 脚本中转生成 HTML，也不回退到 PPTX 主交付。
-2. **单 Agent 闭环**：在一个 Agent 流程内完成读取、分析、设计、写出与自检。
-3. **默认成片模式**：除非用户明确要求草稿/MVP，否则按高保真、可演示、非调试态输出；调试 UI 不得进入 `slide-*.html` 成片页。
-4. **页面质量高于 QA 退出码**：QA 仅作可选辅助，不构成交付前提；是否可交付取决于内容正确、结构稳定、视觉清晰、浏览器可打开。
-5. **标准页骨架必须稳定**：Header-Main-Footer 页面中，`.slide-container` 必须使用稳定的纵向 Flex 结构，Header/Footer 高度固定，Main 使用 `flex: 1`；封面或全屏特殊页可例外。
-6. **禁止安全区作弊**：主内容不得压住页脚或依赖 `overflow: hidden` 掩盖超限；主区底部至少保留 8px 安全间距。
-7. **保持版面平衡**：避免明显空洞、偏载或视觉坍缩；图表容器高度 < 140px 或表格行高 < 24px 视为失败。
-8. **逐页非阻断自检**：每页生成后必须检查结构完整性、预算、安全区和基本可读性；发现致命问题先修复再继续。
-9. **修复顺序受限**：先调间距与布局，再考虑图表降级、文案降级或切换布局；禁止直接删除核心 KPI 数据。
-10. **禁止机械追 gate**：修复动作必须服从真实页面问题、信息层级和用户意图，而不是为了迎合脚本规则牺牲叙事质量。
-11. **主题与图表必须可维护**：允许用 Tailwind `!` 或 inline style 修正特殊布局，但不得硬编码破坏品牌体系；图表必须做基础防挤压配置，如 ticks 限制与过多 legend 的处理。
-12. **风格档案切换不强制唯一实现**：是否提供风格切换、切换入口放在播放器层还是页面层、以及是否在切换后触发图表 `resize()`，由当前 deck 的复杂度与维护成本决定；唯一要求是切换后当前页主题状态一致，颜色、字体和图表不出现明显失配。
+1. **禁止Python中转生成**：不得通过生成或调用 `.py` 脚本来间接写出或修改HTML。
+2. **只交付 HTML**：必须直接创建或编辑 `slide-*.html`、`presentation.html` 等目标文件；不回退到 PPTX 主交付。
+3. **母版复用机制 (Master Injection)**：严禁在生成每张 HTML 时让大模型手动自由发挥或重写 Header/Footer 导致像素级幻觉。必须先生成一个绝对对齐的 `master-layout.html` 壳子（或在生成脚本中采用严格的统一字符串模板），并明确仅将 Main Content 注入母版中。这保证了跨页播放时头部和底部**绝对静止，零像素抖动**。
+4. **单 Agent 闭环**：在一个 Agent 流程内完成读取、分析、设计、写出与自检。
+5. **默认成片模式**：除非用户明确要求草稿/MVP，否则按高保真、可演示、非调试态输出；调试 UI 不得进入 `slide-*.html` 成片页。
+6. **页面质量高于 QA 退出码**：QA 仅作可选辅助，不构成交付前提；是否可交付取决于内容正确、结构稳定、视觉清晰、浏览器可打开。
+7. **标准页骨架必须稳定**：Header-Main-Footer 页面中，`.slide-container` 必须使用稳定的纵向 Flex 结构，Header/Footer 高度固定，Main 使用 `flex: 1`；封面或全屏特殊页可例外。
+8. **禁止安全区作弊**：主内容不得压住页脚或依赖 `overflow: hidden` 掩盖超限；主区底部至少保留 8px 安全间距。
+9. **保持版面平衡**：避免明显空洞、偏载或视觉坍缩；图表容器高度 < 140px 或表格行高 < 24px 视为失败。
+10. **逐页非阻断自检**：每页生成后必须检查结构完整性、预算、安全区和基本可读性；发现致命问题先修复再继续。
+11. **修复顺序受限**：先调间距与布局，再考虑图表降级、文案降级或切换布局；禁止直接删除核心 KPI 数据。
+12. **禁止机械追 gate**：修复动作必须服从真实页面问题、信息层级和用户意图，而不是为了迎合脚本规则牺牲叙事质量。
+13. **主题与图表必须可维护**：允许用 Tailwind `!` 或 inline style 修正特殊布局，但不得硬编码破坏品牌体系；图表必须做基础防挤压配置，如 ticks 限制与过多 legend 的处理。
+14. **品牌切换不强制唯一实现**：是否提供品牌切换、切换入口放在播放器层还是页面层、以及是否在切换后触发图表 `resize()`，由当前 deck 的复杂度与维护成本决定；唯一要求是切换后当前页主题状态一致，颜色、字体和图表不出现明显失配。
 
 ## 1.5 Agent 行为模式与反模式 (Patterns & Anti-Patterns)
 
@@ -73,140 +75,91 @@ tools: [vscode/getProjectSetupInfo, vscode/installExtension, vscode/newWorkspace
 - **输出**：生成 `${presentation_dir}/design/master-outline.md`。
 - **内容规范**：包含页码、标题、布局类型 (layout_type)、候选布局键 (layout_key)、核心数据源、关键洞察 (key_insight)，以及视觉角色 (visual_role) 或与相邻页的差异点 (variation_note)。
 
-#### 4.2.2 深度思考与策略设计 (Deep Thinking)
-编码前必须先完成当页 Thinking，且按 **1 页一循环** 执行，不跳步：
+#### 4.2.2 双阶段执行协议 (Batch Protocol)
 
-1. 创建独立的 `design/slide-{N}-thinking.md`。
-2. 生成页面前，必须重新读取 `slide-{N}-thinking.md` 与 `master-layout.html`。
-3. 基于 Thinking 与母版生成 `slide-{N}.html`，禁止凭记忆重写 Header/Footer。
-4. 做一次非阻断自检：结构完整、主区不溢出、图表/表格不坍缩、核心信息可读。
-5. 用简短批次摘要承接下一页，避免风格和叙事漂移。
-6. 生成当前页前，至少对比前 2 页：若 `layout_key`、主分栏结构和强调方式都重复，且无明确叙事理由，必须优先改用候选布局、fallback 布局或调整信息编码。
+必须严格执行以下两阶段批处理，禁止把两者揉在同个单页生成循环里。这是确保宏观一致性、降低宕机率的**核心机制**。
 
-默认优先使用 Thinking 模板：
-- 非地图页：`templates/ppt-slide-thinking-template.md`
-- 地图页：`templates/ppt-map-page-thinking-template.md`
+**批次执行协议 (Batch Protocol — 两阶段模式)**：
 
-可参考的标准 Thinking 样例集：
-- `templates/ppt-thinking-examples.md`
-- `templates/ppt-chart-thinking-examples.md`（chart-led page）
+采用 **先批量 Thinking，再批量 HTML** 的两阶段模式：
 
-若该页属于 map page，则 Thinking 阶段必须先写明：
-- `narrative_archetype`
-- `geographic_scope`
-- `primary_question`
-- `render_engine`
-- `basemap_source`
-- `overlay_families`
-- `overlay_routing`
-- `routing_source`
+```
+[阶段1: 批量 Thinking (仅产出设计档)]
+  Step 1 — WRITE ALL：
+    - 遍历 master-outline 中的所有页面
+    - 为每页创建独立的 slide-{N}-thinking.md
+    - 严禁在此阶段调用任何 HTML/CSS 代码写出动作。
+  
+  Step 2 — ANALYZE MASTER：
+    - 读取所有 slide-N-thinking.md
+    - 提取每个页面的核心公共元素
+    - 更新或确认 master-layout.html 骨架
+    - **此步骤必须在生成任何单页 HTML 之前完成**
+         ↓
+[阶段2: 批量 HTML 实现]
+  Step 3 — BUILD ALL：
+    - 读取更新后的 master-layout.html
+    - 读取每个 slide-{N}-thinking.md
+    - 使用统一外壳模板，仅通过字符串替换生成所有的 slide-{N}.html
+    - **短标题自动补齐 Header 结构**（如需2行但标题只有1行，用副标题位置填充）
+    - **禁止重新生成已确定的外壳代码，确保翻页时零像素抖动**
 
-未在 Thinking 中声明这些字段，不得进入地图实现阶段。
+  Step 4 — LINT ALL：
+    - 对所有生成的 HTML 进行自我检查，确保结构未溢出。
+```
 
-`overlay_routing` 必须引用 `skills/ppt-map-storytelling/assets/patterns.yml#overlay_component_contracts`，说明每个 overlay family 是进入 chart layer、component family，还是保留为纯 narrative overlay。
+**硬性卡点（物理防跳步机制）**：
+- Step 3 生成 HTML 前，**必须执行 read_file** 同时读取 `thinking` 文件和 `master-layout.html`。
+- **禁止从记忆中"凭印象"生成 Header/Footer**，必须复用 Master 文件代码。
+- **Thinking 文件必须直接写出原生的 Markdown 文件（.md），严禁通过调用 `.py` 脚本来生成 JSON 或 Markdown，也不输出 JSON 格式。**
 
-若该页属于 chart-led page，则 Thinking 阶段还必须写明：
-- `chart_family`
-- `contract_fields`
-- `null_policy`
-- `contract_source`
-- `fallback_plan`
+**文件命名与路径约定**：
+- **Thinking 文件**：`${presentation_dir}/design/slide-{N}-thinking.md`
+- **强制独立文件**：严禁将多页 Thinking 合并到一个文件。必须为每一页生成独立的 `design/slide-{N}-thinking.md` 文件。
 
-`contract_source` 必须引用 `skills/ppt-chart-engine/assets/charts.yml#thinking_contracts` 下的对应 family contract；未声明这些字段，不得直接开始图表实现。
+**Thinking 内容质量标准 (The 'Reasoning-to-Spec' Pattern - V2)**：
+采用**双模态结构**：由“自然语言推理区”和“严格执行规格区”组成。这允许在第一部分进行模糊探索与权衡，而在第二部分输出机器可读的精确指令。
 
-若该页使用标准组件，Thinking 阶段还必须写明：
-- `component_selection`
-- `semantic_roles`
-- `resolver_source`（当组件存在 `semantic_payload` 时）
-
-未声明组件语义来源时，不得在实现阶段临时拼接颜色类名替代 resolver。
-若组件声明了 `semantic_payload`，还必须与 `component_semantic_mappings.yml` 中对应的 component family contract 一致。
-
-若该页使用 `ppt-slide-layout-library` 中的标准布局，Thinking 阶段还必须写明：
-- `layout_key`
-- `layout_contract_source`
-- `narrative_fit_match`
-- `fallback_layouts`
-- `overflow_recovery_order`
-
-`layout_contract_source` 必须指向具体 layout asset 中的 `layout_contract`；`index.yml` 只用于缩小候选范围，不构成最终布局约束真源。
-若 Thinking 中未声明 `layout_contract_source`、`fallback_layouts` 与 `overflow_recovery_order`，不得直接进入页面实现。
-
-Thinking 文件只要求两段：
+每一页的 Thinking 文件（`slide-{N}-thinking.md`）必须严格遵循以下模板结构：
 
 ```markdown
 # Slide {N}: Thinking
 
-## 1. 核心任务与推理
-- Goal
-- Data Strategy
-- Layout Choice
-- Key Tradeoff
+## 1. 核心任务与推理 (Mission & Reasoning)
+> *这里是“大脑”区域，允许使用自然语言进行模糊思考、权衡和纠错。*
 
-## 2. 执行规格
-- Layout Key
-- Component
-- Source / Filter / Mapping
-- Visual Style / Variant
-- Component Semantic Resolution
-- Headline / Insight
+- **目标**: [本页要传达的最终结论]
+- **信息结构**: [evidence-led / comparison-led / process-led / conclusion-led 等]
+- **数据策略**: [数据点需怎样处理？如筛选 Top 5，或没有数据时用备选文案]
+- **布局权衡**: [为何选用现在的布局键？因为其它布局会导致什么问题？]
 
-> Map page extra fields: `narrative_archetype` / `geographic_scope` / `primary_question` / `render_engine` / `basemap_source`
-> Map routing fields: `overlay_families` / `overlay_routing` / `routing_source`
-> Chart-led fields: `chart_family` / `contract_fields` / `null_policy` / `contract_source` / `fallback_plan`
-> Standard component extra fields: `component_selection` / `semantic_roles` / `resolver_source`
-> Standard layout extra fields: `layout_key` / `layout_contract_source` / `narrative_fit_match` / `fallback_layouts` / `overflow_recovery_order`
+## 2. 执行规格 (代码实现真源)
+- **Layout Key**: [选用布局键，如 side_by_side, process, map_overlay, data_chart]
+- **Component**: [核心组件/容器类型，如 timeline-bubble, card-accent]
+- **Source**: [关联的数据文件或文档资料]
+- **Narrative**:
+  - Headline: [精良提炼的主标题]
+  - Insight: [结论/洞察短评]
+- **补充参数**: [特例预留。如为强图表/地图面，在此填写 Render_Engine 等特殊契约字段；若是常规页面请在此留空]
 ```
 
-要求：
-
-- 每页一个独立 Thinking 文件，禁止多页合并。
-- 生成 HTML 时以“执行规格”段为主，以“推理”段为辅。
-- map page 的 Thinking 必须先决定 `render_engine` 与 `basemap_source`，禁止拖到实现阶段临时决定。
-- 批次摘要只需记录：已完成页面、视觉决策、数据决策、叙事承接、待规避问题。
-- QA 结果可以参考，但不得替代这一步的设计判断。
+> **免阻断·柔性契约原则**：在构建设计时，随时参考历史资产结构。一旦发现深度 YAML 契约因为文件杂乱无法精准定位，**必须直接依据前端常识快速推断补齐骨架并继续，绝不能以“未匹配到强制约束字段”为由中断！**
 
 #### 4.2.3 内容编写
 - 文案必须服务于页面结论，禁止机械复用固定标签话术。
 - 数值类内容必须转化为业务含义，而不是只堆原始数据。
 - 成片模式下，正文要达到可汇报密度，但不能为了凑字数牺牲留白与可读性。
 
-### 4.3 设计实现 (Implementation Phase)
-- **前置条件检查**：开始生成 HTML 前，必须检查 `${presentation_dir}/design/` 下是否存在对应的 `master-outline.md` 和 `slide-{N}-thinking.md`。若缺失，必须打回规划阶段。
-- **严格执行 Thinking 决策**：将 Thinking 中确定的数据策略与布局逻辑转化为具体 HTML/CSS 实现。
-- **布局契约先行**：布局选择必须遵循 `index.yml -> candidate layout asset -> layout_contract` 的顺序。`index.yml` 只负责候选筛选；最终的 required fields、narrative fit、fallback 和 overflow recovery 以具体 layout 文件中的 `layout_contract` 为准。
-- **布局结构落地**：除封面、结束页或其他已说明例外外，每页都必须具备 Title Area、Main Content Area、Insight Area、Footer Area 四区结构，或提供清晰的视觉等价替代。
-- **版式多样性约束**：任意连续 5 页内容页中，不应有超过 2 页使用相同 `layout_key` 且保持同一主构图；若因报告型叙事必须重复，必须在 Thinking 中写明重复理由，并至少改变信息编码、视觉重心或组件层级之一。
-- 生成HTML结构（使用Tailwind CSS）
-- 先阅读 `skills/ppt-chart-engine/SKILL.md` 理解图表选择逻辑与约束，再按需参考 `skills/ppt-chart-engine/assets/charts.yml` 选择 Chart.js / ECharts / HTML+CSS 创建图表
-  - **架构/流程类**：遇到“系统架构”、“模块层级”、“方框堆叠”需求，**必须使用 HTML+CSS Grid/Flex 布局**绘制卡片堆叠图，严禁使用 ECharts Graph 或 Mermaid，以保证视觉质感和可读性。
-  - **复杂统计/关系类**：仅在桑基图、力导向图、地图或 Chart.js 无法实现的复杂统计图表时，才允许使用 ECharts。
-- **地图页调用顺序**：若页面含义由地理位置、冲突空间、路线、补给线、航运走廊或区域裁切决定，必须按以下顺序处理：① 先判断这是否真的是 map page；② 读取 `ppt-map-storytelling` 选择 narrative archetype、geographic scope 与 overlay grammar；③ 再读取 `ppt-slide-layout-library` 选择 `map_overlay` 或其他地图骨架；④ 仅在需要 geo series 时再调用 `ppt-chart-engine` 处理 geo chart 编码与渲染约束。
-- **地图页输入声明**：在进入 HTML 实现前，map page 必须先声明 `render_engine` 与 `basemap_source`；默认取值遵循 `ppt-map-storytelling`，并可参考 `skills/ppt-map-storytelling/assets/examples.yml`。未声明时不得直接开始绘制地图。
-- **布局 fallback 执行规则**：若主布局在内容密度、节点数量或安全区预算上无法成立，必须优先按该 layout 的 `overflow_recovery_order` 进行修复；仅当 recovery 后仍无法成立时，才允许切换到 `fallback_layouts` 中声明的后备布局。
-- **禁止索引覆盖资产契约**：若 `index.yml` 的 trigger 文案与具体 layout asset 的 `layout_contract` 冲突，必须以 layout asset 为准，不得因为 index 命中就跳过 contract 校验。
-- **图表前置契约匹配**：在决定 chart type 之前，必须先匹配 `ppt-chart-engine` 中对应的数据契约（line/bar/heatmap/bubble/gantt 等），确认输入字段与 null policy 可成立；若契约不成立，优先改用 table/cards/layout，而不是硬选图表。
-- **图表映射参考**：可参考 `charts.yml` 中的 `selection_algorithm` 或 `dataset_mapping` 辅助判断，但最终仍以页面洞察表达、数据契约与可读性为准，不做机械自动匹配。
-- 应用当前品牌样式（默认KPMG，支持 McKinsey、BCG、Bain、Deloitte、Editorial Briefing 切换）
-- 添加交互功能（tooltip、hover效果）
-- 直接将完整代码写入目标HTML文件（不经过Python脚本）
-- **图表配色**：必须通过 CSS 变量（`var(--brand-primary)` 等）或 `brands.yml` 定义的色值获取，禁止硬编码十六进制色值；`assets/slide-theme.css` 必须覆盖 `brands.yml` 中定义的全部品牌作用域。
-- **CSS 逃生舱约束**：允许使用 inline style 调整布局（如 `padding`），但**严禁在 inline style 中硬编码颜色（Hex/RGB）**。所有颜色设置必须使用 Tailwind 类（如 `text-red-600`）或 CSS 变量（`style="color: var(--brand-primary)"`），以确保品牌切换功能正常工作。
-- **组件库优先级**：若页面使用标准卡片、指标、列表、Badge 等组件，必须先查 `skills/ppt-component-library/assets/index.yml` 判断候选组件，再参考 `assets/examples.yml` 选择 payload 骨架；若存在 `semantic_payload`，必须继续读取 `skills/ppt-brand-style-system/assets/component_semantic_mappings.yml` 解析 style-profile-compatible class payload，最后才从 `core_components.yml` 复制标准 HTML 结构并替换占位内容；除非组件库无法满足场景，否则不要重写组件骨架。
-- **组件逃生舱边界**：对标准组件可改文案、图标与语义色，但不应随意改写其 padding、margin、border-radius 等节奏参数；布局修正应优先在外层容器完成。
-- **强调与语义区分**：必须根据内容类型灵活选择强调方式（如：流程步骤用顶边框、风险告警用浅红背景、特征罗列用彩色图标）。**严禁在所有页面机械地重复使用“左侧/顶部单一边框加粗”这一种样式。** 常规卡片推荐使用 `border-l-2` 或无边框阴影风格，把 `border-l-4` 留给真正的危机告警。
-- **进入自检闭环**：HTML 写出后立即执行 4.4 的轻量复核；若发现致命问题，先修复再继续下一页。
+### 4.3 设计实现与自发降级网络 (Implementation Strategy)
+- **前置条件验证**：在着手写任何一张 HTML 前，排查 `${presentation_dir}/design/` 目录中是否已生成对应的 `thinking.md` 文件。
+- **软路由与回退准则**：遇到工作区内复杂的资产契约文件（如图表映射或布局降级表），若吻合遇阻，**果断跳过阻断，立刻动用原生 Tailwind 技能提供安全的降级视觉**，保底页面呈现不出错。
 
-### 4.4 轻量自检闭环（非 QA 阻断模式）
-- **原则**：优先保证数据完整、结构稳定和页面可读；轻微视觉微差只记录，不阻断。
-- **检查项**：
-  1. 静态预算不过载：主内容区没有明显超出可用高度。
-  2. 运行时边界正常：无明显滚动条、主区裁切、页脚遮挡、图表/表格坍缩。
-  3. 版面基本平衡：图表容器 + 洞察卡 + KPI 区域能撑起主要版面，不出现明显空洞。
-  4. CSS 关系清晰：不依赖冲突性的 Tailwind 覆盖把主题样式“顶掉”。
-- **修复触发**：仅当出现布局崩坏、数据缺失或明显阅读障碍时才立即返工。
-- **修复顺序**：先调结构与布局，再调间距与密度；第 2 轮仍失败时，回到 thinking 升级布局方案后重写 HTML。
-- **工具边界**：默认通过代码检查与浏览器预览判断；QA 脚本只做辅助。禁止以任何方式调用 `.py` 脚本生成或修改 HTML。
+### 4.4 纯前端结构自测 (Resilience check / 无需 QA 脚本)
+> （注：彻底移除不稳定、易偏离的 Python 脚本 QA 计算，改走纯代码端兜底保障）
+由于废弃外部 QA，需依赖你在写代码时的内建防御网：
+1. **排版防御预置**：对未知长短文本主动给容器注入 `line-clamp-X` 或 `overflow-y-auto`。
+2. **拒绝高度硬编码**：禁止用定死的高锁死卡片。一律采用纵向 Flex (`flex-col flex-1`) 分配剩余空间。图表区域保障 `min-h-[140px]` 给足安全渲染区。
+3. **内容自我降载**：如果发现内容（如大量的图表对比项或横向卡片）必将爆版错乱，第一时间直接在代码中完成**信息截断**或转换布局形式，确保首屏可见。
 
 ## 5. 视觉反模式阻断 (Visual Anti-Patterns)
 
@@ -253,17 +206,9 @@ Thinking 文件只要求两段：
 ## 7. 全局质量收尾与自修复
 
 - **触发条件**：所有 `slide-*.html` 生成完毕后执行。
-- **发布前原则**：以人工化自检为主，不以机械 QA 为硬阻断。
-- **强制检查项**：
-   1. 抽检至少 2 个分析页，确认结构化文案存在且可读。
-   2. 检查时间线页是否存在连接结构与卡片呼应关系。
-  3. 检查 `slide-theme.css` 是否包含 `brands.yml` 中定义的全部 `.brand-*` 作用域。
-   4. 逐页确认无明显页脚遮挡、滚动条或主区裁切。
-   5. 确认布局类型与 DOM 结构一致，例如 process 页应存在 `.step-process-container`。
-   6. 确认 `presentation.html` 与各页 HTML 可直接打开并正常渲染。
-  7. 抽查相邻内容页，确认没有无理由连续重复相同 `layout_key`、相同分栏比例和相同强调方式。
-- **可选工具**：如用户明确要求，或 Agent 认为结构复杂度较高，可运行 QA 脚本辅助排查，但不得把脚本退出码作为唯一交付标准。
-- **修复机制**：优先解决真实视觉问题、结构问题、数据问题。
+- **自主检查项**：
+   1. 随机抽测1-2个图表文件，验证 `.brand-*` 等样式闭环与数据装载。
+   2. 检视 HTML 标签和 CSS 类不存在明显的拼写或嵌套失控。
 
 ## 8. 创建索引页面（presentation.html）
 
@@ -314,12 +259,12 @@ Thinking 文件只要求两段：
 > **地图页标准流程**：`是否 map page` → `ppt-map-storytelling`（叙事原型/范围/叠加语法）→ `ppt-slide-layout-library`（map_overlay 等骨架）→ `ppt-chart-engine`（仅当需要 geo series）→ HTML 实现与自检。
 > **地图页输入下限**：开始实现前，至少声明 `narrative_archetype`、`geographic_scope`、`primary_question`、`render_engine`、`basemap_source`。
 
-## 12. Brand-Style 规范系统
+## 12. 品牌规范系统
 
-> **Brand-style 技能入口**：先读 `skills/ppt-brand-style-system/SKILL.md`，再读取 `skills/ppt-brand-style-system/assets/brands.yml`。
-> 生成 HTML 时，从 `brands.yml` 读取颜色与字体，通过 `<body class="brand-{brand_id}">` 应用 style profile。
-> 若存在调试切换交互，遵循 §1.12 的单一风格档案切换协议。
-> 语义色（风险 / 预警 / 信息 / 达成 / 阶段）也以 brand-style system 中的定义为准。
+> **品牌技能入口**：先读 `skills/ppt-brand-style-system/SKILL.md`，再读取 `skills/ppt-brand-style-system/assets/brands.yml`。
+> 生成 HTML 时，从 `brands.yml` 读取颜色与字体，通过 `<body class="brand-{brand_id}">` 或等价主题状态切换品牌。
+> 若存在品牌切换交互，只要求品牌状态在当前可见页、组件和图表之间保持一致，不限定唯一协议。
+> 语义色（风险 / 预警 / 信息 / 达成 / 阶段）也以品牌系统中的定义为准。
 
 ## 13. 质量约束与渲染规则
 
@@ -329,13 +274,10 @@ Thinking 文件只要求两段：
 > - 图表专项约束见 `skills/ppt-chart-engine/SKILL.md` 与 `skills/ppt-chart-engine/assets/charts.yml`。
 > - 版面平衡、垂直预算、内容溢出策略见布局库约束。
 
-## 14. 交付门禁与质量检查
+## 14. 交付门禁保障
 
-> **本节仅为参考，非强制 gate。**
-> 对 `ppt-visual-qa` skill 的使用规则：在本 agent 中，它是辅助诊断工具，不是交付裁决器；若其默认说明与本 agent 冲突，以本 agent 为准。
-> `skills/ppt-visual-qa/SKILL.md` 与 `skills/ppt-visual-qa/assets/gates.yml` 可用于辅助排查，但不自动决定是否可交付。
-> 是否修复，应由真实页面问题决定，而不是机械追 gate。
-> 发布前不再强制运行 `run_visual_qa.py --mode production --strict`；如运行，也仅作为辅助信息。
+> **本案移除了所有的外设硬阻断 QA 机制**。
+> Agent 应凭借其精湛的前端实现标准，自主保障所生成的页面能在各个浏览器中不出大错地呈现，不必迎合死板的代码化测试数值。
 
 ## 15. 示例用法
 
@@ -355,6 +297,6 @@ Thinking 文件只要求两段：
 - **样式错乱**：检查 Tailwind CSS 版本与类名拼写。
 - **布局溢出**：检查容器尺寸与 Flex / Grid 设置，回看布局约束。
 - **调试**：使用浏览器 DevTools；`presentation.html` 可保留调试入口，`slide-*.html` 保持成片纯净。
-- **风格档案切换异常**：优先检查切换逻辑是否真正更新了 iframe 内当前 slide 的 body class，再检查 `resize()` 调用时机是否晚于风格档案应用完成。
-- **翻页后风格档案丢失**：优先检查播放器是否维护了当前 `brand_id`，以及 iframe 每次加载新 slide 后是否重新应用了该风格档案。
-- **brand-style / 图表代码示例**：参考 `ppt-brand-style-system` examples 与 chart engine examples。
+- **品牌切换异常**：优先检查切换逻辑是否真正更新了 iframe 内当前 slide 的 body class，再检查 `resize()` 调用时机是否晚于品牌切换完成。
+- **翻页后品牌丢失**：优先检查播放器是否维护了当前 `brand_id`，以及 iframe 每次加载新 slide 后是否重新应用了该品牌。
+- **品牌 / 图表代码示例**：参考品牌系统 examples 与 chart engine examples。
