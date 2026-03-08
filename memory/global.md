@@ -49,3 +49,5 @@
 ### Task-Scoped Preferences
 
 - None recorded.
+
+- [Agent Engineering] Restored hard tollgates to PPT agent to enforce 'pseudo-code' pipeline constraints.

@@ -36,6 +36,15 @@ spec:
   footer: { height_px: 40 }
   main:
     available_h_px: 600
+  region_budget_model:
+    intent: "先给 KPI row 与 chart grid 分配净宽净高，再为每个 grid cell 选择合适的 metric/chart component"
+    regions:
+      kpi_row:
+        width_rule: "主内容全宽"
+        height_rule: "main.available_h_px 的约 20%，扣除 gap 与 padding"
+      chart_grid:
+        width_rule: "主内容全宽"
+        height_rule: "main.available_h_px 的约 80%，扣除 KPI row、gap 与 padding"
   regions:
     kpi_row:
       rows: 1
@@ -45,6 +54,9 @@ spec:
       rows: 2
       height_pct: 80
       cols: { min: 2, max: 3 }
+  component_entrypoints:
+    kpi_components: [Metric_Big, Metric_Trend, Metric_KpiRow]
+    chart_components: [echarts_sparkline_compact, echarts_cartesian_standard, echarts_heatmap_compact]
 
 content_spec:
   kpi_cards:
@@ -58,6 +70,7 @@ content_spec:
     per_chart:
       title_max_chars: 20
       data_points: { min: 3, max: 8 }
+  candidate_selection_rule: "先根据 KPI row 与 chart grid 的 cell 预算生成 metric/chart component 候选，再做网格装箱；不得先固定 4 KPI + 2 charts 再强塞。"
 
 constraints:
   - "KPI区高度 ≤ 20%"

@@ -18,6 +18,22 @@ selection_criteria:
     - "少于 3 个阶段"
 
 spec:
+  structure_type: "header-main-footer"
+  canvas: { width: 1280, height: 720 }
+  header: { height_px: 80 }
+  footer: { height_px: 40 }
+  main:
+    available_h_px: 600
+    padding: "px-12 py-8"
+  region_budget_model:
+    intent: "先计算 label 列、阶段列与跨列合并单元格的真实预算，再决定每一行采用何种 comparison/progression 组件。"
+    regions:
+      label_col:
+        width_rule: "按 12 栅格中的 2 列取值"
+        height_rule: "main.available_h_px 按 row_count 与分隔线分配"
+      option_cols:
+        width_rule: "每个阶段列按 3 栅格取值，扣除箭头与跨列留白"
+        height_rule: "main.available_h_px 按 row_count 与 header row 分配"
   regions:
     grid:
       layout: "css_grid_12_cols"
@@ -25,6 +41,9 @@ spec:
         label_col: 2
         option_cols: 3
         gap: 1
+  component_entrypoints:
+    row_components: [Card_Accent, Card_Solid, List_Icon, Metric_Trend, Badge_Pill]
+    progression_components: [Visual_Arrow]
 
 content_spec:
   structure:
@@ -36,6 +55,7 @@ content_spec:
   option_headers:
     title_max_chars: 20
     subtitle_max_chars: 40
+  candidate_selection_rule: "先依据 region_budget_model 计算各阶段列和跨列单元格预算，再根据 component_entrypoints 生成每行候选组件；禁止先固定所有行都用同一块状样式后再压文本。"
 
 layout_contract:
   required_thinking_fields:
@@ -74,6 +94,30 @@ constraints:
   - "必须使用数字角标引导行"
   - "跨阶段特性必须使用合并单元格 (colspan)"
   - "行之间使用虚线分隔"
+
+worked_layout_example:
+  scenario: "Three-stage strategy progression comparing operating model maturity from basic to enhanced to final state"
+  region_budget:
+    label_col_width_px: 146
+    stage_col_width_px: 220
+    row_height_px: 86
+    header_row_height_px: 92
+  component_candidates:
+    stage_header:
+      - { component_family: Card_Solid, variant: compact, estimated_height_px: 88, fit_reason: "适合标题 + 双行副标题 + 顶部阶段强调" }
+      - { component_family: Card_Accent, variant: compact, estimated_height_px: 96, fit_reason: "强调更强，但对窄列副标题宽度更敏感" }
+    row_cell:
+      - { component_family: Card_Solid, variant: compact, estimated_height_px: 68, fit_reason: "适合每阶段一条短描述" }
+      - { component_family: List_Icon, variant: compact, estimated_height_px: 84, fit_reason: "适合两点式能力描述，但会提高单行成本" }
+    merged_progression_cell:
+      - { component_family: Card_Accent, variant: compact, estimated_height_px: 74, fit_reason: "适合承载跨阶段共享能力" }
+  packing_result:
+    selected_components:
+      - { region: stage_header, component_family: Card_Solid, variant: compact }
+      - { region: row_cell, component_family: Card_Solid, variant: compact }
+      - { region: merged_progression_cell, component_family: Card_Accent, variant: compact }
+    distribution_note:
+      - "若某一阶段列标题明显更长，必须优先升档 header component，而不是压缩所有行高"
 
 # ── HTML 模板 ─────────────────────────────────────────
 template: |

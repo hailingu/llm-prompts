@@ -30,10 +30,25 @@ layout_contract:
     - downgrade_to_timeline_evolution_or_multi_year_flow
 
 spec:
+  structure_type: "header-main-footer"
+  canvas: { width: 1280, height: 720 }
+  header: { height_px: 80 }
+  footer: { height_px: 40 }
+  main:
+    available_h_px: 600
+    padding: "px-12 py-8"
+  region_budget_model:
+    intent: "先确定 steps row 的净宽净高和步间留白，再为每一步选择 process 组件候选。"
+    regions:
+      steps_row:
+        width_rule: "主内容全宽扣除左右 padding"
+        height_rule: "main.available_h_px 扣除 header/footer 后的中轴区高度"
   regions:
     steps_row:
       layout: "horizontal"
       max_steps: 5
+  component_entrypoints:
+    step_components: [List_Timeline, Card_Accent, Visual_Arrow, Badge_Pill]
 
 content_spec:
   steps:
@@ -42,11 +57,14 @@ content_spec:
       title_max_chars: 15
       desc_max_chars: 80
       icon_required: true
+  candidate_selection_rule: "先按步数计算单步 cell 宽度，再依据 step component spec 生成候选；若单步宽度不足以容纳当前标题/正文，必须减少步数或改 timeline 布局。"
 
 constraints:
   - "步骤数 3-5 个"
   - "必须使用水平布局"
   - "必须有图标"
+  - "横向箭头或连接线只能位于步骤间留白，不得穿过圆形图标、标题或正文"
+  - "若存在纵向连接，必须与横向箭头保持同一视觉语言，并放置在卡片或步骤之间的 safe zone"
 
 # ── HTML 模板 ─────────────────────────────────────────
 template: |

@@ -45,6 +45,15 @@ spec:
     available_h_px: 600
     inner_h_px: 552
     padding: "px-12 py-6"
+  region_budget_model:
+    intent: "图表区与右侧洞察区必须先做净宽净高预算；图表与卡片组件的候选生成必须建立在区域预算之上"
+    regions:
+      left_chart:
+        width_rule: "按 58% 主内容宽度取值"
+        height_rule: "main.inner_h_px 扣除图表标题区与容器 padding"
+      right_cards:
+        width_rule: "按 42% 主内容宽度取值"
+        height_rule: "main.inner_h_px 扣除 rail padding、gap 与 footer-safe gap"
   regions:
     left_chart:
       cols: 7
@@ -55,6 +64,9 @@ spec:
       width_pct: 42
       count: { min: 2, max: 3, default: 3 }
       height_distribution: "flex-1 均分"
+  component_entrypoints:
+    chart_components: [echarts_cartesian_standard, echarts_cartesian_annotated, echarts_bar_compact]
+    rail_components: [Card_Accent, Card_Glass, Metric_Big, Metric_Trend, support_micro_card]
 
 # ── 内容规格 ─────────────────────────────────────────
 content_spec:
@@ -75,6 +87,7 @@ content_spec:
     balance:
       max_char_diff: 50
     total_content_min_chars: 180
+  candidate_selection_rule: "先根据图表区与右侧 rail 的预算，分别生成 chart component 与 insight card 的候选集；右侧 rail 必须在候选集上装箱，左侧 chart 必须按 chart spec 校验 legend/ticks/annotation 密度。"
 
 # ── 约束 ─────────────────────────────────────────────
 constraints:
@@ -83,6 +96,29 @@ constraints:
   - "图表优先：左侧图表区宽度必须 ≥ 58%"
   - "右侧对齐：2-3 张洞察卡，flex-1 均分高度"
   - "页脚安全：main_scroll_h <= main_client_h - 8"
+
+worked_layout_example:
+  scenario: "Single-theme line chart page with one annotated trend chart on the left and two packed insight cards on the right"
+  region_budget:
+    left_chart_width_px: 618
+    left_chart_height_px: 248
+    right_cards_width_px: 446
+    right_cards_height_px: 512
+  chart_candidates:
+    - { component_id: echarts_cartesian_standard, variant: default, estimated_height_px: 236, fit_reason: "适用于低 annotation 密度" }
+    - { component_id: echarts_cartesian_annotated, variant: compact, estimated_height_px: 268, fit_reason: "适用于 2-4 个关键 annotation" }
+  right_rail_candidates:
+    - { component_family: Card_Accent, variant: compact, estimated_height_px: 124 }
+    - { component_family: Card_Glass, variant: compact, estimated_height_px: 116 }
+    - { component_family: Metric_Big, variant: compact, estimated_height_px: 64, semantic_role: support_micro_card }
+  packing_result:
+    selected_chart_component: { component_id: echarts_cartesian_annotated, variant: compact }
+    selected_right_components:
+      - { component_family: Card_Accent, variant: compact }
+      - { component_family: Card_Glass, variant: compact }
+      - { component_family: Metric_Big, variant: compact }
+    distribution_note:
+      - "若右侧三张 compact card 仍有明显剩余空间，优先增大首张主卡留白，而不是简单继续叠第四张卡"
 
 # ── HTML 模板 ─────────────────────────────────────────
 template: |

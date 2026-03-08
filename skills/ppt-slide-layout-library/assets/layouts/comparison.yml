@@ -16,10 +16,26 @@ selection_criteria:
     - "仅 2 个方案 → 改用 side_by_side"
 
 spec:
+  structure_type: "header-main-footer"
+  canvas: { width: 1280, height: 720 }
+  header: { height_px: 80 }
+  footer: { height_px: 40 }
+  main:
+    available_h_px: 600
+    padding: "px-12 py-6"
+  region_budget_model:
+    intent: "先根据方案列数计算每列的真实净宽净高，再为每列生成 comparison card/chart 候选。"
+    regions:
+      columns:
+        width_rule: "主内容宽度按 3 或 4 列均分并扣除列间 gap"
+        height_rule: "main.available_h_px 扣除列内标题区、图表区和列表区的安全预算后所得"
   regions:
     columns:
       layout: "vertical_columns"
       count: { min: 3, max: 4 }
+  component_entrypoints:
+    column_chart_components: [echarts_comparison_compact, echarts_bar_compact]
+    column_components: [Card_Solid, Card_Accent, List_Icon, Metric_Trend, Badge_Pill]
 
 content_spec:
   columns:
@@ -28,6 +44,7 @@ content_spec:
       title_max_chars: 20
       items_count: { min: 4, max: 6 }
       per_item_max_chars: 30
+  candidate_selection_rule: "先依据列宽预算生成每列图表/列表/评分组件候选，再做多列平衡装箱；禁止先固定所有列都带同型图表后再压文本。"
 
 layout_contract:
   required_thinking_fields:

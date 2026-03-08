@@ -42,6 +42,15 @@ spec:
   main:
     available_h_px: 600
     inner_h_px: 552
+  region_budget_model:
+    intent: "先确定左右列的真实净宽净高，再决定每列使用何种 component；组件选择不得早于区域预算"
+    regions:
+      left_column:
+        width_rule: "50% 主内容宽度扣除 gap 后所得"
+        height_rule: "main.inner_h_px 扣除卡片 padding 与标题区后所得"
+      right_column:
+        width_rule: "50% 主内容宽度扣除 gap 后所得"
+        height_rule: "main.inner_h_px 扣除卡片 padding 与标题区后所得"
   regions:
     left_column:
       cols: 6
@@ -49,6 +58,9 @@ spec:
     right_column:
       cols: 6
       width_pct: 50
+  component_entrypoints:
+    text_cards: [Card_Accent, Card_Solid, Card_Glass, List_Icon]
+    chart_components: [echarts_cartesian_standard, echarts_comparison_compact]
 
 # ── 内容规格 ─────────────────────────────────────────
 content_spec:
@@ -65,6 +77,7 @@ content_spec:
   chart:
     allowed_types: ["bar", "radar"]
     data_points_per_chart: { min: 3, max: 6 }
+  candidate_selection_rule: "先依据 region_budget_model 计算左右列预算，再根据 component_entrypoints 与当前列内文案长度/图表标签密度生成候选组件，最后做列内装箱与左右平衡。"
 
 # ── 约束 ─────────────────────────────────────────────
 constraints:

@@ -82,7 +82,7 @@ Do not enter component implementation until these fields are stable.
 Machine-readable source order:
 
 1. `assets/index.yml` narrows candidate components.
-2. `assets/examples.yml` provides the payload skeleton, `component_family`, `required_semantic_fields`, and resolver checklist.
+2. `assets/examples.yml` provides the payload skeleton, `component_family`, `required_semantic_fields`, resolver checklist, and worked examples for candidate generation + packing.
 3. `../ppt-brand-style-system/assets/component_semantic_mappings.yml` is the semantic resolution truth for role-to-slot mapping.
 4. `assets/core_components.yml` is the HTML skeleton truth.
 
@@ -136,10 +136,11 @@ Use supporting assets as follows:
 Resolver consumption rule:
 
 1. Read the candidate component example in `assets/examples.yml`.
-2. Validate `component_family` and `required_semantic_fields`.
-3. Resolve semantic roles through `component_semantic_mappings.yml`.
-4. Use `payload` classes only as safe fallback.
-5. Only then copy the HTML skeleton from `assets/core_components.yml`.
+2. If the region is budget-sensitive, read the worked `candidate_generation_examples` in `assets/examples.yml` first.
+3. Validate `component_family` and `required_semantic_fields`.
+4. Resolve semantic roles through `component_semantic_mappings.yml`.
+5. Use `payload` classes only as safe fallback.
+6. Only then copy the HTML skeleton from `assets/core_components.yml`.
 
 ## Usage Guidelines
 

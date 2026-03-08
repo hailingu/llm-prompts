@@ -16,11 +16,29 @@ selection_criteria:
     - "≤5 个事件 → 改用 milestone_timeline"
 
 spec:
+  structure_type: "header-main-footer"
+  canvas: { width: 1280, height: 720 }
+  header: { height_px: 80 }
+  footer: { height_px: 40 }
+  main:
+    available_h_px: 600
+    padding: "px-12 py-6"
+  region_budget_model:
+    intent: "先确定左侧时间轴与右侧事件卡区域的净宽净高，再为事件节点和事件卡生成候选组件。"
+    regions:
+      timeline:
+        width_rule: "窄列，用于时间轴与节点标记"
+        height_rule: "main.available_h_px 扣除上下 padding"
+      cards:
+        width_rule: "主叙事列，占据剩余宽度"
+        height_rule: "main.available_h_px 扣除事件间 gap 后所得"
   regions:
     timeline:
       layout: "vertical_left"
     cards:
       layout: "vertical_right"
+  component_entrypoints:
+    event_components: [List_Timeline, Card_Solid, Badge_Pill]
 
 content_spec:
   events:
@@ -29,6 +47,7 @@ content_spec:
       date_max_chars: 15
       title_max_chars: 25
       desc_max_chars: 100
+  candidate_selection_rule: "先依据事件数与右侧卡区预算生成 event card 候选，再决定是否保留全部事件；禁止先固定 8-10 个事件再强行滚动或裁切。"
 
 layout_contract:
   required_thinking_fields:

@@ -17,12 +17,31 @@ selection_criteria:
     - ">8 事件 → 改用 timeline_vertical"
 
 spec:
+  structure_type: "header-main-footer"
+  canvas: { width: 1280, height: 720 }
+  header: { height_px: 80 }
+  footer: { height_px: 40 }
+  main:
+    available_h_px: 600
+    padding: "px-12 py-6"
+  region_budget_model:
+    intent: "先分配顶部时间轴与下方事件卡网格的净宽净高，再为节点与事件卡生成候选组件。"
+    regions:
+      timeline:
+        width_rule: "主内容全宽"
+        height_rule: "固定顶部时间轴预算 + 节点标签预算"
+      cards:
+        width_rule: "主内容全宽"
+        height_rule: "剩余主区高度，按 2 行或 3 行事件卡网格分配"
   regions:
     timeline:
       layout: "horizontal"
       position: "top"
     cards:
       layout: "below_timeline"
+  component_entrypoints:
+    timeline_components: [Badge_Pill, Visual_Arrow]
+    event_card_components: [Card_Accent, Card_Solid, List_Icon]
 
 content_spec:
   events:
@@ -31,6 +50,7 @@ content_spec:
       year_required: true
       title_max_chars: 20
       desc_max_chars: 60
+  candidate_selection_rule: "先根据事件数决定时间轴节点间距和事件卡网格行列，再依据 component_entrypoints 生成节点与事件卡候选；若节点标签或事件描述超预算，必须减少事件数或改 vertical timeline。"
 
 layout_contract:
   required_thinking_fields:
@@ -40,6 +60,7 @@ layout_contract:
     - milestone_labels
     - sequencing_basis
     - takeaway_message
+    - axis_anchor_policy
     - fallback_plan
   narrative_fit:
     - milestone_history
@@ -66,7 +87,29 @@ layout_contract:
 constraints:
   - "事件数 5-8 个"
   - "必须有年份标注"
-  - "节点必须绝对居中 (top-1/2)"
+  - "时间轴与节点必须使用同一垂直锚点；节点圆心必须严格落在轴线上"
+  - "禁止用独立 margin/top 偏移分别摆放轴线和节点"
+  - "优先使用单一 SVG 坐标系，或在同一 wrapper 内由共享 centerline 驱动轴线与节点"
+
+worked_layout_example:
+  scenario: "Six annual milestones with a single top axis and a 3x2 event-card grid below"
+  region_budget:
+    timeline_height_px: 96
+    card_grid_height_px: 420
+    card_cell_width_px: 336
+    card_cell_height_px: 124
+  component_candidates:
+    node_label:
+      - { component_family: Badge_Pill, variant: compact, estimated_height_px: 24, fit_reason: "适合单年标签，不占用过多轴线空间" }
+    event_card:
+      - { component_family: Card_Accent, variant: compact, estimated_height_px: 108, fit_reason: "适合单一 milestone 标题 + 短描述" }
+      - { component_family: Card_Solid, variant: compact, estimated_height_px: 116, fit_reason: "信息更重，但在 6 事件场景中更容易挤压网格" }
+  packing_result:
+    selected_components:
+      - { region: timeline, component_family: Badge_Pill, variant: compact }
+      - { region: cards, component_family: Card_Accent, variant: compact }
+    distribution_note:
+      - "若某一年份事件描述明显更长，优先升档该事件卡或减少总事件数，而不是单独把该卡撑高破坏轴线节奏"
 
 # ── HTML 模板 ─────────────────────────────────────────
 template: |

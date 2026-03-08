@@ -12,6 +12,225 @@ resolver_validation:
     - Confirm resolver output slot set matches the placeholders actually used by the component.
     - Use `payload` only as safe fallback classes, not as the primary semantic source.
 
+candidate_generation_examples:
+  right_rail_packing:
+    description: "示例：在既定 side rail 区域预算下，如何从 component spec 生成候选并完成装箱。"
+    region_budget:
+      region_type: side_rail
+      region_width_px: 372
+      region_height_px: 512
+      rail_gap_px: 8
+      rail_padding_px: 24
+    content_inputs:
+      headline: "A Global Funnel of Vulnerability"
+      body_word_count_en: 18
+      kpi_labels: ["mb/d Oil", "Bcf/d LNG"]
+      support_fact: "20% global oil consumption"
+      conclusion_sentence: "A Hormuz disruption reprices energy security globally."
+    candidate_generation:
+      required_blocks:
+        - block_id: insight
+          candidates:
+            - component_family: Card_Glass
+              variant: compact
+              estimated_height_px: 148
+              width_mode: width-sensitive
+              fit_reason: "headline 在 372px rail 下为 2 行，正文可控制在 3-4 行"
+            - component_family: Card_Accent
+              variant: compact
+              estimated_height_px: 156
+              width_mode: width-sensitive
+              fit_reason: "强调更强，但左边框会进一步压缩正文宽度"
+        - block_id: kpi_group
+          candidates:
+            - component_family: Metric_KpiRow
+              variant: compact
+              estimated_height_px: 104
+              width_mode: semi-fixed
+              fit_reason: "2 个 KPI label 较短，适合横向并列"
+            - component_family: Card_Solid
+              variant: compact
+              estimated_height_px: 132
+              width_mode: semi-fixed
+              fit_reason: "信息更完整，但垂直成本更高"
+      optional_blocks:
+        - block_id: support_fact
+          candidates:
+            - component_family: Metric_Big
+              variant: compact
+              estimated_height_px: 64
+              width_mode: fixed-like
+              fit_reason: "适合承载单个 share 数字"
+            - component_family: Badge_Pill
+              variant: default
+              estimated_height_px: 32
+              width_mode: width-sensitive
+              fit_reason: "太轻，无法承担 support fact 的阅读任务"
+        - block_id: conclusion
+          candidates:
+            - component_family: Card_Accent
+              variant: compact
+              estimated_height_px: 78
+              width_mode: width-sensitive
+              fit_reason: "适合单句结论，并能锚定 rail 底部"
+    packing_result:
+      selected_components:
+        - { block_id: insight, component_family: Card_Glass, variant: compact, estimated_height_px: 148 }
+        - { block_id: kpi_group, component_family: Metric_KpiRow, variant: compact, estimated_height_px: 104 }
+        - { block_id: support_fact, component_family: Metric_Big, variant: compact, estimated_height_px: 64 }
+        - { block_id: conclusion, component_family: Card_Accent, variant: compact, estimated_height_px: 78 }
+      total_estimated_height_px: 418
+      remaining_space_px: 94
+      second_stage_distribution:
+        - "将剩余空间优先分配给 insight card，使正文与 embedded fact 之间形成更稳定留白"
+        - "将 conclusion card 锚定到底部，而不是继续把所有卡堆在 rail 顶部"
+      rejection_examples:
+        - "若把 kpi_group 换成 Card_Solid compact，总高度会接近 446px，剩余空间变差且 rail 节奏失衡"
+        - "若 support_fact 只用 Badge_Pill，虽然更省高度，但 narrative_value 不足，不能承担二级事实"
+
+  comparison_column_balancing:
+    description: "示例：多列 comparison 中，先为每列生成候选，再做列内和列间平衡。"
+    region_budget:
+      region_type: comparison_column
+      column_width_px: 276
+      column_height_px: 468
+    content_inputs:
+      option_title: "Option A"
+      score_items: 4
+      chart_family: radar_profile
+      note_length: short
+    candidate_generation:
+      chart_candidates:
+        - { component_family: echarts_comparison_compact, variant: compact, estimated_height_px: 176, fit_reason: "雷达/对比图在窄列中更稳定" }
+        - { component_family: echarts_bar_compact, variant: compact, estimated_height_px: 192, fit_reason: "类别较少时可用，但占高略大" }
+      note_candidates:
+        - { component_family: Card_Solid, variant: compact, estimated_height_px: 108, fit_reason: "适合短说明与推荐标签" }
+        - { component_family: List_Icon, variant: compact, estimated_height_px: 124, fit_reason: "适合两到三个评分理由" }
+    packing_result:
+      selected_components:
+        - { component_family: echarts_comparison_compact, variant: compact, estimated_height_px: 176 }
+        - { component_family: List_Icon, variant: compact, estimated_height_px: 124 }
+      balancing_rule:
+        - "若某列因为标题更长导致 note 区增高，必须在列间重新平衡，而不是只压这一列字号"
+
+  comparison_progressive_row:
+    description: "示例：comparison_progressive 中，如何为单行阶段单元格和跨列共享单元格生成候选组件。"
+    region_budget:
+      region_type: progression_row
+      stage_col_width_px: 220
+      merged_col_width_px: 456
+      row_height_px: 86
+    content_inputs:
+      row_label: "运营模式"
+      stage_text_lengths: [14, 16, 18]
+      merged_note_length: short
+    candidate_generation:
+      stage_cell_candidates:
+        - { component_family: Card_Solid, variant: compact, estimated_height_px: 68, fit_reason: "适合单阶段短说明" }
+        - { component_family: List_Icon, variant: compact, estimated_height_px: 84, fit_reason: "适合两点描述，但对行高压力更大" }
+      merged_cell_candidates:
+        - { component_family: Card_Accent, variant: compact, estimated_height_px: 74, fit_reason: "适合跨阶段共享能力与增强逻辑" }
+    packing_result:
+      selected_components:
+        - { block_id: stage_cells, component_family: Card_Solid, variant: compact }
+        - { block_id: merged_progression_cell, component_family: Card_Accent, variant: compact }
+      balancing_note:
+        - "若单行高度不足以同时容纳 stage cells 与 merged cell，优先减少 merged 文案，而不是压缩所有列字号"
+
+  milestone_timeline_cards:
+    description: "示例：milestone_timeline 中，如何为节点标签和下方事件卡生成候选组件。"
+    region_budget:
+      region_type: milestone_grid
+      timeline_node_gap_px: 92
+      card_cell_width_px: 336
+      card_cell_height_px: 124
+    content_inputs:
+      event_count: 6
+      year_label_length: short
+      event_desc_length: medium
+    candidate_generation:
+      node_candidates:
+        - { component_family: Badge_Pill, variant: compact, estimated_height_px: 24, fit_reason: "单年标签最稳" }
+      event_card_candidates:
+        - { component_family: Card_Accent, variant: compact, estimated_height_px: 108, fit_reason: "适合标题 + 单段短描述" }
+        - { component_family: Card_Solid, variant: compact, estimated_height_px: 116, fit_reason: "更重，但 6 卡网格下成本更高" }
+    packing_result:
+      selected_components:
+        - { block_id: timeline_node, component_family: Badge_Pill, variant: compact }
+        - { block_id: event_card, component_family: Card_Accent, variant: compact }
+      balancing_note:
+        - "若某事件说明显著更长，优先减少总事件数或改 vertical timeline，而不是让单张卡破坏整行节奏"
+
+  multi_year_flow_boxes:
+    description: "示例：multi_year_flow 中，如何为两层 flow box 和 connector 生成候选组件。"
+    region_budget:
+      region_type: two_tier_flow
+      box_width_px: 232
+      box_height_px: 96
+      connector_lane_height_px: 72
+    content_inputs:
+      boxes_per_tier: 3
+      box_copy_length: short_to_medium
+      connector_directionality: required
+    candidate_generation:
+      flow_box_candidates:
+        - { component_family: Card_Solid, variant: compact, estimated_height_px: 92, fit_reason: "适合 1 段 20-35 英文词说明" }
+        - { component_family: Card_Accent, variant: compact, estimated_height_px: 104, fit_reason: "适合关键 output box 强调" }
+      connector_candidates:
+        - { component_family: Visual_Arrow, variant: compact, estimated_height_px: 32, fit_reason: "符合横向/纵向统一箭头语法" }
+    packing_result:
+      selected_components:
+        - { block_id: regular_flow_box, component_family: Card_Solid, variant: compact }
+        - { block_id: critical_output_box, component_family: Card_Accent, variant: compact }
+        - { block_id: connector, component_family: Visual_Arrow, variant: compact }
+      balancing_note:
+        - "若 connector lane 不足，优先移除可选纵向 connector，而不是让箭头侵入 box 安全区"
+
+  hybrid_contrast_pivot_columns:
+    description: "示例：hybrid 对照转向页中，左右列与窄中轴的候选生成和装箱。"
+    region_budget:
+      region_type: hybrid_contrast_pivot
+      top_band_height_px: 104
+      bottom_height_px: 338
+      left_col_width_px: 362
+      pivot_axis_width_px: 60
+      right_col_width_px: 424
+    content_inputs:
+      left_risk_cards: 2
+      right_pillars: 3
+      risk_copy_length: short
+      pillar_copy_length: short
+    candidate_generation:
+      left_column:
+        header_budget_px: 56
+        card_row_budget_px: 133
+        candidates:
+          - { component_family: Card_Glass, variant: compact_narrow, estimated_height_px: 72, fit_reason: "适合窄列中的短风险说明" }
+          - { component_family: Card_Solid, variant: compact, estimated_height_px: 104, fit_reason: "可读但在双卡堆叠中成本偏高" }
+      right_column:
+        header_budget_px: 52
+        card_row_budget_px: 88
+        candidates:
+          - { component_family: Card_Solid, variant: compact_narrow, estimated_height_px: 72, fit_reason: "适合 3 行 pillar stack" }
+          - { component_family: Card_Accent, variant: compact, estimated_height_px: 92, fit_reason: "强调够强，但 3 行叠加会接近上限" }
+        merged_strategy:
+          preferred: "single_container_plus_internal_rows"
+          fit_reason: "当右列宽度不足且需 3 张说明时，合并为单容器可减少边框、padding 和阴影成本"
+          inner_packing:
+            container_padding_px: 8
+            row_budget_px: 72
+            row_gap_px: 8
+            rule: "合并容器内部不得使用平均拉伸 1fr；必须为每条 row 生成 compact_narrow 候选并以固定高度堆叠。"
+    packing_result:
+      selected_components:
+        - { block_id: left_risk_card, component_family: Card_Glass, variant: compact_narrow }
+        - { block_id: pivot_axis, component_family: none, variant: icon_only }
+        - { block_id: right_pillar_stack, component_family: Card_Solid, variant: compact_narrow, strategy: single_container_plus_internal_rows }
+      rejection_examples:
+        - "若右列仍采用 3 张独立 Card_Solid compact，实际宽度换行后会超过 88px 行预算"
+        - "若左列使用 Card_Solid compact，两张卡会挤压标题区并放大总高度波动"
+        - "若 merged stack 内部继续用 grid-rows-3 或 1fr 平均拉伸，卡片会被强行拉高并放大正文溢出风险"
+
 examples:
   Card_Glass:
     component_family: Card_Glass

@@ -41,6 +41,7 @@ layout_contract:
     - edge_types
     - flow_direction
     - legend_definition
+    - connector_safe_zones
     - fallback_plan
   narrative_fit:
     - ecosystem_process_map
@@ -69,6 +70,9 @@ constraints:
   - "核心流程必须自左向右"
   - "层级关系必须自上而下 (监管->执行->支持)"
   - "不同类型的连接线必须在图例中说明"
+  - "不同连接类型不得在同一留白通道内相互叠压，避免语义冲突"
+  - "治理连线必须明确落到核心流程或指定节点，不得停在半空"
+  - "反馈回路必须绕行卡片正文区，只能经过预留的空白通道"
 
 # ── HTML 模板 ─────────────────────────────────────────
 template: |

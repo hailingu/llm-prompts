@@ -32,6 +32,8 @@ Current inventory summary:
 | `constraints` | Hard rules | "图表优先：左侧 ≥ 58%" |
 | `template` | HTML code | Full Tailwind HTML template |
 
+For budget-sensitive layouts, some assets now also expose `worked_layout_example` blocks showing a concrete end-to-end chain from region budget to component/chart candidates to final packing.
+
 ## When to Use This Skill
 
 - Create new HTML slides
@@ -85,6 +87,7 @@ Consumption rules:
 3. `required_thinking_fields` must be reflected in the Thinking file before implementation.
 4. Overflow fixes must follow `overflow_recovery_order` before switching layouts.
 5. Layout switching is only valid when the page can no longer be stabilized through contract-defined recovery and the next choice is listed in `fallback_layouts`.
+7. If the chosen asset exposes `worked_layout_example`, consult it before inventing a fresh packing strategy for the same region structure.
 
 Template alignment:
 
@@ -119,6 +122,33 @@ For any page using the standard comparison/timeline/data layout (typically utili
 
 4.  **Content Overflow**:
     -   The Main area should handle overflow gracefully (e.g., scale content, or use internal scrolling if permitted by design guidelines), but the container structure itself must remain rigid due to `flex-1`.
+
+## Geometry Hard Rules
+
+The following geometry rules are mandatory for generated slides and should be treated as contract-level constraints rather than implementation suggestions.
+
+1. **Header Budget Rule**:
+  - English title + subtitle pages must assume a larger fixed header budget than legacy 80px examples.
+  - If the page has `eyebrow + title + subtitle`, the implementation must reserve a fixed header height that can hold two lines of title plus one subtitle line without pushing the main region upward unpredictably.
+  - Agents must not rely on content staying short enough to fit a legacy compact header.
+
+2. **Single Coordinate Rule for Timelines**:
+  - Timeline axes and milestone nodes must be positioned from the same anchor.
+  - Forbidden: axis placed with one `top` value while nodes are placed with unrelated `mt-*` offsets.
+  - Preferred: one SVG coordinate system, or one wrapper with axis and node centers derived from the same vertical centerline.
+
+3. **Connector Safe-Zone Rule**:
+  - Arrows, curves, dashed connectors, and feedback loops must travel only through whitespace lanes.
+  - Forbidden: connectors crossing card bodies, text blocks, or badge areas.
+  - If the page uses absolute positioning, the Thinking file must explicitly record the safe zone used by each connector family.
+
+4. **Directional Consistency Rule**:
+  - Vertical connectors must visually match the page's horizontal connector language unless the legend explicitly differentiates them.
+  - Decorative dashed lines without directional meaning are forbidden on process, roadmap, and system-flow pages.
+
+5. **Geometry Recovery Order**:
+  - When a layout becomes visually unstable, recover in this order: enlarge fixed region budget, simplify content density, then change layout.
+  - Do not patch geometry by ad hoc one-off offsets until the budget and coordinate rules above have been checked.
 
 ## Layout Type Quick Reference
 

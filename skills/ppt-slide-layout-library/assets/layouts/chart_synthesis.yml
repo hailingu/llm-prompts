@@ -35,6 +35,18 @@ spec:
     canvas:
       layout: "flex_col"
       areas: ["chart_canvas", "synthesis_box"]
+  region_budget_model:
+    intent: "先确定 chart canvas 与 synthesis box 的净高比例，再从 chart component 与结论组件 spec 中生成候选"
+    regions:
+      chart_canvas:
+        width_rule: "主内容全宽"
+        height_rule: "main 净高扣除 synthesis_box、gap 与 header/footer 后所得"
+      synthesis_box:
+        width_rule: "主内容全宽"
+        height_rule: "根据结论组件 variant 与正文长度反推"
+  component_entrypoints:
+    chart_components: [echarts_cartesian_annotated, echarts_heatmap_dense, echarts_bubble_focus]
+    synthesis_components: [Card_Accent, conclusion_banner_compact]
 
 content_spec:
   chart:
@@ -43,6 +55,7 @@ content_spec:
   synthesis:
     max_lines: 2
     style: "highlighted_box"
+  candidate_selection_rule: "chart_canvas 必须先依据 chart component spec 选择容器档位，再根据剩余高度为 synthesis_box 选择合适的 conclusion/banner 组件。"
 
 constraints:
   - "图标区域高度占比 >= 70%"

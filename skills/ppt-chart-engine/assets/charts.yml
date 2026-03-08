@@ -33,6 +33,252 @@ chart_types:
     若为 geo chart 且需要底图或注册地图源，底图输入必须遵循 `ppt-map-storytelling` 的 basemap source contract，不得在 chart-engine 内单独发明来源规范。
 
 # ╔══════════════════════════════════════════════════════════╗
+# ║  1.5 图表组件规格 (Chart Component Specs)               ║
+# ╚══════════════════════════════════════════════════════════╝
+
+chart_component_specs:
+  echarts_cartesian_standard:
+    engine: ECharts
+    width_mode: horizontal_fill
+    height_mode: vertical_fill
+    placement_fit: [left_chart, chart_canvas, chart_grid_cell]
+    height_budget_px:
+      compact: "180-220"
+      default: "220-300"
+    text_capacity:
+      title_chars_max: 28
+      legend_items_max: 4
+      x_ticks_max: 8
+      y_ticks_max: 6
+    density_guardrails:
+      - "若 legend > 4，优先改为内嵌标签、拆图或降级表格"
+      - "若 category label 过长，优先横向条形图或缩短标签"
+
+  echarts_cartesian_annotated:
+    engine: ECharts
+    width_mode: horizontal_fill
+    height_mode: vertical_fill
+    placement_fit: [left_chart, chart_canvas]
+    height_budget_px:
+      compact: "240-300"
+      default: "300-380"
+    text_capacity:
+      title_chars_max: 28
+      annotation_count_max: 4
+      legend_items_max: 3
+    density_guardrails:
+      - "annotation 与 legend 共享预算；若 annotation > 4 必须删减或改为外部结论卡"
+
+  echarts_bar_compact:
+    engine: ECharts
+    width_mode: horizontal_fill
+    height_mode: vertical_fill
+    placement_fit: [comparison_column, left_chart, dashboard_cell]
+    height_budget_px:
+      compact: "160-220"
+      default: "220-280"
+    text_capacity:
+      category_count_max: 8
+      label_chars_max: 18
+
+  echarts_heatmap_dense:
+    engine: ECharts
+    width_mode: horizontal_fill
+    height_mode: vertical_fill
+    placement_fit: [chart_canvas, dashboard_cell]
+    height_budget_px:
+      compact: "220-280"
+      default: "280-360"
+    text_capacity:
+      row_count_max: 8
+      col_count_max: 8
+      axis_label_chars_max: 18
+
+  echarts_heatmap_compact:
+    engine: ECharts
+    width_mode: horizontal_fill
+    height_mode: vertical_fill
+    placement_fit: [dashboard_cell]
+    height_budget_px:
+      compact: "140-200"
+      default: "200-240"
+    text_capacity:
+      row_count_max: 5
+      col_count_max: 5
+
+  echarts_bubble_focus:
+    engine: ECharts
+    width_mode: horizontal_fill
+    height_mode: vertical_fill
+    placement_fit: [chart_canvas, left_chart]
+    height_budget_px:
+      compact: "220-280"
+      default: "280-360"
+    text_capacity:
+      point_count_max: 12
+      label_count_max: 6
+
+  echarts_comparison_compact:
+    engine: ECharts
+    width_mode: semi-fixed
+    height_mode: vertical_fill
+    placement_fit: [comparison_column]
+    height_budget_px:
+      compact: "140-200"
+      default: "200-260"
+    text_capacity:
+      series_max: 2
+      category_count_max: 6
+
+  echarts_sparkline_compact:
+    engine: ECharts
+    width_mode: horizontal_fill
+    height_mode: vertical_fill
+    placement_fit: [dashboard_cell, kpi_row]
+    height_budget_px:
+      compact: "64-96"
+      default: "96-132"
+    text_capacity:
+      point_count_max: 16
+      annotation_count_max: 0
+
+candidate_generation_protocol:
+  - "先依据 layout region budget 确定 chart 区域的净宽净高，再从 chart_component_specs 中筛选 placement_fit 与区域匹配的候选项。"
+  - "width_mode=horizontal_fill 的 ECharts 组件必须结合当前区域宽度校验 legend、axis label 与 annotation 密度。"
+  - "若 chart component 的 density_guardrails 无法满足，必须更换 chart component 或回退到非图表表达，而不是继续堆标签。"
+
+chart_candidate_generation_examples:
+  annotated_line_in_left_chart:
+    description: "示例：data_chart 左侧 chart 区中，如何根据区域预算与 annotation 密度为 ECharts 生成候选。"
+    region_budget:
+      region_type: left_chart
+      region_width_px: 618
+      region_height_px: 248
+    content_inputs:
+      chart_family: line_trend
+      series_count: 2
+      point_count: 8
+      legend_items: 2
+      annotation_count: 3
+      x_label_length_chars_avg: 6
+    candidates:
+      - component_id: echarts_cartesian_standard
+        variant: default
+        estimated_height_px: 236
+        fit_reason: "无 annotation 时更省预算，但当前页需要 3 个标注点，解释力不足"
+      - component_id: echarts_cartesian_annotated
+        variant: compact
+        estimated_height_px: 268
+        fit_reason: "annotation_count=3 在 compact 上限内，且 legend 仅 2 项，适合深度分析页"
+    selected_component:
+      component_id: echarts_cartesian_annotated
+      variant: compact
+      rejection_reason_for_others:
+        - "standard 版本无法稳定承载当前 annotation 密度"
+
+  comparison_column_chart:
+    description: "示例：comparison 列内在窄宽度下选择更合适的 ECharts 组件。"
+    region_budget:
+      region_type: comparison_column
+      region_width_px: 276
+      region_height_px: 204
+    content_inputs:
+      chart_family: bar_comparison
+      category_count: 5
+      series_count: 2
+      label_chars_max: 12
+    candidates:
+      - component_id: echarts_comparison_compact
+        variant: compact
+        estimated_height_px: 176
+        fit_reason: "窄列更稳定，series=2 与 category=5 均在容量内"
+      - component_id: echarts_bar_compact
+        variant: compact
+        estimated_height_px: 192
+        fit_reason: "也可容纳，但列内剩余空间更少，不利于下方评分列表"
+    selected_component:
+      component_id: echarts_comparison_compact
+      variant: compact
+      balancing_note: "列内图表选择必须考虑同列下方 note/list 的剩余预算，而不是只看图表自己能否放下"
+
+  dense_heatmap_in_chart_canvas:
+    description: "示例：chart_synthesis 或 dashboard 中，如何为矩阵热力图生成候选。"
+    region_budget:
+      region_type: chart_canvas
+      region_width_px: 640
+      region_height_px: 286
+    content_inputs:
+      chart_family: heatmap_matrix
+      row_count: 7
+      col_count: 6
+      axis_label_chars_max: 14
+    candidates:
+      - component_id: echarts_heatmap_dense
+        variant: compact
+        estimated_height_px: 264
+        fit_reason: "7x6 矩阵仍在 dense 紧凑档容量内"
+      - component_id: echarts_heatmap_compact
+        variant: default
+        estimated_height_px: 228
+        fit_reason: "预算更省，但 7x6 已超出 compact capacity"
+    selected_component:
+      component_id: echarts_heatmap_dense
+      variant: compact
+      rejection_reason_for_others:
+        - "compact 版本会压缩行列标签，导致矩阵可读性下降"
+
+  sparkline_in_dashboard_cell:
+    description: "示例：dashboard KPI 单元格中，如何为微型趋势图生成候选。"
+    region_budget:
+      region_type: dashboard_cell
+      region_width_px: 248
+      region_height_px: 88
+    content_inputs:
+      chart_family: line_trend
+      point_count: 12
+      annotation_count: 0
+      label_density: low
+    candidates:
+      - component_id: echarts_sparkline_compact
+        variant: compact
+        estimated_height_px: 72
+        fit_reason: "适合 KPI cell 中的微型趋势，不抢主数值阅读任务"
+      - component_id: echarts_cartesian_standard
+        variant: compact
+        estimated_height_px: 184
+        fit_reason: "超出 dashboard cell 高度预算"
+    selected_component:
+      component_id: echarts_sparkline_compact
+      variant: compact
+      rejection_reason_for_others:
+        - "standard cartesian 对 dashboard KPI cell 过重"
+
+  bubble_focus_in_left_chart:
+    description: "示例：left_chart 区中，如何为气泡关系图生成候选。"
+    region_budget:
+      region_type: left_chart
+      region_width_px: 618
+      region_height_px: 272
+    content_inputs:
+      chart_family: bubble_relationship
+      point_count: 10
+      label_count: 5
+      group_count: 2
+    candidates:
+      - component_id: echarts_bubble_focus
+        variant: compact
+        estimated_height_px: 248
+        fit_reason: "10 个点、5 个标签仍在 focus 版本预算内"
+      - component_id: echarts_cartesian_standard
+        variant: default
+        estimated_height_px: 236
+        fit_reason: "可以容纳散点关系，但不包含气泡语义与 label guardrail"
+    selected_component:
+      component_id: echarts_bubble_focus
+      variant: compact
+      balancing_note: "若 label_count 超过 6，应优先减少直接标注数量并改 tooltip，而不是继续增大 chart 容器"
+
+# ╔══════════════════════════════════════════════════════════╗
 # ║  2. 图表选择算法                                        ║
 # ╚══════════════════════════════════════════════════════════╝
 

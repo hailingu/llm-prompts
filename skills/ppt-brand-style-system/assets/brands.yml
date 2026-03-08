@@ -230,7 +230,7 @@ design_tokens:
 # ----------------------------------------------------------
 runtime_layout_tokens:
   vertical_rhythm:
-    header_px: 80
+    header_px: 118
     footer_px: 50
     main_padding_y_px: 80
     footer_safe_gap_min_px: 8
@@ -264,6 +264,8 @@ runtime_layout_tokens:
   rules:
     - "优先使用 token 档位（compact/default/relaxed），避免页面内联样式随意漂移"
     - "若触发底部裁切，先从 spacing 与 card_padding token 降档，再下调 chart_height"
+    - "英文标题 + 副标题双行场景默认按 118px header 预算实现；不得沿用 80px 老预算"
+    - "标题区预算不足时，优先缩短副标题或降级字号，不得把正文区顶入标题区"
 
 # ----------------------------------------------------------
 # 4. Semantic Color System

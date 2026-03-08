@@ -4,7 +4,7 @@
 layout:
   id: hybrid
   name: 混合型布局
-  version: 2.0
+  version: 2.1
   category: hybrid
 
 selection_criteria:
@@ -16,6 +16,43 @@ selection_criteria:
     - "单一图表 → 改用 data_chart"
 
 spec:
+  structure_type: "header-main-footer"
+  canvas: { width: 1280, height: 720 }
+  header: { height_px: 80 }
+  footer: { height_px: 40 }
+  main:
+    available_h_px: 600
+    padding: "px-12 py-6"
+  region_budget_model:
+    intent: "先给顶部图表区和底部卡片区分配净宽净高，再分别生成 chart/card component 候选。"
+    regions:
+      top:
+        width_rule: "主内容全宽"
+        height_rule: "main.available_h_px 的 40%-60%，并受图表标题区与容器 padding 影响"
+      bottom:
+        width_rule: "主内容全宽"
+        height_rule: "剩余主区高度扣除 top 区和 gap 后所得"
+    narrative_variants:
+      contrast_pivot:
+        use_when: "页面不是图表主导，而是旧范式 vs 新命题的对照，并由中轴承担转向语义。"
+        top_band_height_px: "96-124"
+        bottom_grid:
+          left_column_width: "34%-38%"
+          pivot_axis_width_px: "56-72"
+          right_column_width: "40%-44%"
+        row_budgets:
+          left_header_px: "52-72"
+          left_card_row_px: "120-144"
+          right_header_px: "48-64"
+          right_card_row_px: "72-88"
+        nested_packing:
+          rule: "若某一列内部仍包含 merged container，则必须继续做二次装箱，显式给出 container 内部的 row budget；禁止使用 1fr/平均拉伸让内部卡片自动吃满高度。"
+          merged_stack_inner_row_px: "64-78"
+          merged_stack_gap_px: "6-10"
+        component_rules:
+          - "右列若需要 3 个 pillar，默认禁止使用 3 张独立 default/compact 大卡；优先 single_container_plus_internal_rows 或 compact_narrow 行卡。"
+          - "左列风险卡若列宽低于 380px，优先 Card_Glass compact_narrow，不得继续沿用更重的 solid card。"
+          - "无论左列还是右列，只要卡片位于列内子容器，就必须以固定候选高度或 max-height 预算落版，不能再用平均分配轨道高度。"
   regions:
     top:
       layout: "full_width"
@@ -23,6 +60,9 @@ spec:
     bottom:
       layout: "grid_2x"
       height_pct: 50
+  component_entrypoints:
+    chart_components: [echarts_cartesian_standard, echarts_cartesian_annotated, echarts_heatmap_compact]
+    card_components: [Card_Accent, Card_Solid, Card_Glass, Metric_Trend, List_Icon]
 
 content_spec:
   chart:
@@ -33,6 +73,7 @@ content_spec:
     per_card:
       title_max_chars: 20
       body_max_chars: 80
+  candidate_selection_rule: "先根据 top/bottom 区域预算生成 chart 与 card 的候选集，再决定底部是 2/3/4 卡还是图表与指标混合；不得先固定格数后硬塞内容。若 narrative_variant=contrast_pivot，则必须先核对左右列头预算和右列三行预算，再决定是否采用 merged stack；一旦采用 merged stack，仍必须继续完成内部 row packing。"
 
 layout_contract:
   required_thinking_fields:
@@ -71,6 +112,7 @@ layout_contract:
 constraints:
   - "图表区域高度 40-60%"
   - "底部卡片 2-4 个"
+  - "contrast_pivot 中，右列 3 行叠放不得直接复用常规 compact 大卡"
 
 # ── HTML 模板 ─────────────────────────────────────────
 template: |

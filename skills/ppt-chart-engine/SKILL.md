@@ -14,6 +14,8 @@ This skill provides a chart decision, rendering constraint, and data contract sy
 
 `SKILL.md` is the human-facing decision guide. `assets/charts.yml` is the detailed rulebook for chart types, mappings, constraints, and examples. If they ever drift, `assets/charts.yml` should be treated as the more specific reference and `SKILL.md` should be updated to match.
 
+For budget-sensitive layouts, `assets/charts.yml#chart_candidate_generation_examples` now provides worked examples showing how to go from region budget to chart-component candidates to final selection.
+
 ## When to Use This Skill
 
 - Select appropriate chart type for data
@@ -21,6 +23,7 @@ This skill provides a chart decision, rendering constraint, and data contract sy
 - Handle data contracts and mappings
 - Implement data guard rules
 - Write chart code examples
+- Generate chart-component candidates inside a pre-decided layout region
 
 ## Thinking Alignment
 
