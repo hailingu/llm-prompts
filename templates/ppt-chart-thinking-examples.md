@@ -25,32 +25,32 @@ Use them when a slide is chart-first and the chart contract must be explicit bef
 ### 2.1 页面骨架 (Layout Anchor)
 
 - **Layout Key**: side_by_side
-- **Layout_Contract_Source**: `skills/ppt-slide-layout-library/assets/layouts/side_by_side.yml#layout_contract`
-- **Narrative_Fit_Match**: `scenario_tradeoff`
-- **Required_Thinking_Fields_Check**: `layout_key`, `comparison_axis`, `option_count`, `scoring_basis`, `recommendation_logic`, `evidence_type`, `fallback_plan`
-- **Overflow_Recovery_Order**: `reduce_chart_width_pressure` -> `reduce_card_copy_density` -> `move_secondary_note_to_footer` -> `downgrade_to_data_chart`
-- **Fallback_Layouts**: `comparison`, `data_chart`
+- **Layout Contract Source**: `skills/ppt-slide-layout-library/assets/layouts/side_by_side.yml#layout_contract`
+- **Narrative Fit Match**: `scenario_tradeoff`
+- **Required Fields Check**: `layout_key`, `comparison_axis`, `option_count`, `scoring_basis`, `recommendation_logic`, `evidence_type`, `fallback_plan`
+- **Overflow Recovery Order**: `reduce_chart_width_pressure` -> `reduce_card_copy_density` -> `move_secondary_note_to_footer` -> `downgrade_to_data_chart`
+- **Fallback Layouts**: `comparison`, `data_chart`
 - **Primary Region Strategy**: chart occupies the dominant reading region
 - **Secondary Region Strategy**: one evidence card interprets the inflection
 
 ### 2.2 内容编码 (Content Encoding)
 
 - **Primary Encoding**: chart
-- **Chart_Family**: line_trend
-- **Contract_Fields**: `time`, `value`, `series`
-- **Null_Policy**: keep_null
+- **Chart Family**: line_trend
+- **Contract Fields**: `time`, `value`, `series`
+- **Null Policy**: keep_null
 - **Source**: scenario price path dataset
 - **Filter Logic**: baseline / stress / extreme only
 
 ### 2.3 图表契约判断 (Chart Contract Check)
 
-- **Contract_Source**: `skills/ppt-chart-engine/assets/charts.yml#line_trend`
-- **Fallback_Plan**: if label density breaks readability, degrade to compact comparison table
-- **Semantic_Note**: use one critical line only; supporting lines remain neutral or secondary
+- **Contract Source**: `skills/ppt-chart-engine/assets/charts.yml#line_trend`
+- **Fallback Plan**: if label density breaks readability, degrade to compact comparison table
+- **Semantic Note**: use one critical line only; supporting lines remain neutral or secondary
 
 ### 2.4 视觉细节 (Visual Props)
 
-- **Style**: Editorial Briefing
+- **Style Profile**: Editorial Briefing
 - **Density**: default
 - **Highlights**: one red line, neutral grid, restrained annotation marker
 
@@ -87,32 +87,32 @@ Use them when a slide is chart-first and the chart contract must be explicit bef
 ### 2.1 页面骨架 (Layout Anchor)
 
 - **Layout Key**: dashboard_grid
-- **Layout_Contract_Source**: `skills/ppt-slide-layout-library/assets/layouts/dashboard_grid.yml#layout_contract`
-- **Narrative_Fit_Match**: `multi_metric_monitoring`
-- **Required_Thinking_Fields_Check**: `layout_key`, `metric_groups`, `chart_mix`, `summary_logic`, `recommendation_logic`, `fallback_plan`
-- **Overflow_Recovery_Order**: `reduce_chart_count` -> `reduce_card_density` -> `collapse_secondary_metrics` -> `downgrade_to_hybrid`
-- **Fallback_Layouts**: `hybrid`, `data_chart`, `full_width`
+- **Layout Contract Source**: `skills/ppt-slide-layout-library/assets/layouts/dashboard_grid.yml#layout_contract`
+- **Narrative Fit Match**: `multi_metric_monitoring`
+- **Required Fields Check**: `layout_key`, `metric_groups`, `chart_mix`, `summary_logic`, `recommendation_logic`, `fallback_plan`
+- **Overflow Recovery Order**: `reduce_chart_count` -> `reduce_card_density` -> `collapse_secondary_metrics` -> `downgrade_to_hybrid`
+- **Fallback Layouts**: `hybrid`, `data_chart`, `full_width`
 - **Primary Region Strategy**: matrix dominates the page center
 - **Secondary Region Strategy**: one card explains the strongest pattern
 
 ### 2.2 内容编码 (Content Encoding)
 
 - **Primary Encoding**: chart
-- **Chart_Family**: heatmap_matrix
-- **Contract_Fields**: `row_key`, `col_key`, `value`
-- **Null_Policy**: replace_zero
+- **Chart Family**: heatmap_matrix
+- **Contract Fields**: `row_key`, `col_key`, `value`
+- **Null Policy**: replace_zero
 - **Source**: regional scenario matrix
 - **Filter Logic**: keep only top-level regions and core time buckets
 
 ### 2.3 图表契约判断 (Chart Contract Check)
 
-- **Contract_Source**: `skills/ppt-chart-engine/assets/charts.yml#heatmap_matrix`
-- **Fallback_Plan**: if axis labels exceed the space budget, degrade to structured matrix table
-- **Semantic_Note**: color scale must encode intensity only; narrative meaning stays in headline/card
+- **Contract Source**: `skills/ppt-chart-engine/assets/charts.yml#heatmap_matrix`
+- **Fallback Plan**: if axis labels exceed the space budget, degrade to structured matrix table
+- **Semantic Note**: color scale must encode intensity only; narrative meaning stays in headline/card
 
 ### 2.4 视觉细节 (Visual Props)
 
-- **Style**: KPMG
+- **Style Profile**: KPMG
 - **Density**: compact
 - **Highlights**: short labels, quiet grid chrome, one highlighted hotspot callout
 
@@ -149,33 +149,33 @@ Use them when a slide is chart-first and the chart contract must be explicit bef
 ### 2.1 页面骨架 (Layout Anchor)
 
 - **Layout Key**: side_by_side
-- **Layout_Contract_Source**: `skills/ppt-slide-layout-library/assets/layouts/side_by_side.yml#layout_contract`
-- **Narrative_Fit_Match**: `scenario_tradeoff`
-- **Required_Thinking_Fields_Check**: `layout_key`, `comparison_axis`, `option_count`, `scoring_basis`, `recommendation_logic`, `evidence_type`, `fallback_plan`
-- **Overflow_Recovery_Order**: `reduce_chart_width_pressure` -> `reduce_card_copy_density` -> `move_secondary_note_to_footer` -> `downgrade_to_data_chart`
-- **Fallback_Layouts**: `comparison`, `data_chart`
+- **Layout Contract Source**: `skills/ppt-slide-layout-library/assets/layouts/side_by_side.yml#layout_contract`
+- **Narrative Fit Match**: `scenario_tradeoff`
+- **Required Fields Check**: `layout_key`, `comparison_axis`, `option_count`, `scoring_basis`, `recommendation_logic`, `evidence_type`, `fallback_plan`
+- **Overflow Recovery Order**: `reduce_chart_width_pressure` -> `reduce_card_copy_density` -> `move_secondary_note_to_footer` -> `downgrade_to_data_chart`
+- **Fallback Layouts**: `comparison`, `data_chart`
 - **Primary Region Strategy**: bubble chart occupies the left analysis region
 - **Secondary Region Strategy**: right card interprets quadrant meaning and outliers
 
 ### 2.2 内容编码 (Content Encoding)
 
 - **Primary Encoding**: chart
-- **Chart_Family**: bubble_relationship
-- **Contract_Fields**: `x`, `y`, `size`, `label`
-- **Recommended_Alias**: `growth_rate`, `index_0_100`, `confidence_level`
-- **Null_Policy**: drop_row only if label integrity is preserved
+- **Chart Family**: bubble_relationship
+- **Contract Fields**: `x`, `y`, `size`, `label`
+- **Recommended Alias**: `growth_rate`, `index_0_100`, `confidence_level`
+- **Null Policy**: drop_row only if label integrity is preserved
 - **Source**: actor assessment table
 - **Filter Logic**: keep only top-priority actors with short labels
 
 ### 2.3 图表契约判断 (Chart Contract Check)
 
-- **Contract_Source**: `skills/ppt-chart-engine/assets/charts.yml#bubble_relationship`
-- **Fallback_Plan**: if label collisions persist, degrade to scatter + ranking table
-- **Semantic_Note**: bubble radius is contract-driven, not manually styled by intuition
+- **Contract Source**: `skills/ppt-chart-engine/assets/charts.yml#bubble_relationship`
+- **Fallback Plan**: if label collisions persist, degrade to scatter + ranking table
+- **Semantic Note**: bubble radius is contract-driven, not manually styled by intuition
 
 ### 2.4 视觉细节 (Visual Props)
 
-- **Style**: Deloitte
+- **Style Profile**: Deloitte
 - **Density**: default
 - **Highlights**: one highlighted actor, muted peers, compact axis labels
 

@@ -28,11 +28,11 @@ Use them as calibration examples, not as rigid templates. The operative template
 ### 2.1 页面骨架 (Layout Anchor)
 
 - **Layout Key**: side_by_side
-- **Layout_Contract_Source**: `skills/ppt-slide-layout-library/assets/layouts/side_by_side.yml#layout_contract`
-- **Narrative_Fit_Match**: `scenario_tradeoff`
-- **Required_Thinking_Fields_Check**: `layout_key`, `comparison_axis`, `option_count`, `scoring_basis`, `recommendation_logic`, `evidence_type`, `fallback_plan`
-- **Overflow_Recovery_Order**: `reduce_chart_width_pressure` -> `reduce_card_copy_density` -> `move_secondary_note_to_footer` -> `downgrade_to_data_chart`
-- **Fallback_Layouts**: `comparison`, `data_chart`
+- **Layout Contract Source**: `skills/ppt-slide-layout-library/assets/layouts/side_by_side.yml#layout_contract`
+- **Narrative Fit Match**: `scenario_tradeoff`
+- **Required Fields Check**: `layout_key`, `comparison_axis`, `option_count`, `scoring_basis`, `recommendation_logic`, `evidence_type`, `fallback_plan`
+- **Overflow Recovery Order**: `reduce_chart_width_pressure` -> `reduce_card_copy_density` -> `move_secondary_note_to_footer` -> `downgrade_to_data_chart`
+- **Fallback Layouts**: `comparison`, `data_chart`
 - **Primary Region Strategy**: left region holds the time-series chart
 - **Secondary Region Strategy**: right region holds one accent card and one metric
 
@@ -45,16 +45,16 @@ Use them as calibration examples, not as rigid templates. The operative template
 
 ### 2.3 组件语义解析 (Component Semantic Resolution)
 
-- **Component_Selection**: `Metric_Big`, `Card_Accent`
-- **Semantic_Roles**:
+- **Component Selection**: `Metric_Big`, `Card_Accent`
+- **Semantic Roles**:
   - `Metric_Big` -> `component_family: Metric_Big`, `emphasis_role: critical`, `value_role: primary_text`
   - `Card_Accent` -> `component_family: Card_Accent`, `emphasis_role: warning`, `surface_role: elevated`
-- **Resolver_Source**: `skills/ppt-brand-style-system/assets/component_semantic_mappings.yml`
-- **Fallback_Policy**: resolver first; only keep example payload as emergency fallback
+- **Resolver Source**: `skills/ppt-brand-style-system/assets/component_semantic_mappings.yml`
+- **Fallback Policy**: resolver first; only keep example payload as emergency fallback
 
 ### 2.4 视觉细节 (Visual Props)
 
-- **Style**: Editorial Briefing
+- **Style Profile**: Editorial Briefing
 - **Density**: default
 - **Highlights**: one red scenario line, one amber watchpoint card, restrained neutral chrome elsewhere
 
@@ -91,11 +91,11 @@ Use them as calibration examples, not as rigid templates. The operative template
 ### 2.1 页面骨架 (Layout Anchor)
 
 - **Layout Key**: hybrid
-- **Layout_Contract_Source**: `skills/ppt-slide-layout-library/assets/layouts/hybrid.yml#layout_contract`
-- **Narrative_Fit_Match**: `mixed_evidence_summary`
-- **Required_Thinking_Fields_Check**: `layout_key`, `primary_chart_family`, `chart_role`, `supporting_cards`, `synthesis_order`, `recommendation_logic`, `fallback_plan`
-- **Overflow_Recovery_Order**: `reduce_card_count` -> `reduce_chart_annotation_density` -> `move_secondary_metrics_to_cards` -> `downgrade_to_data_chart`
-- **Fallback_Layouts**: `data_chart`, `dashboard_grid`, `chart_synthesis`
+- **Layout Contract Source**: `skills/ppt-slide-layout-library/assets/layouts/hybrid.yml#layout_contract`
+- **Narrative Fit Match**: `mixed_evidence_summary`
+- **Required Fields Check**: `layout_key`, `primary_chart_family`, `chart_role`, `supporting_cards`, `synthesis_order`, `recommendation_logic`, `fallback_plan`
+- **Overflow Recovery Order**: `reduce_card_count` -> `reduce_chart_annotation_density` -> `move_secondary_metrics_to_cards` -> `downgrade_to_data_chart`
+- **Fallback Layouts**: `data_chart`, `dashboard_grid`, `chart_synthesis`
 - **Primary Region Strategy**: top strip gives compact KPIs, lower region gives interpretation + sequence
 - **Secondary Region Strategy**: one side explains, one side sequences
 
@@ -108,17 +108,17 @@ Use them as calibration examples, not as rigid templates. The operative template
 
 ### 2.3 组件语义解析 (Component Semantic Resolution)
 
-- **Component_Selection**: `Metric_KpiRow`, `Card_Accent`, `List_Timeline`
-- **Semantic_Roles**:
+- **Component Selection**: `Metric_KpiRow`, `Card_Accent`, `List_Timeline`
+- **Semantic Roles**:
   - `Metric_KpiRow` -> `component_family: Metric_KpiRow`, `surface_role: subtle`, `structure_role: neutral_structure`, `value_role: primary_text`
   - `Card_Accent` -> `component_family: Card_Accent`, `emphasis_role: warning`, `surface_role: elevated`
   - `List_Timeline` -> `component_family: List_Timeline`, `timeline_role: neutral_structure`, `active_step_role: primary`, `inactive_step_role: neutral`
-- **Resolver_Source**: `skills/ppt-brand-style-system/assets/component_semantic_mappings.yml`
-- **Fallback_Policy**: resolver first; examples only define safe fallback classes
+- **Resolver Source**: `skills/ppt-brand-style-system/assets/component_semantic_mappings.yml`
+- **Fallback Policy**: resolver first; examples only define safe fallback classes
 
 ### 2.4 视觉细节 (Visual Props)
 
-- **Style**: KPMG
+- **Style Profile**: KPMG
 - **Density**: compact
 - **Highlights**: keep one amber emphasis point only; let structure stay neutral
 
@@ -154,11 +154,11 @@ Use them as calibration examples, not as rigid templates. The operative template
 
 ### 2.1 地图叙事输入下限 (Map Input Minimum)
 
-- **Narrative_Archetype**: route_corridor
-- **Geographic_Scope**: regional
-- **Primary_Question**: Which corridor concentrates the highest disruption risk?
-- **Render_Engine**: echarts-geo
-- **Basemap_Source**:
+- **Narrative Archetype**: route_corridor
+- **Geographic Scope**: regional
+- **Primary Question**: Which corridor concentrates the highest disruption risk?
+- **Render Engine**: echarts-geo
+- **Basemap Source**:
   - **Type**: geojson
   - **ID**: gulf_corridor_v1
   - **Purpose**: coastline and chokepoint anchors for route line and hotspot callouts
@@ -166,11 +166,11 @@ Use them as calibration examples, not as rigid templates. The operative template
 ### 2.2 布局锚点 (Layout Anchor)
 
 - **Layout Key**: map_overlay
-- **Layout_Contract_Source**: `skills/ppt-slide-layout-library/assets/layouts/map_overlay.yml#layout_contract`
-- **Narrative_Fit_Match**: `route_corridor`
-- **Required_Thinking_Fields_Check**: `layout_key`, `narrative_archetype`, `render_engine`, `overlay_families`, `overlay_routing`, `routing_source`
-- **Overflow_Recovery_Order**: `reduce_overlay_density` -> `reduce_support_card_count` -> `collapse_secondary_labels` -> `downgrade_to_side_by_side`
-- **Fallback_Layouts**: `side_by_side`, `full_width`
+- **Layout Contract Source**: `skills/ppt-slide-layout-library/assets/layouts/map_overlay.yml#layout_contract`
+- **Narrative Fit Match**: `route_corridor`
+- **Required Fields Check**: `layout_key`, `narrative_archetype`, `render_engine`, `overlay_families`, `overlay_routing`, `routing_source`
+- **Overflow Recovery Order**: `reduce_overlay_density` -> `reduce_support_card_count` -> `collapse_secondary_labels` -> `downgrade_to_side_by_side`
+- **Fallback Layouts**: `side_by_side`, `full_width`
 - **Component**: map + KPI panel
 
 ### 2.3 数据绑定 (Data Binding)
@@ -184,19 +184,19 @@ Use them as calibration examples, not as rigid templates. The operative template
 
 ### 2.4 视觉细节 (Visual Props)
 
-- **Style**: Editorial Briefing
-- **Component_Variant**: restrained basemap + high-contrast overlays
+- **Style Profile**: Editorial Briefing
+- **Component Variant**: restrained basemap + high-contrast overlays
 - **Highlights**: one route line, one red ring, one amber evidence card
 
 ### 2.5 组件语义解析 (Component Semantic Resolution)
 
-- **Component_Selection**: `Map_FlowArrow`, `Map_RadarRing`, `Metric_Trend`
-- **Semantic_Roles**:
+- **Component Selection**: `Map_FlowArrow`, `Map_RadarRing`, `Metric_Trend`
+- **Semantic Roles**:
   - `Map_FlowArrow` -> `component_family: Map_FlowArrow`, `flow_role: primary`
   - `Map_RadarRing` -> `component_family: Map_RadarRing`, `core_role: critical`, `icon_role: primary_text`, `ring_role: critical`
   - `Metric_Trend` -> `component_family: Metric_Trend`, `trend_role: warning`, `value_role: primary_text`
-- **Resolver_Source**: `skills/ppt-brand-style-system/assets/component_semantic_mappings.yml`
-- **Fallback_Policy**: resolver first; retain geo overlay fallback only for emergency rendering recovery
+- **Resolver Source**: `skills/ppt-brand-style-system/assets/component_semantic_mappings.yml`
+- **Fallback Policy**: resolver first; retain geo overlay fallback only for emergency rendering recovery
 
 ### 2.6 叙事文案 (Narrative)
 
