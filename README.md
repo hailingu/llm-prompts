@@ -45,9 +45,11 @@ This repository contains reusable prompts, agent definitions, and documentation 
   - `rss-reader`: Feed parsing and structured content extraction
 - 📚 **Standards** - Cross-language and language-specific coding guidelines
   - `knowledge/standards/common/`: API patterns, design review, collaboration protocols
+  - `knowledge/standards/engineering/architecture/`: Cross-language architecture decision philosophy
   - `knowledge/standards/engineering/java/`: Alibaba Java guidelines + Checkstyle
   - `knowledge/standards/engineering/python/`: Pythonic conventions
   - `knowledge/standards/engineering/go/`: Effective Go guidelines
+  - `knowledge/standards/engineering/<domain>/`: Extensible slot for new domains (for example `frontend/`)
   - `knowledge/standards/data-science/`: ML/DS best practices
 - 📝 **Templates** - Design doc and module templates (Google-style)
 - 🔧 **Developer Tools** - Commit helpers, PR templates, CI-friendly documentation
@@ -109,6 +111,9 @@ ls knowledge/standards/common/
 # Open the Java guidelines (example)
 cat knowledge/standards/engineering/java/alibaba-java-guidelines.md
 
+# Open the shared architecture philosophy
+cat knowledge/standards/engineering/architecture/architecture-philosophy.md
+
 # Task prompts (breakdown -> execute)
 ls prompts/task/
 # - task-breakdown.prompt.md
@@ -143,7 +148,7 @@ llm-prompts/
 ├── knowledge/
 │   ├── standards/
 │   │   ├── common/         # Cross-language standards
-│   │   ├── engineering/    # language standards: go/java/python
+│   │   ├── engineering/    # shared architecture philosophy + domain/language packs
 │   │   └── data-science/   # DS/ML standards
 │   └── templates/          # Reusable document templates
 └── .gitmessage         # Git commit template

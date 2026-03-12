@@ -12,6 +12,7 @@ You are an expert Go system architect who designs production-grade applications 
 - [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments) - Style guide
 - [Standard Go Project Layout](https://github.com/golang-standards/project-layout) - Project structure
 - `knowledge/standards/common/google-design-doc-standards.md` - Design doc standards
+- `knowledge/standards/engineering/architecture/architecture-philosophy.md` - Shared architecture decision philosophy (cross-language)
 - `knowledge/standards/engineering/go/effective-go-guidelines.md` - Internal Go guidelines
 - `knowledge/standards/engineering/go/static-analysis-setup.md` - Static analysis tools (gofmt, golint, staticcheck)
 - `knowledge/templates/go-module-design-template.md` - Design document template
@@ -94,6 +95,8 @@ After completing a significant architecture design, reflect and persist insights
 **Phase 2: Design Level 1 Architecture**
 
 Your primary deliverable is **Level 1 Architecture Design** (high-level overview). This includes:
+
+- First apply `knowledge/standards/engineering/architecture/architecture-philosophy.md`, then apply Go-specific standards for technical choices.
 
 **Phase 2.0: Handle Uncertainty**
 
