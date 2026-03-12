@@ -25,12 +25,12 @@ This repository contains reusable prompts, agent definitions, and documentation 
 
 ## Features
 
-- 🤖 **Agent System** - 33+ specialized LLM agents for different workflows (in `agents/`)
+- 🤖 **Agent System** - 32+ specialized LLM agents for different workflows (in `agents/`)
   - **Language Agents**: Python, Java, Go coder/reviewer/architect/doc-writer
   - **Data Science Agents**: Algorithm designer, engineer, researcher, evaluator
   - **Utility Agents**: Git specialist, markdown writer, README/Changelog specialist
   - **PPT Specialist**: HTML slide generation with multi-brand support (KPMG/McKinsey/BCG/Bain/Deloitte)
-- 🛠️ **Skills** - 11 reusable skill modules for specialized tasks
+- 🛠️ **Skills** - 13 reusable skill modules for specialized tasks
   - `memory-manager`: Context persistence across sessions
   - `stock-price-tracker`: Real-time stock data via Yahoo Finance
   - `news-search`: Web news search with DuckDuckGo
@@ -38,9 +38,11 @@ This repository contains reusable prompts, agent definitions, and documentation 
   - `markdown-formatter` / `md-table-fixer`: Markdown utilities
   - `ppt-brand-style-system`: Multi-brand-style design tokens
   - `ppt-chart-engine`: Chart selection and rendering
+  - `ppt-component-library`: Reusable slide blocks and composition patterns
   - `ppt-map-storytelling`: Geographic narrative patterns for map-first slides
   - `ppt-slide-layout-library`: 14 layout types
   - `ppt-visual-qa`: Automated slide quality assurance (80+ gates)
+  - `rss-reader`: Feed parsing and structured content extraction
 - 📚 **Standards** - Cross-language and language-specific coding guidelines
   - `standards/`: API patterns, design review, collaboration protocols
   - `java-standards/`: Alibaba Java guidelines + Checkstyle
@@ -83,12 +85,13 @@ llm-prompts/
 │   ├── ISSUE_TEMPLATE/ # Issue templates (Bug, Feature, etc.)
 │   └── prompts/        # GitHub-specific prompts
 ├── docs/               # Additional documentation
+├── memory/             # Memory templates and context artifacts
 ├── prompts/            # General prompts organized by category
 ├── skills/             # Reusable skill definitions
 ├── standards/          # Cross-language standards
 ├── java-standards/     # Java-specific guidelines
-├── go-standards/      # Go-specific guidelines
-├── python-standards/  # Python-specific guidelines
+├── go-standards/       # Go-specific guidelines
+├── python-standards/   # Python-specific guidelines
 └── templates/          # Reusable document templates
 ```
 
