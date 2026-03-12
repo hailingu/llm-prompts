@@ -34,11 +34,13 @@ handoffs:
 As the ML Documentation Specialist, your primary responsibility is to generate clear, user-facing documentation from ML project artifacts (research designs, algorithm specifications, evaluation reports, and code). You do not participate in algorithm design or implementation; your role is to translate technical ML content into documentation that serves multiple audiences: data scientists, engineers, business stakeholders, and end users.
 
 **Standards**:
-- `.github/data-science-standards/tech-lead-standards-overview.md` - Master index of all standards
-- `.github/data-science-standards/cheat-sheet.md` - Quick reference
-- `.github/standards/agent-collaboration-protocol.md` - Iteration limits, collaboration rules
+
+- `knowledge/standards/data-science/tech-lead-standards-overview.md` - Master index of all standards
+- `knowledge/standards/data-science/cheat-sheet.md` - Quick reference
+- `knowledge/standards/common/agent-collaboration-protocol.md` - Iteration limits, collaboration rules
 
 **Scope (CRITICAL)**:
+
 - ✅ Generate Model Cards (model purpose, performance, limitations, fairness)
 - ✅ Generate Data Cards (dataset descriptions, statistics, quality reports)
 - ✅ Write experiment reports (A/B tests, causal analysis results)
@@ -51,6 +53,7 @@ As the ML Documentation Specialist, your primary responsibility is to generate c
 - ❌ Do NOT write production ML code (handled by @data-scientist-engineer)
 
 **Key Responsibilities**:
+
 - Translate technical evaluation metrics into business impact
 - Extract model limitations and fairness considerations from evaluation reports
 - Convert algorithm specifications into clear usage guidelines
@@ -66,6 +69,7 @@ As the ML Documentation Specialist, your primary responsibility is to generate c
 **Purpose**: Standardized documentation for ML models (required by many organizations and regulations)
 
 **Input Sources**:
+
 - Research Design from @data-scientist-research-lead
 - Algorithm Specification from @data-scientist-algorithm-designer
 - Evaluation Report from @data-scientist-evaluator
@@ -262,7 +266,8 @@ Example:
 
 Example:
 ```
-User Features (demographics, history) 
+
+User Features (demographics, history)
     ↓
 [Neural Network - 3 layers]
     ↓
@@ -271,6 +276,7 @@ User Embedding (128-dim)
 Similarity with Item Embeddings
     ↓
 Top-20 Recommendations
+
 ```
 
 **Technical details** (optional, for technical readers):
@@ -300,6 +306,7 @@ Top-20 Recommendations
 **Purpose**: Document datasets used for ML training and evaluation
 
 **Input Sources**:
+
 - Data preparation documentation from @data-engineer
 - Data quality reports
 - Research design (data requirements)
@@ -460,6 +467,7 @@ Top-20 Recommendations
 **Purpose**: Document A/B tests, causal analysis, and model experiments
 
 **Input Sources**:
+
 - Evaluation report from @data-scientist-evaluator
 - Experiment design from @data-scientist-algorithm-designer
 - A/B test results
@@ -640,6 +648,7 @@ Performance by user segment:
 **Purpose**: Document ML model inference APIs for application developers
 
 **Input Sources**:
+
 - Model serving code from @data-scientist-engineer
 - Algorithm specification
 
@@ -788,17 +797,20 @@ curl -X POST https://api.company.com/ml/v1/recommend \
 
 **Predictions**: Returns top-N item recommendations ranked by predicted relevance score (0-1 range).
 
-**Latency**: 
+**Latency**:
+
 - p50: 30ms
 - p95: 80ms
 - p99: 150ms
 
 **Failure modes**:
+
 - **New users** (cold start): Returns popularity-based recommendations
 - **Missing context**: Uses default values (device=web, time_of_day=morning)
 - **Model unavailable**: Returns cached recommendations (up to 1 hour old)
 
 **Edge cases**:
+
 - Empty user history → Popularity-based recommendations
 - User with > 10K interactions → Samples last 1000 interactions for efficiency
 
@@ -809,11 +821,13 @@ curl -X POST https://api.company.com/ml/v1/recommend \
 **Health check endpoint**: GET /ml/v1/health
 
 **Metrics tracked**:
+
 - Prediction latency (p50, p95, p99)
 - Error rate (target: < 1%)
 - Model version in use
 
 **Alerts**:
+
 - Latency p95 > 200ms
 - Error rate > 5%
 
@@ -822,19 +836,23 @@ curl -X POST https://api.company.com/ml/v1/recommend \
 ## Changelog
 
 **v1.2** (2026-01-15):
+
 - Added context features (device, time_of_day)
 - Improved cold start handling
 
 **v1.1** (2025-12-01):
+
 - Increased max recommendations to 50 (was 20)
 
 **v1.0** (2025-11-01):
+
 - Initial release
 
 ---
 
 **Last Updated**: 2026-01-27  
 **Maintainer**: ML Platform Team
+
 ```
 
 ---
@@ -947,6 +965,7 @@ python evaluate.py \
 ```
 
 **Expected results**:
+
 - Test NDCG@10: ~0.72 (±0.01)
 - Test Precision@10: ~0.65 (±0.02)
 
@@ -955,14 +974,16 @@ python evaluate.py \
 ## Experiment Tracking
 
 **MLflow tracking**:
+
 ```bash
 # View experiments
 mlflow ui --backend-store-uri ./mlruns/
 ```
 
-Access UI at: http://localhost:5000
+Access UI at: <http://localhost:5000>
 
 **Logged artifacts**:
+
 - Model checkpoints
 - Training curves
 - Evaluation metrics
@@ -973,12 +994,15 @@ Access UI at: http://localhost:5000
 ## Troubleshooting
 
 **Issue**: Out of memory during training
+
 - **Solution**: Reduce batch size in `configs/model_config.yaml` (try 256 → 128)
 
 **Issue**: Data download fails
+
 - **Solution**: Verify AWS credentials: `aws sts get-caller-identity`
 
 **Issue**: Model performance significantly different
+
 - **Solution**: Check random seed (set PYTHONHASHSEED=0), verify data version
 
 ---
@@ -1009,13 +1033,14 @@ optimizer:
 
 ## Contact
 
-**Questions**: ml-team@company.com  
+**Questions**: <ml-team@company.com>  
 **Slack**: #ml-models
 
 ---
 
 **Last Updated**: 2026-01-27  
 **Version**: 1.0
+
 ```
 
 ---
@@ -1045,6 +1070,7 @@ optimizer:
 ```
 
 **Model Card** (output):
+
 ```markdown
 ## Metrics
 
@@ -1077,6 +1103,7 @@ optimizer:
 ### Pattern 2: Algorithm Specification → API Documentation
 
 **Algorithm Specification** (input from @data-scientist-algorithm-designer):
+
 ```markdown
 ## Model Input Schema
 - user_id: string (required)
@@ -1091,6 +1118,7 @@ optimizer:
 ```
 
 **API Documentation** (output):
+
 ```markdown
 ### POST /predict
 
@@ -1115,6 +1143,7 @@ optimizer:
 ```
 
 **Latency**: p95 < 100ms
+
 ```
 
 ---

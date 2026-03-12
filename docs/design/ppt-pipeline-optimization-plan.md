@@ -66,8 +66,8 @@ PPT 生成管线由 **4 个 Agent + 4 个 Skill + 1 个 Schema + 1 个渲染器*
 | `skills/ppt-design-system/README.md` | MD3 设计系统 | 648 |
 | `skills/ppt-visual-taxonomy/README.md` | 可视化分类法（24 种类型） | 283 |
 | `skills/ppt-generator/README.md` | 渲染架构文档 | 1464 |
-| `standards/slides-render-schema.json` | Schema v1 接口契约 | 185 |
-| `.github/skills/ppt-generator/bin/generate_pptx.py` | 单体渲染器 | ~3100 |
+| `knowledge/standards/common/slides-render-schema.json` | Schema v1 接口契约 | 185 |
+| `skills/ppt-generator/bin/generate_pptx.py` | 单体渲染器 | ~3100 |
 
 ### 1.2 已完成的迭代
 
@@ -144,6 +144,7 @@ PPT 生成管线由 **4 个 Agent + 4 个 Skill + 1 个 Schema + 1 个渲染器*
 **现象**：竞品的图表/图标更丰富、更切题。
 
 **根因**：
+
 - CP（Content Planner）负责内容但不思考视觉；VD（Visual Designer）负责样式但不理解内容。"什么内容用什么方式呈现"这个核心决策**无人负责**。
 - CP 产出的 `visual` 字段仅是 `{"type": "bar_chart", "placeholder_data": {...}}`——一种机械映射，而非基于认知负荷的可视化选择。
 - 24 种可视化类型定义在 `ppt-visual-taxonomy` 中，但无 Agent 具备"理解内容语义 → 选择最佳可视化 → 设计复合展示"的端到端能力。
@@ -155,6 +156,7 @@ PPT 生成管线由 **4 个 Agent + 4 个 Skill + 1 个 Schema + 1 个渲染器*
 **现象**：竞品一页放 图+表+要点，我们一页只放一种元素。
 
 **根因**：
+
 - Schema v1 的 `slide_type` 是一个枚举值（13 种），每种类型绑定一个固定布局函数。
 - 渲染器通过 `RENDERERS[slide_type]` 分发——这意味着一页只能属于一种类型，无法组合。
 - `components` 字段虽然支持多种组件共存，但实际渲染逻辑忽略了非当前 `slide_type` 关联的组件。
@@ -177,6 +179,7 @@ RENDERERS["data-heavy"]()        │ top: kpi_row          │
 **现象**：竞品用更少的输入信息产出更丰富的内容。
 
 **根因**：
+
 - CP 的 MO-6 自检规则（"数据必须有来源，不捏造"）被**过度解读**为"不做任何内容合成"。
 - CP 接收到丰富的源文档（`slides.md`），但仅做 1:1 段落搬运——每个 heading 变一页 slide，每个 bullet 原封不动。这导致压缩比接近 1.0。
 - 竞品的做法是**内容编辑**：合并相似段落、提炼断言、补充推论、交叉引用数据——最终 25 节内容浓缩为 12 页高密度展示。
@@ -458,10 +461,12 @@ def render_region_architecture(pptx_slide, data, bounds):
 #### 5.3.1 Content Planner (CP) — 不修改
 
 CP 保持原样，继续产出：
+
 - `slides.md`：跨平台可读的演示大纲（可喂给任何工具）
 - `slides_semantic.json` (v1)：结构化中间表示
 
 **理由**：
+
 - `slides.md` 是宝贵的跨平台资产
 - CP 已有稳定的 17 条自检规则
 - 内容增强由新增的 EA Agent 承担
@@ -513,6 +518,7 @@ CD 新增 EA 调度逻辑：
 ```
 
 CD 决定是否启用 EA 的判断条件：
+
 - 默认启用 EA
 - 用户显式要求"快速/简单版"时跳过 EA
 - slides.md 不足 10 页时跳过 EA（信息量不足以压缩）
@@ -571,6 +577,7 @@ Week  1   2   3   4   5   6   7   8   9  10  11  12  13  14
 5. 更新 `ppt-generator/README.md` 文档
 
 **验收标准**：
+
 - 所有数据页使用原生图表（非 PNG）
 - 图表可在 PowerPoint 中双击编辑
 - 配色与 MD3 主题一致
@@ -597,6 +604,7 @@ Week  1   2   3   4   5   6   7   8   9  10  11  12  13  14
 4. 修改渲染入口：检测 `assertion` 字段 → 使用断言标题渲染
 
 **版本兼容**：
+
 - 无 `assertion` 字段 → 正常使用 `title` 渲染（v1 行为）
 - 有 `assertion` 字段 → 使用断言标题渲染（v2 行为）
 
@@ -682,6 +690,7 @@ Week  1   2   3   4   5   6   7   8   9  10  11  12  13  14
 | Schema | `components` 新增 `architecture_data`、`flow_data` 定义 |
 
 **支持的图形元素**：
+
 - 圆角矩形（节点/模块）
 - 直线/折线连接器（带箭头）
 - 2×2 矩阵（四象限图）

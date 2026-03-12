@@ -86,8 +86,8 @@ The repository path is `ppt-brand-style-system`. Its intended meaning is a **bra
 - **Secondary Color**: `#64748B` (Muted Slate)
 - **Accent Color**: `#E2E8F0` (Structural Lines)
 - **Fonts**: Sans-based weight-contrast system (Inter / Noto Sans SC or equivalent)
-- **Layout**: 
-    - **No Sidebars/Navbars**: Absolute canvas cleanliness.
+- **Layout**:
+  - **No Sidebars/Navbars**: Absolute canvas cleanliness.
   - **Restrained Background**: White or very light neutral background, no heavy style blocks.
   - **Typography Driven**: Hierarchy established by weight contrast and scale, not by saturated color blocks.
   - **Structural Elements**: Use thin vertical/horizontal lines for separation.
@@ -135,6 +135,7 @@ Preferred API naming should now use `style profile` semantics such as `getStyleP
 ## Typography System (New in v1.1)
 
 ### Visual Hierarchy Principles
+
 Standard business reports often rely on size alone for hierarchy (H1 > H2). The `Editorial Briefing` style profile introduces **Weight Contrast** as a primary tool:
 
 - **Display Title**: `text-6xl font-black tracking-tight leading-none` (e.g., "Geopolitics 2026")
@@ -142,10 +143,10 @@ Standard business reports often rely on size alone for hierarchy (H1 > H2). The 
 - **Eyebrow / Meta**: `text-xm font-bold tracking-widest uppercase text-slate-400` (e.g., "CONFIDENTIAL BOARD BRIEFING")
 
 ### Font Pairings (`.brand-strategic` / `.brand-strategic-report`)
+
 - **Primary Headings**: `font-weight: 900` (Inter Black / Noto Sans Black)
 - **Secondary Headings**: `font-weight: 300` (Inter Light / Noto Sans Light)
 - **Body Text**: `font-weight: 400` with `leading-relaxed` for readability.
-
 
 ## Semantic Color System
 

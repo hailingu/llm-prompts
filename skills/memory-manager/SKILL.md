@@ -13,6 +13,7 @@ metadata:
 ## Overview
 
 A comprehensive memory and persistence management system enabling AI agents to:
+
 - **Preserve context** across multi-turn sessions
 - **Write raw interaction logs** on every material turn and extract reusable knowledge only when warranted
 - **Distill knowledge** from raw logs to long-term memory
@@ -60,18 +61,21 @@ A comprehensive memory and persistence management system enabling AI agents to:
 ```
 
 ### L1: Session Logs (Raw)
+
 - **Purpose**: Raw record of every material conversation turn
 - **Location**: `memory/sessions/YYYY-MM-DD.md`
 - **Retention**: Managed by repository policy
 - **Trigger**: `persist-turn` or `log-turn`
 
 ### L2: Theme-Based (Working)
+
 - **Purpose**: Categorized, semi-structured notes, fetched facts, and interim research
 - **Location**: `memory/<theme>/YYYY-MM-DD_HH.md`
 - **Retention**: 90 days → auto-archive
 - **Trigger**: Smart detection or quick capture
 
 ### L3: Global (Long-term)
+
 - **Purpose**: Distilled knowledge, user preferences, key decisions
 - **Location**: `memory/global.md`
 - **Retention**: Indefinite
@@ -83,6 +87,7 @@ A comprehensive memory and persistence management system enabling AI agents to:
   4. `User Preferences`
 
 `Research Index` is a discovery aid, not a hard reuse gate:
+
 - Reuse an entry when it is directly relevant and still usable.
 - If no entry is a close fit, continue with fresh search or tool verification.
 - After gathering useful material, write it into `memory/` even if you have not fully distilled it yet.
@@ -213,6 +218,7 @@ Memory is a general workflow, not a research-only feature:
 ## Memory Templates
 
 ### Decision Record
+
 ```markdown
 ## Decision: [Title] - YYYY-MM-DD HH:MM
 
@@ -228,6 +234,7 @@ Memory is a general workflow, not a research-only feature:
 ```
 
 ### Error Post-mortem
+
 ```markdown
 ## Error Post-mortem: [Summary] - YYYY-MM-DD HH:MM
 
@@ -241,6 +248,7 @@ Memory is a general workflow, not a research-only feature:
 ```
 
 ### Task Progress
+
 ```markdown
 ## Task Progress: [Name] - YYYY-MM-DD HH:MM
 
@@ -268,12 +276,14 @@ python3 skills/memory-manager/scripts/memory_manager.py --workspace /path/to/wor
 ```
 
 ### Session Lifecycle
+
 ```bash
 # Initialize session - loads global + recent themes
 session-init [--session-id "abc"] [--recent-days 7] [--theme-limit 8] [--no-log]
 ```
 
 ### L1: Session Logs
+
 ```bash
 # Log a conversation turn
 log-turn --entry-type user --content "Hello" \
@@ -290,6 +300,7 @@ read-logs [--days-back 7] [--limit 20]
 ```
 
 ### L2: Theme Memory
+
 ```bash
 # Write with a caller-provided theme; an L1 entry is written first
 write-theme --theme research --content "..." [--template decision|error|task] \
@@ -300,12 +311,14 @@ read-theme --theme "coding" [--hours-back 24] [--limit 20]
 ```
 
 ### L3: Global Memory
+
 ```bash
 read-global
 write-global --content "..." [--append] [--raw-content "..."]
 ```
 
 ### CSV Data Memory
+
 ```bash
 write-data --name "metrics.csv" --csv-content "date,value\n2026-03-07,1" \
   [--description "..."] [--source-label "..."] [--columns-json '["date","value"]']
@@ -328,6 +341,7 @@ the main interactive turn. Both commands still emit an `L1` session log entry
 before writing `L2` or `L3` content.
 
 ### Utilities
+
 ```bash
 list-themes
 ```
@@ -360,6 +374,7 @@ Authoritative contract: `docs/specs/cortana-memory-contract.md`
 Use the mapping in `docs/specs/cortana-memory-contract.md` as the single source of truth.
 
 **Session Start (Automatic):**
+
 ```yaml
 on_session_start:
   - call: memory-manager/session-init
@@ -379,6 +394,7 @@ read_order:
 Treat `Research Index` as a starting point only. If no existing note is a close fit, continue with fresh search and write the new material back to `memory/`.
 
 **Every Turn (Automatic):**
+
 ```yaml
 on_any_answered_turn:
   - call: memory-manager/persist-turn
@@ -393,6 +409,7 @@ if_extracted_content_is_not_ready_yet:
 ```
 
 **Explicit User Request:**
+
 ```yaml
 when_user_says: ["remember", "do not forget", "remember"]
   - call: memory-manager/persist-turn
@@ -400,11 +417,13 @@ when_user_says: ["remember", "do not forget", "remember"]
 ```
 
 Notes:
+
 - `persist-turn` is the default interactive command because it guarantees `L1` first.
 - `write-theme --promote-global` is the manual path for durable extracted notes outside the main turn flow.
 - Do not require full reuse or full distillation before persisting useful content.
 
 **Global Updates (Selective):**
+
 ```yaml
 when_new_long_term_preference_or_active_mission_change:
   - call: memory-manager/write-global
@@ -412,6 +431,7 @@ when_new_long_term_preference_or_active_mission_change:
 ```
 
 **Verified route / POI / commute tasks:**
+
 ```yaml
 when_route_or_location_answer_was_tool_verified:
   - follow: docs/specs/cortana-memory-contract.md
@@ -441,15 +461,18 @@ memory/
 ## Migration from Legacy CLI
 
 **Breaking Changes:**
+
 - Removed the legacy one-off capture, quality-gating, session-finalization, search, and cleanup command families
 
 **Current Standard:**
+
 - `persist-turn` is the default interactive command
 - `write-theme` is the manual extracted-note command
 - `write-global` is reserved for durable global updates
 - `session-init` only loads context and optionally logs the initialization event
 
 **Migration:**
+
 ```bash
 # Normal turn or milestone
 python3 skills/memory-manager/scripts/memory_manager.py persist-turn \
@@ -477,6 +500,7 @@ python3 skills/memory-manager/scripts/memory_manager.py read-data \
 ## Error Handling
 
 All commands return JSON:
+
 ```json
 {
   "status": "success|error",

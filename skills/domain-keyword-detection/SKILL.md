@@ -173,6 +173,7 @@ scoring_weights:
 ## Confidence Scoring
 
 **Algorithm:**
+
 ```
 Confidence = (matched_unique_keywords / total_domain_keywords) * weight_factor
 
@@ -182,6 +183,7 @@ Weight factors:
 ```
 
 **Threshold recommendations:**
+
 - `0.2` - Permissive (detect weak domain signals, good for exploration)
 - `0.3` - Balanced (default, suitable for most use cases)
 - `0.5` - Strict (high-confidence only, reduces false positives)
@@ -189,6 +191,7 @@ Weight factors:
 ## Return Payloads
 
 ### Success
+
 ```yaml
 status: success
 detected_domains: ["software", "business"]
@@ -204,6 +207,7 @@ total_keywords_matched: 15
 ```
 
 ### Empty
+
 ```yaml
 status: empty
 detected_domains: []
@@ -213,6 +217,7 @@ hint: "No domains matched above threshold 0.5. Try lowering threshold or check d
 ```
 
 ### Error
+
 ```yaml
 status: error
 error_message: "Domain file not found: domains/invalid.yaml"
@@ -238,9 +243,11 @@ hint: "Check the domain name or create the domain configuration file."
 ## Integration
 
 **Current users:**
+
 - `ppt-content-planner` — decision extraction with domain-specific keywords
 
 **Potential users:**
+
 - `markdown-writer-specialist` — domain-aware glossary and style guide selection
 - `data-scientist-research-lead` — route tasks to domain experts
 - `cortana` — context-aware task routing

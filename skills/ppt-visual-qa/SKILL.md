@@ -190,11 +190,11 @@ Interpretation notes:
 
 - **Owner**: `ppt-html-generator`
 - **Dependencies**:
-    - `ppt-brand-style-system` (for brand-style consistency gates)
-    - `ppt-slide-layout-library` (for layout contract and recovery context)
-    - `ppt-chart-engine` (for chart contract context)
-    - `ppt-map-storytelling` (for map-page routing and overlay context)
-    - `ppt-component-library` (for semantic component context)
+  - `ppt-brand-style-system` (for brand-style consistency gates)
+  - `ppt-slide-layout-library` (for layout contract and recovery context)
+  - `ppt-chart-engine` (for chart contract context)
+  - `ppt-map-storytelling` (for map-page routing and overlay context)
+  - `ppt-component-library` (for semantic component context)
 
 ## Reference
 

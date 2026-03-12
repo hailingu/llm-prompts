@@ -29,8 +29,8 @@ For budget-sensitive layouts, `assets/charts.yml#chart_candidate_generation_exam
 
 For chart-led slides, pair this skill with:
 
-- `templates/ppt-slide-thinking-template.md` for the base Thinking structure
-- `templates/ppt-chart-thinking-examples.md` for chart-first worked examples
+- `knowledge/templates/ppt-slide-thinking-template.md` for the base Thinking structure
+- `knowledge/templates/ppt-chart-thinking-examples.md` for chart-first worked examples
 
 Before implementation, the Thinking file should explicitly declare:
 
@@ -42,10 +42,10 @@ Before implementation, the Thinking file should explicitly declare:
 
 If the chart lives inside a standard layout, the Thinking file should also declare:
 
-6. `layout_key`
-7. `layout_contract_source`
-8. `overflow_recovery_order`
-9. `fallback_layouts`
+1. `layout_key`
+2. `layout_contract_source`
+3. `overflow_recovery_order`
+4. `fallback_layouts`
 
 Do not enter chart implementation until those fields are stable.
 
@@ -74,11 +74,13 @@ Before selecting a chart, decide whether the page should use a chart at all.
 Geographic charts remain part of this skill only at the chart-encoding layer.
 
 This skill owns:
+
 - map / geo heatmap / geo scatter / geo lines as chart families
 - geographic data contracts for value encoding
 - legend, color scale, tooltip, and rendering constraints for geo charts
 
 This skill does not own:
+
 - regional crop decisions
 - conflict/route/corridor storytelling grammar
 - callout placement logic on map-heavy narrative pages
@@ -180,6 +182,7 @@ When target style ≈ Notion + row-column matrix data (scenario × year/metric),
 ### Common Contract Fields
 
 **Recommended metadata fields:**
+
 - `source_id`: dataset identifier or source filename
 - `metric_name`: business metric name
 - `unit`: `%`, `index`, `USD mn`, `count`, etc.
@@ -190,31 +193,38 @@ These fields are not required for every row, but the chart config layer should k
 ### Line/Trend Chart
 
 **Required Fields:**
+
 - `time` or `period`: x-axis time key
 - `value`: numeric measure
 
 **Conditionally Required Fields:**
+
 - `series`: required when multiple lines share the same plot
 
 **Optional Fields:**
+
 - `unit`: display unit
 - `target` or `benchmark`: comparison overlay
 - `annotation`: important event marker
 
 **Accepted Shapes:**
+
 - tidy rows: one row per `time x series`
 - single-series rows: one row per `time`
 
 ### Bar/Comparison Chart
 
 **Required Fields:**
+
 - `category`: compared item name
 - `value`: numeric measure
 
 **Conditionally Required Fields:**
+
 - `series`: required for grouped/stacked bars
 
 **Optional Fields:**
+
 - `rank`: sort order
 - `unit`: display unit
 - `highlight_flag`: emphasize key bar
@@ -222,11 +232,13 @@ These fields are not required for every row, but the chart config layer should k
 ### Heatmap / Matrix Chart
 
 **Required Fields:**
+
 - `row_key`: matrix row label
 - `col_key`: matrix column label
 - `value`: numeric cell value
 
 **Optional Fields:**
+
 - `value_label`: formatted cell text
 - `series_group`: optional higher-level grouping
 - `unit`: display unit
@@ -234,17 +246,20 @@ These fields are not required for every row, but the chart config layer should k
 ### Bubble Chart
 
 **Required Fields:**
+
 - `x`: numeric x-axis measure
 - `y`: numeric y-axis measure
 - `size`: numeric bubble size driver
 - `label`: object name
 
 **Recommended Semantic Alias:**
+
 - `x=growth_rate`
 - `y=index_0_100`
 - `size=confidence_level`
 
 **Optional Fields:**
+
 - `group`: legend/color grouping
 - `short_label`: compact legend label
 - `note`: object-specific annotation
@@ -252,23 +267,27 @@ These fields are not required for every row, but the chart config layer should k
 ### Milestone Timeline
 
 **Required Fields:**
+
 - `time` or `year`: Time point
 - `event_type`: Event type
 - `description`: Event description (16-40 characters)
 
 **Optional Fields:**
+
 - `impact_direction`: Impact direction (positive/negative/both)
 - `proxy_metrics`: Metric bars
 
 ### Gantt Chart
 
 **Required Fields:**
+
 - `task`: Task name
 - `start`: Start time
 - `end` or `duration`: End time or duration
 - `phase`: Phase attribution
 
 **Optional Fields:**
+
 - `progress`: Completion (0-100)
 - `owner`: Owner/team
 

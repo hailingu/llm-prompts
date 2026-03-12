@@ -16,6 +16,7 @@ Given the high-level `${input:plan}`, decompose it into detailed, executable tas
 ## Output
 
 Generate task list files to the `docs/tasks/{plan-name}/` directory:
+
 - `{plan-name}`: A slug derived from the plan's main objective (e.g., `user-auth`, `api-refactor`, `doc-migration`)
 - Main task list: `docs/tasks/{plan-name}/task-list.md`
 - Individual task files (optional): `docs/tasks/{plan-name}/{taskId}.md` (e.g., `docs/tasks/user-auth/Task-1.1.md`)
@@ -36,17 +37,20 @@ docs/tasks/
 ```
 
 Each task MUST include:
+
 - Human-readable description with responsibilities and implementation points
 - Machine-readable `Execution Parameters` in YAML format
 
 ## Error Handling
 
 If `${input:plan}` is unclear or incomplete:
+
 - **Request clarification** from the user before proceeding
 - Do **NOT** guess or assume missing information
 - Return a structured error describing what information is needed
 
 If the plan is too vague to decompose:
+
 - Suggest high-level phases first, then ask for details on each phase
 
 ## Execution Parameters Schema 🔧

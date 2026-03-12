@@ -9,10 +9,13 @@ metadata:
 # Stock Price Tracker
 
 ## Overview
+
 This skill provides real-time stock price retrieval using Yahoo Finance's public API. It is designed for AI agents (like Cortana) to obtain accurate, up-to-date stock prices without manual web browsing. The output is clean JSON that can be directly consumed by other agents or tools.
 
 ## Why this Skill?
+
 When an AI agent needs to discuss financial markets, investment strategies, or company valuations, it requires current stock prices. This skill:
+
 1. **Provides Real-Time Data**: Fetches live prices, day change, volume, and market cap.
 2. **Standardized Output**: Returns structured JSON with consistent fields.
 3. **Multi-Symbol Support**: Query multiple stocks in a single request.
@@ -22,6 +25,7 @@ When an AI agent needs to discuss financial markets, investment strategies, or c
 > **Note**: This skill is for real-time price lookup only. For historical data or technical indicators, consider extending the skill or using dedicated financial data APIs.
 
 ## Rate Limiting Protection
+
 This skill includes multiple mechanisms to handle Yahoo Finance's rate limits:
 
 1. **Session Pooling**: Uses `requests.Session()` for TCP connection reuse
@@ -31,7 +35,9 @@ This skill includes multiple mechanisms to handle Yahoo Finance's rate limits:
 5. **Proxy Support**: Configure HTTP/HTTPS proxy if needed
 
 ### Troubleshooting "Too Many Requests" Errors
+
 If you encounter rate limiting errors:
+
 ```bash
 # Option 1: Update yfinance to latest version
 pip install --upgrade yfinance
@@ -45,15 +51,18 @@ python3 skills/stock-price-tracker/scripts/stock_price.py --symbol AAPL
 ```
 
 ## Usage
+
 The skill is implemented as a Python script that uses the `yfinance` library. Ensure you have Python 3.7+ and the required dependencies installed.
 
 ### Installation
+
 ```bash
 # Install required Python packages
 pip install yfinance pandas requests
 ```
 
 ### CLI Commands
+
 ```bash
 # Get real-time price for a single stock symbol
 python3 skills/stock-price-tracker/scripts/stock_price.py --symbol AAPL
@@ -77,6 +86,7 @@ HTTP_PROXY=http://proxy:8080 python3 skills/stock-price-tracker/scripts/stock_pr
 ## Output Format
 
 ### JSON Output Example
+
 ```json
 {
   "status": "success",
@@ -102,13 +112,16 @@ HTTP_PROXY=http://proxy:8080 python3 skills/stock-price-tracker/scripts/stock_pr
 ```
 
 ### CSV Output Example
+
 ```csv
 symbol,name,price,currency,change,change_percent,volume,market_cap,day_high,day_low,previous_close,open,last_updated
 AAPL,Apple Inc.,178.32,USD,1.24,0.70,58201300,2790000000000,179.50,177.10,177.08,177.50,2026-02-25T14:30:00Z
 ```
 
 ## Error Handling
+
 If a symbol cannot be found or an error occurs, the skill returns:
+
 ```json
 {
   "status": "error",
@@ -118,6 +131,7 @@ If a symbol cannot be found or an error occurs, the skill returns:
 ```
 
 ## Integration with Agents
+
 Agents can call this skill via subprocess or Python's `submodule.run`. Example:
 
 ```python
@@ -139,9 +153,11 @@ if price_data["status"] == "success":
 ```
 
 ## Dependencies
+
 - Python 3.7+
 - `yfinance` >= 0.2.0
 - `pandas` >= 1.3.0
 
 ## License
+
 This skill is part of the llm-prompts project and follows the same licensing terms.

@@ -49,7 +49,17 @@ coverage.out
 docs/
 .agents/
 .clinerules/
+.codex/
+.cline/
+.kimi/
 .venv/
+
+# optional generated/mirrored GitHub content (source-of-truth lives outside .github)
+.github/agents/
+.github/go-standards/
+.github/java-standards/
+.github/python-standards/
+.github/prompts/
 
 memory/
 

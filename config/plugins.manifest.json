@@ -1,0 +1,22 @@
+{
+  "default_scope": "project",
+  "default_plugin": "codex",
+  "plugins": {
+    "codex": {
+      "project_target": "AGENTS.md",
+      "global_target": "~/.codex/AGENTS.md"
+    },
+    "cline": {
+      "project_target": ".cline/mcp_settings.json",
+      "global_target": "~/.cline/mcp_settings.json"
+    },
+    "copilot": {
+      "project_target": ".github/copilot-instructions.md",
+      "global_target": "~/.copilot/instructions.md"
+    },
+    "kimi": {
+      "project_target": ".kimi/config.json",
+      "global_target": "~/.kimi/config.json"
+    }
+  }
+}

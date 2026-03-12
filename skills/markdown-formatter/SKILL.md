@@ -79,12 +79,14 @@ python3 skills/md-table-fixer/scripts/md_table_tool.py fix <file_or_directory>
 ### MD022: Headers should be surrounded by blank lines
 
 **Before:**
+
 ```markdown
 # Title
 Content here
 ```
 
 **After:**
+
 ```markdown
 # Title
 
@@ -94,6 +96,7 @@ Content here
 ### MD032: Lists should be surrounded by blank lines
 
 **Before:**
+
 ```markdown
 Text
 - Item 1
@@ -102,6 +105,7 @@ More text
 ```
 
 **After:**
+
 ```markdown
 Text
 
@@ -114,6 +118,7 @@ More text
 ### MD013: Line length
 
 Use prettier to reflow:
+
 ```bash
 npx prettier --write --prose-wrap always <file>
 ```
@@ -121,6 +126,7 @@ npx prettier --write --prose-wrap always <file>
 ### MD060: Table alignment
 
 Use md_table_tool.py:
+
 ```bash
 python3 skills/md-table-fixer/scripts/md_table_tool.py fix <file>
 ```
@@ -130,6 +136,7 @@ python3 skills/md-table-fixer/scripts/md_table_tool.py fix <file>
 The skill returns machine-friendly YAML/JSON payloads matching the following schemas:
 
 ### Success
+
 ```yaml
 status: success
 errors_before: 8
@@ -139,6 +146,7 @@ actions_taken:
 ```
 
 ### Partial
+
 ```yaml
 status: partial
 errors_before: 12
@@ -152,6 +160,7 @@ actions_taken:
 ```
 
 ### Error
+
 ```yaml
 status: error
 error_message: "Configuration file not found"

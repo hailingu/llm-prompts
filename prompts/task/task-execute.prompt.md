@@ -55,6 +55,7 @@ stateDiagram-v2
 ## dryRun Mode
 
 When `${input:dryRun}` is true:
+
 - Simulate all execution steps.
 - Do NOT make actual file changes.
 - Do NOT run actual commands.
@@ -115,6 +116,7 @@ Fail fast on any error. Do not retry.
 | Quality gates fail | List issues, status → `testing_failed` |
 
 Error response format (Chinese + English):
+
 ```json
 {
   "status": "error",

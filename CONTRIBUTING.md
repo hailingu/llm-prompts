@@ -20,12 +20,19 @@ Thank you for wanting to contribute! This project follows an open, collaborative
 - Run linters / formatters as appropriate. For Markdown, run `markdownlint` locally if available.
 - Add or update documentation when behavior changes.
 
-## Source of Truth Rule (`skills/` vs `.github/skills/`)
+## Source of Truth Rule (`skills/` and Adapters)
 
 - Runtime logic must live in `skills/` as the canonical implementation.
-- `.github/skills/` is mirror-only: keep proxy wrappers and metadata, do not add business logic there.
-- If you change renderer/helper/metrics behavior, edit `skills/` first and keep `.github/skills/` aligned as thin forwarding modules only.
-- PRs that introduce duplicated executable logic under `.github/skills/` should be rejected.
+- Plugin-specific files under `adapters/` are integration templates only.
+- If behavior changes, update `skills/` first, then adjust adapter templates and install scripts as needed.
+- Avoid duplicating executable skill logic in plugin adapter folders.
+
+## Source of Truth Rule (`agents/` vs `.github/agents/`)
+
+- Agent definitions are source-of-truth in `agents/`.
+- `.github/agents/` is an optional compatibility mirror and must not be edited directly.
+- Mirror generation is automatic when setup runs with `--plugin copilot` or `--plugin all` in project scope.
+- If needed, you can manually regenerate with `bash scripts/sync_agents_to_github.sh`.
 
 ## Commit Guidelines
 
@@ -36,6 +43,5 @@ Thank you for wanting to contribute! This project follows an open, collaborative
 
 - PRs are reviewed by maintainers and contributors. Respond to review comments promptly.
 - Merge via Squash or Merge when approvals are satisfied and CI passes.
-
 
 Thank you for contributing — we appreciate your time and effort!

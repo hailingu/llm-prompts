@@ -48,13 +48,13 @@ python3 skills/md-table-fixer/scripts/md_table_tool.py fix <path>
 
 ```bash
 # Step 1: Detect issues
-python3 skills/md-table-fixer/scripts/md_table_tool.py detect templates/
+python3 skills/md-table-fixer/scripts/md_table_tool.py detect knowledge/templates/
 
 # Step 2: Fix if issues found
-python3 skills/md-table-fixer/scripts/md_table_tool.py fix templates/
+python3 skills/md-table-fixer/scripts/md_table_tool.py fix knowledge/templates/
 
 # Step 3: Validate with markdownlint
-npx markdownlint-cli templates/
+npx markdownlint-cli knowledge/templates/
 ```
 
 ## Behavior & Guarantees
@@ -87,6 +87,7 @@ npx markdownlint-cli templates/
 ## Return Payloads
 
 ### Success
+
 ```yaml
 status: success
 file_path: docs/example.md
@@ -96,6 +97,7 @@ actions_taken:
 ```
 
 ### Partial
+
 ```yaml
 status: partial
 file_path: docs/example.md
@@ -107,6 +109,7 @@ actions_taken:
 ```
 
 ### Error
+
 ```yaml
 status: error
 error_message: "Path not found: /invalid/path"
@@ -122,6 +125,7 @@ hint: "Check the file or directory path exists"
 ## Integration
 
 This skill is primarily used by:
+
 - `markdown-writer-specialist` — to fix table alignment in generated documents
 - `markdown-formatter` — as part of the comprehensive markdown formatting workflow
 
