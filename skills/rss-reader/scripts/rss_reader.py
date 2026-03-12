@@ -31,6 +31,8 @@ from src.cli import (
     cmd_import,
     cmd_cache,
     cmd_categories,
+    cmd_validate,
+    cmd_refresh_defaults,
 )
 
 
@@ -104,6 +106,16 @@ Examples:
     
     # Categories command
     parser_categories = subparsers.add_parser('categories', help='List available categories')
+
+    # Validate command
+    parser_validate = subparsers.add_parser('validate', help='Validate feed health by fetching/parsing')
+    parser_validate.add_argument('--category', type=str, help='Filter by category')
+    parser_validate.add_argument('--use-defaults', action='store_true', help='Validate default feeds')
+    parser_validate.add_argument('--limit', type=int, help='Limit number of feeds to validate')
+
+    # Refresh defaults command
+    parser_refresh = subparsers.add_parser('refresh-defaults', help='Sync updated default feeds into subscriptions')
+    parser_refresh.add_argument('--category', type=str, help='Sync only one category')
     
     args = parser.parse_args()
     
@@ -122,6 +134,8 @@ Examples:
         'import': cmd_import,
         'cache': cmd_cache,
         'categories': cmd_categories,
+        'validate': cmd_validate,
+        'refresh-defaults': cmd_refresh_defaults,
     }
     
     handler = commands.get(args.command)

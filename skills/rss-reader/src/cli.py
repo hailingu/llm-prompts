@@ -10,7 +10,7 @@ from typing import Dict, Callable, Any
 
 from .cache import CacheManager
 from .reader import RSSReader, output_markdown, get_feeds_to_fetch
-from .subscriptions import SubscriptionManager, DEFAULT_FEEDS
+from .subscriptions import SubscriptionManager, DEFAULT_FEEDS, reload_default_feeds
 
 
 def cmd_add(args) -> int:
@@ -266,3 +266,98 @@ def cmd_categories(args) -> int:
     
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
+
+
+def cmd_validate(args) -> int:
+    """Validate feed URLs by attempting real fetch/parse."""
+    manager = SubscriptionManager()
+    reader = RSSReader(use_cache=False)
+
+    if args.use_defaults:
+        reload_default_feeds()
+        feeds = []
+        if args.category and args.category in DEFAULT_FEEDS:
+            feeds.extend(DEFAULT_FEEDS[args.category])
+        elif args.category:
+            feeds = []
+        else:
+            for _, cat_feeds in DEFAULT_FEEDS.items():
+                feeds.extend(cat_feeds)
+    else:
+        feeds = get_feeds_to_fetch(manager, args)
+
+    if args.limit and args.limit > 0:
+        feeds = feeds[:args.limit]
+
+    if not feeds:
+        print(json.dumps({"status": "error", "message": "No feeds selected for validation"}, ensure_ascii=False, indent=2))
+        return 1
+
+    results = reader.fetch_feeds_concurrent(feeds)
+    checks = []
+    ok = 0
+    fail = 0
+
+    for result in results:
+        item = {
+            "feed_name": result.feed_name,
+            "feed_url": result.feed_url,
+            "status": "ok" if not result.error else "error",
+            "article_count": len(result.articles),
+            "error": result.error,
+            "fetch_time_ms": result.fetch_time_ms,
+        }
+        checks.append(item)
+        if result.error:
+            fail += 1
+        else:
+            ok += 1
+
+    payload = {
+        "status": "success" if fail == 0 else "partial_success",
+        "validated_count": len(checks),
+        "ok_count": ok,
+        "error_count": fail,
+        "checks": checks,
+    }
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    return 0 if fail == 0 else 1
+
+
+def cmd_refresh_defaults(args) -> int:
+    """Sync updated default feeds into user subscriptions."""
+    reload_default_feeds()
+    manager = SubscriptionManager()
+
+    added = 0
+    skipped = 0
+    errors = []
+
+    # Build URL set for duplicate detection.
+    existing_urls = {f.get("url") for f in manager.subscriptions.get("feeds", [])}
+
+    categories = [args.category] if args.category else list(DEFAULT_FEEDS.keys())
+    for category in categories:
+        for feed in DEFAULT_FEEDS.get(category, []):
+            url = feed.get("url")
+            name = feed.get("name")
+            if not url:
+                continue
+            if url in existing_urls:
+                skipped += 1
+                continue
+            result = manager.add_feed(url=url, name=name, category=category)
+            if result.get("status") == "success":
+                added += 1
+                existing_urls.add(url)
+            else:
+                errors.append({"url": url, "message": result.get("message", "unknown error")})
+
+    payload = {
+        "status": "success" if not errors else "partial_success",
+        "added": added,
+        "skipped_existing": skipped,
+        "errors": errors,
+    }
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    return 0 if not errors else 1

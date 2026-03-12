@@ -1,93 +1,106 @@
 # RSS Feed Subscription Configuration
-# 可以在此文件中添加/修改订阅源，支持动态扩展
+# 2026 refresh: prefer stable URLs and provide fallback_urls for migration safety.
 
-# 科技类
 tech:
   - name: "36Kr"
     url: "https://www.36kr.com/feed"
   - name: "IT之家"
-    url: "https://www.ithome.com/rss"
-  - name: "虎嗅"
-    url: "https://www.huxiu.com/rss"
-  - name: "极客公园"
-    url: "https://www.geekpark.com/feed"
-  - name: "爱范儿"
-    url: "https://www.ifanr.com/feed"
+    url: "https://www.ithome.com/rss/"
+    fallback_urls:
+      - "https://www.ithome.com/rss"
   - name: "少数派"
     url: "https://sspai.com/feed"
-  - name: "美团技术团队"
-    url: "https://tech.meituan.com/feed"
+  - name: "InfoQ"
+    url: "https://www.infoq.com/feed/"
+    fallback_urls:
+      - "https://www.infoq.com/news/feed/"
+  - name: "The Verge"
+    url: "https://www.theverge.com/rss/index.xml"
+  - name: "Wired"
+    url: "https://www.wired.com/feed/rss"
 
-# 财经类
 finance:
   - name: "新浪财经"
-    url: "https://finance.sina.com.cn/rss/index.xml"
-  - name: "华尔街见闻"
-    url: "https://api.wallstreetcn.com/apiv1/feed/groundwater"
+    url: "https://rss.sina.com.cn/finance/rollnews.xml"
+    fallback_urls:
+      - "https://rss.sina.com.cn/finance/hotstock.xml"
   - name: "第一财经"
-    url: "https://www.yicai.com/news/rss"
-  - name: "经济观察报"
-    url: "https://www.eeo.com.cn/feed/"
+    url: "https://www.huxiu.com/rss/0.xml"
+    fallback_urls:
+      - "https://rss.sina.com.cn/finance/rollnews.xml"
+  - name: "CNBC Markets"
+    url: "https://www.cnbc.com/id/100003114/device/rss/rss.html"
+  - name: "MarketWatch Top Stories"
+    url: "https://feeds.content.dowjones.io/public/rss/mw_topstories"
+  - name: "FT World"
+    url: "https://www.ft.com/world?format=rss"
 
-# 主流新闻
 news:
-  - name: "环球网"
-    url: "https://www.huanqiu.com/rss"
-  - name: "央视新闻"
-    url: "https://news.cctv.com/rss"
-  - name: "新浪新闻"
-    url: "https://news.sina.com.cn/rss"
-  - name: "参考消息"
-    url: "http://www.cankaoxiaoxi.com/feed"
-  - name: "财新网"
-    url: "http://www.caixin.com/rss"
-  - name: "日经中文网"
-    url: "https://feedx.net/rss/nikkei.xml"
-  - name: "台湾 CNA"
-    url: "https://feedx.net/rss/cna.xml"
-  - name: "澎湃新闻"
-    url: "https://feedx.net/rss/thepaper.xml"
+  - name: "BBC World"
+    url: "https://feeds.bbci.co.uk/news/world/rss.xml"
+  - name: "NPR News"
+    url: "https://feeds.npr.org/1001/rss.xml"
+  - name: "NPR World"
+    url: "https://feeds.npr.org/1004/rss.xml"
+  - name: "新浪新闻-国内滚动"
+    url: "https://rss.sina.com.cn/news/china/focus15.xml"
+    fallback_urls:
+      - "https://rss.sina.com.cn/news/marquee/ddt.xml"
+  - name: "联合早报-国际即时"
+    url: "https://plink.anyfeeder.com/zaobao/realtime/world"
+    fallback_urls:
+      - "https://feeds.bbci.co.uk/news/world/rss.xml"
 
-# AI/大模型
 ai:
-  - name: "MIT Tech Review"
-    url: "https://www.technologyreview.com/feed/"
-  - name: "OpenAI Blog"
-    url: "https://openai.com/blog/rss.xml"
-  - name: "DeepMind Blog"
-    url: "https://deepmind.com/blog/feed/rss"
+  - name: "OpenAI News"
+    url: "https://openai.com/news/rss.xml"
+    fallback_urls:
+      - "https://openai.com/blog/rss.xml"
+  - name: "奇客Solidot"
+    url: "https://www.solidot.org/index.rss"
+    fallback_urls:
+      - "https://www.ithome.com/rss/"
+  - name: "Google DeepMind"
+    url: "https://blog.google/technology/ai/rss/"
+    fallback_urls:
+      - "https://blog.google/rss/"
   - name: "Hugging Face Blog"
     url: "https://huggingface.co/blog/feed.xml"
+  - name: "MIT Technology Review AI"
+    url: "https://www.technologyreview.com/topic/artificial-intelligence/feed"
   - name: "ArXiv ML (cs.LG)"
-    url: "http://arxiv.org/rss/cs.LG?mirror=cn"
+    url: "https://export.arxiv.org/rss/cs.LG"
   - name: "ArXiv AI (cs.AI)"
-    url: "http://arxiv.org/rss/cs.AI?mirror=cn"
-  - name: "Microsoft AI Blog"
-    url: "https://blogs.microsoft.com/ai/feed"
+    url: "https://export.arxiv.org/rss/cs.AI"
 
-# 开发者/技术
 dev:
   - name: "Hacker News"
     url: "https://hnrss.org/frontpage"
   - name: "Dev.to"
     url: "https://dev.to/feed"
-  - name: "掘金"
-    url: "https://juejin.cn/rss/posts"
-  - name: "开源中国"
-    url: "https://www.oschina.net/news/rss"
   - name: "GitHub Blog"
     url: "https://github.blog/feed/"
+  - name: "Stack Overflow Blog"
+    url: "https://stackoverflow.blog/feed/"
+  - name: "InfoQ Development"
+    url: "https://www.infoq.com/feed/"
+    fallback_urls:
+      - "https://www.infoq.com/news/feed/"
 
-# 产品/设计
 product:
-  - name: "Product Hunt"
-    url: "https://www.producthunt.com/feed"
+  - name: "Mind the Product"
+    url: "https://www.mindtheproduct.com/feed/"
   - name: "Smashing Magazine"
     url: "https://www.smashingmagazine.com/feed/"
+  - name: "A List Apart"
+    url: "https://alistapart.com/main/feed/"
 
-# 商业/创业
 business:
-  - name: "YC Blog"
+  - name: "Y Combinator"
     url: "https://www.ycombinator.com/blog/rss"
-  - name: "36Kr 创投"
-    url: "https://www.36kr.com/feed/information"
+  - name: "TechCrunch Startups"
+    url: "https://techcrunch.com/category/startups/feed/"
+  - name: "ezindie"
+    url: "https://www.ezindie.com/feed/rss.xml"
+    fallback_urls:
+      - "https://techcrunch.com/category/startups/feed/"
