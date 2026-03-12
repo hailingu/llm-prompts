@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate Repository
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate YAML files
+        run: |
+          python - <<'PY'
+          import pathlib
+          import sys
+          
+          yaml_files = list(pathlib.Path('.').rglob('*.yml')) + list(pathlib.Path('.').rglob('*.yaml'))
+          # Basic sanity check for readability and non-empty files.
+          bad = []
+          for p in yaml_files:
+            try:
+              content = p.read_text(encoding='utf-8')
+              if not content.strip():
+                bad.append(f"empty yaml: {p}")
+            except Exception as e:
+              bad.append(f"cannot read {p}: {e}")
+          
+          if bad:
+            print('\n'.join(bad))
+            sys.exit(1)
+          print(f"YAML files checked: {len(yaml_files)}")
+          PY
+
+      - name: Compile Python sources
+        run: |
+          python -m compileall -q skills
+          python -m compileall -q .github
+
+      - name: Check markdown files are non-empty
+        run: |
+          python - <<'PY'
+          import pathlib
+          import sys
+          
+          md_files = [p for p in pathlib.Path('.').rglob('*.md') if '.git' not in p.parts]
+          empty = [str(p) for p in md_files if not p.read_text(encoding='utf-8').strip()]
+          if empty:
+            print('Empty markdown files found:')
+            print('\n'.join(empty))
+            sys.exit(1)
+          print(f"Markdown files checked: {len(md_files)}")
+          PY
