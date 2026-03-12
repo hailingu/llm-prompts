@@ -116,22 +116,26 @@ reference: https://adr.github.io/
 ## Quality Rubric
 
 ### Layer 1: Format (Blocking)
+
 - Markdown parses correctly.
 - Headings are ordered.
 - Lists and tables are valid.
 - Code fences include language identifiers.
 
 ### Layer 2: Structure (Automatable)
+
 - Required sections exist for the target doc type.
 - Related content is grouped logically.
 - Cross-references and links are valid.
 
 ### Layer 3: Content (Human + LLM)
+
 - Claims are concrete and verifiable.
 - Steps are actionable and complete.
 - Examples match actual commands/APIs.
 
 ### Layer 4: Usability (Human Validation)
+
 - A target reader can complete the task without back-and-forth.
 - Troubleshooting covers common failure modes.
 

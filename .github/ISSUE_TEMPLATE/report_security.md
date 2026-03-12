@@ -11,6 +11,7 @@ assignees: ''
 **Please do NOT file a public issue for security vulnerabilities.**
 
 If you believe you've discovered a security vulnerability, please:
+
 1. **Do NOT** disclose it publicly
 2. Use [GitHub Security Advisories](https://github.com/hailingu/llm-prompts/security/advisories/new) to report confidentially, OR
 3. Mark this issue as `security` label and we will triage it privately

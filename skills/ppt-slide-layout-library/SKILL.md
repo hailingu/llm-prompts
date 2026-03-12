@@ -275,10 +275,10 @@ Primary resources:
 
 Supporting templates:
 
-- `templates/ppt-slide-thinking-template.md`
-- `templates/ppt-map-page-thinking-template.md`
-- `templates/ppt-thinking-examples.md`
-- `templates/ppt-chart-thinking-examples.md`
+- `knowledge/templates/ppt-slide-thinking-template.md`
+- `knowledge/templates/ppt-map-page-thinking-template.md`
+- `knowledge/templates/ppt-thinking-examples.md`
+- `knowledge/templates/ppt-chart-thinking-examples.md`
 
 ## Usage Flow
 

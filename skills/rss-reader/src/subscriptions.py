@@ -41,11 +41,21 @@ def _load_default_feeds_from_config() -> Dict[str, List[Dict[str, str]]]:
         if isinstance(config, dict):
             for category, items in config.items():
                 if isinstance(items, list):
-                    feeds[category] = [
-                        {"name": item.get("name", "Unknown"), "url": item["url"]}
-                        for item in items
-                        if item.get("url")  # Only include items with URL
-                    ]
+                    normalized_items = []
+                    for item in items:
+                        if not item.get("url"):
+                            continue
+                        normalized = {
+                            "name": item.get("name", "Unknown"),
+                            "url": item["url"],
+                        }
+                        fallback_urls = item.get("fallback_urls")
+                        if isinstance(fallback_urls, list):
+                            normalized["fallback_urls"] = [
+                                str(url) for url in fallback_urls if isinstance(url, str) and url.strip()
+                            ]
+                        normalized_items.append(normalized)
+                    feeds[category] = normalized_items
         
         logger.debug(f"Loaded {sum(len(v) for v in feeds.values())} feeds from config")
         return feeds

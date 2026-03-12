@@ -38,6 +38,7 @@ Do not draw maps from scratch.
 ### Default Library: `ECharts` Geo
 
 Use `ECharts` as the default map rendering engine when the page needs data-driven geography:
+
 - choropleth / shaded regions
 - geo scatter / point markers
 - route lines / directional paths
@@ -45,6 +46,7 @@ Use `ECharts` as the default map rendering engine when the page needs data-drive
 - a single map container that integrates with KPI cards and presentation-safe HTML output
 
 Why this is the default:
+
 - already aligned with `ppt-chart-engine`
 - already used elsewhere in this PPT system
 - fits static or lightly animated presentation pages better than full GIS-style interactive stacks
@@ -52,6 +54,7 @@ Why this is the default:
 ### Secondary Base: Static `SVG` Map + HTML Overlay
 
 Use a simplified static SVG map base when the page is primarily editorial rather than data-dense:
+
 - conflict theater backdrop
 - corridor or chokepoint explanation
 - regional focus page with only a few labels, arrows, or callouts
@@ -62,6 +65,7 @@ In this mode, the map base should come from a prepared SVG asset or simplified v
 ### Exception Library: `MapLibre GL JS`
 
 Use `MapLibre GL JS` only when the page genuinely requires vector-tile behavior that `ECharts` or static SVG cannot reasonably cover, such as:
+
 - large-scale pan/zoom exploration
 - multi-layer basemap styling as part of the story
 - reusable tile-driven geographic scenes across many slides
@@ -134,6 +138,7 @@ Before using a basemap, confirm:
 ### With `ppt-chart-engine`
 
 `ppt-chart-engine` owns the geo-chart layer:
+
 - choropleth / geo heatmap
 - geo scatter
 - geo lines / link series
@@ -141,6 +146,7 @@ Before using a basemap, confirm:
 - low-level rendering and legend constraints
 
 `ppt-map-storytelling` owns the narrative layer:
+
 - why a map is needed on this page
 - what geographic scope to show
 - which overlays to combine
@@ -152,6 +158,7 @@ Before using a basemap, confirm:
 `ppt-slide-layout-library` owns reusable map-capable skeletons such as `map_overlay`.
 
 `ppt-map-storytelling` decides how to fill those skeletons:
+
 - which map crop and focal region to use
 - where to place floating cards
 - which arrow/callout grammar fits the story
@@ -190,24 +197,29 @@ If any of these fail, prefer a non-map expression.
 ## Map Narrative Archetypes
 
 ### 1. Territory Snapshot
+
 - Use when the insight is about regional state, exposure, or concentration.
 - Default overlays: fills, hotspots, short callouts.
 
 ### 2. Route / Corridor Map
+
 - Use when the insight is about movement, trade, logistics, supply, or transit risk.
 - Default overlays: directional lines, checkpoints, bottlenecks, route labels.
 
 ### 3. Conflict Theater Map
+
 - Use when the insight is about escalation, attack direction, force projection, or contested zones.
 - Default overlays: strike arcs, pressure zones, conflict labels, risk markers.
 
 ### 4. Footprint / Network Map
+
 - Use when the insight is about distributed presence across countries or regions.
 - Default overlays: node markers, cluster labels, reach indicators.
 
 ## Overlay Grammar
 
 ### Allowed Overlay Types
+
 - `fill_zone`: territorial emphasis or exposure shading
 - `point_marker`: city, port, base, or node marker
 - `route_line`: movement path or connection
@@ -278,12 +290,14 @@ Canonical minimal examples now live in `assets/examples.yml`.
 - `footprint_network`
 
 Use:
+
 - `minimal_examples.territory_snapshot_page` for regional exposure/state snapshots driven by editorial overlays
 - `minimal_examples.echarts_geo_page` for geo-series pages driven by `ECharts Geo`
 - `minimal_examples.svg_narrative_map_page` for editorial map pages driven by prepared `SVG` + HTML/SVG overlay
 - `minimal_examples.footprint_network_page` for distributed-node and reach-pattern pages
 
 Every map page input should declare at least:
+
 - `narrative_archetype`
 - `geographic_scope`
 - `primary_question`
@@ -291,6 +305,7 @@ Every map page input should declare at least:
 - `basemap_source`
 
 If the page also selects a standard layout, it should additionally declare:
+
 - `layout_key`
 - `layout_contract_source`
 - `overflow_recovery_order`
@@ -306,4 +321,4 @@ If the page also selects a standard layout, it should additionally declare:
 
 - `assets/patterns.yml`: pattern index for narrative archetypes, overlay rules, crop guidance, basemap source contract, and overlay-to-component routing
 - `assets/examples.yml`: input skeleton index covering all four narrative archetypes, with render-engine, basemap, and overlay-routing examples
-- `../templates/ppt-map-page-thinking-template.md`: reusable map-page thinking sample aligned with the PPT specialist workflow
+- `knowledge/templates/ppt-map-page-thinking-template.md`: reusable map-page thinking sample aligned with the PPT specialist workflow

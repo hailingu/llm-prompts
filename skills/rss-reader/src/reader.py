@@ -7,7 +7,7 @@ import time
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from .cache import CacheManager
 from .exceptions import FeedParseError
@@ -113,15 +113,37 @@ class RSSReader:
                 error=str(e),
                 fetch_time_ms=int((time.time() - start_time) * 1000)
             )
+
+    def fetch_feed_with_fallback(self, feed: Dict[str, Any]) -> FeedResult:
+        """Fetch feed using primary URL, then optional fallback URLs."""
+        primary_url = feed.get("url", "")
+        feed_name = feed.get("name")
+        fallback_urls = feed.get("fallback_urls", []) or []
+        candidate_urls = [primary_url] + [u for u in fallback_urls if u and u != primary_url]
+
+        last_error = "no valid candidate url"
+        for candidate in candidate_urls:
+            result = self.fetch_feed(candidate, feed_name)
+            if not result.error:
+                # Keep logical feed_url stable as the configured primary URL.
+                result.feed_url = primary_url or candidate
+                return result
+            last_error = result.error
+
+        return FeedResult(
+            feed_name=feed_name or "Unknown",
+            feed_url=primary_url,
+            error=f"all feed URLs failed: {last_error}",
+        )
     
-    def fetch_feeds_concurrent(self, feeds: List[Dict[str, str]], 
+    def fetch_feeds_concurrent(self, feeds: List[Dict[str, Any]],
                                 max_workers: int = MAX_WORKERS) -> List[FeedResult]:
         """Fetch multiple feeds concurrently."""
         results = []
         
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             future_to_feed = {
-                executor.submit(self.fetch_feed, f['url'], f.get('name')): f
+                executor.submit(self.fetch_feed_with_fallback, f): f
                 for f in feeds
             }
             

@@ -13,7 +13,8 @@ metadata:
 
 This skill provides a **standardized set of UI components (Micro-Layouts)** to ensure visual consistency and code efficiency across presentation slides. It bridges the gap between page-level layouts (`ppt-slide-layout-library`) and raw HTML/CSS implementation.
 
-**Core Philosophy**: 
+**Core Philosophy**:
+
 - **Consistency**: All similar elements (e.g., "Key Insight Cards") must look identical across 40+ slides.
 - **Modularity**: Components are independent HTML snippets that can be dropped into any layout container.
 - **Theme-Aware**: Components use utility classes (Tailwind) compatible with the global `slide-theme.css`.
@@ -23,17 +24,20 @@ This skill provides a **standardized set of UI components (Micro-Layouts)** to e
 This skill owns **local UI primitives and reusable micro-layouts**, not whole-page structure.
 
 This skill does own:
+
 - reusable cards, metrics, lists, badges, and visual primitives
 - local HTML skeletons that can be embedded inside an existing layout region
 - component-level rhythm rules such as padding, corner radius, label scale, and local emphasis
 
 This skill does not own:
+
 - page skeletons, regional composition, or four-zone page structure
 - chart selection, chart contracts, or chart rendering logic
 - map narrative archetypes, geographic scope, basemap source, or render engine choice
 - brand palette definition or style-profile-specific color systems
 
 Use adjacent PPT skills as follows:
+
 - `ppt-slide-layout-library`: decides page skeleton and region structure
 - `ppt-chart-engine`: decides chart type, chart contract, and chart rendering constraints
 - `ppt-map-storytelling`: decides whether the page is a true map page and how map narrative is structured
@@ -46,6 +50,7 @@ Use adjacent PPT skills as follows:
 - When replacing ad-hoc `div` structures with standardized, professional UI patterns.
 
 Do not use this skill as a shortcut for:
+
 - inventing a whole page without first selecting a layout
 - forcing a chart problem into cards or badges
 - forcing a true map page into abstract geo snippets
@@ -55,8 +60,8 @@ Do not use this skill as a shortcut for:
 
 For component-led or component-assisted slides, pair this skill with:
 
-- `templates/ppt-slide-thinking-template.md` for the base Thinking structure
-- `templates/ppt-thinking-examples.md` for component-led worked examples
+- `knowledge/templates/ppt-slide-thinking-template.md` for the base Thinking structure
+- `knowledge/templates/ppt-thinking-examples.md` for component-led worked examples
 
 Before implementation, the Thinking file should explicitly declare:
 
@@ -66,16 +71,16 @@ Before implementation, the Thinking file should explicitly declare:
 
 If any selected component relies on semantic payload resolution, also confirm:
 
-4. `component_family`
-5. `required_semantic_fields`
-6. `resolver_checklist`
+1. `component_family`
+2. `required_semantic_fields`
+3. `resolver_checklist`
 
 If the components are placed inside a standard layout, the Thinking file should also declare:
 
-7. `layout_key`
-8. `layout_contract_source`
-9. `overflow_recovery_order`
-10. `fallback_layouts`
+1. `layout_key`
+2. `layout_contract_source`
+3. `overflow_recovery_order`
+4. `fallback_layouts`
 
 Do not enter component implementation until these fields are stable.
 
@@ -123,12 +128,13 @@ After the gate passes, choose a component by answering these questions in order:
 
 ## core_components.yml Access
 
-All HTML templates are stored in `assets/core_components.yml`. 
+All HTML templates are stored in `assets/core_components.yml`.
 **Action**: Read this file to get the exact HTML structure for a requested component.
 
 This file is currently the component source of truth. Over time it should evolve from raw snippets into a contract-driven asset file.
 
 Use supporting assets as follows:
+
 - `assets/index.yml`: fast lookup by category, layout fit, and use case
 - `assets/examples.yml`: minimal payload skeletons for standard component instantiation, including `component_family` alignment and a semantic payload layer
 - `../ppt-brand-style-system/assets/component_semantic_mappings.yml`: resolve semantic payload roles into style-profile-compatible class payloads before relying on raw fallback classes, and use the component family contract there to confirm the right slot set
@@ -150,7 +156,7 @@ Resolver consumption rule:
 4. **Fill**: Replace placeholders with page-specific content and semantic meaning.
 5. **Style Safely**:
    - Prefer semantic tokens and style-profile-compatible classes.
-  - If `semantic_payload` is present, resolve it via `ppt-brand-style-system/assets/component_semantic_mappings.yml` first.
+   - If `semantic_payload` is present, resolve it via `ppt-brand-style-system/assets/component_semantic_mappings.yml` first.
    - Avoid ad hoc color rewrites that break brand-style switching.
    - Keep spacing, radius, and local rhythm stable unless the component contract explicitly allows a variant.
 6. **Escalate or Downgrade**:
@@ -162,12 +168,14 @@ If components destabilize the page budget inside a standard layout, do not inven
 ## Design System Rules
 
 ### 1. Depth & Layering (Z-Index Strategy)
+
 - **Level 0 (Background)**: inherited from page layout or style profile.
 - **Level 1 (Component Base)**: local surface, border, or soft fill.
 - **Level 2 (Component Emphasis)**: local highlight, accent edge, subtle shadow, or elevated chip.
 - **Level 3 (Text/Icon)**: foreground content, icons, labels, or semantic markers.
 
 ### 2. Semantic Colors
+
 - Components should consume semantic roles, not define fixed geopolitical or industry meanings.
 - Recommended semantic roles:
   - `primary`: default emphasis or brand-led accent
@@ -179,6 +187,7 @@ If components destabilize the page budget inside a standard layout, do not inven
 - Final color mapping belongs to `ppt-brand-style-system`, not this skill.
 
 ### 3. Typography Scale (Desktop 1280x720)
+
 - **Metric Big**: `text-5xl font-bold tracking-tighter`
 - **Card Title**: `text-lg font-bold mb-2`
 - **Body Text**: `text-xs leading-relaxed`

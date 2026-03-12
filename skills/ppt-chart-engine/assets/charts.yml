@@ -508,7 +508,7 @@ thinking_contracts:
     conditional_fields: [series]
     default_layouts: [side_by_side, dashboard_grid]
     supported_examples:
-      - templates/ppt-chart-thinking-examples.md#example-a-multi-series-line-chart
+      - knowledge/templates/ppt-chart-thinking-examples.md#example-a-multi-series-line-chart
 
   bar_comparison:
     template_fields:
@@ -532,7 +532,7 @@ thinking_contracts:
     conditional_fields: []
     default_layouts: [dashboard_grid, hybrid]
     supported_examples:
-      - templates/ppt-chart-thinking-examples.md#example-b-heatmap-matrix
+      - knowledge/templates/ppt-chart-thinking-examples.md#example-b-heatmap-matrix
 
   bubble_relationship:
     template_fields:
@@ -546,7 +546,7 @@ thinking_contracts:
     recommended_alias: [growth_rate, index_0_100, confidence_level]
     default_layouts: [side_by_side]
     supported_examples:
-      - templates/ppt-chart-thinking-examples.md#example-c-bubble-relationship
+      - knowledge/templates/ppt-chart-thinking-examples.md#example-c-bubble-relationship
 
   milestone_timeline:
     template_fields:

@@ -11,6 +11,7 @@ Instructions:
 Workflow (use this single workflow end-to-end):
 
 1) Establish scope and requirements (do not skip)
+
 - Your documentation must clearly explain: project structure, boundaries, responsibilities, dependencies, and interactions.
 - Minimum dimensions you MUST cover:
   - Overall architecture diagram
@@ -20,12 +21,14 @@ Workflow (use this single workflow end-to-end):
   - Interaction relationships between components (calls, events, data flow)
 - Output language: English.
 
-2) Scan the repository and gather facts
+1) Scan the repository and gather facts
+
 - Inspect the repo layout and key files (e.g., `README.md`, build files, dependency manifests, configs, entrypoints, scripts).
 - Identify: main language(s), frameworks, module boundaries, directory conventions, and (if visible) deployment/runtime shape.
 - Define “component” for this repo as any unit with a clear responsibility boundary (service, module/package, library, CLI, worker, web frontend, data-access layer, adapter/integration layer).
 
-3) Identify and model components
+1) Identify and model components
+
 - Enumerate components (do not invent). For each component, capture:
   - Name (stable, unambiguous)
   - Location (relative path, entrypoint, key files)
@@ -37,13 +40,15 @@ Workflow (use this single workflow end-to-end):
     - Configuration dependencies (config files, environment variables)
   - Exposed interfaces (as applicable): CLI commands, HTTP APIs, library APIs, message topics, file I/O, etc.
 
-4) Analyze interactions and data flow
+1) Analyze interactions and data flow
+
 - Describe component interactions: direction, trigger, sync/async, and the main payload/data shape (high-level).
 - If storage/external systems exist, document read/write paths and key data flows.
 - If failure handling is visible, document retries/timeouts/fallbacks/idempotency.
 - If something is unclear, label it explicitly as “Needs confirmation” and list concrete questions.
 
-5) Write the required documentation into docs/
+1) Write the required documentation into docs/
+
 - If `docs/` does not exist, create it.
 - Create/update the following files (all are required):
 
@@ -66,7 +71,8 @@ Workflow (use this single workflow end-to-end):
   - External dependency list (major third-party libraries/services/runtime dependencies).
   - For important dependencies, note purpose and any risk points (tight coupling, single point of failure, replaceability).
 
-6) Add only the necessary extra context (keep it minimal but sufficient)
+1) Add only the necessary extra context (keep it minimal but sufficient)
+
 - Add details that materially improve understanding and maintainability, when present in the repo:
   - Development & runtime: how to run, key scripts, key configuration and environment variables
   - Configuration model: sources, precedence, defaults (if visible)
@@ -75,7 +81,8 @@ Workflow (use this single workflow end-to-end):
   - Extensibility: how to add a component/module/command, common change paths
   - Reliability/performance: caching, queues, concurrency model, retries/timeouts (if present)
 
-7) Self-check before finishing
+1) Self-check before finishing
+
 - Diagrams are Mermaid and renderable.
 - Only relative paths are used (no local absolute paths).
 - No non-existent components/interfaces were invented.

@@ -107,6 +107,7 @@ flowchart TD
 ### 3.1 环境检查
 
 **检查项**：
+
 ```bash
 git rev-parse --is-inside-work-tree  # 1. 确认在 git 仓库中
 git symbolic-ref --short HEAD        # 2. 确认不在 detached HEAD
@@ -120,6 +121,7 @@ git symbolic-ref --short HEAD        # 2. 确认不在 detached HEAD
 ### 3.2 安全检查
 
 **禁止提交的内容**：
+
 - ❌ Secrets、tokens、private keys、credentials
 - ❌ Large binaries（大文件）
 - ❌ 环境特定路径（如 `/Users/xxx/`、`C:\Users\`）
@@ -127,6 +129,7 @@ git symbolic-ref --short HEAD        # 2. 确认不在 detached HEAD
 **敏感信息检测模式**：
 
 *Key 名称模式*（检查代码/配置中的变量名）：
+
 ```
 - api_key / apikey / API_KEY / API-KEY
 - password / passwd / pwd / PASS
@@ -137,6 +140,7 @@ git symbolic-ref --short HEAD        # 2. 确认不在 detached HEAD
 ```
 
 *敏感文件路径模式*：
+
 ```
 - .env / .env.local / .env.production / .env.*.local
 - credentials.json / secrets.json / config.secrets.json
@@ -146,6 +150,7 @@ git symbolic-ref --short HEAD        # 2. 确认不在 detached HEAD
 ```
 
 *内容模式*：
+
 ```
 - -----BEGIN.*PRIVATE KEY-----
 - AWS Key ID: AKIA[0-9A-Z]{16}
@@ -154,6 +159,7 @@ git symbolic-ref --short HEAD        # 2. 确认不在 detached HEAD
 ```
 
 **检测范围与 .gitignore 处理**：
+
 - 扫描 `git diff` / `git diff --staged` 的输出内容
 - 文件已被 `.gitignore` 排除 → 不检测该文件内容，跳过
 - 文件在变更列表中且包含敏感信息 → **阻断**
@@ -166,6 +172,7 @@ git symbolic-ref --short HEAD        # 2. 确认不在 detached HEAD
 ### 3.3 变更检查
 
 **变更状态检测**：
+
 ```bash
 git diff --staged                    # 检查已暂存的变更
 git status                           # 检查仓库状态
@@ -173,17 +180,20 @@ git diff                             # 检查未暂存的变更
 ```
 
 **文件状态说明**：
+
 | `git status --porcelain` 输出 | 含义 |
 |------------------------------|------|
 | `M  file` | 已修改并暂存 |
-| ` M file` | 已修改未暂存 |
+| `M file` | 已修改未暂存 |
 | `?? file` | 未跟踪文件 |
 
 **已暂存文件优先**：
+
 - 如果有已暂存文件 → 使用这些文件作为 commit 范围
 - 如果无已暂存文件 → 检查未暂存变更和未跟踪文件
 
 **未跟踪文件检测**：
+
 ```bash
 git status --porcelain | grep "^??"  # 检测未跟踪文件
 ```
@@ -195,10 +205,12 @@ git status --porcelain | grep "^??"  # 检测未跟踪文件
 | 无已暂存文件 + 有未暂存变更 | 使用未暂存变更 |
 
 **部分暂存提醒**：
+
 - 如果有已暂存文件 + 有未暂存变更/未跟踪文件
 - 提示用户："当前仅包含已暂存的文件，还有 X 个文件未暂存，是否需要一起提交？"
 
 **Merge Conflict 检测**：
+
 ```bash
 git status --porcelain | grep "^UU\|^AA\|^DD"  # 检测冲突文件
 ```
@@ -215,6 +227,7 @@ git status --porcelain | grep "^UU\|^AA\|^DD"  # 检测冲突文件
 | 无冲突（无输出） | 继续执行 |
 
 **无变更处理**：
+
 - Mode A: 提示用户 "当前没有可提交的变更"，不生成 message
 - Mode B: 提示用户 "当前没有可提交的变更"，询问是否需要先执行 `git add`
 
@@ -270,6 +283,7 @@ PR: #456
 | 全局配置变更 | 可省略或用 `deps` | 更新所有依赖 → `deps` |
 
 **跨模块判断示例**：
+
 - auth +5 行 / api +100 行 → `api`（行数差异大）
 - auth +50 行 / api +60 行 → `auth`（行数相近，auth 更核心）
 
@@ -288,16 +302,19 @@ PR: #456
 ### 4.5 特殊类型：Revert
 
 **获取原始 commit 信息**：
+
 ```bash
 git log --oneline -1 <commit-hash>  # 获取摘要
 git show --stat <commit-hash>       # 获取变更范围
 ```
 
 **摘要处理规则**：
+
 - 原始 commit 摘要**保持原样**（不翻译成中文）
 - 前缀使用中文："撤销"
 
 **格式模板**：
+
 ```text
 revert: 撤销 "原始 commit 摘要（保持原样）"
 
@@ -311,6 +328,7 @@ Testing:
 ```
 
 **示例**：
+
 ```text
 revert: 撤销 "fix(auth): resolve token expiration bug"
 
@@ -342,23 +360,28 @@ Testing:
 | `CHANGELOG.md` | 用户可见变更时 | 添加到 `## Unreleased` 下 |
 
 **CHANGELOG 注意事项**：
+
 - 不要在 CHANGELOG 中添加 commit id（避免循环依赖）
 - commit id 在发布时由 changelog-specialist 统一补充
 
 ### 5.3 提交 [仅 Mode B]
 
 **暂存文件**：
+
 - 仅暂存相关文件（避免无关噪音）
 
 **执行提交**：
+
 - 提交到当前分支
 
 **Hook 处理**：
+
 - 如果 pre-commit hook 失败，展示 hook 输出内容，提示用户修复
 - **禁止**自动使用 `--no-verify` 绕过 hooks
 - 如用户明确要求绕过，需二次确认
 
 **输出结果**：
+
 - 输出 commit hash
 
 ---

@@ -8,7 +8,7 @@ meta:
   consumers:
     - ppt-component-library/assets/examples.yml
     - agents/ppt-specialist.agent.md
-    - .github/agents/ppt-specialist.agent.md
+    - agents/ppt-specialist.agent.md
   resolution_order:
     - Read the component semantic_payload roles.
     - Select the target style profile.

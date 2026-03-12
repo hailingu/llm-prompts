@@ -1,0 +1,18 @@
+{
+  "source": "skills",
+  "skills": [
+    "domain-keyword-detection",
+    "markdown-formatter",
+    "md-table-fixer",
+    "memory-manager",
+    "news-search",
+    "ppt-brand-style-system",
+    "ppt-chart-engine",
+    "ppt-component-library",
+    "ppt-map-storytelling",
+    "ppt-slide-layout-library",
+    "ppt-visual-qa",
+    "rss-reader",
+    "stock-price-tracker"
+  ]
+}
