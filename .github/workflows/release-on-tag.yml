@@ -1,0 +1,40 @@
+name: Release on Tag
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure tag commit is on main or dev
+        run: |
+          git fetch origin main dev
+          if git branch -r --contains "${GITHUB_SHA}" | grep -Eq 'origin/(main|dev)$'; then
+            echo "Tag commit is on main/dev. Continue."
+          else
+            echo "Tag commit ${GITHUB_SHA} is not on origin/main or origin/dev. Skip release."
+            exit 1
+          fi
+
+      - name: Create release from tag
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
