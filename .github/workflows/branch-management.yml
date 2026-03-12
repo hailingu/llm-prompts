@@ -1,0 +1,119 @@
+name: Branch Management
+
+on:
+  issues:
+    types:
+      - opened
+      - assigned
+  pull_request:
+    types:
+      - closed
+    branches:
+      - dev
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  create-feature-branch:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: git config user.name 'github-actions[bot]' && git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Extract issue info
+        id: issue
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: 'BRANCH_NAME="issue-${ISSUE_NUMBER}-$(echo "${ISSUE_TITLE}" | sed ''s/[^a-zA-Z0-9]/-/g'' | sed ''s/--*/-/g'' | sed ''s/^-//'' | sed ''s/-$//'' | tr ''[:upper:]'' ''[:lower:]'')" && echo "branch_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT && echo "issue_number=${ISSUE_NUMBER}" >> $GITHUB_OUTPUT'
+
+      - name: Fetch and checkout dev branch
+        run: git fetch origin dev && git checkout dev
+
+      - name: Create feature branch
+        id: create_branch
+        env:
+          BRANCH_NAME: ${{ steps.issue.outputs.branch_name }}
+        run: 'if git show-ref --verify --quiet "refs/heads/${BRANCH_NAME}"; then echo "branch_created=false" >> $GITHUB_OUTPUT; else git checkout -b "${BRANCH_NAME}" && git push origin "${BRANCH_NAME}" && echo "branch_created=true" >> $GITHUB_OUTPUT; fi'
+
+      - name: Create issue comment
+        if: steps.create_branch.outputs.branch_created == 'true'
+        env:
+          BRANCH_NAME: ${{ steps.issue.outputs.branch_name }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COMMENT_FILE="/tmp/comment.md"
+          echo "🌱 **分支已创建**" > $COMMENT_FILE
+          echo "" >> $COMMENT_FILE
+          echo "已为此 Issue 创建功能分支: \`${BRANCH_NAME}\`" >> $COMMENT_FILE
+          echo "" >> $COMMENT_FILE
+          echo "### 开发流程" >> $COMMENT_FILE
+          echo "1. 拉取并切换分支:" >> $COMMENT_FILE
+          echo '   ```bash' >> $COMMENT_FILE
+          echo "   git fetch origin" >> $COMMENT_FILE
+          echo "   git checkout ${BRANCH_NAME}" >> $COMMENT_FILE
+          echo '   ```' >> $COMMENT_FILE
+          echo "2. 进行开发并提交代码" >> $COMMENT_FILE
+          echo "3. 创建 Pull Request 合并到 \`dev\` 分支" >> $COMMENT_FILE
+          echo "4. 合并后分支将自动删除" >> $COMMENT_FILE
+          echo "" >> $COMMENT_FILE
+          echo "> 分支命名规范: \`issue-{编号}-{标题摘要}\`" >> $COMMENT_FILE
+          gh issue comment "$ISSUE_NUMBER" --body-file $COMMENT_FILE
+
+  cleanup-feature-branch:
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get PR info
+        id: pr
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: 'echo "head_branch=${HEAD_REF}" >> $GITHUB_OUTPUT && echo "base_branch=${BASE_REF}" >> $GITHUB_OUTPUT && echo "pr_number=${PR_NUMBER}" >> $GITHUB_OUTPUT'
+
+      - name: Check if feature branch
+        id: check
+        env:
+          HEAD_BRANCH: ${{ steps.pr.outputs.head_branch }}
+        run: 'IS_FEATURE="false"; if [[ "${HEAD_BRANCH}" == issue-* ]]; then IS_FEATURE="true"; fi; if [[ "${HEAD_BRANCH}" == fix/* ]]; then IS_FEATURE="true"; fi; if [[ "${HEAD_BRANCH}" == feat/* ]]; then IS_FEATURE="true"; fi; echo "is_feature=${IS_FEATURE}" >> $GITHUB_OUTPUT'
+
+      - name: Delete feature branch
+        if: steps.check.outputs.is_feature == 'true'
+        env:
+          HEAD_BRANCH: ${{ steps.pr.outputs.head_branch }}
+        run: 'git push origin --delete "${HEAD_BRANCH}" 2>/dev/null || echo "Branch already deleted"'
+
+      - name: Create PR comment
+        if: steps.check.outputs.is_feature == 'true'
+        env:
+          HEAD_BRANCH: ${{ steps.pr.outputs.head_branch }}
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COMMENT_FILE="/tmp/comment.md"
+          echo "🧹 **分支已清理**" > $COMMENT_FILE
+          echo "" >> $COMMENT_FILE
+          echo "功能分支 \`${HEAD_BRANCH}\` 已合并到 \`dev\` 并自动删除。" >> $COMMENT_FILE
+          echo "" >> $COMMENT_FILE
+          echo "### 下一步" >> $COMMENT_FILE
+          echo "- 等待 \`dev\` 分支测试通过后合并到 \`main\`" >> $COMMENT_FILE
+          echo "- 或继续在 \`dev\` 上进行其他功能开发" >> $COMMENT_FILE
+          gh pr comment "$PR_NUMBER" --body-file $COMMENT_FILE

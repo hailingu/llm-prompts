@@ -6,27 +6,6 @@ tools:
   - edit
   - search
   - execute
-handoffs:
-  - label: java-coder-specialist handoff
-    agent: java-coder-specialist
-    prompt: Please implement the module based on the complete design document (Architecture Design + API Specification). Follow the API interfaces, contracts, and concurrency requirements strictly as specified.
-    send: true
-  - label: java-doc-writer handoff
-    agent: java-doc-writer
-    prompt: Please generate user documentation from the API Specification, extracting Caller Guidance from Design Rationale to create User Guide and API Reference.
-    send: true
-  - label: java-architect feedback
-    agent: java-architect
-    prompt: I found issues with the Architecture Design that need clarification. Please review and update.
-    send: true
-  - label: java-tech-lead review request
-    agent: java-tech-lead
-    prompt: Level 2 API Specification is complete. Please review and approve before proceeding to implementation.
-    send: true
-  - label: java-tech-lead escalation
-    agent: java-tech-lead
-    prompt: Escalation - iteration limit exceeded or unable to resolve conflict with architect. Please arbitrate.
-    send: true
 ---
 
 **MISSION**
@@ -36,6 +15,80 @@ As the Java API designer, your core responsibility is to **generate the detailed
 **Standards**:
 - `.github/standards/google-design-doc-standards.md` - Design doc standards
 - `.github/standards/agent-collaboration-protocol.md` - Collaboration rules (iteration limits, escalation mechanism)
+- `.github/java-standards/alibaba-java-guidelines.md` - Alibaba Java Coding Guidelines
+- `.github/java-standards/static-analysis-setup.md` - Static analysis tools
+
+**Memory Integration**:
+- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/api_patterns.md` for existing API patterns and contracts
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable patterns, contracts, or design decisions
+
+---
+
+## MEMORY USAGE
+
+### Reading Memory (Session Start)
+
+Before designing APIs, read relevant memory files:
+
+1. **Global Knowledge** (`memory/global.md`):
+   - Check `## Active Mission` to identify the **Current Project Name**.
+   - Look for "Patterns" section with API design patterns
+   - Check "Decisions" for interface design choices
+
+2. **Java API Design Theme** (`memory/projects/[Current Project Name]/api_patterns.md`):
+   - Review previous API contract patterns
+   - Check common exception hierarchies used
+   - Look for validated design patterns (Interface vs Abstract Class, etc.)
+
+### Writing Memory (L1 First, Then Optional L2)
+
+After completing significant API design work, reflect and persist:
+
+**Trigger Conditions**:
+- New API contract pattern discovered
+- Exception hierarchy design with clear rationale
+- Complex type composition pattern that worked well
+- Caller guidance pattern that prevents common mistakes
+
+**Distillation Templates**:
+
+**Pattern Template**:
+```markdown
+### Pattern: [Pattern Name]
+
+**Context**: [When does this apply?]
+
+**Insight**: [The core realization]
+
+**Application**: [How to apply this pattern]
+
+**Example**:
+```java
+// Java code example showing the pattern
+```
+```
+
+**Contract Template**:
+```markdown
+### Contract: [Method/Interface Name]
+
+**Interface**: `ReturnType methodName(...)`
+
+**Contract Summary**: [When X → Throws/Returns Y]
+
+**Key Design Decisions**:
+- Why this return type: [rationale]
+- Why these exceptions: [rationale]
+- Thread-safety approach: [approach]
+
+**Caller Guidance**:
+- Always check for: [conditions]
+- Never do: [anti-patterns]
+```
+
+**Storage Location**:
+- Reusable patterns → `memory/projects/[Current Project Name]/api_patterns.md`
+- Contract templates → `memory/projects/[Current Project Name]/api_patterns.md`
 
 **Level**: Level 2 - API Specification (Detailed)  
 **Corresponding Google practice**: Engineers author Protocol Buffers (.proto files) + AIP Guidelines
@@ -620,6 +673,19 @@ See `.github/standards/google-design-doc-standards.md` Section 4 for complete ex
 ### Output to @java-doc-writer:
 - Same complete Design Document
 - @java-doc-writer will extract Caller Guidance from Section 4.2 Design Rationale
+
+---
+
+## MEMORY PERSISTENCE CHECKLIST
+
+Before handing off to `java-coder-specialist`:
+
+- [ ] **Reflect**: What API design insight would help future designs?
+- [ ] **Distill**: Can I extract a reusable pattern or contract template?
+- [ ] **Persist**: Write to appropriate memory file
+   - New patterns → `memory/projects/[Current Project Name]/api_patterns.md`
+   - Contract templates → `memory/projects/[Current Project Name]/api_patterns.md`
+  - Generic insights → `memory/global.md` "## Patterns"
 
 ---
 

@@ -1,0 +1,253 @@
+# 渐进式对比布局 (comparison_progressive)
+# 文件: layouts/comparison_progressive.yml
+
+layout:
+  id: comparison_progressive
+  name: 渐进式对比布局
+  version: 2.2
+  category: comparison
+
+selection_criteria:
+  when_to_use:
+    - "方案演进对比 (I -> II -> III)"
+    - "策略逐步增强展示"
+    - "不同成熟度阶段特性对比"
+  when_not_to_use:
+    - "非递进关系的简单并列对比 (改用 comparison)"
+    - "纯定量数据对比 (改用 comparison 或 data_chart)"
+    - "少于 3 个阶段"
+
+spec:
+  structure_type: "header-main-footer"
+  canvas: { width: 1280, height: 720 }
+  header: { height_px: 80 }
+  footer: { height_px: 40 }
+  main:
+    available_h_px: 600
+    padding: "px-12 py-8"
+  region_budget_model:
+    intent: "先计算 label 列、阶段列与跨列合并单元格的真实预算，再决定每一行采用何种 comparison/progression 组件。"
+    regions:
+      label_col:
+        width_rule: "按 12 栅格中的 2 列取值"
+        height_rule: "main.available_h_px 按 row_count 与分隔线分配"
+      option_cols:
+        width_rule: "每个阶段列按 3 栅格取值，扣除箭头与跨列留白"
+        height_rule: "main.available_h_px 按 row_count 与 header row 分配"
+  regions:
+    grid:
+      layout: "css_grid_12_cols"
+      col_spans:
+        label_col: 2
+        option_cols: 3
+        gap: 1
+  component_entrypoints:
+    row_components: [Card_Accent, Card_Solid, List_Icon, Metric_Trend, Badge_Pill]
+    progression_components: [Visual_Arrow]
+
+content_spec:
+  structure:
+    option_count: { min: 3, max: 3, strict: true }
+    row_count: { min: 3, max: 6 }
+  labels:
+    max_chars: 30
+    line_limit: 2
+  option_headers:
+    title_max_chars: 20
+    subtitle_max_chars: 40
+  candidate_selection_rule: "先依据 region_budget_model 计算各阶段列和跨列单元格预算，再根据 component_entrypoints 生成每行候选组件；禁止先固定所有行都用同一块状样式后再压文本。"
+
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - progression_axis
+    - stage_order
+    - row_labels
+    - carry_forward_logic
+    - recommendation_stage
+    - fallback_plan
+  narrative_fit:
+    - maturity_progression
+    - phased_strategy_evolution
+    - capability_build_up
+  compatible_chart_families:
+    - bar_comparison
+    - line_trend
+  compatible_component_families:
+    - Step_Flow
+    - Card_Accent
+    - List_Icon
+    - Metric_Trend
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - comparison
+    - process_steps
+    - milestone_timeline
+  overflow_recovery_order:
+    - reduce_row_count
+    - reduce_header_copy_density
+    - collapse_shared_cells
+    - downgrade_to_comparison
+
+constraints:
+  - "必须包含逐步增强的视觉流向 (箭头)"
+  - "必须使用数字角标引导行"
+  - "跨阶段特性必须使用合并单元格 (colspan)"
+  - "行之间使用虚线分隔"
+
+worked_layout_example:
+  scenario: "Three-stage strategy progression comparing operating model maturity from basic to enhanced to final state"
+  region_budget:
+    label_col_width_px: 146
+    stage_col_width_px: 220
+    row_height_px: 86
+    header_row_height_px: 92
+  component_candidates:
+    stage_header:
+      - { component_family: Card_Solid, variant: compact, estimated_height_px: 88, fit_reason: "适合标题 + 双行副标题 + 顶部阶段强调" }
+      - { component_family: Card_Accent, variant: compact, estimated_height_px: 96, fit_reason: "强调更强，但对窄列副标题宽度更敏感" }
+    row_cell:
+      - { component_family: Card_Solid, variant: compact, estimated_height_px: 68, fit_reason: "适合每阶段一条短描述" }
+      - { component_family: List_Icon, variant: compact, estimated_height_px: 84, fit_reason: "适合两点式能力描述，但会提高单行成本" }
+    merged_progression_cell:
+      - { component_family: Card_Accent, variant: compact, estimated_height_px: 74, fit_reason: "适合承载跨阶段共享能力" }
+  packing_result:
+    selected_components:
+      - { region: stage_header, component_family: Card_Solid, variant: compact }
+      - { region: row_cell, component_family: Card_Solid, variant: compact }
+      - { region: merged_progression_cell, component_family: Card_Accent, variant: compact }
+    distribution_note:
+      - "若某一阶段列标题明显更长，必须优先升档 header component，而不是压缩所有行高"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white text-slate-800">
+    <!-- Header -->
+    <header class="h-[80px] border-b-2 border-brand-primary px-12 pt-6 pb-2 shrink-0 flex justify-between items-end">
+      <div>
+        <h1 class="text-3xl font-bold text-brand-primary tracking-tight">方案逐步演进对比</h1>
+        <p class="text-sm text-slate-500 mt-1">三个阶段的能力提升路径分析</p>
+      </div>
+      <div class="h-full flex items-end pb-1">
+         <span class="text-xs text-slate-400">Strategy Evolution</span>
+      </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="flex-1 w-full px-12 py-8 min-h-0 flex flex-col">
+      <!-- Grid Container -->
+      <div class="grid grid-cols-12 gap-4 h-full">
+        
+        <!-- Header Row -->
+        <div class="col-span-2 flex items-end pb-4 font-bold text-brand-secondary text-sm">
+          评估维度
+        </div>
+        
+        <!-- Option I Header -->
+        <div class="col-span-3 bg-slate-50 p-4 border-t-4 border-slate-300 relative group">
+          <div class="text-center">
+            <div class="font-bold text-lg mb-1">I: 基础方案</div>
+            <div class="text-xs text-slate-500 leading-tight">最小可行性 MVP <br/>低成本快速启动</div>
+          </div>
+          <!-- Right Arrow Decoration (Pseudo-element simulation) -->
+          <div class="absolute -right-6 top-1/2 -translate-y-1/2 w-8 h-8 text-slate-200 z-10">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full drop-shadow-sm"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg>
+          </div>
+        </div>
+
+        <!-- Option II Header -->
+        <div class="col-span-3 bg-slate-50 p-4 border-t-4 border-brand-primary/60 relative group">
+          <div class="text-center">
+            <div class="font-bold text-lg mb-1">II: 增强模式</div>
+            <div class="text-xs text-slate-500 leading-tight">引入市场激励机制 <br/>优化运营效率</div>
+          </div>
+           <!-- Right Arrow Decoration -->
+          <div class="absolute -right-6 top-1/2 -translate-y-1/2 w-8 h-8 text-brand-primary/30 z-10">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full drop-shadow-sm"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg>
+          </div>
+        </div>
+
+        <!-- Option III Header -->
+        <div class="col-span-3 bg-slate-50 p-4 border-t-4 border-brand-primary relative shadow-sm">
+          <div class="text-center">
+            <div class="font-bold text-lg mb-1">III: 最终形态</div>
+            <div class="text-xs text-slate-500 leading-tight">完全市场化运作 <br/>长期可持续发展</div>
+          </div>
+        </div>
+        
+        <!-- Padding for 12th col -->
+        <div class="col-span-1"></div>
+
+
+        <!-- Row 1: Cost/Structure -->
+        <div class="col-span-12 border-b border-dashed border-slate-200 my-2"></div>
+        
+        <!-- Label 1 -->
+        <div class="col-span-2 flex items-center pr-4">
+           <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand-primary text-white text-xs font-bold mr-2 shrink-0">1</span>
+           <span class="font-semibold text-sm text-slate-700 leading-snug">成本结构</span>
+        </div>
+        
+        <!-- Row 1 Content -->
+        <div class="col-span-3 p-3 text-xs bg-white border border-slate-100 rounded shadow-sm text-slate-600">
+          固定成本为主，人工干预较多，效率一般
+        </div>
+        
+        <!-- Colspan Example: Option II & III sharing feature -->
+        <div class="col-span-6 p-3 text-xs bg-white border border-slate-100 rounded shadow-sm flex items-center justify-center text-center text-slate-700 font-medium relative ml-4">
+          <div class="absolute -left-3 top-1/2 -translate-y-1/2 text-brand-primary">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          </div>
+          通过自动化工具降低边际成本，实现规模效应 (PLUS: AI 辅助决策)
+        </div>
+         <div class="col-span-1"></div>
+
+
+        <!-- Row 2: Operation Mode -->
+        <div class="col-span-12 border-b border-dashed border-slate-200 my-2"></div>
+
+        <!-- Label 2 -->
+        <div class="col-span-2 flex items-center pr-4">
+           <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand-primary text-white text-xs font-bold mr-2 shrink-0">2</span>
+           <span class="font-semibold text-sm text-slate-700 leading-snug">运营模式</span>
+        </div>
+
+        <!-- Row 2 Content - Progressive -->
+        <div class="col-span-3 p-3 text-xs bg-white border border-slate-100 rounded shadow-sm text-slate-600">
+          手动流程，依赖Excel管理
+        </div>
+        <div class="col-span-3 p-3 text-xs bg-white border border-slate-100 rounded shadow-sm text-slate-600 ml-4 relative">
+          <div class="absolute -left-6 top-1/2 -translate-y-1/2 text-slate-300">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+          </div>
+          引入SaaS平台，标准化流程
+        </div>
+        <div class="col-span-3 p-3 text-xs bg-white border-l-4 border-brand-primary rounded-r shadow-sm text-slate-800 font-semibold ml-4 relative pl-4">
+          <div class="absolute -left-6 top-1/2 -translate-y-1/2 text-slate-300">
+             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+          </div>
+          PLUS: 全链路数字化 + 预测性分析
+        </div>
+         <div class="col-span-1"></div>
+
+        <!-- Row 3: Full Span Example -->
+        <div class="col-span-12 border-b border-dashed border-slate-200 my-2"></div>
+        
+        <div class="col-span-2 flex items-center pr-4">
+           <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand-primary text-white text-xs font-bold mr-2 shrink-0">3</span>
+           <span class="font-semibold text-sm text-slate-700 leading-snug">合规性</span>
+        </div>
+        
+        <div class="col-span-9 p-3 text-xs bg-slate-50 border border-slate-200 rounded text-center text-slate-500 italic">
+          所有方案均需满足基础 GDPR/CCPA 合规要求
+        </div>
+         <div class="col-span-1"></div>
+        
+      </div>
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0 flex items-center justify-between">
+      <span class="text-xs text-slate-400">Ⓒ 2026 Company Name</span>
+      <span class="text-xs text-slate-400">Confidential</span>
+    </footer>
+  </div>

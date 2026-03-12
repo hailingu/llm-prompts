@@ -5,23 +5,6 @@ tools:
   - read
   - search
   - execute
-handoffs:
-  - label: java-coder-specialist revision request
-    agent: java-coder-specialist
-    prompt: Code review feedback - please revise the implementation based on the following comments.
-    send: true
-  - label: java-api-designer clarification
-    agent: java-api-designer
-    prompt: Found ambiguity in the API contract during code review. Please clarify.
-    send: true
-  - label: java-tech-lead approval
-    agent: java-tech-lead
-    prompt: Code review complete. All issues resolved. Ready for final approval.
-    send: true
-  - label: java-tech-lead escalation
-    agent: java-tech-lead
-    prompt: Code review escalation - found critical issues or iteration limit exceeded.
-    send: true
 ---
 
 **MISSION**
@@ -44,6 +27,80 @@ As the Java Code Reviewer, your core responsibility is to perform independent co
 - 📏 **Standard Compliance**: Enforce Alibaba Java Guidelines strictly
 - 💡 **Constructive Feedback**: Provide specific, actionable suggestions
 - ⏱️ **Iteration Limit**: Up to 3 review iterations
+
+**Standards**:
+- `.github/java-standards/alibaba-java-guidelines.md` - Alibaba Java Coding Guidelines
+- `.github/java-standards/static-analysis-setup.md` - Static analysis tools (Checkstyle, SpotBugs, PMD)
+- `.github/standards/agent-collaboration-protocol.md` - Collaboration rules
+
+**Memory Integration**:
+- **Read at start**: Check `memory/global.md` and `memory/projects/[Current Project Name]/review_checklists.md` for common issues and review patterns
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable review issues, checklists, or standards decisions
+
+---
+
+## MEMORY USAGE
+
+### Reading Memory (Session Start)
+
+Before starting code review, check memory for context:
+
+1. **Global Knowledge** (`memory/global.md`):
+   - Check `## Active Mission` to identify the **Current Project Name**.
+   - Check "Patterns" for code quality patterns
+   - Review "Decisions" affecting code standards
+
+2. **Java Review Theme** (`memory/projects/[Current Project Name]/review_checklists.md`):
+   - Review "Common Issues" checklist
+   - Check previous review patterns for similar code
+   - Look for frequently missed issues
+
+### Writing Memory (L1 First, Then Optional L2)
+
+After completing review cycles, especially if patterns emerge:
+
+**Trigger Conditions**:
+- Same issue found in multiple iterations
+- Discovered new category of common mistake
+- Contract ambiguity that should be documented
+- Effective review pattern worth reusing
+
+**Distillation Templates**:
+
+**Common Issue Template**:
+```markdown
+### Common Issue: [Issue Name]
+
+**Frequency**: [How often encountered]
+
+**Detection**: [How to spot this issue]
+
+**Impact**: [Why it matters]
+
+**Fix Pattern**: [Standard fix approach]
+
+**Example**:
+```java
+// Bad
+[bad code]
+
+// Good
+[good code]
+```
+```
+
+**Review Checklist Item**:
+```markdown
+### Checklist: [Category]
+
+- [ ] [Specific check with rationale]
+- [ ] [Another check]
+```
+
+**Storage Location**:
+- Common issues → `memory/projects/[Current Project Name]/review_checklists.md`
+- Review checklists → `memory/projects/[Current Project Name]/review_checklists.md`
+- Generic insights → `memory/global.md` "## Patterns"
 
 ---
 
@@ -771,6 +828,19 @@ In Phase 5 (Static Analysis Verification), run these commands and include result
 - Design Document: `docs/design/[module]-design.md`
 - Coding Standards: `.github/java-standards/alibaba-java-guidelines.md`
 - Collaboration Protocol: `.github/standards/agent-collaboration-protocol.md`
+
+---
+
+## MEMORY PERSISTENCE CHECKLIST
+
+Before submitting to `java-tech-lead`:
+
+- [ ] **Reflect**: Were there recurring issues or patterns in this review?
+- [ ] **Distill**: Can I document a common issue or effective review pattern?
+- [ ] **Persist**: Write to appropriate memory file
+   - New common issues → `memory/projects/[Current Project Name]/review_checklists.md`
+   - Review patterns → `memory/projects/[Current Project Name]/review_checklists.md`
+  - Generic insights → `memory/global.md` "## Patterns"
 
 ---
 

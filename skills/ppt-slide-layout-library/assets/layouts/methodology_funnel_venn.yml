@@ -1,0 +1,132 @@
+name: methodology_funnel_venn
+description: "Composite methodology slide combining a 3‑step arrow header, a left-side funnel with icon/crowd inputs, and a right-side Venn/overlap graphic. Useful for showing multi-stage methodology with data funnel and incremental reach analysis."
+type: layout
+version: 1.0.0
+selection_criteria:
+  - "Use when you need to present a three-step methodology above, a funnel or conversion graphic on the left, and a comparative overlap chart on the right."
+  - "Suitable for marketing or analytics workflows with both process steps and data breakdown."
+  - "Not suitable for simple process flows (use process_steps) or single-chart slides."
+
+spec:
+  structure:
+    - area: header
+      height: 80px
+      fixed: true
+    - area: main
+      flex: 1
+      layout: "grid-12"
+      elements:
+        - "top_steps (col-span-12)"
+        - "left_funnel (col-span-5)"
+        - "right_venn (col-span-7)"
+    - area: footer
+      height: 50px
+      fixed: true
+
+  style_presets:
+    step_arrow: "flex items-center space-x-2"
+    step_circle: "w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold"
+    funnel_box: "bg-amber-200 border border-amber-400 p-4 rounded shadow text-center text-sm"
+    venn_large: "bg-amber-300 rounded-full opacity-70"
+    venn_small: "bg-slate-300 rounded-full opacity-70"
+
+content_spec:
+  steps: { min: 3, max: 3, strict: true }
+  funnel_levels: { min: 2, max: 4 }
+  venn_groups: { exact: 2 }
+  text_limits:
+    step_label: "10-40 chars"
+    funnel_label: "10-50 chars"
+    venn_label: "10-30 chars"
+
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - methodology_steps
+    - funnel_stages
+    - overlap_entities
+    - comparison_message
+    - synthesis_takeaway
+    - fallback_plan
+  narrative_fit:
+    - methodology_plus_evidence
+    - funnel_and_overlap_story
+    - multi_stage_analytics_explanation
+  compatible_chart_families:
+    - funnel_conversion
+    - venn_overlap
+  compatible_component_families:
+    - Step_Flow
+    - Card_Solid
+    - List_Icon
+    - Badge_Status
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - process_steps
+    - chart_synthesis
+    - full_width
+  overflow_recovery_order:
+    - reduce_funnel_levels
+    - reduce_step_copy_density
+    - simplify_overlap_annotations
+    - downgrade_to_process_steps
+
+template: |
+  <div class="slide-container flex flex-col h-full bg-white font-sans text-slate-800">
+    <!-- Header with Title -->
+    <header class="h-20 px-12 flex flex-col justify-center border-b border-brand-primary">
+      <h1 class="text-2xl font-bold text-emerald-800 tracking-tight">{{title}}</h1>
+      <p class="text-sm text-slate-600 mt-1">{{subtitle}}</p>
+    </header>
+
+    <!-- Top Steps -->
+    <div class="w-full px-12 py-4 grid grid-cols-12 gap-4">
+      <!-- step1 -->
+      <div class="col-span-4 flex items-center">
+        <div class="step_circle">1</div>
+        <div class="ml-2 text-sm text-slate-700">Define ad viewable area and audience</div>
+      </div>
+      <!-- step2 -->
+      <div class="col-span-4 flex items-center">
+        <div class="step_circle">2</div>
+        <div class="ml-2 text-sm text-slate-700">Combine survey data and calculate metrics</div>
+      </div>
+      <!-- step3 -->
+      <div class="col-span-4 flex items-center">
+        <div class="step_circle">3</div>
+        <div class="ml-2 text-sm text-slate-700">Cross-channel tracking</div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 grid grid-cols-12 gap-4 px-12 py-6">
+      <!-- Left Funnel/Icons -->
+      <div class="col-span-5 flex flex-col items-center space-y-4">
+        <div class="w-full bg-amber-100 p-2 text-xs text-center">Geographic + time + venue</div>
+        <div class="funnel_box w-full">Device ID and crowd portrait<br/>within the output range</div>
+        <!-- Placeholder for people icons grid -->
+        <div class="grid grid-cols-4 gap-2 w-full">
+          <!-- icons would be inserted here -->
+        </div>
+      </div>
+
+      <!-- Right Venn -->
+      <div class="col-span-7 relative flex items-center justify-center">
+        <!-- Large circle -->
+        <div class="venn_large absolute w-48 h-48"></div>
+        <!-- Small overlapping circle -->
+        <div class="venn_small absolute w-24 h-24 left-20 top-12"></div>
+        <!-- Labels -->
+        <div class="absolute text-xs text-slate-800" style="top:-10px; left:-20px;">Digital TA UA 1,000,000</div>
+        <div class="absolute text-xs text-slate-800" style="top:30px; left:50px;">Overlap 120,000</div>
+        <div class="absolute text-xs text-slate-800" style="top:60px; left:70px;">OOH TA UA 250,000</div>
+        <div class="absolute text-xs text-slate-600" style="bottom:-20px; left:30px;">OOH Incremental Reach 5.4%</div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="h-[50px] px-12 flex items-center justify-between border-t border-slate-200 text-xs text-slate-400">
+      <span>Source: BCG Report</span>
+      <span>Page {{page}}</span>
+    </footer>
+  </div>

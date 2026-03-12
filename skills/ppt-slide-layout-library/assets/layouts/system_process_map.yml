@@ -1,0 +1,201 @@
+# 系统流程图布局 (system_process_map)
+# 文件: layouts/system_process_map.yml
+
+layout:
+  id: system_process_map
+  name: 系统流程图
+  version: 2.4
+  category: process
+
+selection_criteria:
+  when_to_use:
+    - "复杂的多方业务流程"
+    - "生态系统全景图 (Ecosystem Map)"
+    - "供应链上下游关系展示"
+    - "涉及多层级 (监管/执行/支持) 的交互图"
+  when_not_to_use:
+    - "简单的线性步骤 (改用 process_steps)"
+    - "纯文本描述 (改用 full_width)"
+
+spec:
+  regions:
+    canvas:
+      layout: "layered_flow"
+      layers: ["Governance/Oversight", "Core Workflow", "Support/Infrastructure"]
+
+content_spec:
+  nodes:
+    max_count: 12
+    grouping: "Supported (visual containers)"
+  edges:
+    types: ["Solid (Main Flow)", "Dashed (Information/Permit)", "Curved (Financial)"]
+  legend:
+    required: true
+    position: "Bottom Left"
+
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - actor_layers
+    - node_groups
+    - edge_types
+    - flow_direction
+    - legend_definition
+    - connector_safe_zones
+    - fallback_plan
+  narrative_fit:
+    - ecosystem_process_map
+    - multi_actor_system_flow
+    - operating_model_landscape
+  compatible_chart_families:
+    - sankey_flow
+    - network_graph
+  compatible_component_families:
+    - Step_Flow
+    - Badge_Status
+    - Card_Solid
+    - List_Icon
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - process_steps
+    - multi_year_flow
+    - analytical_model_tree
+  overflow_recovery_order:
+    - reduce_node_count
+    - collapse_supporting_layers
+    - simplify_edge_types
+    - downgrade_to_process_steps
+
+constraints:
+  - "核心流程必须自左向右"
+  - "层级关系必须自上而下 (监管->执行->支持)"
+  - "不同类型的连接线必须在图例中说明"
+  - "不同连接类型不得在同一留白通道内相互叠压，避免语义冲突"
+  - "治理连线必须明确落到核心流程或指定节点，不得停在半空"
+  - "反馈回路必须绕行卡片正文区，只能经过预留的空白通道"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white text-slate-800">
+    <!-- Header -->
+    <header class="h-[80px] border-b-2 border-brand-primary px-12 pt-6 pb-2 shrink-0">
+      <h1 class="text-3xl font-bold text-brand-primary tracking-tight">货物运输系统全景</h1>
+      <p class="text-sm text-slate-500 mt-1">关键参与方及其交互流程分析</p>
+    </header>
+    
+    <!-- Main Content: System Map -->
+    <main class="flex-1 w-full px-12 py-6 relative overflow-hidden">
+      <!-- Layer 1: Governance & Oversight (Top) -->
+      <div class="absolute top-6 left-1/3 w-1/3 flex flex-col items-center space-y-2 z-10">
+         <div class="px-6 py-2 bg-slate-100 border border-slate-300 rounded shadow-sm text-sm font-semibold w-full text-center">
+            国家/州/市政府机构
+         </div>
+         <div class="px-6 py-2 bg-slate-100 border border-slate-300 rounded shadow-sm text-sm font-semibold w-full text-center">
+            港口管理局 (Port of LA/LB)
+         </div>
+         <!-- Downward Connections (Dotted) -->
+         <div class="h-8 border-l-2 border-dotted border-slate-400"></div>
+      </div>
+
+      <!-- Cross-Layer Callout (Yellow) -->
+      <div class="absolute top-24 right-1/4 bg-yellow-100 border border-yellow-300 p-3 rounded shadow-md text-xs w-48 z-20">
+        <div class="font-bold mb-1">Drayage 定义</div>
+        包括服务于港口集装箱运输的所有卡车及司机
+        <!-- Pointer -->
+        <div class="absolute -bottom-2 left-4 w-4 h-4 bg-yellow-100 border-b border-r border-yellow-300 transform rotate-45"></div>
+      </div>
+
+      <!-- Layer 2: Core Workflow (Middle) -->
+      <div class="absolute top-1/3 w-full flex items-center justify-between px-4 mt-8">
+         <!-- Step 1 -->
+         <div class="w-32 h-24 bg-brand-primary text-white p-2 flex items-center justify-center text-center font-bold text-sm rounded shadow-md relative group">
+           制造商/集货商
+           <!-- Arrow -->
+           <div class="absolute -right-6 top-1/2 -translate-y-1/2 text-slate-300">
+             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg>
+           </div>
+         </div>
+         
+         <!-- Step 2 -->
+         <div class="w-20 h-24 bg-slate-500 text-white p-1 flex items-center justify-center text-center font-bold text-xs rounded shadow-md relative">
+           码头运营
+           <div class="absolute -right-6 top-1/2 -translate-y-1/2 text-slate-300">
+             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg>
+           </div>
+         </div>
+         
+         <!-- Step 3 -->
+         <div class="w-28 h-24 bg-brand-primary text-white p-2 flex items-center justify-center text-center font-bold text-sm rounded shadow-md relative">
+           船公司 (Shipping Line)
+           <div class="absolute -right-6 top-1/2 -translate-y-1/2 text-slate-300"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg></div>
+         </div>
+         
+         <!-- Step 4 -->
+         <div class="w-20 h-24 bg-slate-500 text-white p-1 flex items-center justify-center text-center font-bold text-xs rounded shadow-md relative">
+           码头运营
+           <div class="absolute -right-6 top-1/2 -translate-y-1/2 text-slate-300"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg></div>
+         </div>
+         
+         <!-- Group: Drayage/LMC -->
+         <div class="relative w-32 h-32 flex flex-col space-y-2">
+            <div class="bg-brand-secondary/80 text-white text-xs p-1 text-center rounded">LMC</div>
+            <div class="flex-1 bg-brand-primary text-white flex items-center justify-center font-bold text-sm rounded relative">
+               Drayage
+               <div class="absolute bottom-0 w-full border-t border-white/30"></div>
+               <div class="absolute bottom-1 w-full text-center text-[10px]">Rail</div>
+            </div>
+             <div class="absolute -right-6 top-1/2 -translate-y-1/2 text-slate-300"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg></div>
+         </div>
+         
+         <!-- Step 5: DC -->
+         <div class="w-20 h-24 bg-brand-primary text-white p-1 flex items-center justify-center text-center font-bold text-xs rounded shadow-md relative">
+           配送中心
+            <div class="absolute -right-6 top-1/2 -translate-y-1/2 text-slate-300"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg></div>
+         </div>
+         
+         <!-- Step 6: BCO -->
+         <div class="w-32 h-24 bg-brand-primary text-white p-2 flex items-center justify-center text-center font-bold text-sm rounded shadow-md">
+           货主 (BCO)
+         </div>
+      </div>
+      
+      <!-- Layer 3: Financial Flow (Curved Lines Bottom) -->
+      <div class="absolute bottom-12 w-full px-12 pointer-events-none">
+          <svg class="w-full h-24" style="stroke: #333; stroke-width: 1.5; fill: none;">
+             <!-- Curve from BCO to Shipping Line -->
+             <path d="M 850,10 Q 500,80 250,10" marker-end="url(#arrowhead)"/>
+             <!-- Curve from Forwarder to Others -->
+             <path d="M 600,60 Q 400,90 350,20" marker-end="url(#arrowhead)" stroke-dasharray="0" opacity="0.6"/>
+          </svg>
+           <!-- Define markers in a hidden svg or inline -->
+           <div class="hidden">
+             <svg>
+               <defs>
+                 <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                   <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+                 </marker>
+               </defs>
+             </svg>
+           </div>
+           
+           <div class="absolute left-1/2 -bottom-4 -translate-x-1/2 bg-brand-secondary/60 text-white px-4 py-1 rounded text-sm w-32 text-center">
+             货运代理 (Freight Forwarder)
+           </div>
+      </div>
+      
+      <!-- Legend -->
+      <div class="absolute bottom-4 left-4 bg-white border border-slate-300 p-3 shadow-lg rounded w-48 z-30">
+        <ul class="text-xs space-y-2">
+           <li class="flex items-center"><span class="w-8 h-0.5 bg-slate-400 mr-2 relative"><span class="absolute right-0 -top-1 border-t-4 border-b-4 border-l-4 border-l-slate-400 border-t-transparent border-b-transparent"></span></span> 物流方向</li>
+           <li class="flex items-center"><span class="w-8 h-0.5 bg-black mr-2 relative"><span class="absolute right-0 -top-1 border-t-4 border-b-4 border-l-4 border-l-black border-t-transparent border-b-transparent"></span></span> 资金流向</li>
+           <li class="flex items-center"><span class="w-8 h-0.5 border-t-2 border-dotted border-slate-400 mr-2 relative"><span class="absolute right-0 -top-1 border-t-4 border-b-4 border-l-4 border-l-slate-400 border-t-transparent border-b-transparent"></span></span> 许可/监管</li>
+        </ul>
+      </div>
+
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0 flex justify-between items-center text-xs text-slate-400">
+      <span>资料来源: Port interviews</span>
+      <span>13</span>
+    </footer>
+  </div>

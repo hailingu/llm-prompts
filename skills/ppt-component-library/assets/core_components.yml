@@ -1,0 +1,689 @@
+# ============================================================
+# ppt-component-library / core_components.yml
+# Standardized UI Component Templates (Tailwind CSS)
+# ============================================================
+
+components:
+
+  _spec_conventions:
+    description: "组件规格字段约定：供 layout 在做 region budget 和 candidate generation 时引用。"
+    fields:
+      width_mode: "fixed-like / semi-fixed / width-sensitive"
+      expansion_axis: "horizontal_fill / vertical_fill / intrinsic"
+      empirical_height_px: "不同 variant 的经验高度区间"
+      text_capacity_hint: "经验可承载文本量，需结合当前区域宽度复核"
+      placement_fit: "推荐放置的区域类型，如 rail / grid / full-width / panel"
+
+  # 1. Containers (Cards)
+  # ------------------------------------------------------------
+  Card_Glass:
+    description: "Standard semi-transparent card for dark backgrounds."
+    use_case: "General content grouping, insight blocks."
+    category: container
+    variant: glass
+    compatible_layouts: [side_by_side, dashboard_grid, hybrid, conclusion, comparison]
+    theme_support: [dark_bias, editorial_compatible]
+    required_placeholders: [surface_class, border_class, title_text_class, body_text_class, title, body_text]
+    optional_placeholders: [backdrop_class]
+    semantic_tokens: [surface_subtle, border_subtle, text_primary, text_secondary]
+    component_spec:
+      width_mode: width-sensitive
+      expansion_axis: vertical_fill
+      placement_fit: [rail, side_panel, grid_cell, narrow_column]
+      variants:
+        compact_narrow:
+          empirical_height_px: "56-84"
+          title_lines_max: 2
+          body_lines_max: 2
+          text_capacity_hint: "窄列中用于短标题 + 1 句短正文"
+        compact:
+          empirical_height_px: "96-136"
+          title_lines_max: 2
+          body_lines_max: 4
+          text_capacity_hint: "短标题 + 40-70 英文词正文"
+        default:
+          empirical_height_px: "136-180"
+          title_lines_max: 3
+          body_lines_max: 6
+    do_not_use_when:
+      - "the page requires a high-contrast light-surface component"
+      - "the component must carry dense tabular or chart-like content"
+    example_payload:
+      surface_class: bg-white/80
+      border_class: border-slate-200
+      title_text_class: text-slate-950
+      body_text_class: text-slate-600
+      backdrop_class: backdrop-blur-sm
+      title: Key Implication
+      body_text: Corridor pressure is concentrated in a narrow operating band rather than evenly distributed.
+    html: |
+      <div class="{{surface_class}} {{backdrop_class}} border {{border_class}} p-6 rounded-xl flex flex-col gap-4">
+        <h3 class="text-lg font-bold {{title_text_class}} tracking-tight">{{title}}</h3>
+        <p class="text-sm {{body_text_class}} font-sans leading-relaxed">{{body_text}}</p>
+      </div>
+
+  Card_Accent:
+    description: "Card with a colored accent border on the left."
+    use_case: "Highlighting key strategic pillars or warnings."
+    category: container
+    variant: accent_left
+    compatible_layouts: [side_by_side, dashboard_grid, hybrid, process]
+    theme_support: [dark_bias, style_profile_sensitive]
+    required_placeholders: [surface_class, accent_border_class, accent_text_class, title_text_class, body_text_class, label, title, description]
+    optional_placeholders: []
+    semantic_tokens: [accent_color, surface_elevated, text_primary, text_secondary]
+    component_spec:
+      width_mode: width-sensitive
+      expansion_axis: vertical_fill
+      placement_fit: [rail, synthesis_box, warning_panel, narrow_column, row_cell]
+      variants:
+        compact_narrow:
+          empirical_height_px: "56-84"
+          title_lines_max: 2
+          body_lines_max: 2
+          text_capacity_hint: "窄列或短行中用于 label + 短标题 + 1 句正文"
+        compact:
+          empirical_height_px: "72-108"
+          title_lines_max: 2
+          body_lines_max: 3
+          text_capacity_hint: "短 label + 标题 + 1 个短段落"
+        default:
+          empirical_height_px: "108-152"
+          title_lines_max: 3
+          body_lines_max: 5
+    do_not_use_when:
+      - "every card on the page is already emphasized"
+      - "the page needs neutral evidence cards rather than highlighted callouts"
+      - "column width is below 430px and row budget is below 88px, in which case compact_narrow or merged rows are safer"
+    example_payload:
+      surface_class: bg-white
+      accent_border_class: border-amber-500
+      accent_text_class: text-amber-700
+      title_text_class: text-slate-950
+      body_text_class: text-slate-600
+      label: Watchpoint
+      title: Maritime disruption is locally concentrated
+      description: Insurance stress is concentrated around the chokepoint rather than across the entire basin.
+    html: |
+      <div class="{{surface_class}} border-l-4 {{accent_border_class}} p-6 flex flex-col gap-2 shadow-lg">
+        <div class="text-xs font-bold {{accent_text_class}} uppercase tracking-widest mb-1">{{label}}</div>
+        <h3 class="text-xl font-bold {{title_text_class}}">{{title}}</h3>
+        <p class="text-xs {{body_text_class}} leading-relaxed">{{description}}</p>
+      </div>
+
+  Card_Solid:
+    description: "Solid background card for high contrast."
+    use_case: "Light mode or high-emphasis blocks."
+    category: container
+    variant: solid
+    compatible_layouts: [side_by_side, dashboard_grid, hybrid, comparison_progressive]
+    theme_support: [mixed, style_profile_sensitive]
+    required_placeholders: [surface_class, border_class, icon_bg_class, icon_text_class, title_text_class, body_text_class, icon, title, content]
+    optional_placeholders: []
+    semantic_tokens: [surface_strong, border_strong, accent_color, text_primary]
+    component_spec:
+      width_mode: width-sensitive
+      expansion_axis: vertical_fill
+      placement_fit: [grid_cell, side_panel, comparison_column, narrow_column, row_cell]
+      variants:
+        compact_narrow:
+          empirical_height_px: "58-86"
+          title_lines_max: 2
+          body_lines_max: 2
+          text_capacity_hint: "窄列中用于短标题 + 1 句解释，必须控制 icon 与 padding"
+        compact:
+          empirical_height_px: "92-132"
+          title_lines_max: 2
+          body_lines_max: 4
+        default:
+          empirical_height_px: "132-176"
+          title_lines_max: 3
+          body_lines_max: 6
+    do_not_use_when:
+      - "a low-contrast glass treatment is more appropriate"
+      - "iconography is not part of the reading task"
+      - "column width is below 430px and a 3-row stack is required; prefer compact_narrow or a merged container with internal rows"
+    example_payload:
+      surface_class: bg-slate-50
+      border_class: border-slate-200
+      icon_bg_class: bg-sky-100
+      icon_text_class: text-sky-700
+      title_text_class: text-slate-950
+      body_text_class: text-slate-600
+      icon: shield
+      title: Control Node
+      content: Command continuity depends on a small number of protected decision nodes.
+    html: |
+      <div class="{{surface_class}} border {{border_class}} p-6 rounded-lg shadow-md">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full {{icon_bg_class}} flex items-center justify-center {{icon_text_class}}">
+            <i class="fa-solid fa-{{icon}}"></i>
+          </div>
+          <h3 class="text-lg font-bold {{title_text_class}}">{{title}}</h3>
+        </div>
+        <div class="text-sm {{body_text_class}} font-sans">{{content}}</div>
+      </div>
+
+  # 2. Metrics (Numbers)
+  # ------------------------------------------------------------
+  Metric_Big:
+    description: "Large hero number with label."
+    use_case: "GDP, Growth Rate, Key Performance Indicator."
+    category: metric
+    variant: hero_number
+    compatible_layouts: [dashboard_grid, side_by_side, conclusion, executive_summary]
+    theme_support: [mixed]
+    required_placeholders: [value_text_class, value, accent_text_class, label]
+    optional_placeholders: []
+    semantic_tokens: [text_primary, accent_color, label_muted]
+    component_spec:
+      width_mode: fixed-like
+      expansion_axis: intrinsic
+      placement_fit: [kpi_row, support_micro, rail]
+      variants:
+        compact:
+          empirical_height_px: "44-72"
+          text_capacity_hint: "1 个 hero number + 1 个短 label"
+        default:
+          empirical_height_px: "72-104"
+    do_not_use_when:
+      - "the number requires methodological caveats next to it"
+      - "multiple measures need equal emphasis rather than a single hero figure"
+    example_payload:
+      value_text_class: text-slate-950
+      value: "$158"
+      accent_text_class: text-red-500
+      label: Brent Peak
+    html: |
+      <div class="flex flex-col">
+        <div class="text-5xl font-bold {{value_text_class}} tracking-tighter leading-none mb-1">{{value}}</div>
+        <div class="text-[10px] font-bold {{accent_text_class}} uppercase tracking-[0.2em]">{{label}}</div>
+      </div>
+
+  Metric_Trend:
+    description: "Number with an up/down trend indicator."
+    use_case: "Stock price, Year-over-Year change."
+    category: metric
+    variant: trend
+    compatible_layouts: [dashboard_grid, side_by_side, executive_summary]
+    theme_support: [mixed]
+    required_placeholders: [value_text_class, value, trend_text_class, trend_direction, change_pct, label_class, label]
+    optional_placeholders: []
+    semantic_tokens: [text_primary, trend_color, text_muted]
+    component_spec:
+      width_mode: fixed-like
+      expansion_axis: intrinsic
+      placement_fit: [kpi_row, dashboard_cell]
+      variants:
+        compact:
+          empirical_height_px: "52-80"
+          text_capacity_hint: "1 个值 + 趋势箭头 + 短 label"
+        default:
+          empirical_height_px: "80-112"
+    do_not_use_when:
+      - "directionality is ambiguous or not the main reading task"
+      - "trend needs a full sparkline or time-series context"
+    example_payload:
+      value_text_class: text-slate-950
+      value: "82"
+      trend_text_class: text-amber-700
+      trend_direction: up
+      change_pct: "12"
+      label_class: text-slate-500
+      label: Risk Index
+    html: |
+      <div class="flex items-end gap-3">
+        <div class="text-4xl font-bold {{value_text_class}}">{{value}}</div>
+        <span class="text-sm font-bold {{trend_text_class}} mb-1 flex items-center gap-1">
+          <i class="fa-solid fa-arrow-{{trend_direction}}"></i> {{change_pct}}%
+        </span>
+      </div>
+      <div class="text-xs {{label_class}} font-bold uppercase mt-1">{{label}}</div>
+
+  Metric_KpiRow:
+    description: "Horizontal row of simple metrics."
+    use_case: "Dashboard headers, summary statistics."
+    category: metric
+    variant: row
+    compatible_layouts: [dashboard_grid, executive_summary, comparison, side_by_side]
+    theme_support: [mixed]
+    required_placeholders: [row_surface_class, row_border_class, value_text_class, label_text_class, divider_class, val_1, lab_1, val_2, lab_2]
+    optional_placeholders: [val_3, lab_3, val_4, lab_4]
+    semantic_tokens: [surface_subtle, border_subtle, text_primary, text_muted]
+    component_spec:
+      width_mode: semi-fixed
+      expansion_axis: horizontal_fill
+      placement_fit: [rail, kpi_row, dashboard_header]
+      variants:
+        compact:
+          empirical_height_px: "72-104"
+          text_capacity_hint: "2-3 个短 KPI label，禁止长段说明"
+        default:
+          empirical_height_px: "104-136"
+    do_not_use_when:
+      - "each metric requires explanation text or different semantic emphasis"
+      - "the row needs more than four statistics and starts wrapping"
+    example_payload:
+      row_surface_class: bg-slate-50
+      row_border_class: border-slate-200
+      value_text_class: text-slate-950
+      label_text_class: text-slate-500
+      divider_class: bg-slate-200
+      val_1: "3"
+      lab_1: Scenario Paths
+      val_2: "82"
+      lab_2: Risk Index
+    html: |
+      <div class="flex justify-between items-center {{row_surface_class}} p-4 border-t {{row_border_class}}">
+        <!-- Item 1 -->
+        <div>
+          <div class="text-2xl font-bold {{value_text_class}}">{{val_1}}</div>
+          <div class="text-[9px] uppercase font-bold {{label_text_class}}">{{lab_1}}</div>
+        </div>
+        <!-- Divider -->
+        <div class="w-px h-8 {{divider_class}}"></div>
+        <!-- Item 2 -->
+        <div>
+          <div class="text-2xl font-bold {{value_text_class}}">{{val_2}}</div>
+          <div class="text-[9px] uppercase font-bold {{label_text_class}}">{{lab_2}}</div>
+        </div>
+      </div>
+
+  # 3. Lists (Structured Text)
+  # ------------------------------------------------------------
+  List_Icon:
+    description: "List items with icons on the left."
+    use_case: "Features, Benefits, Key Points."
+    category: list
+    variant: icon
+    compatible_layouts: [side_by_side, dashboard_grid, comparison, hybrid]
+    theme_support: [mixed]
+    required_placeholders: [accent_icon_class, item_text_class, item_1_text, item_2_text]
+    optional_placeholders: [item_3_text, item_4_text]
+    semantic_tokens: [accent_color, text_primary, text_secondary]
+    component_spec:
+      width_mode: width-sensitive
+      expansion_axis: vertical_fill
+      placement_fit: [rail, comparison_column, side_panel]
+      variants:
+        compact:
+          empirical_height_px: "84-124"
+          item_count_max: 3
+        default:
+          empirical_height_px: "124-176"
+          item_count_max: 4
+    do_not_use_when:
+      - "the items need sequence, chronology, or causal linkage"
+      - "the list exceeds a compact reading budget"
+    example_payload:
+      accent_icon_class: text-emerald-500
+      item_text_class: text-slate-700
+      item_1_text: Route security improved after escorts were introduced.
+      item_2_text: Insurance friction remains concentrated around one corridor.
+    html: |
+      <ul class="space-y-4">
+        <li class="flex items-start gap-3">
+          <i class="fa-solid fa-check {{accent_icon_class}} mt-1"></i>
+          <span class="text-sm {{item_text_class}}">{{item_1_text}}</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <i class="fa-solid fa-check {{accent_icon_class}} mt-1"></i>
+          <span class="text-sm {{item_text_class}}">{{item_2_text}}</span>
+        </li>
+      </ul>
+
+  List_Timeline:
+    description: "Vertical timeline list."
+    use_case: "Process steps, History of events."
+    category: list
+    variant: timeline
+    compatible_layouts: [side_by_side, process, milestone_timeline, hybrid]
+    theme_support: [dark_bias, mixed]
+    required_placeholders: [timeline_border_class, marker_ring_class, step_1_marker_class, step_1_label_class, step_1_body_class, step_1_label, step_1_description, step_2_marker_class, step_2_label_class, step_2_body_class, step_2_label, step_2_description]
+    optional_placeholders: [step_3_label, step_3_description, step_4_label, step_4_description]
+    semantic_tokens: [accent_color, border_subtle, text_primary, text_secondary]
+    component_spec:
+      width_mode: width-sensitive
+      expansion_axis: vertical_fill
+      placement_fit: [side_panel, process_column]
+      variants:
+        compact:
+          empirical_height_px: "112-160"
+          item_count_max: 3
+        default:
+          empirical_height_px: "160-220"
+          item_count_max: 4
+    do_not_use_when:
+      - "the page already uses a full timeline layout"
+      - "the sequence requires precise intervals or Gantt-style duration bars"
+    example_payload:
+      timeline_border_class: border-slate-300
+      marker_ring_class: border-white
+      step_1_marker_class: bg-sky-600
+      step_1_label_class: text-slate-950
+      step_1_body_class: text-slate-600
+      step_1_label: 2025
+      step_1_description: Shadow conflict escalates into direct signaling.
+      step_2_marker_class: bg-slate-300
+      step_2_label_class: text-slate-950
+      step_2_body_class: text-slate-600
+      step_2_label: 2026
+      step_2_description: Maritime disruption becomes the main transmission channel.
+    html: |
+      <div class="space-y-6 relative border-l {{timeline_border_class}} ml-3 pl-6">
+        <!-- Step 1 -->
+        <div class="relative">
+          <div class="absolute -left-[29px] top-1 w-3 h-3 rounded-full {{step_1_marker_class}} border-2 {{marker_ring_class}}"></div>
+          <h4 class="text-sm font-bold {{step_1_label_class}} mb-1">{{step_1_label}}</h4>
+          <p class="text-xs {{step_1_body_class}}">{{step_1_description}}</p>
+        </div>
+        <!-- Step 2 -->
+        <div class="relative">
+          <div class="absolute -left-[29px] top-1 w-3 h-3 rounded-full {{step_2_marker_class}} border-2 {{marker_ring_class}}"></div>
+          <h4 class="text-sm font-bold {{step_2_label_class}} mb-1">{{step_2_label}}</h4>
+          <p class="text-xs {{step_2_body_class}}">{{step_2_description}}</p>
+        </div>
+      </div>
+
+  # 4. Badges & Tags
+  # ------------------------------------------------------------
+  Badge_Pill:
+    description: "Rounded status label."
+    use_case: "Status (Active/Pending), Category tags."
+    category: badge
+    variant: pill
+    compatible_layouts: [all]
+    theme_support: [mixed]
+    required_placeholders: [badge_bg_class, badge_text_class, badge_border_class, label]
+    optional_placeholders: []
+    semantic_tokens: [accent_color, surface_subtle, border_subtle]
+    component_spec:
+      width_mode: width-sensitive
+      expansion_axis: intrinsic
+      placement_fit: [rail, grid_cell, timeline_node, comparison_header]
+      variants:
+        compact:
+          empirical_height_px: "20-32"
+          label_chars_max: 18
+        default:
+          empirical_height_px: "32-44"
+          label_chars_max: 24
+    do_not_use_when:
+      - "the label is longer than a compact badge can hold"
+      - "the badge is being used as a substitute for a real insight card"
+    example_payload:
+      badge_bg_class: bg-amber-50
+      badge_text_class: text-amber-700
+      badge_border_class: border-amber-200
+      label: Elevated Risk
+    html: |
+      <span class="px-3 py-1 {{badge_bg_class}} {{badge_text_class}} text-[10px] font-bold uppercase tracking-widest border {{badge_border_class}} rounded-full">
+        {{label}}
+      </span>
+
+  Badge_Tag:
+    description: "Rectangular tag attached to corners."
+    use_case: "Versioning, Security Level."
+    category: badge
+    variant: tag
+    compatible_layouts: [all]
+    theme_support: [mixed]
+    required_placeholders: [tag_surface_class, tag_text_class, label]
+    optional_placeholders: []
+    semantic_tokens: [surface_strong, text_primary]
+    component_spec:
+      width_mode: width-sensitive
+      expansion_axis: intrinsic
+      placement_fit: [corner_tag, card_header, security_label]
+      variants:
+        compact:
+          empirical_height_px: "18-28"
+          label_chars_max: 16
+        default:
+          empirical_height_px: "28-40"
+          label_chars_max: 24
+    do_not_use_when:
+      - "status severity needs semantic color emphasis"
+      - "the component must read as a primary headline or callout"
+    example_payload:
+      tag_surface_class: bg-slate-100
+      tag_text_class: text-slate-900
+      label: Restricted
+    html: |
+      <div class="{{tag_surface_class}} {{tag_text_class}} text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider inline-block">
+        {{label}}
+      </div>
+
+  # 5. Visuals & Decor
+  # ------------------------------------------------------------
+  Visual_Arrow:
+    description: "Large directional arrow for process flows."
+    use_case: "Connecting two cards."
+    category: visual
+    variant: connector_arrow
+    compatible_layouts: [process, side_by_side, hybrid, comparison_progressive]
+    theme_support: [mixed]
+    required_placeholders: [arrow_text_class]
+    optional_placeholders: [direction]
+    semantic_tokens: [border_subtle, text_muted]
+    component_spec:
+      width_mode: semi-fixed
+      expansion_axis: horizontal_fill
+      placement_fit: [process_gap, comparison_connector, side_by_side_bridge]
+      variants:
+        compact:
+          empirical_height_px: "24-48"
+          text_capacity_hint: "纯连接，不承载正文"
+        default:
+          empirical_height_px: "48-72"
+    do_not_use_when:
+      - "the connection requires labeled logic or multiple branches"
+      - "a decorative arrow would add noise rather than structure"
+    example_payload:
+      arrow_text_class: text-slate-600
+      direction: right
+    html: |
+      <div class="flex items-center justify-center {{arrow_text_class}} text-2xl h-full">
+        <i class="fa-solid fa-arrow-right"></i>
+      </div>
+
+  Visual_Glow:
+    description: "Background glow effect."
+    use_case: "Atmosphere behind hero elements."
+    category: visual
+    variant: glow
+    compatible_layouts: [cover, conclusion, executive_summary, hybrid]
+    theme_support: [dark_bias, style_profile_sensitive]
+    required_placeholders: [glow_bg_class]
+    optional_placeholders: []
+    semantic_tokens: [accent_color]
+    component_spec:
+      width_mode: horizontal_fill
+      expansion_axis: intrinsic
+      placement_fit: [background_layer, hero_backdrop]
+      variants:
+        compact:
+          empirical_height_px: "120-220"
+        default:
+          empirical_height_px: "220-360"
+    do_not_use_when:
+      - "the page already has multiple competing background effects"
+      - "clarity and neutral evidence density matter more than atmosphere"
+    example_payload:
+      glow_bg_class: bg-blue-500/20
+    html: |
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 {{glow_bg_class}} rounded-full blur-[80px] -z-10"></div>
+
+  # 6. Abstract Maps (Geopolitics)
+  # ------------------------------------------------------------
+  Map_Grid:
+    description: "Conceptual grid map for regions."
+    use_case: "Showing political alignment without precise geography (e.g., Europe Populism)."
+    category: geo_primitive
+    variant: abstract_grid
+    compatible_layouts: [map_overlay, side_by_side, hybrid]
+    theme_support: [mixed]
+    required_placeholders: [grid_surface_class, grid_border_class, cell_bg_class, cell_border_class, cell_text_class, country_code]
+    optional_placeholders: []
+    semantic_tokens: [accent_color, surface_subtle, border_subtle]
+    component_spec:
+      width_mode: horizontal_fill
+      expansion_axis: vertical_fill
+      placement_fit: [map_surface, side_panel_map, comparison_map]
+      variants:
+        compact:
+          empirical_height_px: "120-180"
+          text_capacity_hint: "少量国家/区域编码"
+        default:
+          empirical_height_px: "180-260"
+    do_not_use_when:
+      - "the page is a true map page that needs real geography or geographic scope decisions"
+      - "the audience might mistake the grid for literal spatial accuracy"
+    example_payload:
+      grid_surface_class: bg-slate-50
+      grid_border_class: border-slate-200
+      cell_bg_class: bg-cyan-50
+      cell_border_class: border-cyan-200
+      cell_text_class: text-cyan-700
+      country_code: OMN
+    html: |
+      <div class="grid grid-cols-3 gap-2 w-[300px] mx-auto p-4 {{grid_surface_class}} border {{grid_border_class}} rounded-xl">
+        <!-- Grid Item -->
+        <div class="{{cell_bg_class}} border {{cell_border_class}} p-2 flex items-center justify-center text-xs font-bold {{cell_text_class}} transition-colors">
+          {{country_code}}
+        </div>
+      </div>
+
+  Map_NodeNetwork:
+    description: "Strategic nodes on an abstract map layer."
+    use_case: "Iron Ring Strategy, Supply Chain Nodes."
+    category: geo_primitive
+    variant: node_network
+    compatible_layouts: [map_overlay, hybrid, side_by_side]
+    theme_support: [dark_bias, style_profile_sensitive]
+    required_placeholders: [network_surface_class, network_border_class, node_dot_class, node_border_class, node_label_text_class, node_label_surface_class, node_name]
+    optional_placeholders: [node_2_name, node_3_name]
+    semantic_tokens: [surface_strong, accent_color, text_primary, border_subtle]
+    component_spec:
+      width_mode: horizontal_fill
+      expansion_axis: vertical_fill
+      placement_fit: [map_surface, map_canvas, hybrid_top]
+      variants:
+        compact:
+          empirical_height_px: "180-240"
+          node_count_max: 4
+        default:
+          empirical_height_px: "240-320"
+          node_count_max: 6
+    do_not_use_when:
+      - "the page needs a true basemap, route geometry, or geographic crop"
+      - "a standard process/network layout would explain the system more clearly"
+    example_payload:
+      network_surface_class: bg-slate-950/90
+      network_border_class: border-slate-800
+      node_dot_class: bg-blue-500
+      node_border_class: border-blue-500/30
+      node_label_text_class: text-white
+      node_label_surface_class: bg-slate-950/80
+      node_name: Bahrain Hub
+    html: |
+      <div class="relative w-full h-full {{network_surface_class}} border {{network_border_class}} rounded-lg overflow-hidden">
+        <!-- Background Grid -->
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,...')] opacity-10"></div>
+        <!-- Node 1 -->
+        <div class="absolute top-[40%] left-[30%] group">
+          <div class="w-4 h-4 {{node_dot_class}} rounded-full shadow-[0_0_10px_currentColor] animate-pulse"></div>
+          <div class="absolute top-6 left-1/2 -translate-x-1/2 text-[9px] font-bold {{node_label_text_class}} {{node_label_surface_class}} px-2 py-1 border {{node_border_class}} whitespace-nowrap">{{node_name}}</div>
+        </div>
+      </div>
+
+  Map_FlowArrow:
+    description: "Simple SVG flow between two points."
+    use_case: "Energy export flow, Trade route."
+    category: geo_primitive
+    variant: flow_arrow
+    compatible_layouts: [map_overlay, side_by_side, hybrid, process]
+    theme_support: [mixed]
+    required_placeholders: [flow_color, x1, y1, cx1, cy1, cx2, cy2, x2, y2]
+    optional_placeholders: []
+    semantic_tokens: [flow_color]
+    component_spec:
+      width_mode: horizontal_fill
+      expansion_axis: intrinsic
+      placement_fit: [map_surface, process_gap, route_overlay]
+      variants:
+        compact:
+          empirical_height_px: "24-64"
+          path_count_max: 2
+        default:
+          empirical_height_px: "64-120"
+          path_count_max: 4
+    do_not_use_when:
+      - "the route requires actual geo-series encoding handled by ECharts"
+      - "multiple overlapping paths would make the SVG primitive unreadable"
+    example_payload:
+      flow_color: info
+      x1: 120
+      y1: 180
+      cx1: 240
+      cy1: 120
+      cx2: 380
+      cy2: 140
+      x2: 520
+      y2: 200
+    html: |
+      <svg class="w-full h-full overflow-visible pointer-events-none absolute inset-0">
+        <defs>
+          <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:{{flow_color}};stop-opacity:1" />
+            <stop offset="100%" style="stop-color:{{flow_color}};stop-opacity:0.2" />
+          </linearGradient>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="{{flow_color}}" />
+          </marker>
+        </defs>
+        <path d="M {{x1}},{{y1}} C {{cx1}},{{cy1}} {{cx2}},{{cy2}} {{x2}},{{y2}}" stroke="url(#flowGrad)" stroke-width="4" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="8 4" class="animate-pulse" />
+      </svg>
+
+  Map_RadarRing:
+    description: "Concentric rings for defense depth."
+    use_case: "Strategic depth, Area Denial (A2/AD)."
+    category: geo_primitive
+    variant: radar_ring
+    compatible_layouts: [map_overlay, hybrid, side_by_side, comparison]
+    theme_support: [dark_bias, mixed]
+    required_placeholders: [core_bg_class, core_border_class, icon_text_class, ring_outer_class, ring_fill_class, ring_inner_class]
+    optional_placeholders: [icon]
+    semantic_tokens: [accent_color, surface_subtle, border_subtle]
+    component_spec:
+      width_mode: fixed-like
+      expansion_axis: intrinsic
+      placement_fit: [map_surface, hybrid_top, comparison_panel]
+      variants:
+        compact:
+          empirical_height_px: "120-180"
+        default:
+          empirical_height_px: "180-260"
+    do_not_use_when:
+      - "the page needs precise range quantification or true geo scale"
+      - "the audience may confuse symbolic rings with measured distance"
+    example_payload:
+      core_bg_class: bg-red-600
+      core_border_class: border-white/20
+      icon_text_class: text-white
+      ring_outer_class: border-red-500/50
+      ring_fill_class: border-red-500/30 bg-red-500/10
+      ring_inner_class: border-red-500/30
+      icon: shield
+    html: |
+      <div class="relative flex items-center justify-center w-64 h-64">
+        <!-- Core -->
+        <div class="w-16 h-16 {{core_bg_class}} rounded-full z-20 flex items-center justify-center shadow-lg border-2 {{core_border_class}}">
+          <i class="fa-solid fa-{{icon}} {{icon_text_class}}"></i>
+        </div>
+        <!-- Ring 1 -->
+        <div class="absolute w-32 h-32 border {{ring_outer_class}} rounded-full z-10 animate-ping opacity-20"></div>
+        <div class="absolute w-32 h-32 border {{ring_fill_class}} rounded-full z-10"></div>
+        <!-- Ring 2 -->
+        <div class="absolute w-48 h-48 border border-dashed {{ring_inner_class}} rounded-full z-0"></div>
+      </div>

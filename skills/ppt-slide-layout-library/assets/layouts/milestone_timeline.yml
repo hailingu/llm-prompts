@@ -1,0 +1,183 @@
+# 里程碑时间线布局 (milestone_timeline)
+# 文件: layouts/milestone_timeline.yml
+
+layout:
+  id: milestone_timeline
+  name: 里程碑时间线
+  version: 2.0
+  category: timeline
+
+selection_criteria:
+  when_to_use:
+    - "5-8 个年度事件/里程碑"
+    - "历史演进展示"
+    - "项目进度追踪"
+  when_not_to_use:
+    - "纯逻辑步骤 → 改用 process_steps"
+    - ">8 事件 → 改用 timeline_vertical"
+
+spec:
+  structure_type: "header-main-footer"
+  canvas: { width: 1280, height: 720 }
+  header: { height_px: 80 }
+  footer: { height_px: 40 }
+  main:
+    available_h_px: 600
+    padding: "px-12 py-6"
+  region_budget_model:
+    intent: "先分配顶部时间轴与下方事件卡网格的净宽净高，再为节点与事件卡生成候选组件。"
+    regions:
+      timeline:
+        width_rule: "主内容全宽"
+        height_rule: "固定顶部时间轴预算 + 节点标签预算"
+      cards:
+        width_rule: "主内容全宽"
+        height_rule: "剩余主区高度，按 2 行或 3 行事件卡网格分配"
+  regions:
+    timeline:
+      layout: "horizontal"
+      position: "top"
+    cards:
+      layout: "below_timeline"
+  component_entrypoints:
+    timeline_components: [Badge_Pill, Visual_Arrow]
+    event_card_components: [Card_Accent, Card_Solid, List_Icon]
+
+content_spec:
+  events:
+    count: { min: 5, max: 8, optimal: 6 }
+    per_event:
+      year_required: true
+      title_max_chars: 20
+      desc_max_chars: 60
+  candidate_selection_rule: "先根据事件数决定时间轴节点间距和事件卡网格行列，再依据 component_entrypoints 生成节点与事件卡候选；若节点标签或事件描述超预算，必须减少事件数或改 vertical timeline。"
+
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - chronology
+    - event_count
+    - milestone_labels
+    - sequencing_basis
+    - takeaway_message
+    - axis_anchor_policy
+    - fallback_plan
+  narrative_fit:
+    - milestone_history
+    - project_roadmap
+    - event_based_progression
+  compatible_chart_families:
+    - line_trend
+  compatible_component_families:
+    - Step_Flow
+    - Card_Accent
+    - Card_Solid
+    - List_Icon
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - timeline_vertical
+    - timeline_evolution
+    - process_steps
+  overflow_recovery_order:
+    - reduce_event_count
+    - shorten_event_descriptions
+    - collapse_secondary_events
+    - downgrade_to_timeline_vertical
+
+constraints:
+  - "事件数 5-8 个"
+  - "必须有年份标注"
+  - "时间轴与节点必须使用同一垂直锚点；节点圆心必须严格落在轴线上"
+  - "禁止用独立 margin/top 偏移分别摆放轴线和节点"
+  - "优先使用单一 SVG 坐标系，或在同一 wrapper 内由共享 centerline 驱动轴线与节点"
+
+worked_layout_example:
+  scenario: "Six annual milestones with a single top axis and a 3x2 event-card grid below"
+  region_budget:
+    timeline_height_px: 96
+    card_grid_height_px: 420
+    card_cell_width_px: 336
+    card_cell_height_px: 124
+  component_candidates:
+    node_label:
+      - { component_family: Badge_Pill, variant: compact, estimated_height_px: 24, fit_reason: "适合单年标签，不占用过多轴线空间" }
+    event_card:
+      - { component_family: Card_Accent, variant: compact, estimated_height_px: 108, fit_reason: "适合单一 milestone 标题 + 短描述" }
+      - { component_family: Card_Solid, variant: compact, estimated_height_px: 116, fit_reason: "信息更重，但在 6 事件场景中更容易挤压网格" }
+  packing_result:
+    selected_components:
+      - { region: timeline, component_family: Badge_Pill, variant: compact }
+      - { region: cards, component_family: Card_Accent, variant: compact }
+    distribution_note:
+      - "若某一年份事件描述明显更长，优先升档该事件卡或减少总事件数，而不是单独把该卡撑高破坏轴线节奏"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white">
+    <header class="h-[80px] border-b border-slate-200 px-12 pt-6 pb-4 shrink-0">
+      <h1 class="text-3xl font-bold text-slate-800">里程碑时间线</h1>
+    </header>
+    
+    <main class="flex-1 w-full px-12 py-6 min-h-0 flex flex-col">
+      <!-- Timeline Section -->
+      <div class="timeline-container relative h-24 mb-6">
+        <div class="connection-line absolute top-1/2 left-0 right-0 h-1 bg-brand-primary/30 -translate-y-1/2"></div>
+        <div class="flex justify-between items-center absolute top-0 left-0 right-0 h-full">
+          <div class="timeline-node flex flex-col items-center">
+            <div class="w-4 h-4 bg-brand-primary rounded-full mb-2"></div>
+            <span class="text-sm font-bold text-brand-primary">2020</span>
+          </div>
+          <div class="timeline-node flex flex-col items-center">
+            <div class="w-4 h-4 bg-brand-secondary rounded-full mb-2"></div>
+            <span class="text-sm font-bold text-brand-secondary">2021</span>
+          </div>
+          <div class="timeline-node flex flex-col items-center">
+            <div class="w-4 h-4 bg-emerald-500 rounded-full mb-2"></div>
+            <span class="text-sm font-bold text-emerald-600">2022</span>
+          </div>
+          <div class="timeline-node flex flex-col items-center">
+            <div class="w-4 h-4 bg-amber-500 rounded-full mb-2"></div>
+            <span class="text-sm font-bold text-amber-600">2023</span>
+          </div>
+          <div class="timeline-node flex flex-col items-center">
+            <div class="w-4 h-4 bg-sky-500 rounded-full mb-2"></div>
+            <span class="text-sm font-bold text-sky-600">2024</span>
+          </div>
+          <div class="timeline-node flex flex-col items-center">
+            <div class="w-4 h-4 bg-indigo-500 rounded-full mb-2"></div>
+            <span class="text-sm font-bold text-indigo-600">2025</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Event Cards -->
+      <div class="grid grid-cols-3 gap-4 flex-1 min-h-0">
+        <div class="card p-4 border-l-4 border-brand-primary bg-slate-50">
+          <h4 class="font-bold text-brand-primary mb-2">事件 1</h4>
+          <p class="text-sm text-slate-600">事件描述文字，建议不超过60字符</p>
+        </div>
+        <div class="card p-4 border-l-4 border-brand-secondary bg-slate-50">
+          <h4 class="font-bold text-brand-secondary mb-2">事件 2</h4>
+          <p class="text-sm text-slate-600">事件描述文字</p>
+        </div>
+        <div class="card p-4 border-l-4 border-emerald-500 bg-slate-50">
+          <h4 class="font-bold text-emerald-600 mb-2">事件 3</h4>
+          <p class="text-sm text-slate-600">事件描述文字</p>
+        </div>
+        <div class="card p-4 border-l-4 border-amber-500 bg-slate-50">
+          <h4 class="font-bold text-amber-600 mb-2">事件 4</h4>
+          <p class="text-sm text-slate-600">事件描述文字</p>
+        </div>
+        <div class="card p-4 border-l-4 border-sky-500 bg-slate-50">
+          <h4 class="font-bold text-sky-600 mb-2">事件 5</h4>
+          <p class="text-sm text-slate-600">事件描述文字</p>
+        </div>
+        <div class="card p-4 border-l-4 border-indigo-500 bg-slate-50">
+          <h4 class="font-bold text-indigo-600 mb-2">事件 6</h4>
+          <p class="text-sm text-slate-600">事件描述文字</p>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0"></footer>
+  </div>

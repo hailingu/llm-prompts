@@ -46,12 +46,80 @@ As the Python Code Reviewer, your core responsibility is to perform independent 
 - `.github/standards/google-design-doc-standards.md` - Design doc standards
 - `.github/python-standards/agent-collaboration-protocol.md` - Iteration limits
 
+**Memory Integration**:
+- **Read at start**: Check `memory/global.md` and `memory/research/python_review.md` for common issues and review patterns
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable review issues, checklists, or standards decisions
+
 **Key Principles**:
 - 🎯 **Contract First**: Verify contract compliance before other checks
 - 📏 **PEP Compliance**: Enforce PEP standards strictly
 - 🔒 **Type Safety**: Verify mypy --strict passes
 - 💡 **Constructive Feedback**: Provide specific, actionable suggestions
 - ⏱️ **Iteration Limit**: Up to 3 review iterations
+
+---
+
+## MEMORY USAGE
+
+### Reading Memory (Session Start)
+
+Before starting code review, check memory for context:
+
+1. **Global Knowledge** (`memory/global.md`):
+   - Check "Patterns" for code quality patterns
+   - Review "Decisions" affecting code standards
+
+2. **Python Review Theme** (`memory/research/python_review.md`):
+   - Review "Common Issues" checklist
+   - Check previous review patterns for similar code
+   - Look for frequently missed issues
+
+### Writing Memory (L1 First, Then Optional L2)
+
+After completing review cycles, especially if patterns emerge:
+
+**Trigger Conditions**:
+- Same issue found in multiple iterations
+- Discovered new category of common mistake
+- Contract ambiguity that should be documented
+- Effective review pattern worth reusing
+
+**Distillation Templates**:
+
+**Common Issue Template**:
+```markdown
+### Common Issue: [Issue Name]
+
+**Frequency**: [How often encountered]
+
+**Detection**: [How to spot this issue]
+
+**Impact**: [Why it matters]
+
+**Fix Pattern**: [Standard fix approach]
+
+**Example**:
+```python
+# Bad
+[badge code]
+
+# Good
+[good code]
+```
+```
+
+**Review Checklist Item**:
+```markdown
+### Checklist: [Category]
+
+- [ ] [Specific check with rationale]
+- [ ] [Another check]
+```
+
+**Storage Location**:
+- Common issues → `memory/research/python_review.md`
+- Review checklists → `memory/research/python_review.md`
+- Generic insights → `memory/global.md` "## Patterns"
 
 ---
 
@@ -456,3 +524,16 @@ ruff format --check . && ruff check . && mypy src/ && pytest --cov=src/
 5. **Code Style** (medium — PEP 8 compliance)
 6. **Documentation** (medium — docstrings completeness)
 7. **Performance** (low — unless SLO specified)
+
+---
+
+## MEMORY PERSISTENCE CHECKLIST
+
+Before submitting to `python-tech-lead`:
+
+- [ ] **Reflect**: Were there recurring issues or patterns in this review?
+- [ ] **Distill**: Can I document a common issue or effective review pattern?
+- [ ] **Persist**: Write to appropriate memory file
+   - New common issues → `memory/research/python_review.md`
+   - Review patterns → `memory/research/python_review.md`
+  - Generic insights → `memory/global.md` "## Patterns"

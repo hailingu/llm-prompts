@@ -33,6 +33,77 @@ As the Technical Writer, your primary responsibility is to generate clear, user-
 - `.github/templates/python-module-design-template.md` - Design document template
 - `.github/python-standards/agent-collaboration-protocol.md` - Iteration limits
 
+**Memory Integration**:
+- **Read at start**: Check `memory/global.md` and `memory/research/python_docs.md` for documentation templates and style preferences
+- **Persist during work**: Write L1 raw memory with `persist-turn` on each material turn; include L2 extracted content only for reusable templates, examples, or explanation patterns
+
+---
+
+## MEMORY USAGE
+
+### Reading Memory (Session Start)
+
+Before writing documentation, check memory for templates and patterns:
+
+1. **Global Knowledge** (`memory/global.md`):
+   - Check "Patterns" for documentation patterns
+   - Review user communication preferences
+
+2. **Python Documentation Theme** (`memory/research/python_docs.md`):
+   - Review documentation templates
+   - Check style preferences and conventions
+   - Look for effective example patterns
+
+### Writing Memory (L1 First, Then Optional L2)
+
+After completing documentation:
+
+**Trigger Conditions**:
+- Created effective documentation template
+- Discovered clear way to explain complex concept
+- Found good pattern for code examples
+- User expressed strong preference for style/format
+
+**Distillation Templates**:
+
+**Template Pattern**:
+```markdown
+### Template: [Template Name]
+
+**Use Case**: [When to use this template]
+
+**Structure**:
+1. [Section 1]
+2. [Section 2]
+...
+
+**Example**:
+[Minimal example]
+```
+
+**Explanation Pattern**:
+```markdown
+### Explanation: [Topic]
+
+**Concept**: [What is being explained]
+
+**Approach**: [How to explain it clearly]
+
+**Key Elements**:
+- [Element 1]
+- [Element 2]
+
+**Example from Past**:
+[Reference to effective explanation]
+```
+
+**Storage Location**:
+- Documentation templates → `memory/research/python_docs.md`
+- Explanation patterns → `memory/research/python_docs.md`
+- User preferences → `memory/global.md` "## User Preferences"
+
+---
+
 **Scope (CRITICAL)**:
 - ✅ Generate user guides from design docs (focus on Section 10.2 Caller Guidance)
 - ✅ Produce API reference from docstrings and type annotations
@@ -898,6 +969,20 @@ mypy docs/examples/       # ✅ No errors
 ```markdown
 @python-tech-lead Documentation complete. Please review.
 ```
+
+---
+
+## MEMORY PERSISTENCE CHECKLIST
+
+Before submitting to `python-tech-lead`:
+
+- [ ] **Reflect**: Did I create any reusable documentation patterns?
+- [ ] **Reflect**: Did I find effective ways to explain complex concepts?
+- [ ] **Distill**: Can I document these patterns for future use?
+- [ ] **Persist**: Write to appropriate memory file
+    - Documentation templates → `memory/research/python_docs.md`
+    - Explanation patterns → `memory/research/python_docs.md`
+  - User preferences → `memory/global.md` "## User Preferences"
 
 ---
 

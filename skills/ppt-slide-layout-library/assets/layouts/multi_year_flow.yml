@@ -1,0 +1,149 @@
+name: multi_year_flow
+description: "Two-tier flow diagram showing model inputs, effects, and outputs across consecutive years. Each tier has three colored boxes connected by arrows, with optional cross-tier connector. Ideal for illustrating year-over-year model mechanics."
+type: layout
+version: 1.0.0
+selection_criteria:
+  - "Use when depicting sequential annual inputs/effects/outputs in a two-row format."
+  - "Use for models where Year N results feed Year N+1 inputs."
+  - "Not suitable for simple linear steps (use process_steps) or complex systems (use system_process_map)."
+
+spec:
+  structure:
+    - area: "header"
+      height: "80px"
+      fixed: true
+    - area: "main"
+      flex: 1
+      layout: "two_tier_flow"
+      elements:
+        - "tier1_boxes (3)"
+        - "tier2_boxes (3)"
+        - "horizontal_arrows"
+        - "vertical_connector (optional)"
+    - area: "footer"
+      height: "50px"
+      fixed: true
+  region_budget_model:
+    intent: "先分配两层 flow row 与 box/arrow/connector 的净宽净高，再生成 flow box 和 connector 组件候选。"
+    regions:
+      tier_row:
+        width_rule: "主内容全宽扣除左右 padding 与 box 之间的箭头占位"
+        height_rule: "main 可用高度按两层均分并扣除层间连接安全区"
+      connector_lane:
+        width_rule: "位于上下两层对应 box 之间的留白中心"
+        height_rule: "层间安全区高度"
+
+  style_presets:
+    box_year0: "bg-amber-200 border border-amber-400 p-4 rounded shadow text-slate-800 text-sm leading-snug"
+    box_year1: "bg-emerald-200 border border-emerald-400 p-4 rounded shadow text-slate-800 text-sm leading-snug"
+    box_output: "bg-slate-200 border border-slate-300 p-4 rounded shadow text-slate-800 text-sm leading-snug"
+    arrow: "w-6 h-6 text-slate-400"
+  component_entrypoints:
+    flow_box_components: [Card_Solid, Card_Accent, List_Icon]
+    connector_components: [Visual_Arrow]
+
+content_spec:
+  tier_count: { exact: 2 }
+  boxes_per_tier: { exact: 3 }
+  text_limits:
+    box: "15-50 chars"
+    header: "20-30 chars"
+  candidate_selection_rule: "先根据每层 3 个 box 的净宽净高生成 flow box 候选，再根据 connector_lane 生成连接组件候选；若 box 文案超过当前层预算，必须改更轻量 box variant 或降级布局。"
+
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - time_horizon
+    - tier_labels
+    - stage_dependencies
+    - carry_forward_mechanism
+    - connector_policy
+    - connector_safe_zone
+    - fallback_plan
+  narrative_fit:
+    - multi_year_causal_flow
+    - annual_model_hand_off
+    - phased_operating_mechanism
+  compatible_chart_families:
+    - gantt_sequence
+    - line_trend
+  compatible_component_families:
+    - Step_Flow
+    - Card_Solid
+    - Card_Accent
+    - List_Icon
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - process_steps
+    - system_process_map
+    - timeline_evolution
+  overflow_recovery_order:
+    - reduce_text_per_box
+    - remove_optional_vertical_connector
+    - collapse_tier_annotations
+    - downgrade_to_process_steps
+
+constraints:
+  - "纵向连接必须位于上下两层对应卡片之间的留白中心，不得贴边或进入卡片内部"
+  - "纵向连接若表达承接方向，必须使用与横向箭头一致的方向性箭头语法"
+  - "禁止仅用无方向虚线代替阶段承接关系"
+
+worked_layout_example:
+  scenario: "Two-year operating model hand-off where Year 0 outputs feed Year 1 inputs"
+  region_budget:
+    tier_row_height_px: 168
+    box_width_px: 232
+    box_height_px: 96
+    connector_lane_height_px: 72
+  component_candidates:
+    flow_box:
+      - { component_family: Card_Solid, variant: compact, estimated_height_px: 92, fit_reason: "适合 1 个短标题 + 1 段 20-35 英文词说明" }
+      - { component_family: Card_Accent, variant: compact, estimated_height_px: 104, fit_reason: "用于关键 output box 时强调更强" }
+    connector:
+      - { component_family: Visual_Arrow, variant: compact, estimated_height_px: 32, fit_reason: "承接关系清晰，符合横向/纵向统一箭头语法" }
+  packing_result:
+    selected_components:
+      - { region: tier_row, component_family: Card_Solid, variant: compact }
+      - { region: critical_output_box, component_family: Card_Accent, variant: compact }
+      - { region: connector_lane, component_family: Visual_Arrow, variant: compact }
+    distribution_note:
+      - "若层间说明过多，优先减少 box 文案或取消可选纵向 connector，而不是让连接侵入卡片安全区"
+
+template: |
+  <div class="slide-container flex flex-col h-full bg-white text-slate-800">
+    <!-- Header -->
+    <header class="h-20 px-12 flex flex-col justify-center border-b border-green-700 bg-white z-50">
+      <h1 class="text-2xl font-bold text-emerald-800 tracking-tight">{{title}}</h1>
+      <p class="text-sm text-slate-600 mt-1">{{subtitle}}</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 relative w-full p-8 flex flex-col justify-around">
+      <!-- Tier 1 Row -->
+      <div class="flex justify-center items-center space-x-8">
+        <div class="box_year0 w-1/4">Year 0 baseline<br/>inputs...</div>
+        <svg class="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        <div class="box_year1 w-1/4">Year0 effects...</div>
+        <svg class="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        <div class="box_output w-1/4">Year0 outputs used</div>
+      </div>
+
+      <!-- Tier 2 Row -->
+      <div class="flex justify-center items-center space-x-8">
+        <div class="box_year0 w-1/4">Year1 market model output</div>
+        <svg class="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        <div class="box_year1 w-1/4">Year1 CTP impacts</div>
+        <svg class="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        <div class="box_output w-1/4">Year1 inputs for later years</div>
+      </div>
+
+      <!-- Optional vertical connector -->
+      <svg class="absolute right-12 top-1/2 transform -translate-y-1/2 h-20" viewBox="0 0 24 24"><path d="M12 0v24" stroke="currentColor" stroke-width="2" stroke-dasharray="4,4"/></svg>
+    </main>
+
+    <!-- Footer -->
+    <footer class="h-[50px] px-12 flex items-center justify-between text-xs text-slate-400 border-t border-slate-200">
+      <span>Source: BCG analysis</span>
+      <span>Page {{page}}</span>
+    </footer>
+  </div>

@@ -1,0 +1,202 @@
+# 定性评估矩阵布局 (assessment_matrix)
+# 文件: layouts/assessment_matrix.yml
+
+layout:
+  id: assessment_matrix
+  name: 定性评估矩阵
+  version: 2.3
+  category: comparison
+
+selection_criteria:
+  when_to_use:
+    - "定性指标评估 (如安全性、用户体验)"
+    - "多方案优劣势分析"
+    - "不同时间维度的表现对比 (短期 vs 长期)"
+  when_not_to_use:
+    - "精确数值对比 (改用 data_chart)"
+    - "简单的二元对比 (Yes/No)"
+
+spec:
+  regions:
+    grid:
+      layout: "css_grid_auto_rows"
+      row_headers: "left_column"
+      data_cells: "centered_icons"
+
+content_spec:
+  structure:
+    max_columns: 8
+    max_rows: 5
+  headers:
+    top_level_max_chars: 25
+    sub_level_max_chars: 15
+  legend:
+    required: true
+    items: ["Worse", "Better"]
+
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - evaluation_dimensions
+    - option_groups
+    - rating_scale
+    - legend_definition
+    - recommendation_logic
+    - fallback_plan
+  narrative_fit:
+    - qualitative_assessment
+    - strategic_option_screening
+    - short_vs_long_term_tradeoff
+  compatible_chart_families:
+    - heatmap_matrix
+    - radar_profile
+  compatible_component_families:
+    - Table_Status
+    - Badge_Status
+    - Card_Solid
+    - List_Icon
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - comparison
+    - side_by_side
+    - dashboard_grid
+  overflow_recovery_order:
+    - reduce_column_count
+    - reduce_row_count
+    - simplify_rating_scale
+    - downgrade_to_comparison
+
+constraints:
+  - "图标风格必须统一 (SVG)"
+  - "方案组之间必须有虚线分隔"
+  - "行高必须一致"
+  - "必须包含图例说明"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white text-slate-800">
+    <!-- Header -->
+    <header class="h-[80px] border-b-2 border-brand-primary px-12 pt-6 pb-2 shrink-0">
+      <h1 class="text-3xl font-bold text-brand-primary tracking-tight">综合评估结论</h1>
+      <p class="text-sm text-slate-500 mt-1">方案 III 在长期可持续性方面表现最佳，但面临短期风险</p>
+    </header>
+    
+    <!-- Main Matrix Area -->
+    <main class="flex-1 w-full px-12 py-8 min-h-0 flex flex-col items-center justify-center">
+      
+      <!-- Grid Container -->
+      <div class="grid grid-cols-[200px_repeat(6,1fr)] gap-0 w-full max-w-5xl border-t-2 border-slate-800">
+        
+        <!-- Header Row: Top Level (Scheme) -->
+        <div class="p-2 border-b border-white"></div> <!-- Empty Corner -->
+        
+        <!-- Scheme I -->
+        <div class="col-span-2 p-3 text-center border-l-2 border-dashed border-slate-300 font-bold text-slate-800 bg-slate-50">
+          I: 基础方案
+        </div>
+        
+        <!-- Scheme II -->
+        <div class="col-span-2 p-3 text-center border-l-2 border-dashed border-slate-300 font-bold text-slate-800 bg-slate-50">
+          II: 增强模式
+        </div>
+        
+        <!-- Scheme III -->
+        <div class="col-span-2 p-3 text-center border-l-2 border-dashed border-slate-300 font-bold text-brand-primary bg-brand-primary/5">
+          III: 最终形态
+        </div>
+        
+        
+        <!-- Header Row: Sub Level (Timeframe) -->
+        <div class="font-bold text-right pr-4 py-2 border-b-2 border-brand-primary flex flex-col justify-end text-sm text-slate-500">
+          现状评估
+        </div>
+        
+        <!-- Subheaders Theme I -->
+        <div class="text-center py-2 border-b-2 border-brand-primary border-l-2 border-dashed border-slate-300 font-semibold text-sm">短期</div>
+        <div class="text-center py-2 border-b-2 border-brand-primary font-semibold text-sm">长期</div>
+        
+        <!-- Subheaders Theme II -->
+        <div class="text-center py-2 border-b-2 border-brand-primary border-l-2 border-dashed border-slate-300 font-semibold text-sm">短期</div>
+        <div class="text-center py-2 border-b-2 border-brand-primary font-semibold text-sm">长期</div>
+        
+        <!-- Subheaders Theme III -->
+        <div class="text-center py-2 border-b-2 border-brand-primary border-l-2 border-dashed border-slate-300 font-semibold text-sm bg-brand-primary/5">短期</div>
+        <div class="text-center py-2 border-b-2 border-brand-primary font-semibold text-sm bg-brand-primary/5">长期</div>
+
+
+        <!-- Data Row 1: Environment -->
+        <div class="row-header py-6 px-4 bg-brand-secondary text-white font-bold flex items-center shadow-sm my-2 rounded-l">
+          环境影响
+        </div>
+        
+        <!-- Row 1 Data Cells -->
+        <div class="flex items-center justify-center py-2 border-l-2 border-dashed border-slate-300">
+           <!-- Harvey Ball 1/4 -->
+           <svg class="w-8 h-8 text-slate-600" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14v12c3.31 0 6-2.69 6-6s-2.69-6-6-6z" opacity="0.3"/><path d="M12 4v8h8c0-4.41-3.59-8-8-8z"/></svg>
+        </div>
+        <div class="flex items-center justify-center py-2">
+           <!-- Harvey Ball 1/2 -->
+           <svg class="w-8 h-8 text-slate-600" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-16v16c4.42 0 8-3.58 8-8s-3.58-8-8-8z"/></svg>
+        </div>
+        
+        <div class="flex items-center justify-center py-2 border-l-2 border-dashed border-slate-300">
+           <!-- Harvey Ball 3/4 -->
+           <svg class="w-8 h-8 text-brand-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-16v8h8c0 4.42-3.58 8-8 8V4z"/></svg>
+        </div>
+        <div class="flex items-center justify-center py-2">
+           <!-- Harvey Ball Full -->
+           <svg class="w-8 h-8 text-brand-primary" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+        </div>
+        
+        <div class="flex items-center justify-center py-2 border-l-2 border-dashed border-slate-300 bg-brand-primary/5">
+           <!-- Harvey Ball 3/4 -->
+           <svg class="w-8 h-8 text-brand-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-16v8h8c0 4.42-3.58 8-8 8V4z"/></svg>
+        </div>
+        <div class="flex items-center justify-center py-2 bg-brand-primary/5">
+           <!-- Harvey Ball Full -->
+           <svg class="w-8 h-8 text-brand-primary" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+        </div>
+        
+
+        <!-- Data Row 2: Operations -->
+        <div class="row-header py-6 px-4 bg-brand-secondary text-white font-bold flex items-center shadow-sm my-2 rounded-l">
+          港口运营效率
+        </div>
+        
+         <!-- Row 2 Data Cells (Simplified for template) -->
+        <div class="flex items-center justify-center py-2 border-l-2 border-dashed border-slate-300">
+           <svg class="w-8 h-8 text-slate-600" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </div>
+        <div class="flex items-center justify-center py-2">
+           <svg class="w-8 h-8 text-slate-600" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14v12c3.31 0 6-2.69 6-6s-2.69-6-6-6z" opacity="0.3"/><path d="M12 4v8h8c0-4.41-3.59-8-8-8z"/></svg>
+        </div>
+        
+        <div class="flex items-center justify-center py-2 border-l-2 border-dashed border-slate-300">
+           <svg class="w-8 h-8 text-slate-600" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-16v16c4.42 0 8-3.58 8-8s-3.58-8-8-8z"/></svg>
+        </div>
+        <div class="flex items-center justify-center py-2">
+            <svg class="w-8 h-8 text-brand-primary" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+        </div>
+        
+        <div class="flex items-center justify-center py-2 border-l-2 border-dashed border-slate-300 bg-brand-primary/5">
+           <svg class="w-8 h-8 text-slate-600" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </div>
+        <div class="flex items-center justify-center py-2 bg-brand-primary/5">
+           <svg class="w-8 h-8 text-brand-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-16v8h8c0 4.42-3.58 8-8 8V4z"/></svg>
+        </div>
+
+      </div>
+      
+      <!-- Legend -->
+      <div class="w-full max-w-5xl mt-4 flex items-center justify-end space-x-4 text-xs text-slate-500">
+         <span>Worse</span>
+         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+         <div class="h-[1px] w-12 bg-slate-400"></div>
+         <svg class="w-5 h-5 text-slate-800" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+         <span>Better</span>
+      </div>
+
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0"></footer>
+  </div>

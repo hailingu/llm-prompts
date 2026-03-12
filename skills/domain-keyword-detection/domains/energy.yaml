@@ -1,0 +1,35 @@
+name: energy
+description: "Energy & Power Systems (renewable, grid, storage, nuclear)"
+version: 1.0.0
+last_updated: 2026-02-25
+
+keywords:
+  decision_verbs:
+    zh: ["决策", "选择", "采用", "推荐", "优先", "决定", "放弃", "排除", "建议"]
+    en: ["decision", "chose", "instead of", "vs", "trade-off", "prioritize", "recommend", "adopt", "reject"]
+  
+  technical_terms:
+    generation: ["光伏", "风电", "核电", "水电", "火电", "燃气轮机", "柴油发电机", "可再生能源"]
+    storage: ["锂电池", "储能", "电池储能", "抽水蓄能", "压缩空气", "飞轮储能", "氢储能"]
+    grid: ["电网", "输配电", "微电网", "智能电网", "并网", "离网", "储能系统", "PCS", "BMS"]
+    infrastructure: ["变电站", "换流站", "配电室", "充电桩", "V2G", "充电站", "换电站"]
+    conversion: ["逆变器", "整流器", "变压器", "变流器", "DC/DC", "AC/DC", "功率变换"]
+  
+  scope_markers:
+    zh: ["必须", "可选", "示范", "试点", "量产", "规模化", "短期", "中期", "长期", "阶段"]
+    en: ["must-have", "optional", "pilot", "demo", "scale-up", "mass production", "near-term", "mid-term", "long-term"]
+  
+  comparison_markers:
+    zh: ["vs", "对比", "权衡", "取舍", "优点", "缺点", "成本", "收益", "性价比", "LCOE"]
+    en: ["vs", "trade-off", "instead of", "pros", "cons", "advantages", "disadvantages", "cost-benefit", "LCOE"]
+  
+  risk_markers:
+    zh: ["为了避免", "缓解", "降级", "监控", "风险", "不确定性", "假设", "验证", "失效", "安全事故"]
+    en: ["to avoid", "mitigate", "fallback", "monitor", "risk", "uncertainty", "assumption", "validate", "failure", "safety incident"]
+
+scoring_weights:
+  decision_verbs: 1.4
+  technical_terms: 1.3
+  scope_markers: 1.0
+  comparison_markers: 1.0
+  risk_markers: 1.1

@@ -1,0 +1,548 @@
+# ============================================================
+# ppt-brand-style-system / component_semantic_mappings.yml
+# Semantic role -> component-ready payload fragments
+# ============================================================
+
+meta:
+  purpose: Resolve component-library semantic payload roles into style-profile-compatible class payloads.
+  consumers:
+    - ppt-component-library/assets/examples.yml
+    - agents/ppt-specialist.agent.md
+    - .github/agents/ppt-specialist.agent.md
+  resolution_order:
+    - Read the component semantic_payload roles.
+    - Select the target style profile.
+    - Merge neutral tokens first, then role-specific tokens.
+    - Let page-level exceptions override this file only when the reading task explicitly requires it.
+
+role_families:
+  emphasis_roles: [primary, info, positive, warning, critical, neutral]
+  surface_roles: [subtle, elevated, strong_surface]
+  text_roles: [primary_text, secondary_text, muted_text]
+  structure_roles: [neutral_structure]
+
+semantic_field_contracts:
+  emphasis_role: emphasis_roles
+  trend_role: emphasis_roles
+  active_step_role: emphasis_roles
+  inactive_step_role: emphasis_roles
+  badge_role: emphasis_roles
+  node_role: emphasis_roles
+  flow_role: emphasis_roles
+  core_role: emphasis_roles
+  ring_role: emphasis_roles
+  surface_role: surface_roles
+  text_role: text_roles
+  secondary_text_role: text_roles
+  value_role: text_roles
+  label_role: text_roles
+  body_role: text_roles
+  icon_role: text_roles
+  structure_role: structure_roles
+  timeline_role: structure_roles
+  border_role:
+    maps_to: structure_role
+    status: compatibility_alias
+
+component_families:
+  Card_Glass:
+    slot_set: card_glass
+    semantic_fields: [surface_role, text_role, secondary_text_role, structure_role]
+    resolution_sequence: [surface_role, structure_role, text_role, secondary_text_role]
+  Card_Accent:
+    slot_set: card_accent
+    semantic_fields: [emphasis_role, surface_role, text_role, secondary_text_role]
+    resolution_sequence: [surface_role, emphasis_role, text_role, secondary_text_role]
+  Card_Solid:
+    slot_set: card_solid
+    semantic_fields: [surface_role, emphasis_role, text_role, secondary_text_role]
+    resolution_sequence: [surface_role, emphasis_role, text_role, secondary_text_role]
+  Metric_Big:
+    slot_set: metric_big
+    semantic_fields: [emphasis_role, value_role]
+    resolution_sequence: [value_role, emphasis_role]
+  Metric_Trend:
+    slot_set: metric_trend
+    semantic_fields: [trend_role, value_role, label_role]
+    resolution_sequence: [value_role, label_role, trend_role]
+  Metric_KpiRow:
+    slot_set: kpi_row
+    semantic_fields: [surface_role, structure_role, value_role, label_role]
+    resolution_sequence: [surface_role, structure_role, value_role, label_role]
+  List_Icon:
+    slot_set: icon_list
+    semantic_fields: [emphasis_role, text_role]
+    resolution_sequence: [text_role, emphasis_role]
+  List_Timeline:
+    slot_set: timeline
+    semantic_fields: [timeline_role, active_step_role, inactive_step_role, label_role, body_role]
+    resolution_sequence: [timeline_role, label_role, body_role, active_step_role, inactive_step_role]
+  Badge_Pill:
+    slot_set: badge
+    semantic_fields: [badge_role, surface_role]
+    resolution_sequence: [surface_role, badge_role]
+  Badge_Tag:
+    slot_set: tag
+    semantic_fields: [surface_role, text_role]
+    resolution_sequence: [surface_role, text_role]
+  Visual_Arrow:
+    slot_set: visual_arrow
+    semantic_fields: [text_role]
+    resolution_sequence: [text_role]
+  Visual_Glow:
+    slot_set: visual_glow
+    semantic_fields: [emphasis_role]
+    resolution_sequence: [emphasis_role]
+  Map_Grid:
+    slot_set: map_grid
+    semantic_fields: [surface_role, structure_role, emphasis_role]
+    resolution_sequence: [surface_role, structure_role, emphasis_role]
+  Map_NodeNetwork:
+    slot_set: node_network
+    semantic_fields: [surface_role, node_role, label_role]
+    resolution_sequence: [surface_role, label_role, node_role]
+  Map_FlowArrow:
+    slot_set: flow_arrow
+    semantic_fields: [flow_role]
+    resolution_sequence: [flow_role]
+  Map_RadarRing:
+    slot_set: radar_ring
+    semantic_fields: [core_role, icon_role, ring_role]
+    resolution_sequence: [icon_role, core_role, ring_role]
+
+slot_sets:
+  card_glass:
+    - surface_class
+    - border_class
+    - title_text_class
+    - body_text_class
+  card_accent:
+    - surface_class
+    - accent_border_class
+    - accent_text_class
+    - title_text_class
+    - body_text_class
+  card_solid:
+    - surface_class
+    - border_class
+    - icon_bg_class
+    - icon_text_class
+    - title_text_class
+    - body_text_class
+  metric_big:
+    - value_text_class
+    - accent_text_class
+  metric_trend:
+    - value_text_class
+    - trend_text_class
+    - label_class
+  kpi_row:
+    - row_surface_class
+    - row_border_class
+    - value_text_class
+    - label_text_class
+    - divider_class
+  icon_list:
+    - accent_icon_class
+    - item_text_class
+  timeline:
+    - timeline_border_class
+    - marker_ring_class
+    - step_1_marker_class
+    - step_1_label_class
+    - step_1_body_class
+    - step_2_marker_class
+    - step_2_label_class
+    - step_2_body_class
+  badge:
+    - badge_bg_class
+    - badge_text_class
+    - badge_border_class
+  tag:
+    - tag_surface_class
+    - tag_text_class
+  visual_arrow:
+    - arrow_text_class
+  visual_glow:
+    - glow_bg_class
+  flow_arrow:
+    - flow_color
+  map_grid:
+    - grid_surface_class
+    - grid_border_class
+    - cell_bg_class
+    - cell_border_class
+    - cell_text_class
+  node_network:
+    - network_surface_class
+    - network_border_class
+    - node_dot_class
+    - node_border_class
+    - node_label_text_class
+    - node_label_surface_class
+  radar_ring:
+    - core_bg_class
+    - core_border_class
+    - icon_text_class
+    - ring_outer_class
+    - ring_fill_class
+    - ring_inner_class
+
+profiles:
+  shared_light_neutral:
+    neutral_tokens:
+      subtle:
+        surface_class: bg-slate-50
+        row_surface_class: bg-slate-50
+        badge_bg_class: bg-slate-100
+        tag_surface_class: bg-slate-100
+        grid_surface_class: bg-slate-50
+      elevated:
+        surface_class: bg-white
+        row_surface_class: bg-white
+      primary_text:
+        title_text_class: text-slate-950
+        value_text_class: text-slate-950
+        item_text_class: text-slate-700
+        cell_text_class: text-slate-700
+        step_1_label_class: text-slate-950
+        step_2_label_class: text-slate-950
+        tag_text_class: text-slate-950
+      secondary_text:
+        body_text_class: text-slate-600
+        step_1_body_class: text-slate-600
+        step_2_body_class: text-slate-600
+      muted_text:
+        label_class: text-slate-500
+        label_text_class: text-slate-500
+        arrow_text_class: text-slate-500
+      neutral_structure:
+        border_class: border-slate-200
+        row_border_class: border-slate-200
+        timeline_border_class: border-slate-300
+        badge_border_class: border-slate-200
+        divider_class: bg-slate-200
+        grid_border_class: border-slate-200
+        cell_border_class: border-slate-200
+
+  kpmg:
+    inherits: shared_light_neutral
+    neutral_tokens:
+      strong_surface:
+        network_surface_class: bg-[#00338D]
+        node_label_surface_class: bg-[#00338D]
+      primary_text:
+        node_label_text_class: text-white
+      neutral_structure:
+        marker_ring_class: border-white
+        network_border_class: border-[#00338D]/20
+        core_border_class: border-white/25
+    emphasis_roles:
+      primary:
+        accent_border_class: border-[#00338D]
+        accent_text_class: text-[#00338D]
+        trend_text_class: text-[#00338D]
+        accent_icon_class: text-[#00338D]
+        icon_bg_class: bg-[#00338D]/10
+        icon_text_class: text-[#00338D]
+        node_dot_class: bg-[#00338D]
+        node_border_class: border-[#00338D]/25
+        cell_bg_class: bg-[#00338D]/5
+        cell_border_class: border-[#00338D]/20
+        cell_text_class: text-[#00338D]
+        badge_bg_class: bg-[#00338D]/5
+        badge_text_class: text-[#00338D]
+        badge_border_class: border-[#00338D]/20
+        glow_bg_class: bg-[#00338D]/12
+        flow_color: '#00338D'
+      info:
+        accent_border_class: border-sky-500
+        accent_text_class: text-sky-700
+        trend_text_class: text-sky-700
+        accent_icon_class: text-sky-700
+        badge_bg_class: bg-sky-50
+        badge_text_class: text-sky-700
+        badge_border_class: border-sky-200
+        cell_bg_class: bg-sky-50
+        cell_border_class: border-sky-200
+        cell_text_class: text-sky-700
+        step_1_marker_class: bg-sky-600
+        step_2_marker_class: bg-sky-300
+        glow_bg_class: bg-sky-400/18
+        ring_outer_class: border-sky-500/40
+        ring_fill_class: border-sky-400/30 bg-sky-100/60
+        ring_inner_class: border-sky-300/40
+      positive:
+        accent_border_class: border-emerald-500
+        accent_text_class: text-emerald-700
+        trend_text_class: text-emerald-700
+        accent_icon_class: text-emerald-700
+        badge_bg_class: bg-emerald-50
+        badge_text_class: text-emerald-700
+        badge_border_class: border-emerald-200
+        cell_bg_class: bg-emerald-50
+        cell_border_class: border-emerald-200
+        cell_text_class: text-emerald-700
+        step_1_marker_class: bg-emerald-600
+        step_2_marker_class: bg-emerald-300
+        glow_bg_class: bg-emerald-400/18
+        ring_outer_class: border-emerald-500/40
+        ring_fill_class: border-emerald-400/30 bg-emerald-100/60
+        ring_inner_class: border-emerald-300/40
+      warning:
+        accent_border_class: border-amber-500
+        accent_text_class: text-amber-700
+        trend_text_class: text-amber-700
+        accent_icon_class: text-amber-700
+        badge_bg_class: bg-amber-50
+        badge_text_class: text-amber-700
+        badge_border_class: border-amber-200
+        cell_bg_class: bg-amber-50
+        cell_border_class: border-amber-200
+        cell_text_class: text-amber-700
+        step_1_marker_class: bg-amber-500
+        step_2_marker_class: bg-amber-300
+        glow_bg_class: bg-amber-400/18
+        ring_outer_class: border-amber-500/40
+        ring_fill_class: border-amber-400/30 bg-amber-100/60
+        ring_inner_class: border-amber-300/40
+      critical:
+        accent_border_class: border-red-500
+        accent_text_class: text-red-700
+        trend_text_class: text-red-700
+        accent_icon_class: text-red-700
+        badge_bg_class: bg-red-50
+        badge_text_class: text-red-700
+        badge_border_class: border-red-200
+        cell_bg_class: bg-red-50
+        cell_border_class: border-red-200
+        cell_text_class: text-red-700
+        step_1_marker_class: bg-red-600
+        step_2_marker_class: bg-red-300
+        core_bg_class: bg-red-600
+        glow_bg_class: bg-red-400/18
+        ring_outer_class: border-red-500/50
+        ring_fill_class: border-red-400/30 bg-red-100/60
+        ring_inner_class: border-red-300/40
+      neutral:
+        accent_border_class: border-slate-400
+        accent_text_class: text-slate-700
+        trend_text_class: text-slate-600
+        accent_icon_class: text-slate-600
+        badge_bg_class: bg-slate-100
+        badge_text_class: text-slate-700
+        badge_border_class: border-slate-200
+        cell_bg_class: bg-slate-100
+        cell_border_class: border-slate-200
+        cell_text_class: text-slate-700
+        step_1_marker_class: bg-slate-500
+        step_2_marker_class: bg-slate-300
+        glow_bg_class: bg-slate-400/14
+
+  mckinsey:
+    inherits: shared_light_neutral
+    neutral_tokens:
+      strong_surface:
+        network_surface_class: bg-[#0F766E]
+        node_label_surface_class: bg-[#0F766E]
+      primary_text:
+        node_label_text_class: text-white
+      neutral_structure:
+        marker_ring_class: border-white
+        network_border_class: border-[#00A3A0]/20
+        core_border_class: border-white/25
+    emphasis_roles:
+      primary:
+        accent_border_class: border-[#00A3A0]
+        accent_text_class: text-[#007C7A]
+        trend_text_class: text-[#007C7A]
+        accent_icon_class: text-[#007C7A]
+        icon_bg_class: bg-[#00A3A0]/10
+        icon_text_class: text-[#007C7A]
+        node_dot_class: bg-[#00A3A0]
+        node_border_class: border-[#00A3A0]/25
+        cell_bg_class: bg-[#00A3A0]/5
+        cell_border_class: border-[#00A3A0]/20
+        cell_text_class: text-[#007C7A]
+        badge_bg_class: bg-[#00A3A0]/5
+        badge_text_class: text-[#007C7A]
+        badge_border_class: border-[#00A3A0]/20
+        glow_bg_class: bg-[#00A3A0]/14
+        flow_color: '#00A3A0'
+
+  bcg:
+    inherits: kpmg
+    emphasis_roles:
+      primary:
+        accent_border_class: border-[#009A44]
+        accent_text_class: text-[#007A36]
+        trend_text_class: text-[#007A36]
+        accent_icon_class: text-[#007A36]
+        icon_bg_class: bg-[#009A44]/10
+        icon_text_class: text-[#007A36]
+        node_dot_class: bg-[#009A44]
+        node_border_class: border-[#009A44]/25
+        cell_bg_class: bg-[#009A44]/5
+        cell_border_class: border-[#009A44]/20
+        cell_text_class: text-[#007A36]
+        badge_bg_class: bg-[#009A44]/5
+        badge_text_class: text-[#007A36]
+        badge_border_class: border-[#009A44]/20
+        glow_bg_class: bg-[#009A44]/14
+        flow_color: '#009A44'
+
+  bain:
+    inherits: kpmg
+    emphasis_roles:
+      primary:
+        accent_border_class: border-[#DC291E]
+        accent_text_class: text-[#B42318]
+        trend_text_class: text-[#B42318]
+        accent_icon_class: text-[#B42318]
+        icon_bg_class: bg-[#DC291E]/10
+        icon_text_class: text-[#B42318]
+        node_dot_class: bg-[#DC291E]
+        node_border_class: border-[#DC291E]/25
+        cell_bg_class: bg-[#DC291E]/5
+        cell_border_class: border-[#DC291E]/20
+        cell_text_class: text-[#B42318]
+        badge_bg_class: bg-[#DC291E]/5
+        badge_text_class: text-[#B42318]
+        badge_border_class: border-[#DC291E]/20
+        glow_bg_class: bg-[#DC291E]/14
+        flow_color: '#DC291E'
+
+  deloitte:
+    inherits: kpmg
+    emphasis_roles:
+      primary:
+        accent_border_class: border-[#86BC25]
+        accent_text_class: text-[#5F8E12]
+        trend_text_class: text-[#5F8E12]
+        accent_icon_class: text-[#5F8E12]
+        icon_bg_class: bg-[#86BC25]/10
+        icon_text_class: text-[#5F8E12]
+        node_dot_class: bg-[#86BC25]
+        node_border_class: border-[#86BC25]/25
+        cell_bg_class: bg-[#86BC25]/5
+        cell_border_class: border-[#86BC25]/20
+        cell_text_class: text-[#5F8E12]
+        badge_bg_class: bg-[#86BC25]/5
+        badge_text_class: text-[#5F8E12]
+        badge_border_class: border-[#86BC25]/20
+        glow_bg_class: bg-[#86BC25]/14
+        flow_color: '#86BC25'
+
+  strategic:
+    inherits: shared_light_neutral
+    neutral_tokens:
+      strong_surface:
+        network_surface_class: bg-slate-900
+        node_label_surface_class: bg-slate-900
+      primary_text:
+        node_label_text_class: text-white
+      neutral_structure:
+        marker_ring_class: border-white
+        network_border_class: border-slate-700/40
+        core_border_class: border-white/20
+    emphasis_roles:
+      primary:
+        accent_border_class: border-slate-900
+        accent_text_class: text-slate-900
+        trend_text_class: text-slate-700
+        accent_icon_class: text-slate-800
+        icon_bg_class: bg-slate-900/8
+        icon_text_class: text-slate-900
+        node_dot_class: bg-slate-800
+        node_border_class: border-slate-700/30
+        cell_bg_class: bg-slate-100
+        cell_border_class: border-slate-300
+        cell_text_class: text-slate-800
+        badge_bg_class: bg-slate-100
+        badge_text_class: text-slate-800
+        badge_border_class: border-slate-300
+        glow_bg_class: bg-slate-800/12
+        flow_color: '#0F172A'
+      info:
+        accent_border_class: border-sky-500
+        accent_text_class: text-sky-700
+        trend_text_class: text-sky-700
+        accent_icon_class: text-sky-700
+        badge_bg_class: bg-sky-50
+        badge_text_class: text-sky-700
+        badge_border_class: border-sky-200
+        cell_bg_class: bg-sky-50
+        cell_border_class: border-sky-200
+        cell_text_class: text-sky-700
+        step_1_marker_class: bg-sky-600
+        step_2_marker_class: bg-sky-300
+        glow_bg_class: bg-sky-400/18
+        ring_outer_class: border-sky-500/40
+        ring_fill_class: border-sky-400/30 bg-sky-100/60
+        ring_inner_class: border-sky-300/40
+      positive:
+        accent_border_class: border-emerald-500
+        accent_text_class: text-emerald-700
+        trend_text_class: text-emerald-700
+        accent_icon_class: text-emerald-700
+        badge_bg_class: bg-emerald-50
+        badge_text_class: text-emerald-700
+        badge_border_class: border-emerald-200
+        cell_bg_class: bg-emerald-50
+        cell_border_class: border-emerald-200
+        cell_text_class: text-emerald-700
+        step_1_marker_class: bg-emerald-600
+        step_2_marker_class: bg-emerald-300
+        glow_bg_class: bg-emerald-400/18
+        ring_outer_class: border-emerald-500/40
+        ring_fill_class: border-emerald-400/30 bg-emerald-100/60
+        ring_inner_class: border-emerald-300/40
+      warning:
+        accent_border_class: border-amber-500
+        accent_text_class: text-amber-700
+        trend_text_class: text-amber-700
+        accent_icon_class: text-amber-700
+        badge_bg_class: bg-amber-50
+        badge_text_class: text-amber-700
+        badge_border_class: border-amber-200
+        cell_bg_class: bg-amber-50
+        cell_border_class: border-amber-200
+        cell_text_class: text-amber-700
+        step_1_marker_class: bg-amber-500
+        step_2_marker_class: bg-amber-300
+        glow_bg_class: bg-amber-400/18
+        ring_outer_class: border-amber-500/40
+        ring_fill_class: border-amber-400/30 bg-amber-100/60
+        ring_inner_class: border-amber-300/40
+      critical:
+        accent_border_class: border-red-600
+        accent_text_class: text-red-700
+        trend_text_class: text-red-700
+        accent_icon_class: text-red-700
+        badge_bg_class: bg-red-50
+        badge_text_class: text-red-700
+        badge_border_class: border-red-200
+        cell_bg_class: bg-red-50
+        cell_border_class: border-red-200
+        cell_text_class: text-red-700
+        step_1_marker_class: bg-red-600
+        step_2_marker_class: bg-red-300
+        core_bg_class: bg-red-600
+        glow_bg_class: bg-red-400/18
+        ring_outer_class: border-red-500/50
+        ring_fill_class: border-red-400/30 bg-red-100/60
+        ring_inner_class: border-red-300/40
+      neutral:
+        accent_border_class: border-slate-400
+        accent_text_class: text-slate-700
+        trend_text_class: text-slate-600
+        accent_icon_class: text-slate-600
+        badge_bg_class: bg-slate-100
+        badge_text_class: text-slate-700
+        badge_border_class: border-slate-200
+        cell_bg_class: bg-slate-100
+        cell_border_class: border-slate-200
+        cell_text_class: text-slate-700
+        step_1_marker_class: bg-slate-500
+        step_2_marker_class: bg-slate-300
+        glow_bg_class: bg-slate-400/14

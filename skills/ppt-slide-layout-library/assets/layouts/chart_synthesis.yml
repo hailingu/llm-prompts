@@ -1,0 +1,110 @@
+# 核心图表+底部强结论布局 (chart_synthesis)
+# 文件: layouts/chart_synthesis.yml
+
+layout:
+  id: chart_synthesis
+  name: 核心图表+底部强结论
+  version: 2.5
+  category: chart
+
+selection_criteria:
+  when_to_use:
+    - "单张大图深度分析 (Curve, Scatter, Complex Line)"
+    - "强调图表得出的核心结论 (The So What)"
+    - "需要丰富的图表内标注 (Annotations)"
+  when_not_to_use:
+    - "多图表并列 (改用 side_by_side)"
+    - "简单的 KPI 罗列 (改用 dashboard)"
+    - "无明确结论的数据展示 (改用 data_chart)"
+
+layout_contract:
+  required_thinking_fields: [layout_key, primary_encoding, chart_family, contract_fields, null_policy, contract_source, fallback_plan]
+  narrative_fit: [single_chart_so_what, synthesis_first, deep_dive_with_kicker]
+  compatible_chart_families: [line_trend, heatmap_matrix, bubble_relationship, bar_comparison]
+  compatible_component_families: [Card_Accent, Metric_Big, Badge_Pill]
+  compatible_map_archetypes: []
+  fallback_layouts: [data_chart, hybrid, side_by_side]
+  overflow_recovery_order:
+    - simplify_chart_annotations
+    - shorten_synthesis_copy
+    - reduce_footer_density
+    - downgrade_to_data_chart_or_hybrid
+
+spec:
+  regions:
+    canvas:
+      layout: "flex_col"
+      areas: ["chart_canvas", "synthesis_box"]
+  region_budget_model:
+    intent: "先确定 chart canvas 与 synthesis box 的净高比例，再从 chart component 与结论组件 spec 中生成候选"
+    regions:
+      chart_canvas:
+        width_rule: "主内容全宽"
+        height_rule: "main 净高扣除 synthesis_box、gap 与 header/footer 后所得"
+      synthesis_box:
+        width_rule: "主内容全宽"
+        height_rule: "根据结论组件 variant 与正文长度反推"
+  component_entrypoints:
+    chart_components: [echarts_cartesian_annotated, echarts_heatmap_dense, echarts_bubble_focus]
+    synthesis_components: [Card_Accent, conclusion_banner_compact]
+
+content_spec:
+  chart:
+    height_min: 400
+    annotations: "Highly recommended"
+  synthesis:
+    max_lines: 2
+    style: "highlighted_box"
+  candidate_selection_rule: "chart_canvas 必须先依据 chart component spec 选择容器档位，再根据剩余高度为 synthesis_box 选择合适的 conclusion/banner 组件。"
+
+constraints:
+  - "图标区域高度占比 >= 70%"
+  - "必须包含底部强结论框 (Kicker)"
+  - "结论框背景色必须使用品牌主色或深色"
+
+# ── HTML 模板 ─────────────────────────────────────────
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white text-slate-800">
+    <!-- Header -->
+    <header class="h-[80px] border-b-2 border-brand-primary px-12 pt-6 pb-2 shrink-0">
+      <h1 class="text-3xl font-bold text-brand-primary tracking-tight">当前运输市场集中度分析</h1>
+      <p class="text-sm text-slate-500 mt-1">前 20% 的大型物流公司仅掌握了 50% 的运力资源</p>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="flex-1 w-full px-12 py-6 flex flex-col min-h-0 relative">
+      
+      <!-- Chart Area -->
+      <div class="flex-1 w-full relative">
+         <!-- ECharts Container -->
+         <div id="mainChart" class="w-full h-full"></div>
+         
+         <!-- HTML Graphic Overlays (Example Brackets/Arrows if not in ECharts) -->
+         <div class="absolute top-[15%] left-[18%] w-[1px] h-[40%] border-l-2 border-dashed border-slate-400">
+            <div class="absolute top-0 -left-1 w-2 h-1 bg-slate-400"></div>
+            <div class="absolute bottom-0 -left-1 w-2 h-1 bg-slate-400"></div>
+            <!-- Triangle pointer -->
+             <div class="absolute top-1/2 -translate-y-1/2 -left-2 w-0 h-0 border-l-[6px] border-r-[6px] border-r-transparent border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-slate-600"></div>
+            <div class="absolute top-1/2 -translate-y-1/2 left-2 w-48 text-xs text-slate-600 bg-white/90 p-1">
+               现有市场集中度估算 <br/> (Top 20% LMCs)
+            </div>
+         </div>
+      </div>
+
+      <!-- Synthesis Box (The "Kicker") -->
+      <div class="mt-4 p-4 bg-brand-primary text-white text-center rounded shadow-sm shrink-0">
+        <h3 class="text-lg font-bold leading-tight">
+          极度分散的市场导致了高昂的管理成本、灵活性的缺失以及运营效率的低下
+        </h3>
+      </div>
+
+    </main>
+    
+    <footer class="h-[40px] px-12 border-t border-slate-200 shrink-0 flex justify-between items-center text-xs text-slate-400">
+      <div class="max-w-2xl truncate">
+        1. From Starcrest analysis. Includes all trucks entering the port. 
+        2. Includes frequent and semi-frequent drayage trucks (~16,800).
+      </div>
+      <span>17</span>
+    </footer>
+  </div>

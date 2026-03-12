@@ -49,5 +49,8 @@ coverage.out
 docs/
 .agents/
 .clinerules/
-.github/
 .venv/
+
+memory/
+
+.env

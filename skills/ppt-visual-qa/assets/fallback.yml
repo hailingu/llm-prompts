@@ -1,0 +1,67 @@
+# ============================================================
+# PPT Visual QA — Recovery Guidance Sequence
+# ============================================================
+# When high-signal gates fail, use this sequence as repair guidance.
+# Upstream layout/chart/map/component contracts take precedence.
+# ============================================================
+
+description: |
+  Recovery guidance for QA-driven debugging.
+  Use this after reviewing the failing gates and the page's upstream contracts.
+
+modes:
+  production:
+    max_retries: 2
+    on_final_fail: "Output failure reason, upstream contract context, and suggested manual intervention points"
+  draft:
+    max_retries: 1
+    on_final_fail: "Mark as Draft + failed items, allow delivery"
+
+sequence:
+  - step: 1
+    action: "Respect upstream layout recovery order first"
+    targets: [G10, G11, G12, G35, G36, G37, G38, G39, G40, G41, G60, G61, G77, G78, G79, G80, G82]
+    description: "Before changing page structure, consult the chosen layout asset's overflow_recovery_order and fallback_layouts"
+
+  - step: 2
+    action: "Apply chart-contract recovery"
+    targets: [G19, G20, G21, G22, G23, G24, G25, G26, G27, G29, G30, G31, G32, G33, G34, G75, G76, G83]
+    description: "Use chart-family contract and chart fallback_plan before replacing the chart or layout"
+
+  - step: 3
+    action: "Apply map-overlay or map-routing recovery"
+    targets: [G60, G61, G68, G75, G76, G77, G78, G79, G80]
+    description: "For map pages, reduce overlay density and label competition before abandoning the map expression"
+
+  - step: 4
+    action: "Apply component-density recovery"
+    targets: [G14, G15, G16, G17, G46, G47, G50, G51, G52, G53, G55, G62, G63, G64, G67, G72, G73]
+    executable_actions:
+      - "reduce card/list density"
+      - "shorten secondary copy"
+      - "collapse low-priority badges or notes"
+    description: "Trim component and copy density only after layout/chart/map recovery has been evaluated"
+
+  - step: 5
+    action: "Use safe structural fine-tuning"
+    targets: [G10, G11, G12, G60, G61, G77, G78, G80, G82]
+    executable_actions:
+      - "gap: -2/-4 px"
+      - "padding: -2/-4 px"
+      - "min-height: 0"
+    description: "Use restrained spacing changes; avoid conflicting visual hacks that break style/profile switching"
+
+  - step: 6
+    action: "Switch to contract-approved fallback layout or fallback chart expression"
+    targets: [G19, G35, G36, G37, G38, G39, G40, G41, G46, G47, G50, G55, G72, G73, G82]
+    description: "Only switch when the upstream contract explicitly allows fallback and prior recovery has been exhausted"
+
+  - step: 7
+    action: "Escalate heuristic-only failures to design review"
+    targets: [G14, G15, G16, G17, G35, G62, G64, G72, G73, G74]
+    description: "Heuristic failures should trigger review, not blind auto-repair"
+
+  - step: 8
+    action: "Stop guided recovery and output manual intervention suggestions"
+    targets: []
+    description: "Cease guided recovery and suggest manual intervention with upstream contract references"

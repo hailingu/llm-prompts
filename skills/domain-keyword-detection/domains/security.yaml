@@ -1,0 +1,35 @@
+name: security
+description: "Cybersecurity & Information Security (penetration testing, compliance)"
+version: 1.0.0
+last_updated: 2026-02-25
+
+keywords:
+  decision_verbs:
+    zh: ["决策", "选择", "采用", "推荐", "优先", "决定", "放弃", "排除", "建议"]
+    en: ["decision", "chose", "instead of", "vs", "trade-off", "prioritize", "recommend", "adopt", "reject"]
+  
+  technical_terms:
+    network: ["防火墙", "WAF", "IDS", "IPS", "VPN", "零信任", "SASE", "SD-WAN", "防病毒", "DDoS"]
+    application: ["渗透测试", "代码审计", "SAST", "DAST", "IAST", "RASP", "应用安全", "Web安全"]
+    identity: ["IAM", "SSO", "MFA", "2FA", "LDAP", "AD", "身份认证", "访问控制", "RBAC", "ABAC"]
+    compliance: ["等保", "ISO27001", "SOC2", "GDPR", "个人信息保护", "数据安全", "合规", "分保"]
+    incident: ["安全事件", "应急响应", "漏洞", "CVE", "威胁情报", "SOC", "溯源", "取证"]
+  
+  scope_markers:
+    zh: ["必须", "可选", "等保二级", "等保三级", "过测", "整改", "上线前", "阶段"]
+    en: ["must-have", "optional", "Level 2", "Level 3", "audit", "remediation", "pre-launch", "phase"]
+  
+  comparison_markers:
+    zh: ["vs", "对比", "权衡", "取舍", "优点", "缺点", "成本", "安全性", "易用性"]
+    en: ["vs", "trade-off", "instead of", "pros", "cons", "cost", "security", "usability"]
+  
+  risk_markers:
+    zh: ["为了避免", "缓解", "降级", "监控", "风险", "不确定性", "假设", "验证", "数据泄露", "被黑"]
+    en: ["to avoid", "mitigate", "fallback", "monitor", "risk", "uncertainty", "assumption", "validate", "breach", "compromised"]
+
+scoring_weights:
+  decision_verbs: 1.3
+  technical_terms: 1.4
+  scope_markers: 1.2
+  comparison_markers: 0.9
+  risk_markers: 1.4

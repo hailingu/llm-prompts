@@ -1,0 +1,192 @@
+name: cost_curve_stack
+description: "Supply curve or cost stack chart layout with a strictly aligned data table below. Features variable-width bars (representing volume/supply) sorted by cost/price, with an integrated data table sharing the x-axis segments."
+type: layout
+version: 1.0.0
+selection_criteria:
+  - "Use for Supply Curves (Cost vs Volume)."
+  - "Use for Merit Order Curves (Energy/Commodities)."
+  - "Use for Market Segment Analysis (Revenue/Margin stack)."
+  - "Use when chart columns must align perfectly with a data table below."
+  - "Not suitable for time-series data (Use 'data_chart' or 'timeline')."
+
+spec:
+  structure:
+    - area: "header"
+      height: "80px"
+      fixed: true
+    - area: "main"
+      flex: 1
+      layout: "stack-column"
+      elements:
+        - "main_chart_area (variable width bars)"
+        - "aligned_data_table"
+        - "annotation_overlays"
+    - area: "footer"
+      height: "50px"
+      fixed: true
+
+  style_presets:
+    bar_group_1: "bg-emerald-600 border-l border-white"
+    bar_group_2: "bg-emerald-500 border-l border-white"
+    bar_group_3: "bg-emerald-400 border-l border-white"
+    bar_group_4: "bg-amber-200 border-l border-white"
+    bar_group_5: "bg-amber-300 border-l border-white"
+    bar_group_6: "bg-amber-700/80 border-l border-white" # Contrast
+    threshold_line: "border-l-2 border-red-500 border-dashed" 
+
+content_spec:
+  text_limits:
+    callout_text: "3-5 lines, max 80 chars"
+    table_cell: "Number or short text"
+
+layout_contract:
+  required_thinking_fields:
+    - layout_key
+    - x_segment_logic
+    - cost_metric
+    - width_metric
+    - threshold_lines
+    - table_alignment_logic
+    - fallback_plan
+  narrative_fit:
+    - cost_curve
+    - merit_order_analysis
+    - supply_stack_story
+  compatible_chart_families:
+    - cost_curve
+    - waterfall_bridge
+  compatible_component_families:
+    - Badge_Status
+    - Card_Solid
+    - Metric_Trend
+  compatible_map_archetypes: []
+  fallback_layouts:
+    - data_chart
+    - chart_synthesis
+    - analytical_model_tree
+  overflow_recovery_order:
+    - reduce_segment_count
+    - reduce_callout_count
+    - simplify_table_rows
+    - downgrade_to_data_chart
+
+template: |
+  <div class="slide-container flex flex-col h-full bg-white font-sans text-slate-800 relative overflow-hidden">
+    <!-- Header -->
+    <header class="h-20 px-12 flex flex-col justify-center border-b border-green-700 bg-white z-50">
+      <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Analytical Approach</div>
+      <h1 class="text-2xl font-bold text-emerald-800 tracking-tight leading-none">{{title}}</h1>
+      <p class="text-sm text-emerald-600 mt-1 pb-2 border-b-2 border-emerald-600 inline-block w-full">{{subtitle}}</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 relative w-full h-full bg-slate-50 p-8 flex flex-col">
+      
+      <!-- Chart Area (Top 60%) -->
+      <div class="relative w-full h-[320px] border-b border-slate-400 flex items-end pl-12">
+        <!-- Y-Axis Labels -->
+        <div class="absolute left-0 top-0 bottom-0 w-10 flex flex-col justify-between text-xs text-slate-500 py-2">
+            <span>120</span><span>100</span><span>80</span><span>60</span><span>40</span><span>20</span><span>0</span>
+        </div>
+        <!-- Y-Axis Label Title -->
+        <div class="absolute -left-4 -top-6 text-xs font-bold text-slate-700">Effective price ($/hr)</div>
+
+        <!-- Callouts (Absolute Positioned) -->
+        <div class="absolute top-4 left-32 bg-white border border-slate-300 shadow p-2 text-xs w-56 z-20">
+            <span class="text-red-600 font-bold">Current drayage trucking demand¹ ~26 M hrs</span>
+            <div class="text-[10px] text-slate-500 mt-1">Note 1: Private fleets...</div>
+            <!-- Connector Line -->
+            <div class="absolute top-4 -right-12 w-12 border-t border-dashed border-red-400"></div>
+        </div>
+        
+        <div class="absolute top-40 left-32 bg-white border border-slate-300 shadow p-2 text-xs w-56 z-20 text-red-600 font-bold">
+            Current weighted average price ~$43/hr
+             <div class="absolute top-4 -right-20 w-20 border-t border-dashed border-red-400"></div>
+        </div>
+        
+        <!-- Threshold Lines (Background) -->
+        <div class="absolute left-12 right-0 top-[65%] border-t-2 border-dashed border-red-500 z-10 opacity-50"></div> <!-- ~40 mark -->
+        <div class="absolute left-12 right-0 top-[85%] border-t-2 border-dashed border-emerald-700 z-10 w-[40%]"></div> <!-- ~11 mark -->
+
+        <!-- BARS CONTAINER -->
+        <div class="flex w-full h-full items-end relative z-0">
+             <!-- Bar 1: Pre-1989 (Short, Green) -->
+             <div class="h-[35%] w-[15%] bg-emerald-600 border-r border-white relative group">
+                <div class="absolute bottom-2 left-2 text-[10px] font-bold text-emerald-900 w-full">Pre-1989</div>
+             </div>
+             <!-- Bar 2: 1989-1993 -->
+             <div class="h-[35%] w-[15%] bg-emerald-500 border-r border-white">
+                <div class="absolute bottom-2 left-2 text-[10px] font-bold text-emerald-900">1989-1993</div>
+             </div>
+             <!-- Bar 3: 1994-1995 -->
+             <div class="h-[35%] w-[10%] bg-emerald-400 border-r border-white"></div>
+             
+             <!-- Vertical Threshold Line (Demand Cutoff) -->
+             <div class="absolute h-full border-l-2 border-dashed border-red-500 left-[40%] -top-10 z-30"></div>
+
+             <!-- Bar 4: Non-drayage -->
+             <div class="h-[38%] w-[10%] bg-emerald-600/80 border-r border-white"></div>
+             <div class="h-[40%] w-[10%] bg-emerald-500/80 border-r border-white"></div>
+
+             <!-- Bar 5: Expensive Segment (Yellow) -->
+             <div class="h-[75%] w-[25%] bg-amber-200 border-r border-white relative flex items-center justify-center">
+                 <div class="text-xs font-bold text-amber-900 text-center w-24">LA region employee driven</div>
+             </div>
+             <!-- Bar 6: Most Expensive (Yellow) -->
+             <div class="h-[80%] w-[15%] bg-amber-300 border-r border-white flex items-center justify-center">
+                  <div class="text-xs font-bold text-amber-900 text-center w-16">IE employee</div>
+             </div>
+             <!-- Bar 7: Nationals (Spike) -->
+             <div class="h-[85%] w-[2%] bg-amber-800 border-r border-white"></div>
+        </div>
+      </div>
+
+      <!-- Data Table Area (Bottom 30%) -->
+      <!-- Must strictly align widths with the bars above -->
+      <div class="w-full pl-12 pt-2">
+         <!-- Row 1: Segments -->
+         <div class="flex w-full text-[10px] font-bold text-slate-800 border-b border-slate-200 pb-2 mb-2">
+             <div class="w-[40%] text-center">Frequent/semi-freq: Drayage</div>
+             <div class="w-[20%] text-center">Freq/semi-freq: Non-drayage</div>
+             <div class="w-[25%] text-center">LA employee driven</div>
+             <div class="w-[15%] text-center">IE employee</div>
+         </div>
+
+         <!-- Row 2: Metrics -->
+         <div class="flex w-full text-[10px] text-slate-600 space-y-1">
+             <div class="w-16 font-bold text-slate-800 shrink-0">Trucks</div>
+             <!-- Data Cells matching logic widths roughly -->
+             <div class="w-[40%] text-center">~16K</div>
+             <div class="w-[20%] text-center">~16K</div>
+             <div class="w-[25%] text-center">~32K</div>
+             <div class="w-[15%] text-center">~23K</div>
+         </div>
+         <div class="flex w-full text-[10px] text-slate-600 space-y-1 mt-1">
+             <div class="w-16 font-bold text-slate-800 shrink-0">% utilization</div>
+             <div class="w-[40%] text-center">~70%</div>
+             <div class="w-[20%] text-center">~30%</div>
+             <div class="w-[25%] text-center">~25%</div>
+             <div class="w-[15%] text-center">~10%</div>
+         </div>
+         <div class="flex w-full text-[10px] text-slate-600 space-y-1 mt-1">
+             <div class="w-16 font-bold text-slate-800 shrink-0">Supply hours</div>
+             <div class="w-[40%] text-center">~25.6 M hrs</div>
+             <div class="w-[20%] text-center">~11.3 M hrs</div>
+             <div class="w-[25%] text-center">~19.9 M hrs</div>
+             <div class="w-[15%] text-center">~5.8 M hrs</div>
+         </div>
+      </div>
+
+    </main>
+    
+    <!-- Footer -->
+    <footer class="h-[50px] bg-white border-t border-slate-200 px-12 flex items-center justify-between text-xs text-slate-400 z-50">
+      <div class="max-w-2xl text-[8px] leading-tight text-slate-300">
+        (1) Private fleets and infrequent IOOs account for ~6M hrs demand. derived...
+      </div>
+      <div class="flex items-center space-x-4">
+        <span>The Boston Consulting Group</span>
+        <span>Page 41</span>
+      </div>
+    </footer>
+  </div>

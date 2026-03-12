@@ -1,0 +1,35 @@
+name: data_science
+description: "Data Science & AI/ML (algorithms, models, training, inference)"
+version: 1.0.0
+last_updated: 2026-02-25
+
+keywords:
+  decision_verbs:
+    zh: ["决策", "选择", "采用", "推荐", "优先", "决定", "放弃", "排除", "建议"]
+    en: ["decision", "chose", "instead of", "vs", "trade-off", "prioritize", "recommend", "adopt", "reject"]
+  
+  technical_terms:
+    algorithms: ["机器学习", "深度学习", "神经网络", "XGBoost", "LGBM", "随机森林", "SVM", "回归", "分类", "聚类"]
+    models: ["大语言模型", "LLM", "Transformer", "BERT", "GPT", "ResNet", "YOLO", "CNN", "RNN", "LSTM"]
+    training: ["训练", "微调", "预训练", "蒸馏", "量化", "剪枝", "特征工程", "数据增强", "超参数"]
+    infrastructure: ["GPU", "TPU", "算力", "训练集群", "推理", "部署", "MLOps", "特征存储", "模型仓库"]
+    metrics: ["准确率", "召回率", "F1", "AUC", "RMSE", "MAE", "损失函数", "过拟合", "欠拟合", "泛化"]
+  
+  scope_markers:
+    zh: ["必须", "可选", "MVP", "示范", "量产", "规模化", "短期", "中期", "长期", "阶段"]
+    en: ["must-have", "optional", "MVP", "pilot", "demo", "production", "scale-up", "near-term", "mid-term", "long-term"]
+  
+  comparison_markers:
+    zh: ["vs", "对比", "权衡", "取舍", "优点", "缺点", "性能", "精度", "速度"]
+    en: ["vs", "trade-off", "instead of", "pros", "cons", "accuracy", "performance", "speed", "latency"]
+  
+  risk_markers:
+    zh: ["为了避免", "缓解", "降级", "监控", "风险", "不确定性", "假设", "验证", "偏见", "幻觉"]
+    en: ["to avoid", "mitigate", "fallback", "monitor", "risk", "uncertainty", "assumption", "validate", "bias", "hallucination"]
+
+scoring_weights:
+  decision_verbs: 1.3
+  technical_terms: 1.5
+  scope_markers: 1.0
+  comparison_markers: 1.0
+  risk_markers: 1.1

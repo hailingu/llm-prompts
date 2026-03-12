@@ -1,0 +1,136 @@
+# ============================================================
+# ppt-map-storytelling / examples.yml
+# 最小输入示例 — 用于 map page 的实现栈声明、底图来源与叙事输入
+# ============================================================
+
+minimal_examples:
+  territory_snapshot_page:
+    description: "区域状态/暴露地图页：适用于区域风险集中、暴露分层或状态快照。"
+    input:
+      page_type: map_page
+      narrative_archetype: territory_snapshot
+      geographic_scope: regional
+      crop_focus: Gulf Littoral
+      primary_question: Which coastal zone holds the highest concentration of operational exposure?
+      render_engine: static-svg-overlay
+      basemap_source:
+        type: svg_asset
+        id: gulf_littoral_editorial_map
+        purpose: cropped regional basemap for exposure shading and focused labels
+      overlay_families: [fill_zone, hotspot_callout]
+      overlay_routing:
+        - overlay_family: fill_zone
+          route_to: narrative_overlay
+          component_family: Map_Grid
+          routing_reason: zone emphasis is explanatory and does not require a quantitative choropleth scale
+        - overlay_family: hotspot_callout
+          route_to: component_layer
+          component_family: Badge_Pill
+          routing_reason: local hotspots need short labeled emphasis rather than a full geo scatter system
+      routing_source: patterns.yml#overlay_component_contracts
+      overlays:
+        - { type: fill_zone, region: Northern Gulf Exposure Belt, emphasis: high }
+        - { type: hotspot_callout, label: High Port Dependence, anchor: [51.4, 25.3] }
+
+  echarts_geo_page:
+    description: "数据驱动地图页：适用于路线压力、热点分布、区域强度编码。"
+    input:
+      page_type: map_page
+      narrative_archetype: route_corridor
+      geographic_scope: regional
+      crop_focus: Strait of Hormuz
+      primary_question: Which shipping corridor is under the highest disruption pressure?
+      render_engine: echarts-geo
+      basemap_source:
+        type: geojson
+        id: gulf_corridor_v1
+        purpose: regional coastline and route anchors
+      overlay_families: [route_line, hotspot_callout]
+      overlay_routing:
+        - overlay_family: route_line
+          route_to: chart_layer
+          component_family: Map_FlowArrow
+          routing_reason: route geometry and path value are data-bound, so geo-series encoding takes priority
+        - overlay_family: hotspot_callout
+          route_to: narrative_overlay
+          component_family: Card_Accent
+          routing_reason: the chokepoint needs explanatory emphasis rather than full geo-series treatment
+      routing_source: patterns.yml#overlay_component_contracts
+      sourceData:
+        - { route: Hormuz Westbound, from: [56.2, 26.5], to: [52.9, 25.4], risk_index: 82 }
+        - { route: Hormuz Eastbound, from: [52.9, 25.4], to: [56.2, 26.5], risk_index: 74 }
+        - { label: Strait chokepoint, coord: [56.25, 26.55], priority: high }
+      mapping:
+        geo_lines: { from: from, to: to, value: risk_index }
+        callouts: { coord: coord, label: label }
+
+  svg_narrative_map_page:
+    description: "编辑型地图页：适用于冲突战区、区域态势、轻量箭头和浮层卡片。"
+    input:
+      page_type: map_page
+      narrative_archetype: conflict_theater
+      geographic_scope: multi-region
+      crop_focus: Eastern Mediterranean
+      primary_question: Where is escalation pressure concentrated across the theater?
+      render_engine: static-svg-overlay
+      basemap_source:
+        type: svg_asset
+        id: eastern_mediterranean_editorial_map
+        purpose: clean editorial basemap for arrows and risk zones
+      overlay_families: [fill_zone, direction_arrow, floating_card]
+      overlay_routing:
+        - overlay_family: fill_zone
+          route_to: narrative_overlay
+          component_family: Map_Grid
+          routing_reason: regional pressure is expressed as an editorial zone, not a quantitative choropleth
+        - overlay_family: direction_arrow
+          route_to: component_layer
+          component_family: Map_FlowArrow
+          routing_reason: a small number of directional arcs can stay as narrative overlays without geo-series escalation
+        - overlay_family: floating_card
+          route_to: component_layer
+          component_family: Card_Accent
+          routing_reason: the summary belongs in a detached narrative card anchored to the theater
+      routing_source: patterns.yml#overlay_component_contracts
+      overlays:
+        - { type: fill_zone, region: Levant Corridor, emphasis: high }
+        - { type: direction_arrow, from_label: Naval axis, to_label: Eastern Med, style: pressure_arc }
+      floating_cards:
+        - { title: Escalation Node, body: Pressure is concentrated in a narrow operational corridor rather than evenly distributed. }
+
+  footprint_network_page:
+    description: "网络布局地图页：适用于节点分布、区域覆盖与 reach pattern。"
+    input:
+      page_type: map_page
+      narrative_archetype: footprint_network
+      geographic_scope: global
+      crop_focus: Eurasia and Middle East network
+      primary_question: Which nodes define the network's real reach rather than its nominal footprint?
+      render_engine: echarts-geo
+      basemap_source:
+        type: geojson
+        id: eurasia_network_v1
+        purpose: geo anchor set for distributed nodes and long-distance corridor links
+      overlay_families: [point_marker, route_line, floating_card]
+      overlay_routing:
+        - overlay_family: point_marker
+          route_to: chart_layer
+          component_family: Map_NodeNetwork
+          routing_reason: node coordinates and priority levels are data-bound and need stable geo anchors
+        - overlay_family: route_line
+          route_to: chart_layer
+          component_family: Map_FlowArrow
+          routing_reason: long-distance links are easier to manage as geo lines than manual overlays
+        - overlay_family: floating_card
+          route_to: component_layer
+          component_family: Metric_KpiRow
+          routing_reason: network summary belongs in a detached KPI card rather than on-map labels
+      routing_source: patterns.yml#overlay_component_contracts
+      sourceData:
+        - { node: Bahrain Hub, coord: [50.58, 26.22], priority: high }
+        - { node: Eastern Med Node, coord: [34.88, 32.08], priority: medium }
+        - { node: Black Sea Link, coord: [37.62, 44.79], priority: medium }
+        - { route: Gulf to Med, from: [50.58, 26.22], to: [34.88, 32.08], value: 73 }
+      mapping:
+        geo_scatter: { coord: coord, label: node, value: priority }
+        geo_lines: { from: from, to: to, value: value }

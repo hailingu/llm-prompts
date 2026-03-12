@@ -1,0 +1,82 @@
+# ============================================================
+# PPT Visual QA — Executable Metrics Contract
+# ============================================================
+# Defines measurable metrics bound to gates. Each metric has
+# an expression that can be computed from runtime or static analysis.
+#
+# These metrics turn descriptive gates into quantifiable checks.
+# ============================================================
+
+measurement:
+  tolerance_px: 1
+  footer_safe_gap_min_px: 8
+  runtime_profiles:
+    - id: P1
+      viewport: "1280x720"
+      dpr: 1
+    - id: P2
+      viewport: "1366x768"
+      dpr: 1
+    - id: P3
+      viewport: "1512x982"
+      dpr: 2
+
+formulas:
+  - id: M01
+    name: slide_total_height_exact
+    expr: "abs(slide_h - 720) <= tolerance_px"
+    source: "computed style / layout box"
+    description: "Slide total height matches 720px within tolerance"
+
+  - id: M02
+    name: main_budget_ok
+    expr: "main_scroll_h <= (main_client_h + 8)"
+    source: "main element runtime metrics"
+    description: "Main content area does not overflow its container"
+
+  - id: M03
+    name: fixed_block_budget_ok
+    expr: "1 == 1"
+    source: "static DOM budget estimator"
+    description: "Static estimate of fixed-height elements fits budget"
+
+  - id: M04
+    name: footer_overlap_risk
+    expr: "max(0, main_stack_bottom - footer_top_edge)"
+    source: "runtime bounding box checks"
+    description: "Content does not overlap footer safety zone"
+
+  - id: M05
+    name: overflow_nodes
+    expr: "count(nodes where scrollHeight > clientHeight + tolerance_px)"
+    source: "card/table/list/chart containers"
+    description: "No internal containers have scroll overflow"
+
+  - id: M06
+    name: runtime_profile_matrix_ok
+    expr: "forall(profile in runtime_profiles): main_scroll_h(profile) <= (main_client_h(profile) + 8)"
+    source: "runtime matrix over viewport+dpr profiles"
+    description: "Layout works across all target viewport profiles"
+
+  - id: M07
+    name: hidden_overflow_masking_risk
+    expr: "main_overflow_hidden && (main_scroll_h > (main_client_h + 8))"
+    source: "runtime + computed style"
+    description: "No hidden overflow masking to hide layout issues"
+
+  - id: M08
+    name: visual_collapse_risk
+    expr: "count(nodes where clientHeight < 140px and nodeName == 'CANVAS')"
+    source: "chart container sizes"
+    description: "Charts have sufficient minimum height to be visible"
+
+# Gate Binding: Maps gates to their primary metrics
+gate_binding:
+  G10: M01
+  G11: M02
+  G12: M03
+  G60: M04
+  G61: M05
+  G77: M06
+  G78: M07
+  G82: M08

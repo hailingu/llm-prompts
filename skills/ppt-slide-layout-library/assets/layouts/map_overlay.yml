@@ -1,0 +1,311 @@
+# 地图叙事布局 (map_overlay)
+# 文件: layouts/map_overlay.yml
+
+layout:
+  id: map_overlay
+  name: 地图叙事叠加布局
+  version: 2.2
+  category: map
+
+selection_criteria:
+  when_to_use:
+    - "地图本身决定页面含义，而不是仅作为装饰背景"
+    - "地缘冲突、路线、走廊、航运、补给、区域暴露等空间叙事"
+    - "需要地图 + 浮层卡片 + callout 的复合表达"
+  when_not_to_use:
+    - "仅有简单地理数值编码（优先用 geo chart 或表格）"
+    - "地图无法保留足够可见面积（优先改非地图布局）"
+    - "真正要表达的是排序、矩阵或时间顺序，而不是空间关系"
+
+spec:
+  canvas:
+    structure: "map + side_rail"
+    map_region_width: "68%-72%"
+    side_rail_width: "28%-32%"
+    gutter: "16-24px"
+    region_budget_model:
+      intent: "先确定当前 slide 在既定 layout 下各内容区的净宽净高，再决定组件候选；组件选择不得先于区域预算"
+      regions:
+        map_region:
+          width_rule: "按 canvas.map_region_width 取值"
+          height_rule: "main 净高扣除容器边框与内边距后所得"
+        side_rail:
+          width_rule: "按 canvas.side_rail_width 取值，并受 min-width 阈值约束"
+          height_rule: "main 净高扣除 rail padding、gap 与 footer-safe gap 后所得"
+  side_rail:
+    max_blocks: 4
+    preferred_stack:
+      - insight_card
+      - merged_kpi_card
+      - conclusion_card
+    component_specs:
+      insight_card:
+        variants:
+          compact:
+            width_mode: "width-sensitive"
+            empirical_height_px: "136-172"
+            title_lines_max: 2
+            body_lines_max: 4
+            embedded_micro_fact_max: 1
+            text_capacity_hint: "适用于 1 个短标题 + 1 段 28-46 英文词正文 + 1 个 micro fact"
+          default:
+            width_mode: "width-sensitive"
+            empirical_height_px: "172-208"
+            title_lines_max: 3
+            body_lines_max: 5
+            embedded_micro_fact_max: 1
+        width_thresholds_px:
+          narrow: "<= 340"
+          stable: "341-390"
+          wide: ">= 391"
+      merged_kpi_card:
+        variants:
+          compact:
+            width_mode: "semi-fixed"
+            empirical_height_px: "92-124"
+            metric_layout: "1x2 或 2x1"
+            shared_note_lines_max: 2
+            text_capacity_hint: "适用于 2 个短 label KPI + 1 条共享说明"
+          default:
+            width_mode: "semi-fixed"
+            empirical_height_px: "124-156"
+            metric_layout: "2x1 或 stacked"
+            shared_note_lines_max: 3
+      support_micro_card:
+        variants:
+          compact:
+            width_mode: "fixed-like"
+            empirical_height_px: "52-84"
+            title_lines_max: 1
+            body_lines_max: 2
+            text_capacity_hint: "适用于单个数字 / share / 状态，不承载长正文"
+      conclusion_card:
+        variants:
+          compact:
+            width_mode: "width-sensitive"
+            empirical_height_px: "56-84"
+            body_lines_max: 3
+            text_capacity_hint: "适用于单条判断句或 1 个短段落"
+    budget_model:
+      available_height_rule: "先以 main content 可用净高为上限，再扣除 rail padding 与 block gap；不得用整页 720px 直接估算"
+      packing_objective: "把 side rail 视作有限高度背包：在不溢出的前提下，选择叙事价值最高、且高度组合最合理的一组 card，而不是先预设固定块数"
+      rail_overhead_px:
+        padding_total: "24-32"
+        gap_per_block: "8-12"
+      candidate_generation_rule: "必须先用 component_specs 对照当前 slide 的真实标题长度、正文长度、KPI label 长度与 rail 宽度，生成 component candidate 列表；禁止跳过候选生成直接选固定 card"
+      candidate_blocks:
+        required:
+          - { id: insight_card, narrative_value: 5, priority: 1 }
+          - { id: merged_kpi_card, narrative_value: 5, priority: 2 }
+        optional:
+          - { id: support_micro_card, narrative_value: 3, priority: 3, when: "存在可独立强化的二级事实，如 global share、insurance shock、route concentration" }
+          - { id: conclusion_card, narrative_value: 3, priority: 4, when: "需要单独收束判断，而不是并入 insight" }
+      packing_rules:
+        - "先放入 required cards，并默认使用 compact 档估算高度"
+        - "在 required/optional 装箱之前，必须先基于当前 rail 宽度与真实文案长度，为每个 block 生成 1 个或多个可行 component candidate；候选至少包含 variant、高度区间、可承载文本量和宽度敏感性"
+        - "随后从 optional cards 中选择 narrative_value / height 比更高的候选项，直到接近 rail_available_height，但必须保留 footer-safe margin"
+        - "若剩余空间不足以容纳完整 conclusion_card，但足以容纳 support_micro_card，则优先加入 support_micro_card，而不是机械补第三张大卡"
+        - "若剩余空间足以容纳 2 个 compact optional cards，则允许形成 4-card 组合；其中新增卡默认必须是 micro/support 级，而不是再增加一个大号正文卡"
+        - "若所有 required + optional 的组合都低效，允许把 conclusion 合并回 insight，或把 support 信息吸收到 KPI 共享说明中"
+        - "完成组合选择后，必须再做一次剩余空间分配：决定是否提升主卡档位、是否把 conclusion 压到底部、以及是否保留 intentional whitespace；禁止组合确定后直接停在顶部堆叠"
+        - "在生成 HTML 前必须先做一次经验高度组合估算；若估算总和超过可用净高，先替换为更小的候选 card，再压 copy 行数，禁止写出后再靠截图回调"
+      copy_budget_by_card:
+        rule: "以上限为准，但具体可承载文本量必须回到 component_specs 的 variant 中按当前宽度再判断一次；不得只凭统一行数上限拍板"
+    prohibition:
+      - "禁止在 side rail 中堆叠 5 个及以上独立卡片"
+      - "禁止把 2 个 KPI 各自做成独立大卡后再追加 conclusion 卡"
+      - "若出现第 4 张卡，默认必须是 support_micro_card 或同级轻量卡；禁止把第 4 张做成完整大段正文卡"
+  floating_cards:
+    map_surface_max: 2
+    preferred_positions: [bottom-left, top-left, lower-mid]
+  map_surface:
+    visible_area_min: "60%"
+    hotspot_callouts: "1-2"
+    overlay_families_max: 2
+
+layout_contract:
+  required_thinking_fields: [layout_key, narrative_archetype, geographic_scope, primary_question, render_engine, basemap_source, overlay_families, overlay_routing, routing_source]
+  narrative_fit: [map_led_narrative, corridor_story, conflict_theater, footprint_network]
+  compatible_chart_families: []
+  compatible_component_families: [Card_Accent, Card_Glass, Metric_Trend, Metric_Big, Metric_KpiRow, Map_FlowArrow, Map_NodeNetwork, Map_RadarRing, Badge_Pill]
+  compatible_map_archetypes: [territory_snapshot, route_corridor, conflict_theater, footprint_network]
+  fallback_layouts: [side_by_side, chart_synthesis, full_width]
+  overflow_recovery_order:
+    - merge_kpi_blocks_in_side_rail
+    - compress_insight_copy_and_card_padding
+    - reduce_overlay_families
+    - reduce_floating_card_count
+    - crop_map_more_aggressively
+    - downgrade_to_side_by_side_or_chart_synthesis
+  fallback_protocol:
+    - "禁止 silent fallback；若不再使用地图骨架，必须先回写 thinking"
+    - "thinking 中必须显式记录 fallback_reason、recovered_from、applied_recovery_step"
+    - "只有最终实际布局与 thinking 一致时，页面才可视为完成"
+
+storytelling_contract:
+  required_fields:
+    - { field: narrative_archetype, values: [territory_snapshot, route_corridor, conflict_theater, footprint_network], desc: "地图叙事原型；与 ppt-map-storytelling 对齐" }
+    - { field: geographic_scope, values: [local, regional, multi-region, global], desc: "地图范围" }
+    - { field: primary_question, desc: "该页只回答的一个空间问题" }
+  optional_fields:
+    - { field: crop_focus, desc: "地图裁切焦点，如 Strait of Hormuz / Eastern Mediterranean" }
+    - { field: overlay_families, desc: "主叠加层类型，建议不超过 2 类" }
+    - { field: hotspot_count, desc: "热点数量，建议 1-3 个" }
+    - { field: floating_card_count, desc: "浮层卡片数量，建议 1-3 个" }
+
+content_spec:
+  map_base:
+    engine: "Default: ECharts Geo for geo series; Secondary: prepared static SVG + HTML/SVG overlay; Exception: MapLibre GL JS only for true vector-tile scenes"
+    visibility_requirement: "地图主体在叠加后仍应保持可辨识"
+    source_rule: "禁止从 0 手绘地图；底图必须来自已准备的 SVG、GeoJSON/TopoJSON 或 tile/vector source"
+  overlays:
+    allowed_types: [fill_zone, point_marker, route_line, direction_arrow, hotspot_callout, floating_card]
+    max_primary_families: 2
+  labels:
+    hierarchy:
+      primary: "1-3 个核心标签"
+      secondary: "支撑性地点或路线"
+      contextual: "仅在无法定位时补充"
+  cards:
+    recommended_count: "1-3"
+    linkage_rule: "每张卡片必须能指向明确地图区域或路线"
+  side_rail:
+    insight_card:
+      title_lines_max: 3
+      body_lines_max: 6
+    merged_kpi_card:
+      kpi_count: "1-2"
+      layout: "stacked metrics inside a single container"
+    support_micro_card:
+      purpose: "补充一个关键二级事实或 share，不承载长正文"
+      recommended_payload: "单个数字、短标签、最多两行解释"
+    conclusion_card:
+      body_lines_max: 4
+    max_independent_cards: 4
+    candidate_selection_rule: "先根据 region_budget_model 计算 side rail 的真实净宽净高，再依据 component_specs 生成候选组件，最后才进入 budget_model 装箱"
+    budget_execution_rule: "HTML 实现前先估算 side rail 可用净高，并从 required/optional card 池中选择最合适的高度组合；若预算不足，优先换更小的 card 变体或把 support 信息并入主卡，而不是直接删掉核心信息"
+    budget_escalation_rule: "若预算仍有明显剩余，不得机械停在 2-card 或 3-card；应优先评估是否加入 support_micro_card、是否提升某卡档位，或是否把 conclusion 从 insight 中拆出"
+    budget_distribution_rule: "完成 card 组合后，必须显式处理剩余空间：优先增加主卡留白或把 conclusion 下沉到底部，其次才考虑新增 support 卡；避免所有卡片都挤在 rail 上半区"
+  implementation_acceptance:
+    required_dom_elements:
+      - "1 个可辨识的 map base 容器"
+      - "至少 1 种地图 overlay family（如 point_marker / route_line / direction_arrow / hotspot_callout / floating_card）"
+      - "至少 1 个与具体地理位置绑定的 callout 或 floating card"
+    rejection_rule: "若最终 DOM 不满足以上三项中的任意一项，则不得保留 map_overlay，必须按 fallback_protocol 回写 thinking 并切换到 fallback_layouts 中的布局"
+
+constraints:
+  - "若页面需要 geo series、geo scatter、geo lines 或区域着色，默认使用 ECharts Geo"
+  - "若页面只是编辑型叙事底图，优先使用 prepared static SVG + HTML/SVG overlay"
+  - "只有在确实需要 vector-tile / slippy-map 行为时才允许 MapLibre GL JS"
+  - "Leaflet 不是该布局的默认实现栈"
+  - "地图页一次只回答一个空间问题"
+  - "overlay_families > 2 时默认判定为信息过载风险"
+  - "floating_card_count > 3 时应降级为 map + side panel 或非地图布局"
+  - "全局地图不得承担局部邻接推理；需要局部关系时必须裁切"
+  - "若地图退化为纯背景纹理，应改用非地图布局"
+  - "若最终实现中不存在 map base 容器或 overlay family，不得继续标记为 map_overlay"
+  - "若从 map_overlay 降级到 fallback_layouts，必须先更新 thinking；禁止 HTML 与 thinking 的 layout_key 不一致"
+  - "地图区可见面积低于 60% 时，视为布局失败"
+  - "side rail 出现 5 个及以上独立卡片时，视为布局失败"
+  - "若 side rail 需要同时容纳 insight、2 个 KPI 和 conclusion，必须先把 KPI 合并成单卡"
+  - "side rail 的 block 数量必须服从经验高度预算，而不是仅服从 preferred_stack"
+  - "component 选择必须建立在当前区域净宽净高之上；禁止先挑 component 再反推区域预算"
+  - "对于 width-sensitive 组件，必须同时校验宽度导致的换行增高；禁止只看纵向预算"
+  - "若经验高度预算显示 3 张卡无法容纳，则必须在实现前换成更轻量的组合；禁止先写满大卡再事后微调数值"
+  - "若经验高度预算存在明显剩余，则必须评估 support_micro_card 或更合理的档位提升；禁止把 block 数量当成固定目标"
+  - "完成装箱后若 rail 下半区出现明显空洞，视为剩余空间分配失败；必须重新分配主卡高度、卡间节奏或结论位置"
+
+worked_layout_example:
+  scenario: "Hormuz chokepoint map page with one regional map, one KPI group, one support fact, and one concluding judgment"
+  region_budget:
+    main_height_px: 542
+    map_region_width_px: 700
+    side_rail_width_px: 372
+    side_rail_height_px: 512
+  component_candidates:
+    insight_block:
+      - { component_family: Card_Glass, variant: compact, estimated_height_px: 148, fit_reason: "标题 2 行 + 正文 3-4 行 + 1 个 embedded fact" }
+      - { component_family: Card_Accent, variant: compact, estimated_height_px: 156, fit_reason: "强调更强，但会进一步压缩正文宽度" }
+    kpi_block:
+      - { component_family: Metric_KpiRow, variant: compact, estimated_height_px: 104, fit_reason: "2 个短 KPI label 适合横向并列" }
+      - { component_family: Card_Solid, variant: compact, estimated_height_px: 132, fit_reason: "信息更重，但垂直成本更高" }
+    optional_blocks:
+      - { component_family: Metric_Big, variant: compact, estimated_height_px: 64, semantic_role: support_micro_card }
+      - { component_family: Card_Accent, variant: compact, estimated_height_px: 78, semantic_role: conclusion_card }
+  packing_result:
+    selected_components:
+      - { region: side_rail, block: insight_block, component_family: Card_Glass, variant: compact }
+      - { region: side_rail, block: kpi_block, component_family: Metric_KpiRow, variant: compact }
+      - { region: side_rail, block: conclusion_block, component_family: Card_Accent, variant: compact }
+    second_stage_distribution:
+      - "若 support fact 与 insight 强绑定，则优先嵌入 insight card，而不是新增第四张 card"
+      - "conclusion card 默认锚到底部，剩余空间优先分配给主 insight card"
+
+visual_architecture:
+  layers:
+    - { id: base, z: 0, purpose: "Map base" }
+    - { id: data, z: 1, purpose: "Geo series / overlays" }
+    - { id: ui, z: 10, purpose: "Header / KPI / narrative / callouts" }
+  preferred_card_positions: [top-right, bottom-left, right-column]
+  right_rail_rhythm: "top insight / middle merged KPI / bottom conclusion"
+
+template: |
+  <div class="slide-container flex flex-col justify-between h-full bg-white text-slate-900">
+    <header class="slide-header relative z-10 bg-transparent px-12 pt-6 pb-2 shrink-0">
+      <div class="kicker">Map Narrative</div>
+      <h1 class="text-3xl font-bold tracking-tight">Regional Exposure and Route Pressure</h1>
+      <p class="text-sm text-slate-500 mt-1">Map-first storytelling layout for conflict, corridor, and regional footprint pages.</p>
+    </header>
+
+    <main class="slide-main relative flex-1 min-h-0 overflow-hidden">
+      <div class="grid h-full grid-cols-[minmax(0,2.4fr)_minmax(300px,1fr)] gap-5">
+        <section class="relative min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+          <div class="absolute inset-0 z-0 flex items-center justify-center text-sm text-slate-400">
+            Map Base Layer
+          </div>
+
+          <div class="absolute inset-0 z-[1] pointer-events-none">
+            <div class="absolute left-[18%] top-[32%] h-3 w-3 rounded-full bg-red-500"></div>
+            <div class="absolute left-[20%] top-[34%] w-40 border-t-2 border-red-500 rotate-[18deg]"></div>
+          </div>
+
+          <section class="absolute left-6 bottom-6 z-10 w-64 rounded-2xl border border-slate-200 bg-white/88 p-4 shadow-md backdrop-blur-sm">
+            <div class="text-xs uppercase tracking-[0.18em] text-slate-400">Hotspot</div>
+            <div class="mt-2 text-lg font-semibold">Chokepoint</div>
+            <div class="mt-2 text-sm text-slate-600">One clear callout tied to one map location.</div>
+          </section>
+        </section>
+
+        <aside class="flex min-h-0 flex-col gap-3">
+          <section class="rounded-2xl border border-white/40 bg-white/88 p-5 shadow-lg backdrop-blur-sm">
+            <div class="text-xs uppercase tracking-[0.18em] text-slate-400">Primary Insight</div>
+            <div class="mt-3 text-2xl font-bold text-slate-900">Route disruption is geographically concentrated, not system-wide.</div>
+            <div class="mt-3 text-sm leading-6 text-slate-600">Use floating cards only for location-linked claims. Do not restate everything already encoded on the map.</div>
+          </section>
+
+          <section class="rounded-2xl border border-slate-200 bg-white/92 p-5 shadow-sm">
+            <div class="grid grid-cols-1 gap-4">
+              <div>
+                <div class="text-3xl font-bold text-slate-900">20.9 mb/d</div>
+                <div class="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Oil Flow</div>
+              </div>
+              <div class="border-t border-slate-200 pt-4">
+                <div class="text-3xl font-bold text-slate-900">11.4 Bcf/d</div>
+                <div class="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">LNG Flow</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="mt-auto rounded-2xl border-l-4 border-slate-400 bg-slate-50 p-5 shadow-sm">
+            <div class="text-xs uppercase tracking-[0.18em] text-slate-400">Strategic Conclusion</div>
+            <div class="mt-2 text-sm leading-6 text-slate-700">Keep the conclusion compact. If copy expands beyond four lines, compress it before adding more cards.</div>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="slide-footer h-[40px] px-12 border-t border-slate-200 shrink-0 flex justify-between items-center text-xs text-slate-400">
+      <span>Map storytelling layout</span>
+      <span>1</span>
+    </footer>
+  </div>
