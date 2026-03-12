@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- 暂无
+
+---
+
+## [v0.4.0] - 2026-03-12
+
 > 建议版本更新：**MINOR**（包含新特性 `feat(...)`）
 
 ### Added
@@ -71,6 +77,7 @@
 
 ---
 
-[Unreleased]: https://github.com/hailingu/llm-prompts/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/hailingu/llm-prompts/compare/v0.4.0...HEAD
 
+[v0.4.0]: https://github.com/hailingu/llm-prompts/compare/v30-enrich-20260210...v0.4.0
 [v0.3.0]: https://github.com/hailingu/llm-prompts/compare/v30-enrich-20260210...v0.3.0
