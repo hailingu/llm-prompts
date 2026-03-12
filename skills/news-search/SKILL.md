@@ -34,10 +34,10 @@ The skill is implemented as a standalone Python script that requires no external
 
 ```bash
 # Search using default (DuckDuckGo)
-python3 skills/news-search/scripts/search.py "上海交通 2026年2月25日" --max 5
+python3 skills/news-search/scripts/search.py "Shanghai traffic February 25 2026" --max 5
 
 # Search using specific source
-python3 skills/news-search/scripts/search.py "上海交通" --source baidu --max 5
+python3 skills/news-search/scripts/search.py "Shanghai traffic" --source baidu --max 5
 python3 skills/news-search/scripts/search.py "Shanghai traffic" --source bing --max 5
 
 # Search using RSS feeds
@@ -48,7 +48,7 @@ python3 skills/news-search/scripts/search.py "tech" --source rss --max 5
 
 ```bash
 # Search with category filter
-python3 skills/news-search/scripts/search.py "2026年2月" --category finance --max 3
+python3 skills/news-search/scripts/search.py "February 2026" --category finance --max 3
 
 # Combined search (multiple sources)
 python3 skills/news-search/scripts/search.py "AI news" --source all --max 3
@@ -59,14 +59,14 @@ python3 skills/news-search/scripts/search.py "site:36kr.com AI" --source bing --
 
 ### Supported Categories
 Use `--category` flag to narrow down news by topic:
-- `tech` (科技): 36Kr, IT之家, 虎嗅
-- `finance` (财经): 新浪财经, 华尔街见闻, 第一财经
-- `sports` (体育): 新浪体育, 虎扑, 直播吧
-- `entertainment` (娱乐): 新浪娱乐, 网易娱乐
-- `global` (国际): 环球网国际, 央视国际
-- `domestic` (国内): 新浪国内, 央视国内
-- `military` (军事): 环球网军事, 新浪军事
-- `gaming` (游戏): 游民星空, 机核网, IGN中国
+- `tech` (technology): 36Kr, ITHome, Huxiu
+- `finance` (finance): Sina Finance, Wallstreetcn, Yicai
+- `sports` (sports): Sina Sports, Hupu, Zhibo8
+- `entertainment` (entertainment): Sina Entertainment, NetEase Entertainment
+- `global` (international): Huanqiu International, CCTV International
+- `domestic` (domestic): Sina Domestic, CCTV Domestic
+- `military` (military): Huanqiu Military, Sina Military
+- `gaming` (gaming): Gamersky, Gcores, IGN China
 
 ### Output Format
 The script outputs a JSON object containing the news search results:
@@ -75,13 +75,13 @@ The script outputs a JSON object containing the news search results:
 {
   "status": "success",
   "source": "baidu",
-  "query": "上海交通 2026年2月25日",
+  "query": "Shanghai traffic February 25 2026",
   "results": [
     {
-      "title": "上海地铁早高峰限流措施将继续实施",
+      "title": "Shanghai Metro morning-peak flow-control measures will continue",
       "url": "https://www.sohu.com/a/989590849_121117079",
-      "snippet": "2月25日，上海地铁早高峰限流措施将继续实施，届时将有2座地铁站早高峰计划限流。",
-      "source": "搜狐网"
+      "snippet": "On February 25, Shanghai Metro will continue morning-peak flow-control measures at two stations.",
+      "source": "Sohu"
     }
   ],
   "metadata": {
@@ -143,7 +143,7 @@ When an agent uses this skill to answer a user's query, the agent **MUST** adher
 2. **Timestamp**: Always include the exact time the search was performed (precise to the second)
 3. **Transparency**: Do not present the news as the agent's own knowledge; explicitly state that it was retrieved via search
 4. **Format Example**:
-   - "上海地铁早高峰限流措施将继续实施... [信源: 搜狐网](https://www.sohu.com/...) (检索时间: 2026-02-25 13:46:00)"
+   - "Shanghai Metro morning-peak flow-control measures will continue... [Source: Sohu](https://www.sohu.com/...) (Search time: 2026-02-25 13:46:00)"
 
 ## Error Handling
 The script handles common errors gracefully:
@@ -160,12 +160,12 @@ The script handles common errors gracefully:
 5. **Combine sources**: Use `--source all` to get diverse perspectives
 </parameter>
 <task_progress>
-- [x] 阅读当前 news-search skill 实现
-- [x] 分析现有能力与可扩展方式
-- [x] 设计新的新闻获取方式（支持 baidu, bing, rss）
-- [x] 更新 skill 文档
-- [ ] 更新搜索脚本
-- [ ] 测试新功能
+- [x] Read current news-search skill implementation
+- [x] Analyze existing capabilities and extension paths
+- [x] Design new news retrieval paths (baidu, bing, rss)
+- [x] Update skill documentation
+- [ ] Update search script
+- [ ] Test new features
 </task_progress>
 </invoke>
 </minimax:tool_call>

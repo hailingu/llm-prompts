@@ -24,19 +24,19 @@ Automatically detect document domain via lightweight keyword matching. Designed 
 | Domain | Description | Example Keywords |
 |--------|-------------|------------------|
 | `software` | Software & IT (architecture, tech stacks) | microservices, React, PostgreSQL, MVP |
-| `hardware` | Power Electronics & Hardware (materials, PD) | 纳米晶, SiC, 功率密度, 液冷 |
-| `manufacturing` | Manufacturing & Supply Chain (processes, SPC) | 良率, Cpk, 试产, 返工 |
-| `standards` | Standards & Certification (IEC, IEEE, GB) | IEC, 认证, 合规, 互比试验 |
-| `business` | Business & Finance (models, metrics, ROI) | ROI, 商业模式, 订阅, TCO |
-| `biotech` | Biotech & Pharma (clinical trials, GMP, FDA) | 临床试验, GMP, 靶标, 制剂 |
-| `energy` | Energy & Power Systems (renewable, grid, storage) | 光伏, 风电, 储能, 电网 |
-| `data_science` | Data Science & AI/ML (algorithms, models, training) | 机器学习, 深度学习, XGBoost, 训练 |
-| `automotive` | Automotive & EV (powertrain, ADAS, vehicle) | 电机, 电驱, BMS, ADAS, 自动驾驶 |
+| `hardware` | Power Electronics & Hardware (materials, PD) | nanocrystalline, SiC, power density, liquid cooling |
+| `manufacturing` | Manufacturing & Supply Chain (processes, SPC) | yield, Cpk, pilot production, rework |
+| `standards` | Standards & Certification (IEC, IEEE, GB) | IEC, certification, compliance, inter-lab testing |
+| `business` | Business & Finance (models, metrics, ROI) | ROI, business model, subscription, TCO |
+| `biotech` | Biotech & Pharma (clinical trials, GMP, FDA) | clinical trial, GMP, target, formulation |
+| `energy` | Energy & Power Systems (renewable, grid, storage) | photovoltaics, wind power, energy storage, power grid |
+| `data_science` | Data Science & AI/ML (algorithms, models, training) | machine learning, deep learning, XGBoost, training |
+| `automotive` | Automotive & EV (powertrain, ADAS, vehicle) | motor, e-drive, BMS, ADAS, autonomous driving |
 | `cloud_infrastructure` | Cloud & Infrastructure (AWS/GCP/Azure, DevOps) | AWS, Azure, Kubernetes, CI/CD, Terraform |
-| `telecom` | Telecommunications (5G, network, wireless) | 5G, 基站, 核心网, LTE, WiFi |
-| `iot` | IoT & Embedded Systems (sensors, protocols, edge) | 传感器, MQTT, MCU, 嵌入式, RTOS |
-| `medical_devices` | Medical Devices & Healthcare (FDA 510(k), CE) | FDA, 510(k), ISO13485, 临床试验 |
-| `security` | Cybersecurity & Information Security (penetration testing) | 防火墙, WAF, 渗透测试, 等保, ISO27001 |
+| `telecom` | Telecommunications (5G, network, wireless) | 5G, base station, core network, LTE, WiFi |
+| `iot` | IoT & Embedded Systems (sensors, protocols, edge) | sensors, MQTT, MCU, embedded, RTOS |
+| `medical_devices` | Medical Devices & Healthcare (FDA 510(k), CE) | FDA, 510(k), ISO13485, clinical trial |
+| `security` | Cybersecurity & Information Security (penetration testing) | firewall, WAF, penetration testing, MLPS, ISO27001 |
 
 ## Supported Commands
 
@@ -107,7 +107,7 @@ report["domain_packs_activated"] = activated_packs
     "software": 0.85
   },
   "matched_keywords": {
-    "software": ["microservices", "React", "PostgreSQL", "MVP", "决策"]
+    "software": ["microservices", "React", "PostgreSQL", "MVP", "decision"]
   },
   "activated_packs": ["software"],
   "threshold": 0.3,
@@ -122,11 +122,11 @@ report["domain_packs_activated"] = activated_packs
   "status": "success",
   "domain": "hardware",
   "keywords": {
-    "decision_verbs": ["决策", "选择", "采用", "推荐"],
-    "technical_terms": ["纳米晶", "非晶", "粉末", "SiC", "GaN", "功率密度"],
-    "scope_markers": ["MVP", "Phase 1", "必须", "可选"],
-    "comparison_markers": ["vs", "对比", "权衡", "trade-off"],
-    "risk_markers": ["风险", "缓解", "降级", "监控"]
+    "decision_verbs": ["decision", "choose", "adopt", "recommend"],
+    "technical_terms": ["nanocrystalline", "amorphous", "powder", "SiC", "GaN", "power density"],
+    "scope_markers": ["MVP", "Phase 1", "must-have", "optional"],
+    "comparison_markers": ["vs", "comparison", "trade-off", "trade-off"],
+    "risk_markers": ["risk", "mitigate", "degrade", "monitor"]
   }
 }
 ```
@@ -143,7 +143,7 @@ last_updated: 2026-02-06
 
 keywords:
   decision_verbs:
-    zh: ["决策", "选择", "采用", "推荐", "优先", "决定"]
+    zh: ["decision", "choose", "adopt", "recommend", "prioritize", "decide"]
     en: ["decision", "chose", "instead of", "vs", "trade-off", "prioritize"]
   
   technical_terms:
@@ -151,15 +151,15 @@ keywords:
     tech_stack: ["React", "Vue", "Angular", "PostgreSQL", "MongoDB", "Redis"]
   
   scope_markers:
-    zh: ["必须", "可选", "MVP", "示范", "量产", "规模化"]
+    zh: ["must-have", "optional", "MVP", "demo", "mass production", "scale-up"]
     en: ["must-have", "optional", "nice-to-have", "MVP", "Phase 1", "pilot"]
   
   comparison_markers:
-    zh: ["vs", "对比", "权衡", "取舍", "优点", "缺点"]
+    zh: ["vs", "comparison", "trade-off", "compromise", "pros", "cons"]
     en: ["vs", "trade-off", "instead of", "pros", "cons", "advantages"]
   
   risk_markers:
-    zh: ["为了避免", "缓解", "降级", "监控", "风险", "不确定性"]
+    zh: ["to avoid", "mitigate", "degrade", "monitor", "risk", "uncertainty"]
     en: ["to avoid", "mitigate", "fallback", "monitor", "risk", "uncertainty"]
 
 scoring_weights:
@@ -197,7 +197,7 @@ confidence_scores:
   business: 0.55
 matched_keywords:
   software: ["microservices", "React", "MVP"]
-  business: ["ROI", "商业模式"]
+  business: ["ROI", "business model"]
 activated_packs: ["software", "business"]
 threshold: 0.3
 total_keywords_matched: 15
@@ -232,7 +232,7 @@ hint: "Check the domain name or create the domain configuration file."
 
 - **Lightweight keyword matching** (not ML-based): Fast, interpretable, but may miss context-dependent domain signals
 - **Single-language support per category**: Chinese and English keywords mixed; no full i18n support yet
-- **No semantic understanding**: "采用 React" vs "不采用 React" both match "React" keyword (use decision extraction for context)
+- **No semantic understanding**: "adopt React" vs "do not adopt React" both match the "React" keyword (use decision extraction for context)
 - **Fixed threshold**: Single global threshold for all domains (future: per-domain thresholds)
 
 ## Integration

@@ -343,8 +343,8 @@ keyword-based auto-detection internally.
 
 | Signal | Pattern | Action |
 |--------|---------|--------|
-| User correction | "不对", "错了", "应该是", "wrong", "incorrect" | → Error post-mortem |
-| Explicit memory request | "记住", "不要忘记", "remember", "偏好", "约束" | → Preference record |
+| User correction | "not right", "wrong", "it should be", "wrong", "incorrect" | → Error post-mortem |
+| Explicit memory request | "remember", "do not forget", "remember", "preference", "constraint" | → Preference record |
 | Error in response | "Error:", "Exception", "timeout" | → Error log |
 | Emotional + complex | Satisfied/dissatisfied + 5+ turns | → Task summary |
 | Tool-heavy milestone | 3+ tools, every 5 turns | → Progress snapshot |
@@ -394,7 +394,7 @@ if_extracted_content_is_not_ready_yet:
 
 **Explicit User Request:**
 ```yaml
-when_user_says: ["记住", "不要忘记", "remember"]
+when_user_says: ["remember", "do not forget", "remember"]
   - call: memory-manager/persist-turn
     with: {raw_content, extracted_content, theme: preferences, promote_global: true}
 ```

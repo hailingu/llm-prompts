@@ -109,13 +109,13 @@ The skill comes with **25+ high-quality RSS feeds** pre-configured across 7 cate
 
 | Category | Feeds |
 |----------|-------|
-| **Tech** (科技) | 36Kr, IT之家, 虎嗅, 极客公园, 爱范儿, 少数派 |
-| **Finance** (财经) | 新浪财经, 华尔街见闻, 第一财经, 经济观察报 |
-| **News** (新闻) | 环球网, 央视新闻, 新浪新闻, 参考消息, 财新网 |
-| **AI** (人工智能) | MIT Tech Review, OpenAI Blog, Anthropic Blog, Hugging Face |
-| **Dev** (开发) | Hacker News, Dev.to, 掘金, 开源中国, GitHub Blog |
-| **Product** (产品) | Product Hunt, Smashing Magazine |
-| **Business** (商业) | YC Blog, 36Kr创投 |
+| **Tech** (technology) | 36Kr, ITHome, Huxiu, Geekerwan, ifanr, SSPAI |
+| **Finance** (finance) | Sina Finance, Wallstreetcn, Yicai, EEO |
+| **News** (news) | Huanqiu, CCTV News, Sina News, Cankaoxiaoxi, Caixin |
+| **AI** (artificial intelligence) | MIT Tech Review, OpenAI Blog, Anthropic Blog, Hugging Face |
+| **Dev** (development) | Hacker News, Dev.to, Juejin, OSChina, GitHub Blog |
+| **Product** (product) | Product Hunt, Smashing Magazine |
+| **Business** (business) | YC Blog, 36Kr Venture |
 
 ## Output Format
 
@@ -126,13 +126,13 @@ The skill comes with **25+ high-quality RSS feeds** pre-configured across 7 cate
   "source": "36kr",
   "articles": [
     {
-      "title": "AI领域最新突破：GPT-5发布",
+      "title": "Latest AI Breakthrough: GPT-5 Released",
       "url": "https://www.36kr.com/p/1234567890",
       "published": "2026-02-25T10:30:00Z",
       "author": "36Kr",
-      "summary": "今日，OpenAI正式发布GPT-5...",
-      "content": "完整文章内容...",
-      "categories": ["AI", "大模型"]
+      "summary": "Today, OpenAI officially released GPT-5...",
+      "content": "Full article content...",
+      "categories": ["AI", "foundation model"]
     }
   ],
   "metadata": {
@@ -144,13 +144,13 @@ The skill comes with **25+ high-quality RSS feeds** pre-configured across 7 cate
 
 ### Markdown Output
 ```markdown
-## AI领域最新突破：GPT-5发布
+## Latest AI Breakthrough: GPT-5 Released
 
-**来源**: 36Kr | **发布时间**: 2026-02-25
+**Source**: 36Kr | **Published**: 2026-02-25
 
-今日，OpenAI正式发布GPT-5...
+Today, OpenAI officially released GPT-5...
 
-[阅读原文](https://www.36kr.com/p/1234567890)
+[Read Full Article](https://www.36kr.com/p/1234567890)
 
 ---
 ```

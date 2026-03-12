@@ -20,7 +20,7 @@ Use this skill when the page must explain geography, conflict space, movement, r
 
 Use this rule at the start of every map-capable page:
 
-**先判页，再定图；先定叙事，再选骨架；只有需要 geo series 时，才上图引擎。**
+**Decide the page first, then the chart; decide the narrative first, then the skeleton; only invoke a map engine when geo series are actually required.**
 
 Expanded execution order:
 

@@ -137,8 +137,8 @@ Preferred API naming should now use `style profile` semantics such as `getStyleP
 ### Visual Hierarchy Principles
 Standard business reports often rely on size alone for hierarchy (H1 > H2). The `Editorial Briefing` style profile introduces **Weight Contrast** as a primary tool:
 
-- **Display Title**: `text-6xl font-black tracking-tight leading-none` (e.g., "地缘政治 2026")
-- **Subtitle / Essence**: `text-4xl font-light tracking-wide text-slate-500` (e.g., "新秩序与战略转折")
+- **Display Title**: `text-6xl font-black tracking-tight leading-none` (e.g., "Geopolitics 2026")
+- **Subtitle / Essence**: `text-4xl font-light tracking-wide text-slate-500` (e.g., "New Order and Strategic Inflection")
 - **Eyebrow / Meta**: `text-xm font-bold tracking-widest uppercase text-slate-400` (e.g., "CONFIDENTIAL BOARD BRIEFING")
 
 ### Font Pairings (`.brand-strategic` / `.brand-strategic-report`)
