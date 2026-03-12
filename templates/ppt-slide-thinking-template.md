@@ -1,19 +1,19 @@
 # Slide {N}: Thinking
 
-## 1. 核心任务与推理 (Mission & Reasoning)
+## 1. Core Task and Reasoning (Mission & Reasoning)
 
-- **目标**: State the single reading task this slide must accomplish.
-- **信息结构**: Explain whether the slide is evidence-led, comparison-led, process-led, or conclusion-led.
-- **数据策略**: State whether the slide is chart-led, component-led, layout-led, or mixed, and why.
-- **布局权衡**:
-  - *方案 A*: Describe the rejected layout or encoding path.
-  - *方案 B*: Describe the chosen layout and why it is superior for this slide.
+- **Goal**: State the single reading task this slide must accomplish.
+- **Information Structure**: Explain whether the slide is evidence-led, comparison-led, process-led, or conclusion-led.
+- **Data Strategy**: State whether the slide is chart-led, component-led, layout-led, or mixed, and why.
+- **Layout Trade-offs**:
+  - *Option A*: Describe the rejected layout or encoding path.
+  - *Option B*: Describe the chosen layout and why it is superior for this slide.
 
 ---
 
-## 2. 执行规格 (Execution Specs)
+## 2. Execution Specs (Execution Specs)
 
-### 2.1 页面骨架 (Layout Anchor)
+### 2.1 Layout Anchor (Layout Anchor)
 
 - **Layout Key**: side_by_side | dashboard_grid | hybrid | comparison | process | conclusion | executive_summary
 - **Layout Contract Source**: `skills/ppt-slide-layout-library/assets/layouts/<layout_key>.yml#layout_contract`
@@ -24,14 +24,14 @@
 - **Primary Region Strategy**: what the main reading region does
 - **Secondary Region Strategy**: what the supporting region does
 
-### 2.2 内容编码 (Content Encoding)
+### 2.2 Content Encoding (Content Encoding)
 
 - **Primary Encoding**: chart | components | text block | table | mixed
 - **Source**: file, note, dataset, or research source
 - **Filter Logic**: what is included and excluded
 - **Mapping**: which facts go to headline / chart / cards / footer notes
 
-### 2.3 图表契约判断 (Chart Contract Check)
+### 2.3 Chart Contract Check (Chart Contract Check)
 
 - **Chart Family**: required when `Primary Encoding = chart`
 - **Contract Fields**: required when `Primary Encoding = chart`
@@ -39,25 +39,25 @@
 - **Contract Source**: `skills/ppt-chart-engine/assets/charts.yml#thinking_contracts.<chart_family>` when chart-led
 - **Fallback Plan**: required when `Primary Encoding = chart`
 
-### 2.4 组件语义解析 (Component Semantic Resolution)
+### 2.4 Component Semantic Resolution (Component Semantic Resolution)
 
 - **Component Selection**: list the standard components used on the page, if any
 - **Semantic Roles**: for each standard component, list the semantic roles used by the payload
 - **Resolver Source**: `skills/ppt-brand-style-system/assets/component_semantic_mappings.yml` when semantic_payload is present
 - **Fallback Policy**: resolver first, then safe fallback payload only if needed
 
-### 2.5 视觉细节 (Visual Props)
+### 2.5 Visual Props (Visual Props)
 
 - **Style Profile**: active style profile or intended page tone
 - **Density**: compact | default | relaxed
 - **Highlights**: emphasis zones, separators, chips, arrows, glow, or KPI anchors
 
-### 2.6 叙事文案 (Narrative)
+### 2.6 Narrative (Narrative)
 
 - **Headline**: one clear headline
 - **Insight**: one sentence explaining why the page matters
 
-### 2.7 布局恢复与降级 (Layout Recovery)
+### 2.7 Layout Recovery and Fallback (Layout Recovery)
 
 - **Recovery Trigger**: what content-density or structure condition would trigger recovery
 - **Recovery Action**: which first action from `Overflow Recovery Order` will be tried before layout switching

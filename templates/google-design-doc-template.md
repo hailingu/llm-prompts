@@ -13,16 +13,16 @@
 ## 1. Context and Scope
 
 **Background:**  
-[为什么需要这个模块？解决什么业务问题？]
+[Why is this module needed? What business problem does it solve?]
 
 **Target Users:**  
-[谁会使用这个模块？内部服务/外部 API/CLI 工具？]
+[Who will use this module? Internal service, external API, or CLI tool?]
 
 **System Boundary:**  
-[与哪些外部系统交互？交互方式是什么？]
+[Which external systems does it interact with, and how?]
 
-- External System A: [交互方式，如 HTTPS REST API]
-- External System B: [交互方式，如 Database/Message Queue]
+- External System A: [Integration method, e.g., HTTPS REST API]
+- External System B: [Integration method, e.g., Database or Message Queue]
 
 ---
 
@@ -30,14 +30,14 @@
 
 **Goals:**
 
-- [目标1：必须实现的功能]
-- [目标2：必须满足的性能指标，如 "响应时间 < 200ms (p95)"]
-- [目标3：必须遵守的约束条件]
+- [Goal 1: required functionality]
+- [Goal 2: required performance target, e.g., "response time < 200ms (p95)"]
+- [Goal 3: required constraints]
 
 **Non-Goals:**
 
-- [非目标1：不在此次实现范围内的功能]
-- [非目标2：暂不考虑的场景]
+- [Non-goal 1: out-of-scope functionality]
+- [Non-goal 2: scenarios not considered in this phase]
 
 ---
 
@@ -53,8 +53,8 @@ graph TD
 
 ### 3.2 Component Description
 
-- **Module A**: [职责描述，1-2 句话]
-- **Module C**: [职责描述，1-2 句话]
+- **Module A**: [Responsibility summary, 1-2 sentences]
+- **Module C**: [Responsibility summary, 1-2 sentences]
 
 ---
 
@@ -64,17 +64,17 @@ graph TD
 
 ```java
 /**
- * [接口描述]
+ * [Interface description]
  */
 public interface ServiceName {
     /**
-     * [方法描述]
+     * [Method description]
      * 
-     * @param param1 [参数描述 + 约束，如 "非空", "> 0"]
-     * @return [返回值描述，如 "订阅信息，如果订阅无效返回 null"]
-     * @throws ExceptionType [异常场景，如 "网络基础设施故障（连接超时、DNS 失败、HTTP 5xx）"]
-     * @throws IllegalArgumentException [参数校验异常]
-     * @ThreadSafe [Yes/No + 说明，如 "Yes（可从多个线程并发调用，无需外部同步）"]
+     * @param param1 [Parameter description + constraints, e.g., "non-null", "> 0"]
+     * @return [Return description, e.g., "subscription info; return null if invalid"]
+     * @throws ExceptionType [Exception scenarios, e.g., "network infrastructure failure (timeout, DNS failure, HTTP 5xx)"]
+     * @throws IllegalArgumentException [Parameter validation exception]
+     * @ThreadSafe [Yes/No + explanation, e.g., "Yes (safe for concurrent calls without external synchronization)"]
      * @Idempotent [Yes/No]
      */
     ReturnType methodName(ParamType param1) throws ExceptionType;
@@ -87,43 +87,43 @@ public interface ServiceName {
 
 **[Method/Feature Name] - [Decision Category]**:
 
-1. **Decision**: [具体决策，一句话]
+1. **Decision**: [Specific decision in one sentence]
 
-2. **Contract**: [接口契约 - 精确定义行为]
-   - Return [X] when: [具体场景，如 "订阅不存在、已过期、已取消（HTTP 200, status=invalid）"]
-   - Throw [Y] when: [具体场景，如 "连接超时、DNS 失败、HTTP 5xx"]
-   - Never throws: [明确不会抛出的异常]
+2. **Contract**: [Interface contract - precisely defined behavior]
+   - Return [X] when: [Specific scenario, e.g., "subscription not found, expired, or canceled (HTTP 200, status=invalid)"]
+   - Throw [Y] when: [Specific scenario, e.g., "connection timeout, DNS failure, HTTP 5xx"]
+   - Never throws: [Exceptions that must never be thrown]
 
-3. **Caller Guidance**: [调用方应该如何使用]
-   - 收到返回值 [X] → [应该如何处理，如 "显示购买提示或降级功能"]
-   - 捕获异常 [Y] → [应该如何处理，如 "重试（指数退避，最多 3 次）或向用户显示网络错误"]
+3. **Caller Guidance**: [How callers should use this]
+   - On return value [X] -> [How to handle it, e.g., "show purchase prompt or degrade functionality"]
+   - On exception [Y] -> [How to handle it, e.g., "retry with exponential backoff up to 3 times or show a network error"]
 
-4. **Rationale**: [为什么这样设计]
-   - [解释设计决策的理由]
+4. **Rationale**: [Why this design is chosen]
+   - [Rationale for the design decision]
 
-5. **Alternative Considered**: [考虑过的其他方案]
-   - Alternative 1: [方案描述] → Rejected: [为什么不选]
+5. **Alternative Considered**: [Alternative options considered]
+   - Alternative 1: [Option description] -> Rejected: [Why it was not selected]
 
 ---
 
 **Example Decision Categories**:
 
-- Error Handling Contract (错误处理契约)
-- Thread Safety Contract (线程安全契约)
-- Idempotency Contract (幂等性契约)
-- Performance Trade-offs (性能权衡)
+- Error Handling Contract
+- Thread Safety Contract
+- Idempotency Contract
+- Performance Trade-offs
 
 ### 4.3 Dependency Interfaces
 
 ```java
 /**
- * [依赖接口描述]
+ * [Dependency interface description]
  */
 public interface DependencyService {
     /**
-     * [方法描述]
+     * [Method description]
      * 
-     * @ThreadSafe [Yes/No + 说明]
+     * @ThreadSafe [Yes/No + explanation]
      */
     ReturnType dependencyMethod(ParamType param);
 }
@@ -136,10 +136,10 @@ public interface DependencyService {
 | Entity  | Fields | Type   | Constraints        | Description |
 | ------- | ------ | ------ | ------------------ | ----------- |
 | ------- | ------ | ------ | ------------------ | ----------- |
-| Entity1 | field1 | String | Non-null, 32 chars | [描述]      |
-|         | field2 | Enum   | ACTIVE/EXPIRED     | [描述]      |
-|         | field3 | Date   | Nullable           | [描述]      |
-| Entity2 | field1 | int    | > 0, milliseconds  | [描述]      |
+| Entity1 | field1 | String | Non-null, 32 chars | [Description]      |
+|         | field2 | Enum   | ACTIVE/EXPIRED     | [Description]      |
+|         | field3 | Date   | Nullable           | [Description]      |
+| Entity2 | field1 | int    | > 0, milliseconds  | [Description]      |
 
 ---
 
@@ -157,13 +157,13 @@ public interface DependencyService {
 
 **methodA()**:
 
-- Requirement: 线程安全，支持并发调用
-- Rationale: 预期从多个请求线程同时调用
+- Requirement: thread-safe and supports concurrent calls
+- Rationale: expected to be called by multiple request threads concurrently
 
 **methodB()**:
 
-- Requirement: 非线程安全，仅主线程调用
-- Rationale: 应用启动时调用一次，无并发场景
+- Requirement: not thread-safe; called only on the main thread
+- Rationale: called once during application startup; no concurrency scenario
 
 ---
 
@@ -179,81 +179,81 @@ public interface DependencyService {
 
 **Optimization Strategy**:
 
-- [优化策略，如 "使用连接池复用 HTTP 连接"]
-- [超时设置]
+- [Optimization strategy, e.g., "reuse HTTP connections with a connection pool"]
+- [Timeout configuration]
 
 ### 7.2 Security
 
 **Requirements**:
 
-- [安全要求，如 "仅使用 HTTPS（禁用 HTTP）"]
-- [证书验证要求]
-- [敏感信息处理，如 "API Key 在日志中脱敏"]
+- [Security requirement, e.g., "HTTPS only (disable HTTP)"]
+- [Certificate validation requirements]
+- [Sensitive data handling, e.g., "mask API keys in logs"]
 
 ### 7.3 Observability
 
 **Logging**:
 
-- INFO: [记录内容]
-- WARN: [记录内容]
-- ERROR: [记录内容]
+- INFO: [What to log]
+- WARN: [What to log]
+- ERROR: [What to log]
 
 **Metrics** (optional):
 
-- [metric_name]: [类型 + 描述]
-- [metric_name]: [类型 + 描述]
+- [metric_name]: [Type + description]
+- [metric_name]: [Type + description]
 
 ---
 
 ## 8. Alternatives Considered
 
-### Alternative 1: [方案名称]
+### Alternative 1: [Option name]
 
 **Pros**:
 
-- [优点1]
-- [优点2]
+- [Pro 1]
+- [Pro 2]
 
 **Cons**:
 
-- [缺点1]
-- [缺点2]
+- [Con 1]
+- [Con 2]
 
-**Decision**: [不采用的理由]
+**Decision**: [Reason for rejection]
 
 ---
 
-### Alternative 2: [方案名称]
+### Alternative 2: [Option name]
 
 **Pros**:
 
-- [优点1]
+- [Pro 1]
 
 **Cons**:
 
-- [缺点1]
+- [Con 1]
 
-**Decision**: [不采用的理由]
+**Decision**: [Reason for rejection]
 
 ---
 
 ## 9. Open Questions (Optional)
 
-1. **[问题描述]**
-   - Owner: @[责任人]
+1. **[Question description]**
+   - Owner: @[Owner]
    - Deadline: [YYYY-MM-DD]
-   - Impact: [影响描述]
+   - Impact: [Impact description]
 
 ---
 
 ## 10. References
 
 - Standards: `.github/standards/google-design-doc-standards.md`
-- Related Docs: [相关文档链接]
+- Related Docs: [Related document links]
 
 ## Appendix A: Sequence Diagram (Optional)
 
-> 仅在交互协议复杂时添加
+> Only include when interaction protocols are complex
 
 ```mermaid
 sequenceDiagram
@@ -275,7 +275,7 @@ sequenceDiagram
 
 ## Appendix B: State Machine Diagram (Optional)
 
-> 仅在状态驱动系统时添加
+> Only include for state-driven systems
 
 ```mermaid
 stateDiagram-v2

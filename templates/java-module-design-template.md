@@ -13,22 +13,22 @@
 ## 1. Module Overview
 
 **Purpose:**  
-[简述模块的核心目的和业务价值]
+[Summarize the module's core purpose and business value]
 
 **Scope:**  
-[定义模块边界：包含什么功能，不包含什么功能]
+[Define the module boundary: what is included and excluded]
 
 **Key Features:**
 
-- [Feature 1: 简述]
-- [Feature 2: 简述]
-- [Feature 3: 简述]
+- [Feature 1: summary]
+- [Feature 2: summary]
+- [Feature 3: summary]
 
 **Success Criteria:**
 
-- [性能指标，如：QPS > 1000]
-- [质量指标，如：测试覆盖率 > 80%]
-- [可维护性指标，如：圈复杂度 < 10]
+- [Performance metric, e.g., QPS > 1000]
+- [Quality metric, e.g., test coverage > 80%]
+- [Maintainability metric, e.g., cyclomatic complexity < 10]
 
 ---
 
@@ -62,8 +62,8 @@ graph TD
 
 **Architecture Decisions:**
 
-- [决策 1：为什么选择这种架构模式？]
-- [决策 2：为什么使用这种依赖关系？]
+- [Decision 1: why choose this architecture pattern?]
+- [Decision 2: why use this dependency relationship?]
 
 ---
 
@@ -72,16 +72,16 @@ graph TD
 | Class Name     | Lifecycle      | Justification                      |
 | -------------- | -------------- | ---------------------------------- |
 | -------------- | -------------- | ---------------------------------- |
-| MainClass      | Singleton      | 全局共享配置，无状态               |
-| HelperClass    | Prototype      | 每次请求创建新实例，避免状态污染   |
-| CacheService   | Singleton      | 全局缓存，需要跨请求共享数据       |
-| RequestHandler | Request-Scoped | 每个请求独立实例，包含请求上下文   |
+| MainClass      | Singleton      | Globally shared configuration; stateless               |
+| HelperClass    | Prototype      | Create a new instance per request to avoid state pollution   |
+| CacheService   | Singleton      | Global cache; data must be shared across requests       |
+| RequestHandler | Request-Scoped | Per-request instance containing request context   |
 
 **Instantiation Strategy:**
 
-- **Singleton Classes**: [如何实例化？Builder pattern? Enum? Lazy initialization?]
-- **Prototype Classes**: [谁负责创建实例？Factory? Constructor?]
-- **Lifecycle Management**: [谁负责销毁实例？如何清理资源？]
+- **Singleton Classes**: [How is it instantiated? Builder pattern, enum, or lazy initialization?]
+- **Prototype Classes**: [Who creates instances? Factory or constructor?]
+- **Lifecycle Management**: [Who destroys instances? How are resources cleaned up?]
 
 ---
 
@@ -101,22 +101,22 @@ graph TD
 | Class Name    | Concurrency Model          | Implementation Details              |
 | ------------- | -------------------------- | ----------------------------------- |
 | ------------- | -------------------------- | ----------------------------------- |
-| MainClass     | Thread-Safe (Stateless)    | 所有方法无状态，无需同步            |
-| CacheService  | Thread-Safe (Synchronized) | 使用 ConcurrentHashMap，Atomic 变量 |
-| ConfigManager | Single-threaded            | 只在启动时初始化，无并发访问        |
+| MainClass     | Thread-Safe (Stateless)    | All methods are stateless; no synchronization needed            |
+| CacheService  | Thread-Safe (Synchronized) | Use ConcurrentHashMap and atomic variables |
+| ConfigManager | Single-threaded            | Initialized only at startup; no concurrent access        |
 
 **Synchronization Rules:**
 
-- **No Synchronization**: [哪些类不需要同步？为什么？]
-- **Synchronized Methods**: [哪些方法需要同步？预期锁竞争如何？]
-- **Lock-Free Design**: [是否使用 Atomic 变量？为什么？]
-- **Immutable Objects**: [哪些类设计为不可变？为什么？]
+- **No Synchronization**: [Which classes do not require synchronization, and why?]
+- **Synchronized Methods**: [Which methods require synchronization, and what lock contention is expected?]
+- **Lock-Free Design**: [Use atomic variables? Why?]
+- **Immutable Objects**: [Which classes are immutable, and why?]
 
 **Performance Considerations:**
 
-- [预期响应时间：< 100ms]
-- [锁竞争评估：低/中/高]
-- [扩展策略：垂直扩展/水平扩展]
+- [Expected response time: < 100ms]
+- [Lock contention assessment: low/medium/high]
+- [Scaling strategy: vertical/horizontal]
 
 ---
 
@@ -147,15 +147,15 @@ sequenceDiagram
 
 **Call Flow Description:**
 
-1. [步骤 1：Client 调用 MainClass.method1()]
-2. [步骤 2：MainClass 调用 DependencyClass.service()]
-3. [步骤 3：DependencyClass 调用 ExternalService API]
-4. [步骤 4：返回结果给 Client]
+1. [Step 1: Client calls MainClass.method1()]
+2. [Step 2: MainClass calls DependencyClass.service()]
+3. [Step 3: DependencyClass calls ExternalService API]
+4. [Step 4: Return result to Client]
 
 **Error Handling:**
 
-- [异常 1：ExternalService 超时 → 如何处理？]
-- [异常 2：数据验证失败 → 如何处理？]
+- [Exception 1: ExternalService timeout -> how to handle?]
+- [Exception 2: data validation failure -> how to handle?]
 
 ---
 
@@ -174,25 +174,25 @@ sequenceDiagram
 **Interface Contracts:**
 
 ```java
-// ConfigLoader 需要提供的接口
+// ConfigLoader interface required from this dependency
 public interface ConfigProvider {
     /**
-     * 获取配置对象
-     * @return 不可变配置对象
-     * @ThreadSafe Yes（可并发调用）
-     * @throws ConfigException 配置加载失败
+     * Get configuration object
+     * @return immutable configuration object
+     * @ThreadSafe Yes（safe for concurrent calls）
+     * @throws ConfigException config load failure
      */
     Config getConfig() throws ConfigException;
 }
 
-// HttpClient 需要提供的接口
+// HttpClient interface required from this dependency
 public interface HttpSender {
     /**
-     * 发送HTTP请求
-     * @param request 请求对象
-     * @return 响应对象
-     * @throws IOException 网络异常
-     * @ThreadSafe Yes（可并发调用）
+     * Send HTTP request
+     * @param request request object
+     * @return response object
+     * @throws IOException network exception
+     * @ThreadSafe Yes（safe for concurrent calls）
      */
     Response send(Request request) throws IOException;
 }
@@ -200,21 +200,21 @@ public interface HttpSender {
 
 **Integration Strategy:**
 
-- 依赖注入方式：构造函数注入（符合依赖倒置原则）
-- 初始化顺序：ConfigLoader → HttpClient → [当前模块]
-- 生命周期管理：所有依赖模块必须在当前模块初始化前就绪
+- Dependency injection: constructor injection (follows dependency inversion principle)
+- Initialization order: ConfigLoader -> HttpClient -> [Current module]
+- Lifecycle management: all dependencies must be ready before this module initializes
 
 **Circular Dependency Detection:**
 
-- [是否存在循环依赖？如何消除？]
+- [Are there circular dependencies? How are they removed?]
 
 ### 6.2 Internal Utility Dependencies
 
 | Dependency Module | Type   | Purpose  | Failure Handling       |
 | ----------------- | ------ | -------- | ---------------------- |
 | ----------------- | ------ | -------- | ---------------------- |
-| Logger Module     | Strong | 日志记录 | N/A (Always available) |
-| Cache Module      | Weak   | 性能优化 | 降级到直接查询         |
+| Logger Module     | Strong | Logging | N/A (Always available) |
+| Cache Module      | Weak   | Performance optimization | Degrade to direct query         |
 
 ### 6.3 External Dependencies
 
@@ -236,17 +236,17 @@ graph LR
 
 **Failure Scenarios:**
 
-- [Scenario 1: Payment Gateway 超时]
-  - Impact: [用户无法完成支付]
-  - Mitigation: [重试 3 次，显示友好错误消息]
+- [Scenario 1: Payment Gateway timeout]
+  - Impact: [Users cannot complete payment]
+  - Mitigation: [Retry 3 times and show a user-friendly error message]
   
-- [Scenario 2: Cache Module 不可用]
-  - Impact: [性能下降 20%]
-  - Mitigation: [降级到数据库直接查询]
+- [Scenario 2: Cache module unavailable]
+  - Impact: [Performance degrades by 20%]
+  - Mitigation: [Degrade to direct database queries]
 
 **Circuit Breaker Strategy:**
 
-- [是否使用熔断器？阈值是多少？]
+- [Use a circuit breaker? What thresholds?]
 
 ---
 
@@ -256,13 +256,13 @@ graph LR
 
 ```java
 /**
- * [API 描述]
+ * [API description]
  * 
- * @param param1 [参数描述]
- * @return [返回值描述]
- * @throws ExceptionType [异常场景]
- * @ThreadSafe [是否线程安全？]
- * @Idempotent [是否幂等？]
+ * @param param1 [Parameter description]
+ * @return [Return value description]
+ * @throws ExceptionType [Exception scenario]
+ * @ThreadSafe [Thread-safe?]
+ * @Idempotent [Idempotent?]
  */
 public ReturnType methodName(ParamType param1) throws ExceptionType;
 ```
@@ -272,18 +272,18 @@ public ReturnType methodName(ParamType param1) throws ExceptionType;
 | API Method           | Purpose        | Thread-Safe | Idempotent | Exception Handling |
 | -------------------- | -------------- | ----------- | ---------- | ------------------ |
 | -------------------- | -------------- | ----------- | ---------- | ------------------ |
-| verifySubscription() | 验证订阅状态   | Yes         | Yes        | 返回 false         |
-| startMonitor()       | 启动周期性检查 | No          | Yes        | 抛出异常           |
+| verifySubscription() | Verify subscription status   | Yes         | Yes        | Return false         |
+| startMonitor()       | Start periodic checks | No          | Yes        | Throw exception           |
 
 **API Design Decisions:**
 
-- [决策 1：为什么这个 API 设计为同步？]
-- [决策 2：为什么返回 Optional 而不是 null？]
+- [Decision 1: why is this API designed as synchronous?]
+- [Decision 2: why return Optional instead of null?]
 
 **Backward Compatibility:**
 
-- [如何保证 API 向后兼容？]
-- [废弃 API 的迁移策略？]
+- [How is API backward compatibility ensured?]
+- [Migration strategy for deprecated APIs?]
 
 ---
 
@@ -298,15 +298,15 @@ public ReturnType methodName(ParamType param1) throws ExceptionType;
 
 **Performance Optimization Strategies:**
 
-- [策略 1：使用对象池减少 GC]
-- [策略 2：异步处理非关键路径]
+- [Strategy 1: use object pooling to reduce GC]
+- [Strategy 2: handle non-critical paths asynchronously]
 
 ### 8.2 Security Requirements
 
-- **Authentication**: [如何验证身份？JWT? OAuth?]
-- **Authorization**: [如何控制权限？RBAC? ABAC?]
-- **Data Encryption**: [哪些数据需要加密？传输加密？存储加密？]
-- **Input Validation**: [如何防止注入攻击？]
+- **Authentication**: [How is identity verified? JWT or OAuth?]
+- **Authorization**: [How is authorization controlled? RBAC or ABAC?]
+- **Data Encryption**: [Which data must be encrypted? In transit and at rest?]
+- **Input Validation**: [How are injection attacks prevented?]
 
 ### 8.3 Compatibility Requirements
 
@@ -317,7 +317,7 @@ public ReturnType methodName(ParamType param1) throws ExceptionType;
 ### 8.4 Testing Requirements
 
 - **Unit Test Coverage**: [> 80%]
-- **Integration Test**: [必须覆盖的场景]
+- **Integration Test**: [Scenarios that must be covered]
 - **Performance Test**: [Load test with 1000 QPS]
 - **Concurrency Test**: [Stress test with 100 threads]
 
@@ -330,7 +330,7 @@ public ReturnType methodName(ParamType param1) throws ExceptionType;
 **Concurrency Implementation:**
 
 ```java
-// Example: 如何实现线程安全
+// Example: how to implement thread safety
 private final ConcurrentHashMap<String, Value> cache = new ConcurrentHashMap<>();
 private final AtomicInteger counter = new AtomicInteger(0);
 ```
@@ -338,7 +338,7 @@ private final AtomicInteger counter = new AtomicInteger(0);
 **Lifecycle Management:**
 
 ```java
-// Example: 如何实现单例
+// Example: how to implement singleton
 public class Singleton {
     private static final Singleton INSTANCE = new Singleton();
     private Singleton() {}
@@ -348,13 +348,13 @@ public class Singleton {
 
 ### 9.2 Known Limitations
 
-- [限制 1：当前不支持分布式场景]
-- [限制 2：缓存大小限制为 1000 条目]
+- [Limitation 1: distributed scenarios are not currently supported]
+- [Limitation 2: cache size is limited to 1000 entries]
 
 ### 9.3 Future Enhancements
 
-- [增强 1：支持异步 API]
-- [增强 2：添加 Metrics 和 Tracing]
+- [Enhancement 1: support asynchronous APIs]
+- [Enhancement 2: add metrics and tracing]
 
 ---
 
@@ -362,11 +362,11 @@ public class Singleton {
 
 **Architecture Review:**
 
-- [ ] 生命周期设计合理
-- [ ] 并发模型匹配实际场景
-- [ ] 依赖关系清晰
-- [ ] 性能要求可达成
-- [ ] 安全要求已考虑
+- [ ] Lifecycle design is reasonable
+- [ ] Concurrency model matches real scenarios
+- [ ] Dependencies are clear
+- [ ] Performance requirements are achievable
+- [ ] Security requirements are addressed
 
 **Reviewed By:**
 
@@ -387,7 +387,7 @@ public class Singleton {
 | ---------- | ------------------------ |
 | QPS        | Queries Per Second       |
 | SLA        | Service Level Agreement  |
-| Idempotent | 多次执行结果相同的操作   |
+| Idempotent | An operation that produces the same result when executed multiple times   |
 
 ## Appendix B: References
 

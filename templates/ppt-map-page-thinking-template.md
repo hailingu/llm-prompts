@@ -1,19 +1,19 @@
 # Slide {N}: Thinking
 
-## 1. 核心任务与推理 (Mission & Reasoning)
+## 1. Core Task and Reasoning (Mission & Reasoning)
 
-- **目标**: Explain the single spatial question this page must answer.
-- **视觉隐喻**: Define the map story type in plain language, such as conflict theater, route corridor, or regional exposure.
-- **数据策略**: State whether the page is data-driven (`ECharts Geo`) or editorial-first (`SVG` narrative map), and why.
-- **布局权衡**:
-  - *方案 A*: Describe the rejected non-map or alternate-map option.
-  - *方案 B*: Describe the chosen map expression and why it is superior for this page.
+- **Goal**: Explain the single spatial question this page must answer.
+- **Visual Metaphor**: Define the map story type in plain language, such as conflict theater, route corridor, or regional exposure.
+- **Data Strategy**: State whether the page is data-driven (`ECharts Geo`) or editorial-first (`SVG` narrative map), and why.
+- **Layout Trade-offs**:
+  - *Option A*: Describe the rejected non-map or alternate-map option.
+  - *Option B*: Describe the chosen map expression and why it is superior for this page.
 
 ---
 
-## 2. 执行规格 (Execution Specs)
+## 2. Execution Specs (Execution Specs)
 
-### 2.1 地图叙事输入下限 (Map Input Minimum)
+### 2.1 Map Narrative Minimum Inputs (Map Input Minimum)
 
 - **Narrative Archetype**: territory_snapshot | route_corridor | conflict_theater | footprint_network
 - **Geographic Scope**: local | regional | multi-region | global
@@ -24,7 +24,7 @@
   - **ID**: asset or dataset identifier
   - **Purpose**: why this basemap source fits the page
 
-### 2.2 布局锚点 (Layout Anchor)
+### 2.2 Layout Anchor (Layout Anchor)
 
 - **Layout Key**: map_overlay | side_by_side | hybrid
 - **Layout Contract Source**: `skills/ppt-slide-layout-library/assets/layouts/<layout_key>.yml#layout_contract`
@@ -37,7 +37,7 @@
 - **Primary Region Strategy**: map-dominant | map-balanced | map-supported
 - **Secondary Region Strategy**: cards | KPI panel | callout stack
 
-### 2.3 数据绑定 (Data Binding)
+### 2.3 Data Binding (Data Binding)
 
 - **Source**: file, note, dataset, or research source
 - **Filter Logic**: what is included and excluded from the map
@@ -53,26 +53,26 @@
 - **Routing Source**: `skills/ppt-map-storytelling/assets/patterns.yml#overlay_component_contracts`
 - **Escalation Check**: note whether any overlay must escalate to `ppt-chart-engine`
 
-### 2.5 组件语义解析 (Component Semantic Resolution)
+### 2.5 Component Semantic Resolution (Component Semantic Resolution)
 
 - **Component Selection**: list the standard components used on the page, if any
 - **Semantic Roles**: for each standard component, list the semantic roles used by the payload
 - **Resolver Source**: `skills/ppt-brand-style-system/assets/component_semantic_mappings.yml` when semantic_payload is present
 - **Fallback Policy**: note whether the page uses resolver-first classes only, or resolver + safe fallback payload
 
-### 2.6 视觉细节 (Visual Props)
+### 2.6 Visual Props (Visual Props)
 
 - **Style Profile**: active style profile or intended page tone
 - **Component Variant**: the chosen visual treatment
 - **Density**: compact | default | relaxed
 - **Highlights**: arrows, hotspots, fills, floating cards, KPI emphasis
 
-### 2.7 叙事文案 (Narrative)
+### 2.7 Narrative (Narrative)
 
 - **Headline**: one clear map headline
 - **Insight**: one map-linked conclusion, not a generic summary
 
-### 2.8 布局恢复与降级 (Layout Recovery)
+### 2.8 Layout Recovery and Fallback (Layout Recovery)
 
 - **Recovery Trigger**: what spatial readability failure would trigger overlay reduction
 - **Recovery Action**: which first action from `Overflow Recovery Order` will be executed before layout switching
