@@ -70,6 +70,11 @@ In CI, run in this order:
 
 Fail fast on any non-zero exit code.
 
+For performance-sensitive applications, also include:
+
+6. route-level bundle diff check
+7. Core Web Vitals lab check (tooling chosen by project)
+
 ## 7. Agent Auto-Configuration Policy
 
 When agent detects missing quality gates:
@@ -78,3 +83,8 @@ When agent detects missing quality gates:
 - Add minimal config files (`tsconfig.json`, ESLint config, Prettier config) if absent
 - Prefer non-breaking incremental setup
 - Report all changes clearly to the user
+
+Related standards:
+
+- `knowledge/standards/engineering/frontend/performance-observability-standards.md`
+- `knowledge/standards/engineering/frontend/testing-strategy.md`

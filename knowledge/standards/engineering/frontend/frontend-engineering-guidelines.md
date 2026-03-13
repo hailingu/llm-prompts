@@ -1,75 +1,61 @@
 # Frontend Engineering Guidelines
 
+**Version**: 2.0  
+**Last Updated**: 2026-03-13
+
+This document is the entry point for frontend engineering standards. Detailed rules are split by topic to keep guidance practical and maintainable.
+
+---
+
 ## 1. Core Principles
 
-- Build user-facing behavior from contracts, not assumptions.
-- Prefer readability and predictability over clever abstractions.
-- Keep components focused: one component, one clear responsibility.
-- Favor composition over inheritance.
-- Make accessibility and performance default constraints.
+- Build from explicit product and API contracts, not assumptions.
+- Optimize for maintainability and predictable behavior over cleverness.
+- Treat accessibility, performance, and reliability as default constraints.
+- Keep architecture evolvable by preserving clear boundaries.
 
-## 2. Language and Typing
+---
 
-- Prefer TypeScript for all new frontend code.
-- Enable strict type checking (`strict: true`).
-- Avoid `any`; use narrow unions, generics, and well-scoped interfaces.
-- Model API responses with explicit types and runtime-safe guards when needed.
+## 2. Standards Map (Read Order)
 
-## 3. Component and State Design
+1. [Architecture and State Patterns](./architecture-and-state-patterns.md)
+2. [API Contract Patterns](./api-contract-patterns.md)
+3. [Performance and Observability Standards](./performance-observability-standards.md)
+4. [Accessibility Standards](./accessibility-standards.md)
+5. [Testing Strategy](./testing-strategy.md)
+6. [Security and Release Standards](./security-and-release-standards.md)
+7. [Static Analysis Setup](./static-analysis-setup.md)
 
-- Keep presentation and business logic reasonably separated.
-- Keep local UI state local; elevate only when shared concerns require it.
-- Centralized/global state should store durable shared data, not transient UI details.
-- Keep side effects isolated in dedicated hooks/composables/services.
+---
 
-## 4. API Integration
+## 3. Mandatory Baselines
 
-- Never call APIs directly from deeply nested presentation components.
-- Normalize and validate response data before rendering.
-- Handle loading, empty, error, and success states explicitly.
-- Surface actionable error messages and telemetry context.
+- **Type safety**: TypeScript strict mode for new/modified code.
+- **Contract mapping**: loading/empty/error/success states are explicit.
+- **Accessibility**: keyboard, semantics, labels, and focus behavior are verifiable.
+- **Performance**: budget targets are measured and regressions are justified.
+- **Testing**: contract-sensitive logic has direct tests.
+- **Release safety**: risky changes have rollout and rollback paths.
 
-## 5. Accessibility (A11y)
+---
 
-- Use semantic HTML first.
-- Ensure full keyboard operability for interactive flows.
-- Maintain visible focus states and logical tab order.
-- Use ARIA only when semantic HTML is insufficient.
-- Provide meaningful labels for controls and form errors.
+## 4. Engineering Review Gate
 
-## 6. Styling and Design Consistency
+A change is not ready until all are true:
 
-- Prefer design tokens (colors, spacing, typography, radius, shadows).
-- Avoid hard-coded magic values when shared tokens exist.
-- Keep responsive behavior intentional across mobile/tablet/desktop breakpoints.
-- Keep animation subtle and purposeful; respect reduced motion preferences.
+- Architecture boundaries are respected.
+- API contract handling is explicit and typed.
+- Accessibility baseline checks pass.
+- Performance impact is measured.
+- Required tests pass in CI.
+- Security/release guardrails are satisfied.
 
-## 7. Performance
+---
 
-- Avoid unnecessary re-renders; memoize only when profiling indicates value.
-- Split bundles by route/feature where practical.
-- Defer non-critical resources and code.
-- Optimize large lists using virtualization/windowing when needed.
-- Use stable keys and deterministic rendering patterns.
+## 5. Usage in Agent Workflow
 
-## 8. Security
+When implementing with frontend agents:
 
-- Never trust client input or remote data blindly.
-- Avoid `dangerouslySetInnerHTML` unless content is sanitized and justified.
-- Protect secrets: do not leak private keys or internal endpoints to client bundles.
-- Follow secure authentication token handling conventions from project architecture.
-
-## 9. Testing
-
-- Unit test reusable logic and boundary behavior.
-- Component/integration tests must cover core user journeys and edge states.
-- Prefer behavior-driven assertions over implementation-detail assertions.
-- Mock external boundaries (network, storage, timers) with clear intent.
-
-## 10. Review Checklist
-
-- Contract compliance: API + UX acceptance criteria met.
-- Accessibility baseline met for keyboard, semantics, and labels.
-- Type and lint checks pass without rule suppression unless documented.
-- Tests cover critical paths and failure states.
-- No obvious performance or security regressions.
+- Start from this document and then load relevant specialized docs for the task.
+- Avoid broad rule bypasses; prefer design-level fixes.
+- Escalate unresolved contract conflicts to designer/architect/tech-lead roles.
