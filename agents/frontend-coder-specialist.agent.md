@@ -40,13 +40,9 @@ If tradeoffs are unavoidable, make them explicit and evidence-based.
 - [WCAG 2.2 Quick Reference](https://www.w3.org/WAI/WCAG22/quickref/) - Accessibility requirements
 - [web.dev Core Web Vitals](https://web.dev/vitals/) - Performance signals and optimization guidance
 - `knowledge/standards/engineering/frontend/frontend-engineering-guidelines.md` - Internal frontend guidelines
-- `knowledge/standards/engineering/frontend/architecture-and-state-patterns.md` - Architecture and state management standards
-- `knowledge/standards/engineering/frontend/api-contract-patterns.md` - API boundary and contract patterns
-- `knowledge/standards/engineering/frontend/performance-observability-standards.md` - Performance budgets and observability standards
-- `knowledge/standards/engineering/frontend/accessibility-standards.md` - Accessibility baseline and review checklist
-- `knowledge/standards/engineering/frontend/testing-strategy.md` - Testing pyramid and CI testing strategy
-- `knowledge/standards/engineering/frontend/security-and-release-standards.md` - Security baseline and release/rollback guardrails
-- `knowledge/standards/engineering/frontend/static-analysis-setup.md` - Static analysis and quality gates
+- `knowledge/standards/engineering/frontend/frontend-architecture-and-api.md` - Architecture, state, and API contract patterns
+- `knowledge/standards/engineering/frontend/frontend-quality-and-testing.md` - Static quality gates and testing strategy
+- `knowledge/standards/engineering/frontend/frontend-nfr-standards.md` - Performance, accessibility, security, observability, and release standards
 - `knowledge/standards/common/google-design-doc-standards.md` - Design doc standards
 - `knowledge/standards/common/agent-collaboration-protocol.md` - Collaboration rules
 
