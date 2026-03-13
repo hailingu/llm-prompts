@@ -64,6 +64,9 @@ cd llm-prompts
 # Install for current project (recommended)
 bash scripts/setup.sh --plugin codex --scope project
 
+# Install into another project directory
+bash scripts/setup.sh --plugin copilot --scope project --target-dir /path/to/your-project
+
 # Validate installation
 bash scripts/doctor.sh --plugin codex --scope project
 
@@ -80,6 +83,7 @@ Install adapters by plugin:
 bash scripts/setup.sh --plugin codex --scope project
 bash scripts/setup.sh --plugin cline --scope project
 bash scripts/setup.sh --plugin copilot --scope project
+bash scripts/setup.sh --plugin copilot --scope project --target-dir /path/to/your-project
 bash scripts/setup.sh --plugin kimi --scope project
 
 # Install all adapters at once
@@ -88,16 +92,26 @@ bash scripts/setup.sh --plugin all --scope project
 
 Notes:
 - `agents/` is source-of-truth.
-- `.github/agents/` is optional compatibility mirror and is generated when using `--plugin copilot` or `--plugin all` in project scope.
+- Cline project setup generates compatibility mirrors:
+  - `agents/` + `prompts/` -> `.clinerules/`
+  - `skills/` -> `.cline/skills/`
+- Copilot project setup generates GitHub compatibility mirrors:
+  - `agents/` -> `.github/agents/`
+  - `skills/` -> `.github/skills/`
+  - `prompts/` -> `.github/instructions/`
 
 Optional global scope:
 
 ```bash
 bash scripts/setup.sh --plugin codex --scope global
+bash scripts/setup.sh --plugin copilot --scope global
+bash scripts/setup.sh --plugin cline --scope global  # adapter only, no global prompts/agents/skills
 
 # install no skills/agents (adapter only)
 bash scripts/setup.sh --plugin codex --scope global --skills none --agents none
 ```
+
+For Copilot CLI global install, instructions are written to `${COPILOT_HOME:-~/.copilot}/copilot-instructions.md`.
 
 ### Explore the Repository
 
@@ -119,11 +133,13 @@ ls prompts/task/
 # - task-breakdown.prompt.md
 # - task-execute.prompt.md
 
-# GitHub mirror is auto-generated when using Copilot adapter
+# GitHub mirrors are auto-generated when using Copilot adapter
 bash scripts/setup.sh --plugin copilot --scope project
 
-# Optional manual mirror sync
+# Optional manual mirror sync/check
 bash scripts/sync_agents_to_github.sh
+bash scripts/sync_agents_to_github.sh --target-dir /path/to/your-project
+bash scripts/sync_agents_to_github.sh --check
 ```
 
 ## Repository Structure

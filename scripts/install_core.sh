@@ -3,17 +3,22 @@ set -euo pipefail
 
 usage() {
   cat <<USAGE
-Usage: $(basename "$0") [--scope project|global] [--skills all|none|a,b] [--agents all|none|a,b]
+Usage: $(basename "$0") [--scope project|global] [--target-dir PATH] [--skills all|none|a,b] [--agents all|none|a,b]
 USAGE
 }
 
 SCOPE="project"
 SKILLS_ARG="all"
 AGENTS_ARG="all"
+TARGET_DIR=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --scope)
       SCOPE="${2:-}"
+      shift 2
+      ;;
+    --target-dir)
+      TARGET_DIR="${2:-}"
       shift 2
       ;;
     --skills)
@@ -43,6 +48,15 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+TARGET_ROOT="$REPO_ROOT"
+if [[ "$SCOPE" == "project" && -n "$TARGET_DIR" ]]; then
+  if [[ ! -d "$TARGET_DIR" ]]; then
+    echo "Target project directory does not exist: $TARGET_DIR" >&2
+    echo "Please provide an existing directory with --target-dir PATH." >&2
+    exit 1
+  fi
+  TARGET_ROOT="$(cd "$TARGET_DIR" && pwd)"
+fi
 SKILLS_DIR="$REPO_ROOT/skills"
 AGENTS_DIR="$REPO_ROOT/agents"
 
@@ -129,5 +143,5 @@ if [[ "$SCOPE" == "global" ]]; then
 
   echo "Core installed globally: $CODEX_HOME (skills=$SKILLS_ARG, agents=$AGENTS_ARG)"
 else
-  echo "Core installed for project scope: $REPO_ROOT (skills=$SKILLS_ARG, agents=$AGENTS_ARG)"
+  echo "Core installed for project scope: $TARGET_ROOT (skills=$SKILLS_ARG, agents=$AGENTS_ARG)"
 fi

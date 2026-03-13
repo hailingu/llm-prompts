@@ -3,12 +3,13 @@ set -euo pipefail
 
 usage() {
   cat <<USAGE
-Usage: $(basename "$0") [--plugin codex|cline|copilot|kimi|all] [--scope project|global]
+Usage: $(basename "$0") [--plugin codex|cline|copilot|kimi|all] [--scope project|global] [--target-dir PATH]
 USAGE
 }
 
 PLUGIN="all"
 SCOPE="project"
+TARGET_DIR=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -18,6 +19,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --scope)
       SCOPE="${2:-}"
+      shift 2
+      ;;
+    --target-dir)
+      TARGET_DIR="${2:-}"
       shift 2
       ;;
     -h|--help)
@@ -35,6 +40,16 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
+COPILOT_HOME="${COPILOT_HOME:-$HOME/.copilot}"
+TARGET_ROOT="$REPO_ROOT"
+if [[ "$SCOPE" == "project" && -n "$TARGET_DIR" ]]; then
+  if [[ ! -d "$TARGET_DIR" ]]; then
+    echo "Target project directory does not exist: $TARGET_DIR" >&2
+    echo "Please provide an existing directory with --target-dir PATH." >&2
+    exit 1
+  fi
+  TARGET_ROOT="$TARGET_DIR"
+fi
 
 check_file() {
   local file="$1"
@@ -55,28 +70,34 @@ check_plugin() {
   case "$p" in
     codex)
       if [[ "$SCOPE" == "project" ]]; then
-        check_file "$REPO_ROOT/AGENTS.md" || status=1
+        check_file "$TARGET_ROOT/AGENTS.md" || status=1
       else
         check_file "$CODEX_HOME/AGENTS.md" || status=1
       fi
       ;;
     cline)
       if [[ "$SCOPE" == "project" ]]; then
-        check_file "$REPO_ROOT/.cline/mcp_settings.json" || status=1
+        check_file "$TARGET_ROOT/.cline/mcp_settings.json" || status=1
+        check_file "$TARGET_ROOT/.clinerules/python-coder-specialist.agent.md" || status=1
+        check_file "$TARGET_ROOT/.clinerules/task/task-breakdown.prompt.md" || status=1
+        check_file "$TARGET_ROOT/.cline/skills/rss-reader/SKILL.md" || status=1
       else
         check_file "$HOME/.cline/mcp_settings.json" || status=1
       fi
       ;;
     copilot)
       if [[ "$SCOPE" == "project" ]]; then
-        check_file "$REPO_ROOT/.github/copilot-instructions.md" || status=1
+        check_file "$TARGET_ROOT/.github/copilot-instructions.md" || status=1
+        check_file "$TARGET_ROOT/.github/agents/python-coder-specialist.agent.md" || status=1
+        check_file "$TARGET_ROOT/.github/skills/rss-reader/SKILL.md" || status=1
+        check_file "$TARGET_ROOT/.github/instructions/task/task-breakdown.prompt.md" || status=1
       else
-        check_file "$HOME/.copilot/instructions.md" || status=1
+        check_file "$COPILOT_HOME/copilot-instructions.md" || status=1
       fi
       ;;
     kimi)
       if [[ "$SCOPE" == "project" ]]; then
-        check_file "$REPO_ROOT/.kimi/config.json" || status=1
+        check_file "$TARGET_ROOT/.kimi/config.json" || status=1
       else
         check_file "$HOME/.kimi/config.json" || status=1
       fi
