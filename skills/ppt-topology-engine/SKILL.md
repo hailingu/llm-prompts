@@ -69,8 +69,12 @@ When building HTML Nodes that contain vanilla Javascript inline strings, Agent c
     3. **Layer Backgrounds**: Always instantiate the macro group box with a securely lower `zIndex` (e.g., `1`) so child nodes (e.g. `zIndex: 10`) sit cleanly on top and are not obscured.
   - Avoid putting nodes directly on the boundary lines (`x=group.x` or `x=group.x + group.width`).
 - **Explicit Node Dimensions (Anti-Stretching Bug)**: **CRITICAL**: Always provide explicit `width` and `height` attributes when invoking `graph.addNode({ width: 140, height: 60... })`, even for `html-node`s. Failure to pass explicit sizes will cause nodes to stretch drastically (vertical/horizontal visual collapse distortion) depending on the flex container context.
-- **Strict Row/Col Alignment**: Nodes in the same logical row or column MUST share the exact same `y` or `x` coordinate (adjusted for their height/width if centering) to prevent a messy layout. Avoid arbitrary `+/- 5px` tweaks. Align centers mathematically.
-- **Node Spacing & Collision**: Never allow nodes to overlap. Maintain strictly uniform spacing (e.g., `dx: 40px`, `dy: 40px`) between siblings to prevent text clipping and provide visual balance. Account for explicit label heights in node dimensions.
+- **Strict Row/Col Alignment (CENTERING PROTOCOL)**: Nodes in the same logical row or column MUST share perfectly aligned centers. 
+  - Do NOT simply share the same `x` coordinate if nodes have different widths. To center nodes of variable widths in a column, compute `x = colCenter - (node.width / 2)`. To align rows, use `y = rowCenter - (node.height / 2)`. Avoid arbitrary `+/- 5px` tweaks. Align mathematical centers.
+- **Node Spacing & Collision**: Never allow nodes to overlap. Maintain strictly uniform spacing (e.g., `gapX: 20px`, `gapY: 30px`) between siblings. 
+  - Standardize node sizes within the same group (e.g. all L3 boxes in Data Lake should be `width: 100, height: 90`) rather than creating chaotic mismatched boxes unless necessary.
+  - Distribute items evenly. If you have 4 identical nodes in a 500px wide group, calculate their offsets explicitly using a loop to distribute empty space.
+- **Micro-Layouts (Flexbox inside HTML Nodes)**: When designing the inner HTML for custom nodes, use flexbox correctly to ensure perfectly centered icons and text: `display: flex; flex-direction: column; align-items: center; justify-content: center;`. This creates tight, professional cards instead of misaligned jumbled text.
 - **Canvas Constraints**: Use a robust `COL_WIDTH` and `ROW_HEIGHT` to coordinate absolute positions to eliminate guessing. Map every single node coordinate in a consistent tabular manner before generating `.html`.
 
 ## 7. Execution Pipeline
@@ -85,3 +89,13 @@ If your generated HTML only shows groups but no child nodes or edges (a "blank c
 2. **Inline HTML Overrides**: If you provide an inline `html: () => "..."` function inside `graph.addNode(...)`, the specified `shape` **MUST** be one that inherited from `'html'`. 
 3. **Invalid Ports/Routing**: Do not connect to `port` IDs that do not exist on the target shape's `ports` definition. E.g. If you use `port: 'left'`, ensure the target Node's registered shape explicitly defines `left` in its `ports.groups`. 
 4. **Try-Catch Block Pattern**: When iterating over many edges or nodes, write defensively so a single failed node doesn't abort the rest of the diagram.
+
+## 9. Pure HTML/CSS Zoned Area Architectures (Non-X6 Layouts)
+When building complex layered block architectures using pure Tailwind CSS Flexbox/Grid (bypassing X6), you **MUST** strictly manage vertical real estate to prevent the document from breaking out of the 1920x1080 fixed boundary.
+- **Vertical Height Budgeting (1080px Total)**:
+  - Subtract Header (e.g., `100px`) and Footer (e.g., `60px`), leaving exactly `920px` for the Main container.
+  - Subtract paddings (e.g., `p-8` is `64px` total), leaving strictly ~`850px` of usable inner vertical space.
+  - If your architecture stacks 3 massive sections vertically (e.g., Top Core, Middle Management, Bottom Infra), you MUST assign explicit fractional heights (e.g. `flex-[3]`, `h-[120px]`, `h-[100px]`) that safely sum up to <= `850px`. 
+- **The `min-h-0` Savior constraint**: Flex children naturally resist shrinking below their content height. In dense architectures, this causes explosive out-of-bounds stretching. You MUST add `min-h-0` to all major flex-column wrappers (`flex flex-col min-h-0`) to allow internal scrolls or shrinkage, preventing the layout from overflowing past the window baseline.
+- **Overflow Prevention via Inner Scroll**: For highly dense lists inside cards, always add `overflow-y-auto` to the immediate child container of the card, combined with `flex-1 min-h-0`, so it scrolls internally rather than pushing the boundary.
+- **Micro-Typography & Density**: For dense L3/L4 nodes, drop text to `text-[10px]` or `text-[9px]`, use tight leading (`leading-tight`), and remove excessive vertical paddings. Shrink the gap to `gap-1` or `gap-2`. Do not use huge padding like `p-4` inside deeply nested inner-boxes.

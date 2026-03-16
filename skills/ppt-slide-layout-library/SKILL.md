@@ -86,9 +86,9 @@ If one area is omitted, provide explicit structural equivalent and rationale.
 
 For standard structured slides:
 
-1. Root `.slide-container` must use vertical Flex.
-2. Header and Footer heights must be fixed across one deck.
-3. Main must use `flex: 1`.
+1. Root `.slide-container` must use vertical Flex (e.g. `1080px` height).
+2. Header and Footer heights must be fixed across one deck (e.g., `h-[100px]`, `h-[60px]`).
+3. Main must use `flex: 1` **AND** `min-h-0` (or `min-height: 0`). This is a critical CSS Flexbox requirement to stop dense inner content from forcing the `.slide-main` container to grow past the 1080px boundary.
 4. Cover/fullscreen/special transition pages may opt out.
 
 ## Geometry Hard Rules
