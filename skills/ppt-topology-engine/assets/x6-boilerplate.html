@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topology Diagram</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Core Engine: ALWAYS use UMD version for independent HTML execution -->
+    <script src="https://unpkg.com/@antv/x6@1.34.14/dist/x6.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        .slide-container { width: 1280px; height: 720px; position: relative; }
+        #topology-container { width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+    <div class="slide-container mx-auto">
+        <div id="topology-container"></div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. NODE REGISTRATION
+        // ==========================================
+
+        // Generic HTML Node
+        X6.Graph.registerNode('html-node', {
+            inherit: 'html',
+            width: 160,
+            height: 60,
+            ports: {
+                groups: {
+                    left: { position: 'left' },
+                    right: { position: 'right' },
+                    top: { position: 'top' },
+                    bottom: { position: 'bottom' }
+                }
+            },
+            effect: ['data'],
+            html: (cell) => {
+                const data = cell.getData();
+                const wrap = document.createElement('div');
+                wrap.style.width = '100%';
+                wrap.style.height = '100%';
+                wrap.innerHTML = `
+                    <div class="w-full h-full flex items-center justify-center p-2 rounded-md shadow-sm border border-slate-300 bg-white" style="box-sizing: border-box;">
+                        <span class="text-xs text-center text-slate-800 leading-tight">` + (data?.label || '') + `</span>
+                    </div>
+                `;
+                return wrap;
+            },
+        });
+
+        // Database Node (Cylinder)
+        X6.Graph.registerNode('arch-database', {
+            inherit: 'html',
+            width: 100,
+            height: 90,
+            ports: {
+                groups: {
+                    left: { position: 'left' }, right: { position: 'right' },
+                    top: { position: 'top' }, bottom: { position: 'bottom' }
+                }
+            },
+            effect: ['data'],
+            html: (cell) => {
+                const data = cell.getData();
+                const wrap = document.createElement('div');
+                wrap.style.width = '100%';
+                wrap.style.height = '100%';
+                wrap.innerHTML = `
+                    <div style="position: relative; width: 100%; height: 100%;">
+                        <svg viewBox="0 0 100 110" preserveAspectRatio="none" style="width: 100%; height: 100%; position: absolute; z-index: 0;">
+                            <path d="M 0,20 A 50,20 0 1,1 100,20 L 100,90 A 50,20 0 1,1 0,90 Z" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2"/>
+                        </svg>
+                        <div class="absolute inset-0 z-10 flex items-center justify-center p-2 text-center text-xs font-bold text-sky-900 leading-tight">
+                            ` + (data?.label || '') + `
+                        </div>
+                    </div>
+                `;
+                return wrap;
+            }
+        });
+
+        // ==========================================
+        // 2. GRAPH INITIALIZATION
+        // ==========================================
+        const graph = new X6.Graph({
+            container: document.getElementById('topology-container'),
+            autoResize: true,
+            panning: false,
+            mousewheel: false,
+            connecting: {
+                router: {
+                    name: 'orth', // strict orthogonal routing avoiding obstacles
+                    args: { padding: 15, startDirections: ['right', 'bottom', 'top'], endDirections: ['left', 'top', 'bottom'] }
+                },
+                connector: {
+                    name: 'rounded',
+                    args: { radius: 8 }
+                },
+                defaultEdge: {
+                    attrs: {
+                        line: { stroke: '#64748b', strokeWidth: 2, targetMarker: { name: 'block', width: 8, height: 8 } }
+                    }
+                }
+            }
+        });
+
+        // ==========================================
+        // 3. GROUPS & NODES
+        // ==========================================
+        const groupNode = graph.addNode({
+            x: 10, y: 10, width: 400, height: 300,
+            zIndex: 1,
+            attrs: {
+                body: { fill: '#f8fafc', stroke: '#cbd5e1', strokeDasharray: '5,5' },
+                label: { text: 'Core System Group', refY: 15, textAnchor: 'middle' }
+            }
+        });
+
+        const childNode = graph.addNode({ shape: 'html-node', x: 50, y: 50, zIndex: 10, data: { label: 'Service A' } });
+        groupNode.addChild(childNode);
+
+        // ==========================================
+        // 4. EDGES
+        // ==========================================
+        // Semantic Port Assignments are CRUCIAL! Be explicit with { cell: id, port: 'direction' }
+        /* 
+        graph.addEdge({
+            source: { cell: 'node-A', port: 'right' },
+            target: { cell: 'node-B', port: 'left' },
+            labels: [{
+                attrs: { label: { text: 'Multiline\\nLabel' } },
+                position: { distance: 0.5, offset: -20 } // offset is required to avoid obstable overlay
+            }],
+            vertices: [{x: 100, y: 200}] // explicit routing waypoints if needed to bypass overlaps
+        });
+        */
+    </script>
+</body>
+</html>
