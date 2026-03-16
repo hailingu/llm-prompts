@@ -147,7 +147,8 @@ Principles:
 
 - HTML + Tailwind CSS
 - JavaScript
-- ECharts (for data-driven charts)
+- ECharts (for statistical, data-driven charts. See `ppt-chart-engine` skill)
+- AntV X6 (for system architectures, business flowcharts, data flows, or cross-functional topologies. You MUST use the `ppt-topology-engine` skill)
 - Optional QA tooling integration (for verification)
 
 ## 8. Layout and Chart Selection References
