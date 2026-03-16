@@ -29,22 +29,27 @@ X6.Graph.registerNode('html-node', {
       bottom: { position: 'bottom' }
     }
   },
+  effect: ['data'],
   html: (cell) => {
     const data = cell.getData();
     // Use Tailwind CSS classes for reliable styling
-    return `
+    const wrap = document.createElement('div');
+    wrap.style.width = '100%';
+    wrap.style.height = '100%';
+    wrap.innerHTML = `
       <div class="w-full h-full flex items-center justify-center p-2 rounded-md shadow-sm border border-slate-300 bg-white" 
            style="box-sizing: border-box;">
         <span class="text-xs text-center text-slate-800 leading-tight">${data.label}</span>
       </div>
     `;
+    return wrap;
   },
 });
 ```
 
 ## 3. Orthogonal Routing Standard
 Edges must look industrial and systematic. Avoid diagonal lines across the canvas.
-- Always prefer `manhattan` routing with step options to avoid node overlap and enforce proper obstacles calculation.
+- Always prefer `orth` routing with step options to avoid node overlap and enforce proper obstacles calculation.
 - Add rounded corners to make intersections look modern.
 
 **Global Options Setup:**
@@ -54,7 +59,7 @@ const graph = new X6.Graph({
   autoResize: true,
   connecting: {
     router: {
-      name: 'manhattan', // better than orth as it avoids obstacles
+      name: 'orth', // better than orth as it avoids obstacles
       args: { padding: 15, startDirections: ['right', 'bottom', 'top'], endDirections: ['left', 'top', 'bottom'] },
     },
     connector: {
@@ -109,10 +114,14 @@ X6.Graph.registerNode('arch-database', {
       top: { position: 'top' }, bottom: { position: 'bottom' }
     }
   },
+  effect: ['data'],
   html: (cell) => {
     const data = cell.getData();
     // Use an inline SVG for the cylinder background, and an absolute div for perfect text centering.
-    return `
+    const wrap = document.createElement('div');
+    wrap.style.width = '100%';
+    wrap.style.height = '100%';
+    wrap.innerHTML = `
       <div style="position: relative; width: 100%; height: 100%;">
         <svg viewBox="0 0 100 110" style="width: 100%; height: 100%; position: absolute; z-index: 0;">
           <path d="M 0,20 A 50,20 0 1,1 100,20 L 100,90 A 50,20 0 1,1 0,90 Z" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2"/>
@@ -122,6 +131,7 @@ X6.Graph.registerNode('arch-database', {
         </div>
       </div>
     `;
+    return wrap;
   }
 });
 ```
