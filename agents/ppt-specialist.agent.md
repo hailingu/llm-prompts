@@ -123,8 +123,8 @@ Thinking file minimum fields (Topology/Architecture Diagrams):
 - Grid Coordination System (Define COL_WIDTH, ROW_HEIGHT, Margin)
 - Node Orientation/Shape Analysis
 - Routing & Port Strategy (Explicitly define which port (top/bottom/left/right) is used for which flow)
-- Group Hierarchy & Nesting Matrix (Define parent-child containment)
-- Node Matrix (List ID, Label, HTML Shape, explicit [col, row], computed (x, y), and Parent Zone)
+- Group Hierarchy & Nesting Matrix (MANDATORY: You must precisely document all levels of nesting, e.g. L1: Platform Core -> L2: Batch Processing -> L3: Azure Databricks. Do not flatten 3-level architectures into 2-level structures!)
+- Node Matrix (List ID, Label, HTML Shape, explicit [col, row], computed (x, y), and Parent Zone / Level)
 - Edge Definition Table (Source with port -> Target with port)
 - Risk & Layout Mitigation (Identify dense intersections or cross-group dependencies)
 

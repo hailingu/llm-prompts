@@ -30,10 +30,10 @@
             height: 60,
             ports: {
                 groups: {
-                    left: { position: 'left' },
-                    right: { position: 'right' },
-                    top: { position: 'top' },
-                    bottom: { position: 'bottom' }
+                    left: { position: 'left', attrs: { circle: { r: 0, magnet: true } } },
+                    right: { position: 'right', attrs: { circle: { r: 0, magnet: true } } },
+                    top: { position: 'top', attrs: { circle: { r: 0, magnet: true } } },
+                    bottom: { position: 'bottom', attrs: { circle: { r: 0, magnet: true } } }
                 }
             },
             effect: ['data'],
@@ -58,8 +58,8 @@
             height: 90,
             ports: {
                 groups: {
-                    left: { position: 'left' }, right: { position: 'right' },
-                    top: { position: 'top' }, bottom: { position: 'bottom' }
+                    left: { position: 'left', attrs: { circle: { r: 0, magnet: true } } }, right: { position: 'right', attrs: { circle: { r: 0, magnet: true } } },
+                    top: { position: 'top', attrs: { circle: { r: 0, magnet: true } } }, bottom: { position: 'bottom', attrs: { circle: { r: 0, magnet: true } } }
                 }
             },
             effect: ['data'],
@@ -100,6 +100,7 @@
                     args: { radius: 8 }
                 },
                 defaultEdge: {
+                    zIndex: 20,
                     attrs: {
                         line: { stroke: '#64748b', strokeWidth: 2, targetMarker: { name: 'block', width: 8, height: 8 } }
                     }

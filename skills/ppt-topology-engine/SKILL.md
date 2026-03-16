@@ -4,16 +4,39 @@
 Topology engine for PPT HTML slides. Used exclusively for complex flowcharts, system architectures, cross-functional bands, and path-routing diagrams. This skill handles crossing logic, node hierarchy, and custom graphic boundaries mapping.
 
 ## 1. Engine & Dependencies
-- **Core Engine File**: See `assets/x6-boilerplate.html` for complete initialization and import bindings (`AntV X6 v1.34.14 (UMD)`).
-- **Rule**: NEVER use standard SVG `<text>` elements for UI-rich labels. Use the `inherit: 'html'` paradigm. An example of `html-node` and custom `arch-database` is provided in `assets/x6-boilerplate.html`.
+- **Core Engine File**: Use the stable v1 CDN link in your HTML: `<script src="https://cdn.jsdelivr.net/npm/@antv/x6@1.34.0/dist/x6.min.js"></script>`. Do NOT use `unpkg.com` for X6 as the default paths have broken due to v3 updates.
+- **Rule**: NEVER use standard SVG `<text>` elements for UI-rich labels. Use the `inherit: 'html'` paradigm.
+- **CRITICAL SHAPE REGISTRATION**: Every `shape` string passed to `graph.addNode({ shape: 'my-shape' })` **MUST** be explicitly registered. 
+  - **Syntax Rule (CRITICAL)**: Because we are locked to v1.34.0, NEVER use the newer `Shape.HTML.register(...)` method. It is undefined and will throw a fatal error. 
+  - You MUST use `X6.Graph.registerNode('my-shape', { inherit: 'html', width: 120, height: 60, html(cell) { ... } })`. If you pass an unregistered shape, the entire X6 execution will throw a fatal JavaScript exception and **halt rendering completely**, resulting in a completely blank canvas. Validate every shape name!
 
-## 2. Orthogonal Routing & Edges Standard
+## 2. Diagram Typology: Block Architecture vs. Flowchart
+When converting a source diagram, determine its fundamental type before writing logic:
+- **Block Architecture Diagrams**: These are structural zoning diagrams (like cloud architectures, platform capabilities, component matrices) built heavily on grouped boxes, sub-modules, and geographic regions. *Characteristics*: Lots of nested boxes, grid alignments, icons, text, but almost **NO explicitly drawn flow lines**. 
+  - **ACTION**: DO NOT invent edges/flowlines if the source material mainly displays structural boxes. Use purely spatial grouping and nested coordinates. Remove connection logic.
+  - **ZERO EDGES POLICY**: For Block Architecture diagrams, you MUST NOT draw any edges or flowlines. Do not create an `edges` array. Do not call `graph.addEdges`. Agents frequently hallucinate data flows ("Data Source -> Data Ingest") because they assume architectures must have lines. **IF THE SOURCE IMAGE DOES NOT HAVE EXPLICIT ARROWS, DO NOT ADD THEM.** Rely purely on spatial positioning and group boundaries.
+  - **INVISIBLE PORTS**: Always configure port groups to be visually invisible unless interactive wires are explicitly requested. Add `attrs: { circle: { r: 0, magnet: true, stroke: 'transparent', fill: 'transparent' } }` to port definitions so empty port circles are hidden.
+  - **High-Fidelity Detail Extraction (NO SHORTCUTS)**: Do not lazily summarize or drop sub-nodes. If a zoned group in the original diagram contains 8 micro-service blocks, you must plot all 8 individually using a properly scaled local grid. Include secondary texts, descriptive subtypes (e.g., "(Metadata Driven)"), and background logos as HTML elements inside nodes if they exist in the source.
+
+## 3. Strict Structural and Sub-Node Fidelity (MANDATORY)
+When converting a diagram, your primary goal is identical visual replication of the content structure.
+- **Deep Nesting Fidelity (NO FLATTENING)**: Analyze the exact depth of the original group boundaries. If a diagram has a 3-level structure (e.g., L1: `Data Platform Core` -> L2: `Data Warehouse` -> L3: `DWD/DWS` nodes), you MUST create nested nodes for ALL 3 levels. Do NOT flatten L3 nodes directly under L1. Create the L2 group boxes with `parent.addChild()` and attach L3 components to L2.
+- **Node Quantity & Completeness**: Count the exact number of nodes, sub-nodes, and distinct modules in the original image. Your generated HTML **MUST** contain the exact same number of blocks. Do not flatten 4 distinct service icons into 1 text box. If "Network" has 4 sub-icons under it, you must either create 4 sub-nodes or accurately recreate the 4 icons within a structured HTML layout inside the node.
+- **Layout Style & Aspect Ratio**: Respect the visual weight and relative proportions of the original diagram. 
+  - If a group node spans across the width of 3 other nodes beneath it, calculate its `width` to visually align with those 3 nodes.
+  - Replicate multi-column vs single-row groupings correctly. If a parent box holds a grid of 2x2 children, configure your `x`, `y`, `width`, `height` logic to perfectly match that 2x2 spatial arrangement.
+- **Styling Consistency**: Replicate the exact visual hierarchy conventions in the source. If the source uses colored headers for outer groups (e.g., grey for Data Source, light blue for Platform), map those to Tailwind classes. Use dashed lines (`strokeDasharray: '5,5'`) if the source group uses dashed borders.
+
+## 4. Orthogonal Routing & Edges Standard
 Edges must look industrial and systematic. Avoid chaotic spaghetti lines, excessive overlaps, and diagonal lines.
 
+- **Strict Edge Fidelity (NO HALLUCINATIONS)**: NEVER invent, assume, or guess connections that are not explicitly drawn in the source image or explicitly requested. If a node or group does not have a visible line connected to it, **do not draw one**. Connecting unrelated modules ("because they logically might communicate") is strictly forbidden. Wait for explicit visual proof or textual instruction before adding an edge.
 - **Routing Type**: 
   - Prefer `orth` or `manhattan` routing with rounded connectors. Set `padding: 20` to keep lines away from node borders.
-  - **CRITICAL - Router Obstacles & Bounding Boxes**: X6 Auto-routing (especially `orth` and `manhattan`) treats ALL nodes—including large background groups—as physical obstacles. This inevitably causes severe zig-zagging as lines try to navigate "around" them instead of through them.
-  - **MANDATORY FIX FOR GROUPS**: For edges that cross into or out of large group boxes, you MUST disable auto-routing on that specific edge using `router: { name: 'normal' }` (or use `er` router) and supply your own exact `vertices` to form the path. Otherwise, paths will look chaotic and broken.
+  - **Cross-Group Collapse Preventions**: Standard `orth` or `manhattan` routers often completely fail or produce chaotic "spaghetti" lines when crossing into or out of deeply nested backgrounds. 
+  - **MANDATORY FIX FOR GROUPS**: For edges that cross into or out of large group boxes:
+    1. You MUST set the edge `zIndex: 20` to ensure it renders above the group background.
+    2. You MUST disable auto-obstacle routing on that specific edge. Use `router: { name: 'er', args: { direction: 'H' } }` for an automated orthogonal flow, OR use `router: { name: 'normal' }` and supply your own exact `vertices` to form the path. Otherwise, paths will look chaotic or vanish completely.
   - **PERFECT RIGHT ANGLES (CRITICAL)**: When using `normal` router and manual `vertices`, the x/y coordinates of the vertices **MUST exactly align** with the target port's absolute center coordinate or the next vertex's coordinate. If the last vertex's `y` is 170 but the target node's port is at `y=150`, the final segment will be an ugly diagonal line. Calculate exact centers to ensure 100% horizontal/vertical lines.
 - **Bus Corridors (Lanes)**: Reserve empty space (e.g., 20-40px wide) between columns and rows explicitly for routing lines. Do not pack nodes so tightly that edges have nowhere to pass without overlapping.
 - **Port Semantics (Crucial)**: ALWAYS specify exact entry/exit ports (`top`, `bottom`, `left`, `right`). Do not blindly assign every connection as `right` -> `left`. Route logically based on relative geographic coordinates (e.g., node directly below should connect `top` to `bottom`).
@@ -28,18 +51,37 @@ Edges must look industrial and systematic. Avoid chaotic spaghetti lines, excess
   - Do not place nodes and multi-line labels too close together. Leave plenty of breathing room.
   - Use `\n` appropriately for native multiline X6 edge labels instead of raw double escapes. (For `<br>` inside HTML Nodes).
 
-## 3. String Interpolation Safety Mechanism (CRITICAL)
+## 5. String Interpolation Safety Mechanism (CRITICAL)
 When building HTML Nodes that contain vanilla Javascript inline strings, Agent code generators often accidentally trigger template literal escaping bugs (e.g. producing `\${data.label}` instead of executing it).
 - **Rule**: NEVER use ES6 Template Literals (`${var}`) for DOM string assignments inside generic render cycles if there's any ambiguity.
 - **Implementation**: STRICTLY use old-school concatenation `"<div class='w-full'> " + (data?.label || '') + " </div>";` as shown in the boilerplate `assets/x6-boilerplate.html` to avert the escaping trap.
 
-## 4. Layout Constraints & Node Positioning
-- **Group Containment (Padding)**: If a Node is inside a Group, carefully calculate its absolute `x` and `y` coordinates to ensure it sits comfortably inside the group boundaries. Avoid putting nodes directly on the boundary lines (`x=group.x` or `x=group.x + group.width`); leave at least a `20px` internal padding everywhere.
+## 6. Layout Constraints & Node Positioning
+- **Z-Index Layering (CRITICAL for Visibility)**: Elements must be strictly layered so lines and text are not hidden behind group backgrounds:
+  - `zIndex: 1`: Large Group Nodes (background boxes).
+  - `zIndex: 10`: Standard functional Nodes (children and standalone).
+  - `zIndex: 20`: **Edges and Lines** (Crucial! If you don't put edges on a higher z-index than group nodes, lines going into groups will disappear behind the group's background fill).
+- **Group Containment (Padding) & Auto-Sizing**: If a Node is inside a Group, carefully calculate its absolute `x` and `y` coordinates to ensure it sits comfortably inside the group boundaries. 
+  - **Visual Styling for Groups (Light Theme Protocol)**: NEVER use dark/black fills for macro group boundaries unless specifically requested. Group nodes must use a very light, soft background tint (e.g., `#f0f9ff`, `#f8fafc`, or a `color + '1A'` low-opacity trick) with a solid colored border (`stroke: '#0ea5e9'`, `strokeWidth: 1.5`, `rx: 4`, `ry: 4`). Ensure the group label uses a matching semantic color and sits clearly at the top. Group background nodes must not overwhelm the white child nodes.
+  - **Dynamic Group Bounding (Anti-Overlap) Principles**: NEVER handcode `width` and `height` for Group/Background boxes via visual guessing if it risks overlap. Either calculate group boundaries dynamically by following the design principles below or carefully map them to a rigid grid:
+    1. **Strict Hierarchy Nesting**: For X6 to treat a group properly, you MUST explicitly assign children. Either pass `parent: parentId` when adding a child, or call `parent.addChild(childNode)`. This ensures panning and dragging affect the whole group.
+    2. **Apply Semantic Padding**: Allocate generous header padding at the top specifically for the group's title text (e.g., leaving 30-40px at the top empty), ensuring titles never overlap the nested nodes. Implement standard spatial padding for left, right, and bottom.
+    3. **Layer Backgrounds**: Always instantiate the macro group box with a securely lower `zIndex` (e.g., `1`) so child nodes (e.g. `zIndex: 10`) sit cleanly on top and are not obscured.
+  - Avoid putting nodes directly on the boundary lines (`x=group.x` or `x=group.x + group.width`).
+- **Explicit Node Dimensions (Anti-Stretching Bug)**: **CRITICAL**: Always provide explicit `width` and `height` attributes when invoking `graph.addNode({ width: 140, height: 60... })`, even for `html-node`s. Failure to pass explicit sizes will cause nodes to stretch drastically (vertical/horizontal visual collapse distortion) depending on the flex container context.
+- **Strict Row/Col Alignment**: Nodes in the same logical row or column MUST share the exact same `y` or `x` coordinate (adjusted for their height/width if centering) to prevent a messy layout. Avoid arbitrary `+/- 5px` tweaks. Align centers mathematically.
 - **Node Spacing & Collision**: Never allow nodes to overlap. Maintain strictly uniform spacing (e.g., `dx: 40px`, `dy: 40px`) between siblings to prevent text clipping and provide visual balance. Account for explicit label heights in node dimensions.
 - **Canvas Constraints**: Use a robust `COL_WIDTH` and `ROW_HEIGHT` to coordinate absolute positions to eliminate guessing. Map every single node coordinate in a consistent tabular manner before generating `.html`.
 
-## 5. Execution Pipeline
+## 7. Execution Pipeline
 1. **Understand Logic:** Parse the prompt into a Node and Edge logical matrix.
 2. **Boilerplate Merge:** Read `assets/x6-boilerplate.html` using the read file tool for reference to get the accurate node registration logic, and inject the boilerplate into your final PPT canvas container.
 3. **Coordinate Planning:** Plan `x` and `y` matrix on a defined grid system (`COL_WIDTH`, `ROW_HEIGHT`, `Margins`) manually. Prevent overlapping layouts explicitly via calculation. Enforce strict padding for child nodes.
 4. **Render Check:** Load nodes into `graph.addNodes()` and specific semantic edges into `graph.addEdges()`. Verify no visual collapses occur.
+
+## 8. Crash Avoidance & Rendering Failures (CRITICAL)
+If your generated HTML only shows groups but no child nodes or edges (a "blank canvas bug"), you have triggered a fatal JS exception that halted execution. Always follow these rules to avoid crashes:
+1. **Unregistered Shapes Stop Execution**: If you use `graph.addNode({ shape: 'my-shape' })`, `'my-shape'` MUST be registered earlier with `X6.Graph.registerNode`. If you rename shapes (e.g., `'html-node'` to `'html-base'`), ensure all usages are updated. One unregistered shape will crash the entire render.
+2. **Inline HTML Overrides**: If you provide an inline `html: () => "..."` function inside `graph.addNode(...)`, the specified `shape` **MUST** be one that inherited from `'html'`. 
+3. **Invalid Ports/Routing**: Do not connect to `port` IDs that do not exist on the target shape's `ports` definition. E.g. If you use `port: 'left'`, ensure the target Node's registered shape explicitly defines `left` in its `ports.groups`. 
+4. **Try-Catch Block Pattern**: When iterating over many edges or nodes, write defensively so a single failed node doesn't abort the rest of the diagram.
