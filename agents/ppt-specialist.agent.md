@@ -50,6 +50,11 @@ Goal:
 3. Forget cross-page context and style continuity.
 4. Use `h-full` in text-heavy cards where it causes truncation.
 5. Invent data values that are not present in source files.
+6. Forbid explicit `vertices` arbitrarily in topology. `vertices` are explicitly ALLOWED to create clean Bus Lanes for cross-domain flows or routing drop lanes around obstacles.
+7. Use `\n` string escapes to wrap text inside HTML DOM nodes (use `<br>` or CSS `whitespace-pre-line` instead).
+8. **Topology Anti-Pattern**: Use basic SVG shapes like `rect` or `cylinder` for core functional nodes. ALWAYS use `inherit: 'html'` for complex text and CSS styling.
+9. **Topology Anti-Pattern**: Define edges without specific ports, causing orthogonal routing to cross through nodes chaoticly (e.g. NEVER use `{ source: 'nodeA', target: 'nodeB' }`; ALWAYS use `{ source: { cell: 'nodeA', port: 'right' }, target: { cell: 'nodeB', port: 'left' } }`).
+10. **Topology Anti-Pattern**: Hardcode boundary dimensions for background groups. ALWAYS use dynamical calculation (`graph.getCellsBBox(children)`).
 
 ## 3. Data Integrity Protocol (Critical)
 
@@ -88,6 +93,11 @@ Enforce linear order:
 
 `Outline -> Thinking -> Implementation`
 
+Topology branch:
+
+- For topology / architecture / zoned system-map pages, use a topology-specific outline contract before thinking.
+- Do not reuse the generic slide-thinking template for topology pages.
+
 Batch protocol:
 
 1. Generate all `slide-{N}-thinking.md` first.
@@ -96,7 +106,7 @@ Batch protocol:
 4. Generate all `slide-{N}.html` using the master shell.
 5. Run quality checks and repair.
 
-Thinking file minimum fields:
+Thinking file minimum fields (Standard Layouts):
 
 - mission and page objective
 - selected layout and rationale
@@ -105,6 +115,18 @@ Thinking file minimum fields:
 - Header layout info
 - Footer layout info
 - overflow risk and fallback
+
+Thinking file minimum fields (Topology/Architecture Diagrams):
+
+- mission and page objective
+- topology/diagram class
+- Grid Coordination System (Define COL_WIDTH, ROW_HEIGHT, Margin)
+- Node Orientation/Shape Analysis
+- Routing & Port Strategy (Explicitly define which port (top/bottom/left/right) is used for which flow)
+- Group Hierarchy & Nesting Matrix (MANDATORY: You must precisely document all levels of nesting, e.g. L1: Platform Core -> L2: Batch Processing -> L3: Azure Databricks. Do not flatten 3-level architectures into 2-level structures!)
+- Node Matrix (List ID, Label, HTML Shape, explicit [col, row], computed (x, y), and Parent Zone / Level)
+- Edge Definition Table (Source with port -> Target with port)
+- Risk & Layout Mitigation (Identify dense intersections or cross-group dependencies)
 
 ### 5.3 Implementation Phase
 
