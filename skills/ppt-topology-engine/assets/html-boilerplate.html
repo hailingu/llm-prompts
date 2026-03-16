@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Block Architecture Diagram</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* 1. Viewport Auto-Scaling (CRITICAL) */
+    body {
+      margin: 0; padding: 0;
+      width: 100vw; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      overflow: auto; /* DO NOT USE hidden, allow scroll if screen is too small */
+      background-color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .slide-container {
+      width: 1920px;
+      height: 1080px;
+      flex-shrink: 0; /* Crucial: ensures inner canvas isn't squished by flex parent */
+      background: white;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      box-sizing: border-box;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      transform-origin: center center;
+    }
+    
+    /* 2. Micro-Layout Helpers */
+    .flex-col-safe { display: flex; flex-direction: column; min-height: 0; }
+    .flex-row-safe { display: flex; flex-direction: row; min-width: 0; }
+  </style>
+</head>
+<body>
+
+  <!-- Pure HTML/CSS Slide Canvas -->
+  <div class="slide-container">
+     <!-- Main Content Here (Use Tailwind and flex-col-safe / flex-row-safe) -->
+  </div>
+
+  <!-- Adaptive Scaling Script -->
+  <script>
+    function scaleSlide() {
+      const slide = document.querySelector('.slide-container');
+      if (!slide) return;
+      
+      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+      if (scale < 1) {
+        // 0.98 ensures a small safe breathing margin
+        slide.style.transform = `scale(${scale * 0.98})`;
+      } else {
+        slide.style.transform = 'none';
+      }
+    }
+    window.addEventListener('resize', scaleSlide);
+    // Initial scale logic
+    window.addEventListener('DOMContentLoaded', scaleSlide);
+  </script>
+</body>
+</html>

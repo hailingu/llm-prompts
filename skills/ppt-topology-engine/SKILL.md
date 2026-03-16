@@ -100,17 +100,6 @@ When building complex layered block architectures using pure Tailwind CSS Flexbo
 - **Overflow Prevention via Inner Scroll**: For highly dense lists inside cards, always add `overflow-y-auto` to the immediate child container of the card, combined with `flex-1 min-h-0`, so it scrolls internally rather than pushing the boundary.
 - **Micro-Typography & Density**: For dense L3/L4 nodes, drop text to `text-[10px]` or `text-[9px]`, use tight leading (`leading-tight`), and remove excessive vertical paddings. Shrink the gap to `gap-1` or `gap-2`. Do not use huge padding like `p-4` inside deeply nested inner-boxes.
 - **Flexible Layout Proportions (No Hardcoded Heights)**: NEVER use static pixel minimums like `min-h-[80px]` or `h-[120px]` on major intermediate rows if they stack vertically inside a space-constrained parent. Instead, use relative flex values (`flex-[2]`, `flex-1`, `flex-[0.5]`) and rely strictly on natural flexbox proportions. Hardcoding heights structurally guarantees that children will snap through the bottom boundary when the math does not align.
-- **Viewport Auto-Scaling (CRITICAL)**: Because the `.slide-container` acts as a rigid `1920x1080` canvas, opening it on smaller computer screens will physically slice off the bottom of the slide (making it look like a broken layout) because `body { overflow: hidden }` blocks scrolling. You **MUST** inject the following inline auto-scale script just before the closing `</body>` tag to ensure the presentation dynamically shrinks to perfectly fit any window size:
-  ```html
-  <script>
-    function scaleSlide() {
-      const slide = document.querySelector('.slide-container');
-      if (!slide) return;
-      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080) * 0.98;
-      slide.style.transform = `scale(${scale})`;
-      slide.style.transformOrigin = 'center center';
-    }
-    window.addEventListener('resize', scaleSlide);
-    window.addEventListener('DOMContentLoaded', scaleSlide);
-  </script>
-  ```
+- **Viewport Auto-Scaling & HTML Boilerplate (CRITICAL)**: Because the `.slide-container` acts as a rigid `1920x1080` canvas, opening it on smaller computer screens will physically slice off the bottom of the slide. 
+  - **Rule:** Do not write the CSS and scaling JavaScript from scratch.
+  - **Action:** You **MUST** use the read file tool to read `assets/html-boilerplate.html` to get the robust Flexbox-based centering and auto-scaling logic, then inject your HTML nodes into it.
