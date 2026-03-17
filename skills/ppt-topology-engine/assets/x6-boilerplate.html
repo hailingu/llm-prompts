@@ -6,7 +6,7 @@
     <title>Topology Diagram</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Core Engine: ALWAYS use UMD version for independent HTML execution -->
-    <script src="https://unpkg.com/@antv/x6@1.34.14/dist/x6.js"></script>
+    <script src="https://unpkg.com/@antv/x6/dist/x6.min.js"></script>
     <style>
         body { margin: 0; padding: 0; }
         .slide-container { width: 1280px; height: 720px; position: relative; }
@@ -24,8 +24,9 @@
         // ==========================================
 
         // Generic HTML Node
-        X6.Graph.registerNode('html-node', {
-            inherit: 'html',
+        const { Graph, Shape } = X6;
+        Shape.HTML.register({
+            shape: 'html-node',
             width: 160,
             height: 60,
             ports: {
@@ -52,8 +53,8 @@
         });
 
         // Database Node (Cylinder)
-        X6.Graph.registerNode('arch-database', {
-            inherit: 'html',
+        Shape.HTML.register({
+            shape: 'arch-database',
             width: 100,
             height: 90,
             ports: {
@@ -85,7 +86,7 @@
         // ==========================================
         // 2. GRAPH INITIALIZATION
         // ==========================================
-        const graph = new X6.Graph({
+        const graph = new Graph({
             container: document.getElementById('topology-container'),
             autoResize: true,
             panning: false,

@@ -4,13 +4,18 @@
 Topology engine for PPT HTML slides. Used exclusively for complex flowcharts, system architectures, cross-functional bands, and path-routing diagrams. This skill handles crossing logic, node hierarchy, and custom graphic boundaries mapping.
 
 ## 1. Engine & Dependencies
-- **Core Engine File**: Use the stable v1 CDN link in your HTML: `<script src="https://cdn.jsdelivr.net/npm/@antv/x6@1.34.0/dist/x6.min.js"></script>`. Do NOT use `unpkg.com` for X6 as the default paths have broken due to v3 updates.
+- **Core Engine File**: Use the stable CDN link in your HTML: `<script src="https://unpkg.com/@antv/x6/dist/x6.min.js"></script>`.
 - **Rule**: NEVER use standard SVG `<text>` elements for UI-rich labels. Use the `inherit: 'html'` paradigm.
 - **CRITICAL SHAPE REGISTRATION**: Every `shape` string passed to `graph.addNode({ shape: 'my-shape' })` **MUST** be explicitly registered. 
-  - **Syntax Rule (CRITICAL)**: Because we are locked to v1.34.0, NEVER use the newer `Shape.HTML.register(...)` method. It is undefined and will throw a fatal error. 
-  - You MUST use `X6.Graph.registerNode('my-shape', { inherit: 'html', width: 120, height: 60, html(cell) { ... } })`. If you pass an unregistered shape, the entire X6 execution will throw a fatal JavaScript exception and **halt rendering completely**, resulting in a completely blank canvas. Validate every shape name!
+  - **Syntax Rule (CRITICAL)**: Use the modern `Shape.HTML.register(...)` method. For example: `const { Graph, Shape } = X6; Shape.HTML.register({ shape: 'my-shape', width: 120, height: 60, html(cell) { ... } });`. If you pass an unregistered shape, the entire X6 execution will throw a fatal JavaScript exception and **halt rendering completely**, resulting in a completely blank canvas. Validate every shape name!
 
-## 2. Diagram Typology: Block Architecture vs. Flowchart
+## 2. Mathematical Layout & Bounding Box Extractor
+Before writing any HTML, you MUST generate a `thinking.md` document that acts as your spatial mapping and measurement step.
+- **Unit Grid System**: Do not guess random pixel layouts. First, divide the canvas into an abstract grid (e.g. 1 Unit = 100px).
+- **Spanning & Bridging**: Explicitly declare nodes that cross between rows or columns (e.g., a "Storage" block that runs the entire height of the left side).
+- **Visual Bounding Box Matrix**: You MUST output a structured table in your `thinking.md` documenting the Width (U), Height (U), Logic-X, and Logic-Y for every macro element. Relying only on text indentation and list summaries is forbidden. Use the `knowledge/templates/ppt-topology-thinking-template.md` contract.
+
+## 3. Diagram Typology: Block Architecture vs. Flowchart
 When converting a source diagram, determine its fundamental type before writing logic:
 - **Block Architecture Diagrams**: These are structural zoning diagrams (like cloud architectures, platform capabilities, component matrices) built heavily on grouped boxes, sub-modules, and geographic regions. *Characteristics*: Lots of nested boxes, grid alignments, icons, text, but almost **NO explicitly drawn flow lines**. 
   - **ACTION**: DO NOT invent edges/flowlines if the source material mainly displays structural boxes. Use purely spatial grouping and nested coordinates. Remove connection logic.

@@ -96,7 +96,7 @@ Enforce linear order:
 Topology branch:
 
 - For topology / architecture / zoned system-map pages, use a topology-specific outline contract before thinking.
-- Do not reuse the generic slide-thinking template for topology pages.
+- Do not reuse the generic slide-thinking template for topology pages. Instead, you MUST use `knowledge/templates/ppt-topology-thinking-template.md`. Extract precise geometric bounds (W, H, Logic-X, Logic-Y) into a `Visual Bounding Box Matrix`. Do not just output indented lists.
 
 Batch protocol:
 
