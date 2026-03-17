@@ -25,12 +25,12 @@ This repository contains reusable prompts, agent definitions, and documentation 
 
 ## Features
 
-- 🤖 **Agent System** - 32+ specialized LLM agents for different workflows (in `agents/`)
+- 🤖 **Agent System** - 36 specialized LLM agents for different workflows (in `agents/`)
   - **Language Agents**: Python, Java, Go coder/reviewer/architect/doc-writer
   - **Data Science Agents**: Algorithm designer, engineer, researcher, evaluator
   - **Utility Agents**: Git specialist, markdown writer, README/Changelog specialist
   - **PPT Specialist**: HTML slide generation with multi-brand support (KPMG/McKinsey/BCG/Bain/Deloitte)
-- 🛠️ **Skills** - 13 reusable skill modules for specialized tasks
+- 🛠️ **Skills** - 15 reusable skill modules for specialized tasks
   - `memory-manager`: Context persistence across sessions
   - `stock-price-tracker`: Real-time stock data via Yahoo Finance
   - `news-search`: Web news search with DuckDuckGo
@@ -42,6 +42,7 @@ This repository contains reusable prompts, agent definitions, and documentation 
   - `ppt-map-storytelling`: Geographic narrative patterns for map-first slides
   - `ppt-slide-layout-library`: 14 layout types
   - `ppt-visual-qa`: Automated slide quality assurance (80+ gates)
+  - `ppt-topology-engine`: Complex flowcharts, system architectures, cross-functional bands, and path-routing diagrams with X6
   - `rss-reader`: Feed parsing and structured content extraction
 - 📚 **Standards** - Cross-language and language-specific coding guidelines
   - `knowledge/standards/common/`: API patterns, design review, collaboration protocols
