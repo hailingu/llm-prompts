@@ -12,7 +12,7 @@
     },
     "copilot": {
       "project_target": ".github/copilot-instructions.md",
-      "global_target": "~/.copilot/instructions.md"
+      "global_target": "~/.copilot/copilot-instructions.md"
     },
     "kimi": {
       "project_target": ".kimi/config.json",

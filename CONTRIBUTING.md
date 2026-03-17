@@ -27,11 +27,13 @@ Thank you for wanting to contribute! This project follows an open, collaborative
 - If behavior changes, update `skills/` first, then adjust adapter templates and install scripts as needed.
 - Avoid duplicating executable skill logic in plugin adapter folders.
 
-## Source of Truth Rule (`agents/` vs `.github/agents/`)
+## Source of Truth Rule (`agents/`, `skills/`, `prompts/` vs mirror dirs)
 
 - Agent definitions are source-of-truth in `agents/`.
-- `.github/agents/` is an optional compatibility mirror and must not be edited directly.
-- Mirror generation is automatic when setup runs with `--plugin copilot` or `--plugin all` in project scope.
+- Skills are source-of-truth in `skills/`.
+- Prompt files are source-of-truth in `prompts/`.
+- `.clinerules/` (agents + prompts), `.cline/skills/`, `.github/agents/`, `.github/skills/`, and `.github/instructions/` are compatibility mirrors and must not be edited directly.
+- Mirror generation is automatic when setup runs with `--plugin cline` / `--plugin copilot` / `--plugin all` in project scope.
 - If needed, you can manually regenerate with `bash scripts/sync_agents_to_github.sh`.
 
 ## Commit Guidelines

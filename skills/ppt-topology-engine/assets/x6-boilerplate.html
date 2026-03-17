@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topology Diagram</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Core Engine: ALWAYS use UMD version for independent HTML execution -->
+    <script src="https://unpkg.com/@antv/x6/dist/x6.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        .slide-container { width: 1280px; height: 720px; position: relative; }
+        #topology-container { width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+    <div class="slide-container mx-auto">
+        <div id="topology-container"></div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. NODE REGISTRATION
+        // ==========================================
+
+        // Generic HTML Node
+        const { Graph, Shape } = X6;
+        Shape.HTML.register({
+            shape: 'html-node',
+            width: 160,
+            height: 60,
+            ports: {
+                groups: {
+                    left: { position: 'left', attrs: { circle: { r: 0, magnet: true } } },
+                    right: { position: 'right', attrs: { circle: { r: 0, magnet: true } } },
+                    top: { position: 'top', attrs: { circle: { r: 0, magnet: true } } },
+                    bottom: { position: 'bottom', attrs: { circle: { r: 0, magnet: true } } }
+                }
+            },
+            effect: ['data'],
+            html: (cell) => {
+                const data = cell.getData();
+                const size = cell.getSize();
+                const wrap = document.createElement('div');
+                wrap.style.width = size.width + 'px';
+                wrap.style.height = size.height + 'px';
+                wrap.style.overflow = 'hidden';
+                wrap.innerHTML = `
+                    <div style="width: 100%; height: 100%; box-sizing: border-box;" class="flex items-center justify-center p-2 rounded-md shadow-sm border border-slate-300 bg-white">
+                        <span class="text-xs text-center text-slate-800 leading-tight">` + (data?.label || '') + `</span>
+                    </div>
+                `;
+                return wrap;
+            },
+        });
+
+        // Database Node (Cylinder)
+        Shape.HTML.register({
+            shape: 'arch-database',
+            width: 100,
+            height: 90,
+            ports: {
+                groups: {
+                    left: { position: 'left', attrs: { circle: { r: 0, magnet: true } } }, right: { position: 'right', attrs: { circle: { r: 0, magnet: true } } },
+                    top: { position: 'top', attrs: { circle: { r: 0, magnet: true } } }, bottom: { position: 'bottom', attrs: { circle: { r: 0, magnet: true } } }
+                }
+            },
+            effect: ['data'],
+            html: (cell) => {
+                const data = cell.getData();
+                const size = cell.getSize();
+                const wrap = document.createElement('div');
+                wrap.style.width = size.width + 'px';
+                wrap.style.height = size.height + 'px';
+                wrap.style.overflow = 'hidden';
+                wrap.innerHTML = `
+                    <div style="position: relative; width: 100%; height: 100%;">
+                        <svg viewBox="0 0 100 110" preserveAspectRatio="none" style="width: 100%; height: 100%; position: absolute; z-index: 0;">
+                            <path d="M 0,20 A 50,20 0 1,1 100,20 L 100,90 A 50,20 0 1,1 0,90 Z" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2"/>
+                        </svg>
+                        <div class="absolute inset-0 z-10 flex items-center justify-center p-2 text-center text-xs font-bold text-sky-900 leading-tight">
+                            ` + (data?.label || '') + `
+                        </div>
+                    </div>
+                `;
+                return wrap;
+            }
+        });
+
+        // ==========================================
+        // 2. GRAPH INITIALIZATION
+        // ==========================================
+        const graph = new Graph({
+            container: document.getElementById('topology-container'),
+            autoResize: true,
+            panning: false,
+            mousewheel: false,
+            connecting: {
+                router: {
+                    name: 'orth', // strict orthogonal routing avoiding obstacles
+                    args: { padding: 15, startDirections: ['right', 'bottom', 'top'], endDirections: ['left', 'top', 'bottom'] }
+                },
+                connector: {
+                    name: 'rounded',
+                    args: { radius: 8 }
+                },
+                defaultEdge: {
+                    zIndex: 20,
+                    attrs: {
+                        line: { stroke: '#64748b', strokeWidth: 2, targetMarker: { name: 'block', width: 8, height: 8 } }
+                    }
+                }
+            }
+        });
+
+        // ==========================================
+        // 3. GROUPS & NODES
+        // ==========================================
+        const groupNode = graph.addNode({
+            x: 10, y: 10, width: 400, height: 300,
+            zIndex: 1,
+            attrs: {
+                body: { fill: '#f8fafc', stroke: '#cbd5e1', strokeDasharray: '5,5' },
+                label: { text: 'Core System Group', refY: 15, textAnchor: 'middle' }
+            }
+        });
+
+        const childNode = graph.addNode({ shape: 'html-node', x: 50, y: 50, zIndex: 10, data: { label: 'Service A' } });
+        groupNode.addChild(childNode);
+
+        // ==========================================
+        // 4. EDGES
+        // ==========================================
+        // Semantic Port Assignments are CRUCIAL! Be explicit with { cell: id, port: 'direction' }
+        /* 
+        graph.addEdge({
+            source: { cell: 'node-A', port: 'right' },
+            target: { cell: 'node-B', port: 'left' },
+            labels: [{
+                attrs: { label: { text: 'Multiline\\nLabel' } },
+                position: { distance: 0.5, offset: -20 } // offset is required to avoid obstable overlay
+            }],
+            vertices: [{x: 100, y: 200}] // explicit routing waypoints if needed to bypass overlaps
+        });
+        */
+    </script>
+</body>
+</html>

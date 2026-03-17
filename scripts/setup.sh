@@ -3,7 +3,7 @@ set -euo pipefail
 
 usage() {
   cat <<USAGE
-Usage: $(basename "$0") [--plugin codex|cline|copilot|kimi|all] [--scope project|global] [--skills all|none|a,b] [--agents all|none|a,b] [--skip-doctor]
+Usage: $(basename "$0") [--plugin codex|cline|copilot|kimi|all] [--scope project|global] [--target-dir PATH] [--skills all|none|a,b] [--agents all|none|a,b] [--skip-doctor]
 USAGE
 }
 
@@ -12,6 +12,7 @@ SCOPE="project"
 SKILLS_ARG="all"
 AGENTS_ARG="all"
 SKIP_DOCTOR="false"
+TARGET_DIR=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -21,6 +22,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --scope)
       SCOPE="${2:-}"
+      shift 2
+      ;;
+    --target-dir)
+      TARGET_DIR="${2:-}"
       shift 2
       ;;
     --skills)
@@ -48,12 +53,39 @@ while [[ $# -gt 0 ]]; do
 done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-"$SCRIPT_DIR/install_core.sh" --scope "$SCOPE" --skills "$SKILLS_ARG" --agents "$AGENTS_ARG"
-"$SCRIPT_DIR/install_adapter.sh" --plugin "$PLUGIN" --scope "$SCOPE"
-
-if [[ "$SKIP_DOCTOR" == "false" ]]; then
-  "$SCRIPT_DIR/doctor.sh" --plugin "$PLUGIN" --scope "$SCOPE"
+TARGET_DIR_ABS=""
+if [[ "$SCOPE" == "project" ]]; then
+  if [[ -z "$TARGET_DIR" ]]; then
+    TARGET_DIR_ABS="$REPO_ROOT"
+  else
+    if [[ ! -d "$TARGET_DIR" ]]; then
+      echo "Target project directory does not exist: $TARGET_DIR" >&2
+      echo "Please provide an existing directory with --target-dir PATH." >&2
+      exit 1
+    fi
+    TARGET_DIR_ABS="$(cd "$TARGET_DIR" && pwd)"
+  fi
 fi
 
-echo "Setup completed (plugin=$PLUGIN, scope=$SCOPE, skills=$SKILLS_ARG, agents=$AGENTS_ARG)."
+SKIP_CORE="false"
+if [[ "$SCOPE" == "global" && "$PLUGIN" == "cline" ]]; then
+  SKIP_CORE="true"
+  echo "Skipping core install for cline global scope (no global prompts/agents/skills)."
+fi
+
+if [[ "$SKIP_CORE" == "false" ]]; then
+  "$SCRIPT_DIR/install_core.sh" --scope "$SCOPE" --target-dir "$TARGET_DIR_ABS" --skills "$SKILLS_ARG" --agents "$AGENTS_ARG"
+fi
+"$SCRIPT_DIR/install_adapter.sh" --plugin "$PLUGIN" --scope "$SCOPE" --target-dir "$TARGET_DIR_ABS"
+
+if [[ "$SKIP_DOCTOR" == "false" ]]; then
+  "$SCRIPT_DIR/doctor.sh" --plugin "$PLUGIN" --scope "$SCOPE" --target-dir "$TARGET_DIR_ABS"
+fi
+
+if [[ "$SCOPE" == "project" ]]; then
+  echo "Setup completed (plugin=$PLUGIN, scope=$SCOPE, target=$TARGET_DIR_ABS, skills=$SKILLS_ARG, agents=$AGENTS_ARG)."
+else
+  echo "Setup completed (plugin=$PLUGIN, scope=$SCOPE, skills=$SKILLS_ARG, agents=$AGENTS_ARG)."
+fi

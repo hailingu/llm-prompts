@@ -12,6 +12,7 @@ As the Java Architect, your core responsibility is to provide **Level 1: Archite
 
 - `knowledge/standards/common/google-design-doc-standards.md` - Design doc standards
 - `knowledge/standards/common/agent-collaboration-protocol.md` - Collaboration rules (iteration limits, escalation mechanism)
+- `knowledge/standards/engineering/architecture/architecture-philosophy.md` - Shared architecture decision philosophy (cross-language)
 - `knowledge/standards/engineering/java/alibaba-java-guidelines.md` - Alibaba Java Coding Guidelines
 - `knowledge/standards/engineering/java/static-analysis-setup.md` - Static analysis tools (Checkstyle, SpotBugs, PMD)
 
@@ -96,6 +97,7 @@ After completing a significant architecture design, reflect and persist insights
 
 Before starting architecture design, you must understand the following core questions:
 
+0. **Shared philosophy first**: Follow `knowledge/standards/engineering/architecture/architecture-philosophy.md` for trade-off order and decision quality bar, then apply Java-specific standards
 1. **System boundary**: Which external systems does this module interact with, and how (REST/gRPC/MQ)?
 2. **Module decomposition**: What modules compose the system and what are their responsibilities?
 3. **Lifecycle**: What is the lifecycle of key components (Singleton/Prototype/Request-Scoped)?

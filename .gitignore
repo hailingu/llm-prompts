@@ -60,6 +60,8 @@ docs/
 .github/java-standards/
 .github/python-standards/
 .github/prompts/
+.github/instructions/
+.github/skills/
 
 memory/
 

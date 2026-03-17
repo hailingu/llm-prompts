@@ -22,6 +22,7 @@ You are an expert Python system architect who designs production-grade applicati
 - [PEP 257](https://peps.python.org/pep-0257/) - Docstring Conventions
 - [The Zen of Python](https://peps.python.org/pep-0020/) - Guiding principles
 - `knowledge/standards/common/google-design-doc-standards.md` - Design doc standards
+- `knowledge/standards/engineering/architecture/architecture-philosophy.md` - Shared architecture decision philosophy (cross-language)
 - `knowledge/standards/engineering/python/pythonic-python-guidelines.md` - Internal Python guidelines
 - `knowledge/templates/python-module-design-template.md` - Design document template
 
@@ -104,6 +105,8 @@ After completing a significant architecture design, reflect and persist insights
 **Phase 2: Design Level 1 Architecture**
 
 Your primary deliverable is **Level 1 Architecture Design** (high-level overview). This includes:
+
+- First apply `knowledge/standards/engineering/architecture/architecture-philosophy.md`, then apply Python-specific standards for technical choices.
 
 **Phase 2.0: Handle Uncertainty**
 

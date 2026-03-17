@@ -3,9 +3,12 @@ set -euo pipefail
 
 usage() {
   cat <<USAGE
-Usage: $(basename "$0") [--check]
+Usage: $(basename "$0") [--check] [--target-dir PATH]
 
-Sync source agent files from agents/ to .github/agents/.
+Sync source content to GitHub-compatible mirror directories:
+- agents/  -> .github/agents/
+- skills/  -> .github/skills/
+- prompts/ -> .github/instructions/
 
 Options:
   --check   verify mirror is in sync; exit non-zero if drift exists
@@ -13,64 +16,112 @@ USAGE
 }
 
 MODE="sync"
-if [[ ${1:-} == "--check" ]]; then
-  MODE="check"
-elif [[ ${1:-} == "-h" || ${1:-} == "--help" ]]; then
-  usage
-  exit 0
-elif [[ $# -gt 0 ]]; then
-  echo "Unknown argument: $1" >&2
-  usage
-  exit 1
-fi
+TARGET_DIR=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --check)
+      MODE="check"
+      shift
+      ;;
+    --target-dir)
+      TARGET_DIR="${2:-}"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-SRC_DIR="$REPO_ROOT/agents"
-DST_DIR="$REPO_ROOT/.github/agents"
-
-if [[ ! -d "$SRC_DIR" ]]; then
-  echo "Missing source directory: $SRC_DIR" >&2
-  exit 1
+TARGET_ROOT="$REPO_ROOT"
+if [[ -n "$TARGET_DIR" ]]; then
+  if [[ ! -d "$TARGET_DIR" ]]; then
+    echo "Target project directory does not exist: $TARGET_DIR" >&2
+    echo "Please provide an existing directory with --target-dir PATH." >&2
+    exit 1
+  fi
+  TARGET_ROOT="$(cd "$TARGET_DIR" && pwd)"
 fi
-mkdir -p "$DST_DIR"
+declare -a PAIRS=(
+  "agents:.github/agents"
+  "skills:.github/skills"
+  "prompts:.github/instructions"
+)
 
-sync_once() {
-  # Remove stale mirrored files.
-  find "$DST_DIR" -mindepth 1 -maxdepth 1 -name '*.agent.md' -type f | while IFS= read -r existing; do
-    base="$(basename "$existing")"
-    if [[ ! -f "$SRC_DIR/$base" ]]; then
-      rm -f "$existing"
+sync_dir() {
+  local src="$1"
+  local dst="$2"
+
+  if [[ ! -d "$src" ]]; then
+    echo "Missing source directory: $src" >&2
+    exit 1
+  fi
+
+  mkdir -p "$dst"
+
+  # Remove stale paths in destination.
+  while IFS= read -r -d '' existing; do
+    local rel="${existing#"$dst"/}"
+    if [[ ! -e "$src/$rel" ]]; then
+      rm -rf "$existing"
     fi
-  done
+  done < <(find "$dst" -mindepth 1 -depth -print0)
 
-  # Copy all source files.
-  find "$SRC_DIR" -mindepth 1 -maxdepth 1 -name '*.agent.md' -type f | while IFS= read -r src; do
-    cp "$src" "$DST_DIR/$(basename "$src")"
-  done
+  # Copy source content recursively.
+  while IFS= read -r -d '' item; do
+    local rel="${item#"$src"/}"
+    local target="$dst/$rel"
+    if [[ -d "$item" ]]; then
+      mkdir -p "$target"
+    elif [[ -f "$item" ]]; then
+      mkdir -p "$(dirname "$target")"
+      cp "$item" "$target"
+    fi
+  done < <(find "$src" -mindepth 1 -print0)
 }
 
-if [[ "$MODE" == "sync" ]]; then
-  sync_once
-  echo "Mirrored agents: $SRC_DIR -> $DST_DIR"
-  exit 0
-fi
+check_dir() {
+  local src="$1"
+  local dst="$2"
+  local label="$3"
 
-TMP_DIR="$(mktemp -d)"
-trap 'rm -rf "$TMP_DIR"' EXIT
-EXPECTED="$TMP_DIR/expected"
-mkdir -p "$EXPECTED"
+  if [[ ! -d "$src" ]]; then
+    echo "Missing source directory: $src" >&2
+    exit 1
+  fi
+  mkdir -p "$dst"
 
-find "$SRC_DIR" -mindepth 1 -maxdepth 1 -name '*.agent.md' -type f | while IFS= read -r src; do
-  cp "$src" "$EXPECTED/$(basename "$src")"
+  if ! diff -qr "$src" "$dst" >/dev/null; then
+    echo "Mirror drift detected for $label." >&2
+    echo "Run: bash scripts/sync_agents_to_github.sh" >&2
+    diff -qr "$src" "$dst" || true
+    return 1
+  fi
+  echo "Mirror check passed for $label."
+  return 0
+}
+
+status=0
+for pair in "${PAIRS[@]}"; do
+  src_rel="${pair%%:*}"
+  dst_rel="${pair#*:}"
+  src_dir="$REPO_ROOT/$src_rel"
+  dst_dir="$TARGET_ROOT/$dst_rel"
+
+  if [[ "$MODE" == "sync" ]]; then
+    sync_dir "$src_dir" "$dst_dir"
+    echo "Mirrored $src_rel: $src_dir -> $dst_dir"
+  else
+    check_dir "$src_dir" "$dst_dir" "$src_rel" || status=1
+  fi
 done
 
-# Compare by file set + content
-if ! diff -qr "$EXPECTED" "$DST_DIR" >/dev/null; then
-  echo "Agent mirror drift detected between agents/ and .github/agents/." >&2
-  echo "Run: bash scripts/sync_agents_to_github.sh" >&2
-  diff -qr "$EXPECTED" "$DST_DIR" || true
-  exit 1
-fi
-
-echo "Agent mirror check passed."
+exit $status
