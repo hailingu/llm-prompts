@@ -1,24 +1,7 @@
 ---
 name: python-code-reviewer
-description: Python Code Reviewer — performs independent code reviews to ensure code quality, contract compliance, PEP standards, and type safety; runs after coder submission and before tech-lead approval
+description: Python Code Reviewer — performs independent code reviews to ensure code quality, contract compliance, PEP standards, and type safety
 tools: ['read', 'search', 'execute']
-handoffs:
-  - label: python-coder-specialist revision request
-    agent: python-coder-specialist
-    prompt: Code review feedback - please revise the implementation based on the following comments.
-    send: true
-  - label: python-api-designer clarification
-    agent: python-api-designer
-    prompt: Found ambiguity in the API contract during code review. Please clarify.
-    send: true
-  - label: python-tech-lead approval
-    agent: python-tech-lead
-    prompt: Code review complete. All issues resolved. Ready for final approval.
-    send: true
-  - label: python-tech-lead escalation
-    agent: python-tech-lead
-    prompt: Code review escalation - found critical issues or iteration limit exceeded.
-    send: true
 ---
 
 **MISSION**

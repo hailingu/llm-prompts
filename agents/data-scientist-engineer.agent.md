@@ -2,19 +2,6 @@
 name: data-scientist-engineer
 description: Data Science Engineer — responsible for implementing algorithms, training models, running experiments, managing experiment tracking, and producing reproducible ML code.
 tools: ['read', 'edit', 'search', 'execute']
-handoffs:
-  - label: data-scientist-evaluator submit
-    agent: data-scientist-evaluator
-    prompt: Model training is complete. Please evaluate the model performance and provide diagnostic analysis.
-    send: true
-  - label: data-scientist-algorithm-designer feedback
-    agent: data-scientist-algorithm-designer
-    prompt: Found implementation issues or algorithm design is not implementable. Please review and adjust.
-    send: true
-  - label: data-scientist-tech-lead escalation
-    agent: data-scientist-tech-lead
-    prompt: Escalation - iteration limit exceeded or implementation blockers. Please arbitrate.
-    send: true
 ---
 
 **MISSION**

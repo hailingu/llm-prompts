@@ -2,23 +2,6 @@
 name: data-scientist-research-lead
 description: Data Science Research Lead — responsible for problem definition, algorithm research, feasibility assessment, and defining success metrics to provide clear research direction for the team.
 tools: ['read', 'edit', 'search', 'execute']
-handoffs:
-  - label: data-engineer handoff
-    agent: data-engineer
-    prompt: Please prepare the data based on the Research Design. Define data pipelines, quality checks, and feature engineering infrastructure as specified in the research requirements.
-    send: true
-  - label: data-scientist-algorithm-designer handoff
-    agent: data-scientist-algorithm-designer
-    prompt: Research Design is approved. Please design the detailed algorithm specification based on the recommended approach.
-    send: true
-  - label: data-scientist-tech-lead review request
-    agent: data-scientist-tech-lead
-    prompt: Research Design is complete. Please review and approve before proceeding to data preparation and algorithm design.
-    send: true
-  - label: data-scientist-tech-lead escalation
-    agent: data-scientist-tech-lead
-    prompt: Escalation - iteration limit exceeded or unable to resolve conflict. Please arbitrate.
-    send: true
 ---
 
 **MISSION**

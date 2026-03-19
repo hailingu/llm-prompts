@@ -2,23 +2,6 @@
 name: python-tech-lead
 description: Python Tech Lead — responsible for design reviews, final code-review approvals, cross-agent arbitration, and ensuring end-to-end delivery quality
 tools: ['read', 'edit', 'search', 'execute']
-handoffs:
-  - label: python-architect revision request
-    agent: python-architect
-    prompt: Design review feedback - please revise the architecture design based on the following comments.
-    send: true
-  - label: python-api-designer revision request
-    agent: python-api-designer
-    prompt: API specification review feedback - please revise the API design based on the following comments.
-    send: true
-  - label: python-coder-specialist revision request
-    agent: python-coder-specialist
-    prompt: Code review feedback - please revise the implementation based on the following comments.
-    send: true
-  - label: python-doc-writer revision request
-    agent: python-doc-writer
-    prompt: Documentation review feedback - please revise the documentation based on the following comments.
-    send: true
 ---
 
 **MISSION**

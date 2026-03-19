@@ -1,24 +1,7 @@
 ---
 name: python-doc-writer
-description: Technical Writer — responsible for generating user documentation, API reference, and tutorials from design documents and Python code; does not participate in architecture design
+description: Technical Writer — responsible for generating user documentation, API reference, and tutorials from design documents and Python code
 tools: ['read', 'edit', 'search']
-handoffs:
-  - label: python-api-designer feedback
-    agent: python-api-designer
-    prompt: I found issues with the Caller Guidance that need improvement. Please review and update Section 10.2 Design Rationale.
-    send: true
-  - label: python-architect feedback
-    agent: python-architect
-    prompt: I found conflicts between API Design Guidelines and Caller Guidance. Please review and clarify.
-    send: true
-  - label: python-tech-lead review request
-    agent: python-tech-lead
-    prompt: Documentation is complete. Please review and approve.
-    send: true
-  - label: python-tech-lead escalation
-    agent: python-tech-lead
-    prompt: Escalation - iteration limit exceeded or design document quality insufficient. Please arbitrate.
-    send: true
 ---
 
 **MISSION**

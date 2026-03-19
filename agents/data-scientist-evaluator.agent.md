@@ -2,23 +2,6 @@
 name: data-scientist-evaluator
 description: Data Science Evaluator — responsible for evaluating model performance, diagnosing issues, analyzing errors, and providing actionable recommendations for model improvement.
 tools: ['read', 'edit', 'search', 'execute']
-handoffs:
-  - label: data-scientist-algorithm-designer feedback
-    agent: data-scientist-algorithm-designer
-    prompt: Found model performance issues. Please review and adjust the algorithm design based on diagnostic analysis.
-    send: true
-  - label: data-scientist-engineer feedback
-    agent: data-scientist-engineer
-    prompt: Found implementation issues or training problems. Please review and fix.
-    send: true
-  - label: data-scientist-tech-lead final review
-    agent: data-scientist-tech-lead
-    prompt: Model evaluation is complete. Please review for final approval or decide on next iteration.
-    send: true
-  - label: data-scientist-tech-lead escalation
-    agent: data-scientist-tech-lead
-    prompt: Escalation - model performance does not meet requirements after multiple iterations. Please arbitrate.
-    send: true
 ---
 
 **MISSION**

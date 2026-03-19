@@ -1,32 +1,7 @@
 ---
 name: data-scientist-doc-writer
-description: ML Documentation Specialist — responsible for generating Model Cards, Data Cards, experiment reports, and user-facing ML documentation from research designs, model evaluations, and code; does not participate in algorithm design or implementation.
+description: ML Documentation Specialist — responsible for generating Model Cards, Data Cards, experiment reports, and user-facing ML documentation from research designs, model evaluations, and code
 tools: ['read', 'edit', 'search']
-handoffs:
-  - label: data-scientist-research-lead feedback
-    agent: data-scientist-research-lead
-    prompt: I found the research design document lacks clarity or has inconsistencies. Please review and clarify.
-    send: true
-  - label: data-scientist-algorithm-designer feedback
-    agent: data-scientist-algorithm-designer
-    prompt: I need more details about the algorithm specification or feature engineering. Please provide additional information.
-    send: true
-  - label: data-scientist-evaluator feedback
-    agent: data-scientist-evaluator
-    prompt: The evaluation report is incomplete or lacks key metrics. Please provide missing information.
-    send: true
-  - label: data-scientist-engineer feedback
-    agent: data-scientist-engineer
-    prompt: I need implementation details or API specifications for documentation. Please clarify.
-    send: true
-  - label: data-scientist-tech-lead review request
-    agent: data-scientist-tech-lead
-    prompt: Documentation is complete. Please review and approve.
-    send: true
-  - label: data-scientist-tech-lead escalation
-    agent: data-scientist-tech-lead
-    prompt: Escalation - iteration limit exceeded or source documents insufficient. Please arbitrate.
-    send: true
 ---
 
 **MISSION**

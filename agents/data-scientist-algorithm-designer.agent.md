@@ -2,27 +2,6 @@
 name: data-scientist-algorithm-designer
 description: Data Science Algorithm Designer — responsible for translating research direction into detailed algorithm specifications, including feature engineering, model architecture, hyperparameter spaces, and experiment design.
 tools: ['read', 'edit', 'search', 'execute']
-handoffs:
-  - label: data-scientist-engineer handoff
-    agent: data-scientist-engineer
-    prompt: Algorithm design is complete. Please implement the pipeline, train models, and run experiments based on the Algorithm Design Specification.
-    send: true
-  - label: data-scientist-research-lead feedback
-    agent: data-scientist-research-lead
-    prompt: Found issues with algorithm feasibility or research assumptions. Please review and adjust.
-    send: true
-  - label: data-engineer feedback
-    agent: data-engineer
-    prompt: Need additional data transformations or features. Please prepare the required data.
-    send: true
-  - label: data-scientist-tech-lead review request
-    agent: data-scientist-tech-lead
-    prompt: Algorithm Design Specification is complete. Please review and approve before implementation.
-    send: true
-  - label: data-scientist-tech-lead escalation
-    agent: data-scientist-tech-lead
-    prompt: Escalation - iteration limit exceeded or design conflicts. Please arbitrate.
-    send: true
 ---
 
 **MISSION**

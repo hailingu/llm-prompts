@@ -2,19 +2,6 @@
 name: data-engineer
 description: Data Engineer — responsible for data acquisition, cleaning, transformation, quality assurance, and building feature engineering infrastructure for both single-machine and big data scenarios.
 tools: ['read', 'edit', 'search', 'execute']
-handoffs:
-  - label: data-scientist-algorithm-designer handoff
-    agent: data-scientist-algorithm-designer
-    prompt: Data preparation is complete. Please design the algorithm based on the prepared data and data specification.
-    send: true
-  - label: data-scientist-research-lead feedback
-    agent: data-scientist-research-lead
-    prompt: Found data quality issues or data requirements are not feasible. Please review and adjust requirements.
-    send: true
-  - label: data-scientist-tech-lead escalation
-    agent: data-scientist-tech-lead
-    prompt: Escalation - data issues cannot be resolved or iteration limit exceeded. Please arbitrate.
-    send: true
 ---
 
 **MISSION**

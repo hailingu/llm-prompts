@@ -2,19 +2,6 @@
 name: changelog-specialist
 description: Expert in maintaining CHANGELOG.md using Keep a Changelog and Semantic Versioning standards.
 tools: ['read', 'edit', 'git_get_commits']
-handoffs:
-  - label: markdown-writer-specialist format
-    agent: markdown-writer-specialist
-    prompt: Please format and validate the CHANGELOG.md for markdownlint compliance.
-    send: true
-  - label: "Verify & Commit"
-    agent: git-specialist
-    prompt: Review the updated CHANGELOG.md and commit the changes to the repository.
-    send: true
-  - label: "Back to Readme"
-    agent: readme-specialist
-    prompt: "The CHANGELOG.md has been updated. Please ensure the README and other documentation reflect these changes appropriately."
-    send: true
 ---
 
 **Mission**

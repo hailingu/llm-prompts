@@ -2,27 +2,6 @@
 name: data-scientist-tech-lead
 description: Data Science Tech Lead — responsible for research design reviews, algorithm design approvals, final model evaluations, cross-agent arbitration, and ensuring end-to-end ML project quality.
 tools: ['read', 'edit', 'search', 'execute']
-handoffs:
-  - label: data-scientist-research-lead revision request
-    agent: data-scientist-research-lead
-    prompt: Research design review feedback - please revise based on the following comments.
-    send: true
-  - label: data-engineer revision request
-    agent: data-engineer
-    prompt: Data quality or pipeline issues found - please revise based on feedback.
-    send: true
-  - label: data-scientist-algorithm-designer revision request
-    agent: data-scientist-algorithm-designer
-    prompt: Algorithm design review feedback - please revise based on the following comments.
-    send: true
-  - label: data-scientist-engineer revision request
-    agent: data-scientist-engineer
-    prompt: Implementation or experiment issues found - please revise based on feedback.
-    send: true
-  - label: data-scientist-evaluator clarification
-    agent: data-scientist-evaluator
-    prompt: Need additional evaluation or clarification on model performance.
-    send: true
 ---
 
 **MISSION**
