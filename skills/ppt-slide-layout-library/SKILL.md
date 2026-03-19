@@ -38,6 +38,13 @@ Before picking a layout:
 3. Open only relevant layout asset files.
 4. Treat unindexed layouts as unavailable.
 
+Hard validation rules:
+
+1. `layout_key` MUST exist in `assets/layouts/index.yml` and map to a real `assets/layouts/*.yml` file.
+2. If `layout_key` cannot be resolved, STOP and re-select from indexed candidates.
+3. Do not invent ad hoc keys such as `metrics_3col_kpi` when they are not indexed.
+4. Do not continue to implementation with a non-resolved layout contract.
+
 ## Unified Layout Contract
 
 Each indexed layout should expose a machine-readable `layout_contract`.
@@ -71,6 +78,18 @@ Rules:
 4. overflow fixes must follow recovery order before switching layout.
 5. switch layout only when stabilization fails and fallback is listed.
 
+Deterministic gating before implementation:
+
+1. `layout_key_resolved` must be true.
+2. `layout_contract_source` must be a real file path under `assets/layouts/`.
+3. `required_thinking_fields_check` must be pass.
+4. if any check fails, implementation is blocked.
+
+Fallback discipline:
+
+- If selected `layout_key` is invalid or missing, re-run layout selection from index candidates.
+- Do not bypass layout resolution by writing one-off page structure directly.
+
 ## Global Page Constraints
 
 Default page structure (except cover/closing variants):
@@ -86,10 +105,16 @@ If one area is omitted, provide explicit structural equivalent and rationale.
 
 For standard structured slides:
 
-1. Root `.slide-container` must use vertical Flex (e.g. `1080px` height).
+1. Root `.slide-container` must use vertical Flex on a fixed `1920x1080` canvas.
 2. Header and Footer heights must be fixed across one deck (e.g., `h-[100px]`, `h-[60px]`).
 3. Main must use `flex: 1` **AND** `min-h-0` (or `min-height: 0`). This is a critical CSS Flexbox requirement to stop dense inner content from forcing the `.slide-main` container to grow past the 1080px boundary.
 4. Cover/fullscreen/special transition pages may opt out.
+
+Presentation packaging rule:
+
+1. `presentation.html` should host slide iframes as fixed `1920x1080` content and apply viewport scale.
+2. Slide files should not independently use responsive shell patterns like `max-width` + `min-height: 100vh`.
+3. Scaled frame must be center-anchored with `left:50%`, `top:50%`, `translate(-50%, -50%) scale(...)` to avoid horizontal drift.
 
 ## Geometry Hard Rules
 
@@ -245,6 +270,42 @@ Main area must not intrude into footer safety zone.
 2. simplify content density (items, label length, chart complexity)
 3. apply contract-defined fallback layout
 
+### Card Emphasis Guardrail
+
+For standard insight/evidence cards inside layout templates:
+
+1. Use neutral card shells by default (`border` + subtle surface).
+2. Do not encode emphasis via edge-accent styles (left color bars, thick top strips).
+3. Move emphasis into chips, metric values, icon markers, or typography hierarchy.
+
+Blocking enforcement:
+
+1. Any `border-l-[2-8]` / `border-t-[2-8]` (or equivalent inline border-left/top >=2px) used as emphasis is invalid.
+2. If found, regenerate the slide card style before packaging; do not ship with waiver.
+
+## Underflow Gates (Blocking)
+
+These gates prevent large empty regions caused by over-stretched containers and low-density content.
+
+`U1` Underflow Density Gate:
+
+1. Do not keep multi-column (`1/2 + 1/2`, `1/3 + 2/3`, `3-col`) structures when content density is too low.
+2. If density is low, reduce column count, merge adjacent cards, or enlarge chart/table region.
+
+`U2` Adaptive Fallback Gate:
+
+1. If one or more cards are `h-full`/`flex-1` but content is short, do not keep full-height card stretching.
+2. Apply fallback in order:
+   - collapse card count
+   - remove `h-full` on short cards and use intrinsic height
+   - switch from 3-column to 2-column
+   - switch to `chart_synthesis` or `full_width` when narrative is sparse
+
+Execution evidence rule:
+
+1. `validate_no_edge_accent_cards.py` and `validate_underflow_density.py` must both run on the target presentation directory in the same generation run.
+2. A gate is considered passed only when script output contains `PASSED`; otherwise packaging is blocked.
+
 ### Balance Constraints
 
 - left/right occupancy should be visually balanced
@@ -287,7 +348,15 @@ Supporting templates:
 3. read selected layout contract
 4. complete thinking fields
 5. implement with budget constraints
-6. run QA and recover via contract order
+6. run deterministic validators and recover via contract order
+
+Deterministic validators:
+
+1. `python3 skills/ppt-slide-layout-library/scripts/validate_layout_contracts.py`
+2. `python3 skills/ppt-component-library/scripts/validate_component_size_contracts.py`
+3. `python3 skills/ppt-slide-layout-library/scripts/validate_presentation_contract.py <presentation_dir>`
+4. `python3 skills/ppt-slide-layout-library/scripts/validate_no_edge_accent_cards.py <presentation_dir>`
+5. `python3 skills/ppt-slide-layout-library/scripts/validate_underflow_density.py <presentation_dir>`
 
 ## Final Guidance
 

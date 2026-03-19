@@ -165,13 +165,46 @@ Resolver consumption rule:
 
 If components destabilize the page budget inside a standard layout, do not invent component-local recovery order. Apply the chosen layout asset's `overflow_recovery_order` first, then reduce component density, and only then switch to a fallback layout if the layout contract allows it.
 
+## Emphasis Style Policy (Blocking)
+
+Use text hierarchy, chips/badges, and local surface contrast for emphasis.
+
+Hard prohibitions for card emphasis:
+
+1. Do not use edge-accent patterns such as left color bars or top color strips as the primary emphasis mechanism.
+2. Do not add `border-l-*`, `border-r-*`, or thick `border-t-*` accents on standard evidence cards.
+3. Keep card shells neutral (`border` + subtle surface), and move emphasis to label chip, value color, or icon marker.
+
+Allowed emphasis:
+
+1. small semantic label chip near the title
+2. value-level color emphasis (`critical`, `warning`, `positive`)
+3. icon-level emphasis with neutral card shell
+
+
+## Size Contract Consistency (Blocking)
+
+When layout assets provide `estimated_height_px` for component candidates, those estimates MUST be inside the component's `component_spec.variants.*.empirical_height_px` range.
+
+Blocking rules:
+
+1. If an estimate is outside the selected variant range, do not proceed with that candidate.
+2. First fix by selecting the correct variant (for example `compact` -> `default` or `compact_narrow`).
+3. If no variant fits the estimate, revise the layout budget/candidate instead of forcing the component.
+4. Do not keep contradictory contracts where layout examples and component contracts disagree.
+
+Deterministic validator:
+
+- `python3 skills/ppt-component-library/scripts/validate_component_size_contracts.py`
+- This must pass before final HTML delivery when layout examples provide `estimated_height_px`.
+
 ## Design System Rules
 
 ### 1. Depth & Layering (Z-Index Strategy)
 
 - **Level 0 (Background)**: inherited from page layout or style profile.
 - **Level 1 (Component Base)**: local surface, border, or soft fill.
-- **Level 2 (Component Emphasis)**: local highlight, accent edge, subtle shadow, or elevated chip.
+- **Level 2 (Component Emphasis)**: local highlight, elevated chip, subtle shadow, or icon emphasis.
 - **Level 3 (Text/Icon)**: foreground content, icons, labels, or semantic markers.
 
 ### 2. Semantic Colors

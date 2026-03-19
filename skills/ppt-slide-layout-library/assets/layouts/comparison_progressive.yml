@@ -104,17 +104,17 @@ worked_layout_example:
     header_row_height_px: 92
   component_candidates:
     stage_header:
-      - { component_family: Card_Solid, variant: compact, estimated_height_px: 88, fit_reason: "适合标题 + 双行副标题 + 顶部阶段强调" }
+      - { component_family: Card_Solid, variant: compact, estimated_height_px: 96, fit_reason: "适合标题 + 双行副标题 + 顶部阶段强调" }
       - { component_family: Card_Accent, variant: compact, estimated_height_px: 96, fit_reason: "强调更强，但对窄列副标题宽度更敏感" }
     row_cell:
-      - { component_family: Card_Solid, variant: compact, estimated_height_px: 68, fit_reason: "适合每阶段一条短描述" }
+      - { component_family: Card_Solid, variant: compact_narrow, estimated_height_px: 68, fit_reason: "适合每阶段一条短描述" }
       - { component_family: List_Icon, variant: compact, estimated_height_px: 84, fit_reason: "适合两点式能力描述，但会提高单行成本" }
     merged_progression_cell:
       - { component_family: Card_Accent, variant: compact, estimated_height_px: 74, fit_reason: "适合承载跨阶段共享能力" }
   packing_result:
     selected_components:
       - { region: stage_header, component_family: Card_Solid, variant: compact }
-      - { region: row_cell, component_family: Card_Solid, variant: compact }
+      - { region: row_cell, component_family: Card_Solid, variant: compact_narrow }
       - { region: merged_progression_cell, component_family: Card_Accent, variant: compact }
     distribution_note:
       - "若某一阶段列标题明显更长，必须优先升档 header component，而不是压缩所有行高"

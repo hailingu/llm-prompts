@@ -108,13 +108,13 @@ worked_layout_example:
     - { component_id: echarts_cartesian_standard, variant: default, estimated_height_px: 236, fit_reason: "适用于低 annotation 密度" }
     - { component_id: echarts_cartesian_annotated, variant: compact, estimated_height_px: 268, fit_reason: "适用于 2-4 个关键 annotation" }
   right_rail_candidates:
-    - { component_family: Card_Accent, variant: compact, estimated_height_px: 124 }
+    - { component_family: Card_Accent, variant: default, estimated_height_px: 124 }
     - { component_family: Card_Glass, variant: compact, estimated_height_px: 116 }
     - { component_family: Metric_Big, variant: compact, estimated_height_px: 64, semantic_role: support_micro_card }
   packing_result:
     selected_chart_component: { component_id: echarts_cartesian_annotated, variant: compact }
     selected_right_components:
-      - { component_family: Card_Accent, variant: compact }
+      - { component_family: Card_Accent, variant: default }
       - { component_family: Card_Glass, variant: compact }
       - { component_family: Metric_Big, variant: compact }
     distribution_note:
@@ -138,11 +138,11 @@ template: |
         </section>
         
         <aside class="col-span-5 flex flex-col gap-4 h-full min-h-0">
-          <div class="card p-4 flex-1 bg-slate-50 border-l-4 border-brand-primary">
+          <div class="card p-4 flex-1 bg-slate-50 border border-slate-200">
             <h4 class="font-bold text-brand-primary mb-2">Key Insight A</h4>
             <p class="text-sm text-slate-600">Detailed analysis text...</p>
           </div>
-          <div class="card p-4 flex-1 bg-slate-50 border-l-4 border-brand-secondary">
+          <div class="card p-4 flex-1 bg-slate-50 border border-slate-200">
             <h4 class="font-bold text-brand-secondary mb-2">Key Insight B</h4>
             <p class="text-sm text-slate-600">Secondary observation...</p>
           </div>

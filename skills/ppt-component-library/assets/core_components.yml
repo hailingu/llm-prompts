@@ -63,13 +63,13 @@ components:
       </div>
 
   Card_Accent:
-    description: "Card with a colored accent border on the left."
+    description: "Emphasized card with neutral shell and semantic label chip."
     use_case: "Highlighting key strategic pillars or warnings."
     category: container
-    variant: accent_left
+    variant: accent_chip
     compatible_layouts: [side_by_side, dashboard_grid, hybrid, process]
     theme_support: [dark_bias, style_profile_sensitive]
-    required_placeholders: [surface_class, accent_border_class, accent_text_class, title_text_class, body_text_class, label, title, description]
+    required_placeholders: [surface_class, border_class, accent_chip_class, accent_text_class, title_text_class, body_text_class, label, title, description]
     optional_placeholders: []
     semantic_tokens: [accent_color, surface_elevated, text_primary, text_secondary]
     component_spec:
@@ -95,9 +95,11 @@ components:
       - "every card on the page is already emphasized"
       - "the page needs neutral evidence cards rather than highlighted callouts"
       - "column width is below 430px and row budget is below 88px, in which case compact_narrow or merged rows are safer"
+      - "the page attempts edge-accent styling such as left bars or top strips"
     example_payload:
       surface_class: bg-white
-      accent_border_class: border-amber-500
+      border_class: border-slate-200
+      accent_chip_class: bg-amber-100
       accent_text_class: text-amber-700
       title_text_class: text-slate-950
       body_text_class: text-slate-600
@@ -105,8 +107,8 @@ components:
       title: Maritime disruption is locally concentrated
       description: Insurance stress is concentrated around the chokepoint rather than across the entire basin.
     html: |
-      <div class="{{surface_class}} border-l-4 {{accent_border_class}} p-6 flex flex-col gap-2 shadow-lg">
-        <div class="text-xs font-bold {{accent_text_class}} uppercase tracking-widest mb-1">{{label}}</div>
+      <div class="{{surface_class}} border {{border_class}} p-6 rounded-lg flex flex-col gap-2 shadow-md">
+        <div class="inline-flex w-fit px-2 py-1 rounded {{accent_chip_class}} text-xs font-bold {{accent_text_class}} uppercase tracking-widest mb-1">{{label}}</div>
         <h3 class="text-xl font-bold {{title_text_class}}">{{title}}</h3>
         <p class="text-xs {{body_text_class}} leading-relaxed">{{description}}</p>
       </div>
@@ -527,7 +529,7 @@ components:
     optional_placeholders: []
     semantic_tokens: [accent_color, surface_subtle, border_subtle]
     component_spec:
-      width_mode: horizontal_fill
+      width_mode: semi-fixed
       expansion_axis: vertical_fill
       placement_fit: [map_surface, side_panel_map, comparison_map]
       variants:

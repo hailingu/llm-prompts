@@ -118,7 +118,8 @@ slot_sets:
     - body_text_class
   card_accent:
     - surface_class
-    - accent_border_class
+    - border_class
+    - accent_chip_class
     - accent_text_class
     - title_text_class
     - body_text_class
@@ -240,6 +241,7 @@ profiles:
     emphasis_roles:
       primary:
         accent_border_class: border-[#00338D]
+        accent_chip_class: bg-[#00338D]/10
         accent_text_class: text-[#00338D]
         trend_text_class: text-[#00338D]
         accent_icon_class: text-[#00338D]
@@ -257,6 +259,7 @@ profiles:
         flow_color: '#00338D'
       info:
         accent_border_class: border-sky-500
+        accent_chip_class: bg-sky-100
         accent_text_class: text-sky-700
         trend_text_class: text-sky-700
         accent_icon_class: text-sky-700
@@ -274,6 +277,7 @@ profiles:
         ring_inner_class: border-sky-300/40
       positive:
         accent_border_class: border-emerald-500
+        accent_chip_class: bg-emerald-100
         accent_text_class: text-emerald-700
         trend_text_class: text-emerald-700
         accent_icon_class: text-emerald-700
@@ -291,6 +295,7 @@ profiles:
         ring_inner_class: border-emerald-300/40
       warning:
         accent_border_class: border-amber-500
+        accent_chip_class: bg-amber-100
         accent_text_class: text-amber-700
         trend_text_class: text-amber-700
         accent_icon_class: text-amber-700
@@ -308,6 +313,7 @@ profiles:
         ring_inner_class: border-amber-300/40
       critical:
         accent_border_class: border-red-500
+        accent_chip_class: bg-red-100
         accent_text_class: text-red-700
         trend_text_class: text-red-700
         accent_icon_class: text-red-700
@@ -326,6 +332,7 @@ profiles:
         ring_inner_class: border-red-300/40
       neutral:
         accent_border_class: border-slate-400
+        accent_chip_class: bg-slate-100
         accent_text_class: text-slate-700
         trend_text_class: text-slate-600
         accent_icon_class: text-slate-600
@@ -354,6 +361,7 @@ profiles:
     emphasis_roles:
       primary:
         accent_border_class: border-[#00A3A0]
+        accent_chip_class: bg-[#00A3A0]/10
         accent_text_class: text-[#007C7A]
         trend_text_class: text-[#007C7A]
         accent_icon_class: text-[#007C7A]
@@ -375,6 +383,7 @@ profiles:
     emphasis_roles:
       primary:
         accent_border_class: border-[#009A44]
+        accent_chip_class: bg-[#009A44]/10
         accent_text_class: text-[#007A36]
         trend_text_class: text-[#007A36]
         accent_icon_class: text-[#007A36]
@@ -396,6 +405,7 @@ profiles:
     emphasis_roles:
       primary:
         accent_border_class: border-[#DC291E]
+        accent_chip_class: bg-[#DC291E]/10
         accent_text_class: text-[#B42318]
         trend_text_class: text-[#B42318]
         accent_icon_class: text-[#B42318]
@@ -417,6 +427,7 @@ profiles:
     emphasis_roles:
       primary:
         accent_border_class: border-[#86BC25]
+        accent_chip_class: bg-[#86BC25]/12
         accent_text_class: text-[#5F8E12]
         trend_text_class: text-[#5F8E12]
         accent_icon_class: text-[#5F8E12]
@@ -448,6 +459,7 @@ profiles:
     emphasis_roles:
       primary:
         accent_border_class: border-slate-900
+        accent_chip_class: bg-slate-200
         accent_text_class: text-slate-900
         trend_text_class: text-slate-700
         accent_icon_class: text-slate-800
@@ -465,6 +477,7 @@ profiles:
         flow_color: '#0F172A'
       info:
         accent_border_class: border-sky-500
+        accent_chip_class: bg-sky-100
         accent_text_class: text-sky-700
         trend_text_class: text-sky-700
         accent_icon_class: text-sky-700
@@ -482,6 +495,7 @@ profiles:
         ring_inner_class: border-sky-300/40
       positive:
         accent_border_class: border-emerald-500
+        accent_chip_class: bg-emerald-100
         accent_text_class: text-emerald-700
         trend_text_class: text-emerald-700
         accent_icon_class: text-emerald-700
@@ -499,6 +513,7 @@ profiles:
         ring_inner_class: border-emerald-300/40
       warning:
         accent_border_class: border-amber-500
+        accent_chip_class: bg-amber-100
         accent_text_class: text-amber-700
         trend_text_class: text-amber-700
         accent_icon_class: text-amber-700
@@ -516,6 +531,7 @@ profiles:
         ring_inner_class: border-amber-300/40
       critical:
         accent_border_class: border-red-600
+        accent_chip_class: bg-red-100
         accent_text_class: text-red-700
         trend_text_class: text-red-700
         accent_icon_class: text-red-700
@@ -534,6 +550,7 @@ profiles:
         ring_inner_class: border-red-300/40
       neutral:
         accent_border_class: border-slate-400
+        accent_chip_class: bg-slate-100
         accent_text_class: text-slate-700
         trend_text_class: text-slate-600
         accent_icon_class: text-slate-600

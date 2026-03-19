@@ -14,196 +14,283 @@ Goal:
 - Keep architecture simple and maintainable.
 - Deliver consistent multi-style output (for example: KPMG, McKinsey, BCG, Bain, Deloitte, Editorial Briefing).
 
-## 1. Non-Negotiable Constraints
+## 1. Execution Contract (State Machine + Gates)
 
-1. Do not use generated Python scripts as an intermediate method to write HTML.
-2. Deliver HTML directly (`slide-*.html`, `presentation.html`); do not switch primary output to PPTX.
-3. Reuse a stable master shell (`master-layout.html`) for Header/Footer and inject only Main content.
-4. Complete read -> analyze -> design -> implement -> self-check in one agent workflow.
-5. Default to production mode unless the user explicitly asks for draft/MVP mode.
-6. Do not place debug UI elements in production slide files.
-7. Standard Header-Main-Footer pages must use stable vertical Flex structure:
-   - fixed Header height
-   - fixed Footer height
-   - Main area with `flex: 1`
-8. Never hide overflow problems using `overflow: hidden` tricks.
-9. Keep at least 8px bottom safety spacing in Main content area.
-10. Prevent visual collapse: chart container height < 140px is invalid; table row height < 24px is invalid.
-11. Apply repair actions in order: spacing and layout tuning, chart/content transformation, secondary-text compression, layout switch.
-12. Never delete core KPI values just to pass checks.
-13. Chart configurations must include anti-crowding protection (ticks, legend strategy).
+This agent MUST execute as a strict finite-state workflow, not as free-form planning text.
 
-## 2. Patterns and Anti-Patterns
+Default state flow:
 
-### Recommended Patterns
+`S0 Input Analysis -> S1 Outline -> S2 Thinking -> S3 HTML Implementation (Final Deliver)`
 
-1. **Structure first**: lock grid/flex skeleton before injecting text or charts.
-2. **Worst-case planning**: assume long labels and dense legends by default.
-3. **Master reuse**: keep Header/Footer pixel-stable across slides.
-4. **Visual rhythm**: avoid repeating the same layout or accent style across many consecutive pages.
-5. **Batch context carry-over**: pass prior-page decisions into later batches.
+Hard rules:
 
-### Strict Anti-Patterns
+- You MUST NOT skip states.
+- You MUST NOT merge states.
+- You MUST NOT treat internal reasoning as state completion.
+- A state is complete only when required artifacts are written to disk and gates pass.
 
-1. Skip validation and deliver blindly.
-2. Patch layouts using ad hoc magic numbers everywhere.
-3. Forget cross-page context and style continuity.
-4. Use `h-full` in text-heavy cards where it causes truncation.
-5. Invent data values that are not present in source files.
-6. Forbid explicit `vertices` arbitrarily in topology. `vertices` are explicitly ALLOWED to create clean Bus Lanes for cross-domain flows or routing drop lanes around obstacles.
-7. Use `\n` string escapes to wrap text inside HTML DOM nodes (use `<br>` or CSS `whitespace-pre-line` instead).
-8. **Topology Anti-Pattern**: Use basic SVG shapes like `rect` or `cylinder` for core functional nodes. ALWAYS use `inherit: 'html'` for complex text and CSS styling.
-9. **Topology Anti-Pattern**: Define edges without specific ports, causing orthogonal routing to cross through nodes chaoticly (e.g. NEVER use `{ source: 'nodeA', target: 'nodeB' }`; ALWAYS use `{ source: { cell: 'nodeA', port: 'right' }, target: { cell: 'nodeB', port: 'left' } }`).
-10. **Topology Anti-Pattern**: Hardcode boundary dimensions for background groups. ALWAYS use dynamical calculation (`graph.getCellsBBox(children)`).
+### 1.1 Output Modes
 
-## 3. Data Integrity Protocol (Critical)
+Production Mode (default):
 
-1. Do not hallucinate data.
-2. KPI/chart values must map to source data exactly.
-3. Embed only required data subsets (not full oversized raw datasets).
-4. Add source-tracing comments for key figures in HTML.
-5. For computed metrics, document formula origin.
-6. Handle missing values transparently (`N/A`, `null`, or explicit interpolation strategy).
+- presentation-ready quality
+- full hierarchy and polished visual language
+- no debug scaffolding
 
-## 4. Output Modes
+Draft Mode (only on explicit user request):
 
-### Production Mode (Default)
+- fast structure/data verification
+- mark output clearly as `Draft`
+- reduced strictness is allowed
 
-- Presentation-ready quality
-- Full hierarchy and polished visual language
-- No debug scaffolding
+### 1.2 Required Artifacts
 
-### Draft Mode (Only on Explicit Request)
+Deck-level:
 
-- Fast structure/data verification
-- Mark output clearly as `Draft`
-- Allow reduced visual QA strictness
+- `deck-outline.md` (single outline for the whole presentation story)
+- `master-layout.html`
+- `presentation.html`
 
-## 5. Workflow
+Per slide `N`:
 
-### 5.1 Input Analysis
+- `slide-{N}-thinking.md`
+- `slide-{N}.html`
 
-- Read markdown narrative/report inputs
-- Parse CSV/data inputs
-- Extract key insights and constraints
+If required artifacts are missing, downstream states are BLOCKED.
 
-### 5.2 Planning and Thinking Phase
+### 1.3 Gate Definitions (Blocking)
 
-Enforce linear order:
+`G0` (Input -> Outline):
 
-`Outline -> Thinking -> Implementation`
+- source markdown/data files are read
+- page list and slide IDs are resolved
 
-Topology branch:
+`G1` (Outline -> Thinking):
 
-- For topology / architecture / zoned system-map pages, use a topology-specific outline contract before thinking.
-- Do not reuse the generic slide-thinking template for topology pages. Instead, you MUST use `knowledge/templates/ppt-topology-thinking-template.md`. Extract precise geometric bounds (W, H, Logic-X, Logic-Y) into a `Visual Bounding Box Matrix`. Do not just output indented lists.
+- `deck-outline.md` exists
+- outline defines full-deck storyline and slide map (slide_id -> section/topic)
+- outline includes deck objective, narrative sequence, and data-source scope
+- `master-layout.html` exists and is generated before any thinking/html files
+- `master-layout.html` defines deck baseline canvas and shared shell contract (at minimum: fixed canvas, header/footer baseline)
 
-Batch protocol:
+`G2` (Thinking -> HTML):
 
-1. Generate all `slide-{N}-thinking.md` first.
-2. Analyze thinking files to derive unified Header/Footer strategy.
-3. Update `master-layout.html` before any slide HTML generation.
-4. Generate all `slide-{N}.html` using the master shell.
-5. Run quality checks and repair.
+- every target slide has `slide-{N}-thinking.md`
+- every thinking file references the same master shell assumptions (canvas/header/footer contract from `master-layout.html`)
+- thinking contains required fields for page type
+- each thinking file contains explicit mapping to deck outline section:
+  - `deck_outline_section_id`
+  - `deck_outline_alignment_note`
 
-Thinking file minimum fields (Standard Layouts):
+`G3` (Slide HTML Implementation):
 
-- mission and page objective
-- selected layout and rationale
-- data binding mapping
-- visual hierarchy and typography plan
-- Header layout info
-- Footer layout info
-- overflow risk and fallback
+- every target slide has `slide-{N}.html`
+- every `slide-{N}.html` uses fixed canvas contract (`1920x1080`) instead of responsive page shell
+- no slide remains in outline-only or thinking-only status
+- `python3 skills/ppt-slide-layout-library/scripts/validate_no_edge_accent_cards.py <presentation_dir>` passes
+- `python3 skills/ppt-slide-layout-library/scripts/validate_underflow_density.py <presentation_dir>` passes
 
-Thinking file minimum fields (Topology/Architecture Diagrams):
+`G4` (Presentation Packaging Final Deliver):
+
+- `presentation.html` exists and is loadable
+- `presentation.html` includes navigation or routing that can reach every `slide-{N}.html`
+- `presentation.html` uses viewport scaling for fixed-canvas slides (no secondary responsive reflow)
+- slide frame centering uses anchor+translate contract (`left: 50%`, `top: 50%`, `translate(-50%, -50%) scale(...)`) to avoid right/left drift under scaling
+- `python3 skills/ppt-slide-layout-library/scripts/validate_presentation_contract.py <presentation_dir>` passes
+
+Transition rules:
+
+- Do not advance when a gate fails.
+- Repair missing artifacts/failures first, then re-check.
+- `G4` pass means FINAL DELIVERY completed.
+- Gate pass must be evidenced by validator PASS output in the run log; no inferred/manual pass is allowed.
+
+### 1.4 State Sentinel Output (Mandatory)
+
+At the end of each completed state, output exactly one sentinel line:
+
+- `STATE_DONE: S0`
+- `STATE_DONE: S1`
+- `STATE_DONE: S2`
+- `STATE_DONE: S3`
+
+Rules:
+
+- Print sentinel only after that state gate passes.
+- Do not print future-state sentinels in advance.
+- On resume, continue from first missing sentinel/state.
+
+### 1.5 Batch Protocol
+
+1. Generate `deck-outline.md` for the whole presentation.
+2. Generate `master-layout.html` as deck baseline before any per-slide artifact.
+3. Gate check `G1`.
+4. Generate all `slide-{N}-thinking.md`.
+5. Gate check `G2`.
+6. Generate all `slide-{N}.html` based on `master-layout.html` shell contract.
+7. Gate check `G3`.
+8. Generate `presentation.html` after all slide HTML files are completed.
+9. Gate check `G4`.
+10. Final delivery complete.
+
+### 1.6 Recovery Protocol
+
+- If execution stops at `S1` or `S2`, resume from first incomplete gate until `S3 Final Deliver`.
+- Do not end with deck-outline/thinking only unless user explicitly asks planning-only output.
+- If planning-only is explicitly requested, mark `Planning-Only (No HTML Requested)`.
+
+### 1.7 Execution Anti-Patterns
+
+- Skip `S1` (deck outline) and write thinking directly.
+- Generate per-slide outline files as the primary outline artifact (should use one `deck-outline.md`).
+- Generate `master-layout.html` at the end of the pipeline instead of the beginning.
+- Generate slide thinking/HTML before `master-layout.html` is fixed.
+- Write thinking without `deck_outline_section_id` mapping.
+- Skip `S2` and generate HTML directly.
+- Generate any `slide-{N}.html` before `G2` passes.
+- Generate `presentation.html` before all target `slide-{N}.html` files are ready and `G3` passes.
+- Output `STATE_DONE: Sx` before the corresponding gate passes.
+- Output future state sentinels in advance (for example, `STATE_DONE: S3` during `S1`).
+- End task at deck-outline/thinking stage without explicit user request for planning-only mode.
+
+## 2. Data Integrity Contract
+
+- Do not hallucinate data.
+- KPI/chart values must map to source data exactly.
+- Embed only required data subsets (do not dump oversized raw datasets).
+- Add source-tracing comments for key figures in HTML.
+- For computed metrics, document formula origin.
+- Handle missing values transparently (`N/A`, `null`, or explicit interpolation strategy).
+- Never delete core KPI values just to pass checks.
+
+## 3. Layout & Readability Contract
+
+### 3.1 Structural Rules
+
+- Deliver HTML directly (`slide-*.html`, `presentation.html`); do not switch primary output to PPTX.
+- Do not use generated Python scripts as an intermediate method to write HTML.
+- Reuse stable master shell (`master-layout.html`) for Header/Footer; inject only Main content.
+- `master-layout.html` must be created first and acts as the single source of truth for deck-level canvas/shell.
+- Each `slide-{N}.html` must inherit master shell contract and only customize page-specific Main content + approved local styles.
+- Slide canvas contract is fixed:
+  - each `slide-{N}.html` must render on a fixed `1920x1080` root canvas
+  - do not use `max-width` + `min-height: 100vh` as primary slide shell
+  - `presentation.html` is responsible for viewport fit via scale transform
+- Standard pages must use stable Header-Main-Footer vertical Flex:
+  - fixed Header height
+  - fixed Footer height
+  - Main with `flex: 1`
+
+### 3.5 Deterministic Validation Gates (Blocking)
+
+Before outputting `STATE_DONE: S3`, ensure `G4` already passed, then run all checks:
+
+1. `python3 skills/ppt-slide-layout-library/scripts/validate_layout_contracts.py`
+2. `python3 skills/ppt-component-library/scripts/validate_component_size_contracts.py`
+3. `python3 skills/ppt-slide-layout-library/scripts/validate_presentation_contract.py <presentation_dir>`
+4. `python3 skills/ppt-slide-layout-library/scripts/validate_no_edge_accent_cards.py <presentation_dir>`
+5. `python3 skills/ppt-slide-layout-library/scripts/validate_underflow_density.py <presentation_dir>`
+
+If any check fails, fix artifacts and rerun until all pass.
+Do not output `STATE_DONE: S3` when any validator has not been executed in this run.
+
+### 3.2 Layout Quality Rules
+
+- Structure first: lock grid/flex skeleton before injecting text/charts.
+- Worst-case planning: assume long labels and dense legends.
+- Keep Header/Footer pixel-stable across slides.
+- Carry batch context across pages; avoid style drift.
+- Keep at least 8px bottom safety spacing in Main.
+- Never hide overflow with `overflow: hidden` tricks.
+- Visual collapse thresholds:
+  - chart container height `< 140px` is invalid
+  - table row height `< 24px` is invalid
+- Chart configs must include anti-crowding protection (ticks/legend strategy).
+
+### 3.3 Repair Order (Mandatory)
+
+Apply fixes in this order:
+
+1. spacing and layout tuning
+2. chart/content transformation
+3. secondary-text compression
+4. layout switch
+
+### 3.4 Anti-Patterns
+
+- Skip validation and deliver blindly.
+- Patch layouts via ad hoc magic numbers everywhere.
+- Forget cross-page context and style continuity.
+- Use `h-full` in text-heavy cards causing truncation.
+- Use `\n` escapes to wrap text inside HTML DOM nodes (use `<br>` or CSS `whitespace-pre-line`).
+
+## 4. Topology Contract
+
+Trigger this contract for topology / architecture / zoned system-map pages.
+
+### 4.1 Required Workflow for Topology Pages
+
+- Use topology-specific outline contract before thinking.
+- Do not use generic slide-thinking template.
+- MUST use `knowledge/templates/ppt-topology-thinking-template.md`.
+- MUST produce `Visual Bounding Box Matrix` with precise `(W, H, Logic-X, Logic-Y)`.
+
+### 4.2 Thinking Minimum Fields (Topology)
 
 - mission and page objective
 - topology/diagram class
-- Grid Coordination System (Define COL_WIDTH, ROW_HEIGHT, Margin)
+- Grid Coordination System (`COL_WIDTH`, `ROW_HEIGHT`, margins)
 - Node Orientation/Shape Analysis
-- Routing & Port Strategy (Explicitly define which port (top/bottom/left/right) is used for which flow)
-- Group Hierarchy & Nesting Matrix (MANDATORY: You must precisely document all levels of nesting, e.g. L1: Platform Core -> L2: Batch Processing -> L3: Azure Databricks. Do not flatten 3-level architectures into 2-level structures!)
-- Node Matrix (List ID, Label, HTML Shape, explicit [col, row], computed (x, y), and Parent Zone / Level)
-- Edge Definition Table (Source with port -> Target with port)
-- Risk & Layout Mitigation (Identify dense intersections or cross-group dependencies)
+- Routing & Port Strategy (explicit top/bottom/left/right per flow)
+- Group Hierarchy & Nesting Matrix (keep full depth, no flattening)
+- Node Matrix (`id`, `label`, shape, `[col,row]`, `(x,y)`, parent zone/level)
+- Edge Definition Table (source-with-port -> target-with-port)
+- Risk & Layout Mitigation
 
-### 5.3 Implementation Phase
+### 4.3 Topology Anti-Patterns
 
-For each slide:
+- Forbid explicit `vertices` arbitrarily. `vertices` are allowed when needed for clean bus lanes/cross-domain routing.
+- Use basic SVG shapes (`rect`, `cylinder`) for core functional nodes instead of `inherit: 'html'`.
+- Define edges without explicit ports.
+- Hardcode background group boundaries instead of dynamic bounds (`graph.getCellsBBox(children)`).
 
-1. Inject content into master shell.
-2. Validate section completeness (header/main/insight/footer when required).
-3. Verify geometry and safety constraints.
-4. Validate chart readability.
-5. Repair before moving to next slide.
+## 5. Visual Style Contract
 
-### 5.4 QA Loop (Non-Blocking but Mandatory)
+Use reusable components rather than one-off blocks:
 
-- Structural checks
-- Runtime boundary checks
-- Readability checks
-- Focused repair based on failed gates
-
-Preferred report path:
-
-- `${presentation_dir}/qa/layout-runtime-report.json`
-
-## 6. Visual Component Guidance
-
-Use reusable components instead of one-off blocks:
-
-- Floating insight card
-- Horizontal process strip
-- Icon-centric feature card
-- Gradient accent conclusion card
-- Badge/label highlights
+- floating insight card
+- horizontal process strip
+- icon-centric feature card
+- gradient accent conclusion card
+- badge/label highlights
 
 Principles:
 
 - semantic color consistency
 - border/emphasis consistency by group
 - avoid over-decoration
+- avoid repeating same layout/accent style across many consecutive pages
 
-## 7. Technical Stack
+## 6. Technical Stack
 
 - HTML + Tailwind CSS
 - JavaScript
-- ECharts (for statistical, data-driven charts. See `ppt-chart-engine` skill)
-- AntV X6 (for system architectures, business flowcharts, data flows, or cross-functional topologies. You MUST use the `ppt-topology-engine` skill)
-- Optional QA tooling integration (for verification)
+- ECharts (statistical/data-driven charts; use `ppt-chart-engine`)
+- AntV X6 (architecture/flow/topology pages; MUST use `ppt-topology-engine`)
 
-## 8. Layout and Chart Selection References
-
-Use these skill libraries as source of truth:
+## 7. References (Source of Truth)
 
 - `skills/ppt-slide-layout-library/SKILL.md`
 - `skills/ppt-chart-engine/SKILL.md`
 - `skills/ppt-brand-style-system/SKILL.md`
 - `skills/ppt-visual-qa/SKILL.md`
 
-## 9. Delivery Gates
+## 8. Optional QA (Only When Explicitly Requested)
 
-A deck is deliverable only when:
+QA is optional and runs only when user explicitly requests QA validation.
 
-1. source-aligned data integrity is preserved
-2. page structure is stable and readable
-3. no unresolved overflow/collapse defects
-4. visual hierarchy is clear
-5. style consistency is maintained across pages
+Optional report path:
 
-## 10. Troubleshooting
-
-If repeated overflow occurs:
-
-1. increase region budget
-2. reduce density per region
-3. switch to a more suitable layout
-
-If cross-page style drift occurs:
-
-1. re-check master shell and style tokens
-2. normalize repeated component classes
-3. enforce layout rhythm in batch planning
+- `${presentation_dir}/qa/layout-runtime-report.json`
 
 This agent optimizes for reliable production delivery over fragile one-off slide rendering.

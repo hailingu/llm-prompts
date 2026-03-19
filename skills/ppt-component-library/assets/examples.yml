@@ -40,7 +40,7 @@ candidate_generation_examples:
               variant: compact
               estimated_height_px: 156
               width_mode: width-sensitive
-              fit_reason: "强调更强，但左边框会进一步压缩正文宽度"
+              fit_reason: "强调更强，适合通过标签 chip 突出风险语义"
         - block_id: kpi_group
           candidates:
             - component_family: Metric_KpiRow
@@ -271,7 +271,8 @@ examples:
       secondary_text_role: secondary_text
     payload:
       surface_class: bg-white
-      accent_border_class: border-amber-500
+      border_class: border-slate-200
+      accent_chip_class: bg-amber-100
       accent_text_class: text-amber-700
       title_text_class: text-slate-950
       body_text_class: text-slate-600

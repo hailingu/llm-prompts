@@ -224,8 +224,8 @@ worked_layout_example:
     side_rail_height_px: 512
   component_candidates:
     insight_block:
-      - { component_family: Card_Glass, variant: compact, estimated_height_px: 148, fit_reason: "标题 2 行 + 正文 3-4 行 + 1 个 embedded fact" }
-      - { component_family: Card_Accent, variant: compact, estimated_height_px: 156, fit_reason: "强调更强，但会进一步压缩正文宽度" }
+      - { component_family: Card_Glass, variant: default, estimated_height_px: 148, fit_reason: "标题 2 行 + 正文 3-4 行 + 1 个 embedded fact" }
+      - { component_family: Card_Accent, variant: default, estimated_height_px: 148, fit_reason: "强调更强，但会进一步压缩正文宽度" }
     kpi_block:
       - { component_family: Metric_KpiRow, variant: compact, estimated_height_px: 104, fit_reason: "2 个短 KPI label 适合横向并列" }
       - { component_family: Card_Solid, variant: compact, estimated_height_px: 132, fit_reason: "信息更重，但垂直成本更高" }
@@ -234,7 +234,7 @@ worked_layout_example:
       - { component_family: Card_Accent, variant: compact, estimated_height_px: 78, semantic_role: conclusion_card }
   packing_result:
     selected_components:
-      - { region: side_rail, block: insight_block, component_family: Card_Glass, variant: compact }
+      - { region: side_rail, block: insight_block, component_family: Card_Glass, variant: default }
       - { region: side_rail, block: kpi_block, component_family: Metric_KpiRow, variant: compact }
       - { region: side_rail, block: conclusion_block, component_family: Card_Accent, variant: compact }
     second_stage_distribution:
